@@ -33,5 +33,6 @@ module.exports = {
     'react/react-in-jsx-scope': 'off',
     'no-shadow': 'off',
     '@typescript-eslint/no-shadow': 'warn',
+    'prettier/prettier': ['error', { endOfLine: 'auto' }],
   },
 }
