@@ -1,19 +1,24 @@
-import './index.css'
+
+import React from 'react'
 import { Routes, Route } from 'react-router-dom'
+
+import MainPage from './pages/MainPage'
+import Header from './components/Header'
+import BottomNavigation from './components/BottomNavigation'
 import Login from './pages/Login'
 
-function App() {
-  // const [count, setCount] = useState(0)
-  // useEffect(() => {
-  //   fetch('/api/test')
-  //     .then(response => response.json())
-  //     .then(json => setMessage(json.SUCCESS_TEXT))
-  // }, [])
 
+function App() {
   return (
-    <Routes>
-      <Route path="/" element={<Login />} />
-    </Routes>
+    <>
+      <Header />
+      <Routes>
+        <Route path="/" element={<MainPage />} />
+        <Route path="/login" element={<Login />} />
+      </Routes>
+      <BottomNavigation />
+    </>
+
   )
 }
 
