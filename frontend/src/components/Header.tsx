@@ -3,6 +3,7 @@ import styled from 'styled-components'
 import logo from '../assets/foodlier_logo.png'
 import useIcon from '../hooks/UseIcon'
 import { breakpoints, palette } from '../constants/Styles'
+import NotificationItem from './notification/NotificationItem'
 
 const Container = styled.header`
   width: 100vw;
@@ -43,7 +44,8 @@ const Menu = styled.button`
 
 const Notification = styled.div<{ $isToggle: boolean }>`
   position: absolute;
-  display: ${props => (props.$isToggle ? 'block' : 'none')};
+  display: ${props => (props.$isToggle ? 'flex' : 'none')};
+  flex-direction: column;
   min-width: 25rem;
   top: 5rem;
   padding: 1rem;
@@ -80,7 +82,7 @@ const WrapNotification = styled.div`
   position: relative;
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-end;
   padding: 0px 1.8rem;
   font-size: 1.8rem;
   font-weight: 600;
@@ -98,9 +100,15 @@ const Header = () => {
     <Container>
       <Logo src={logo} alt="로고 이미지" />
       <WrapIcon>
-        <Icon>
-          <IcBell size={3} color={palette.textPrimary} />
-        </Icon>
+        <WrapNotification>
+          <Icon onClick={() => setIsToggle(!isToggle)}>
+            <IcBell size={3} color={palette.textPrimary} />
+          </Icon>
+          <Notification $isToggle={isToggle}>
+            <NotificationItem />
+          </Notification>
+        </WrapNotification>
+
         <Icon>
           <IcSearch size={3} color={palette.textPrimary} />
         </Icon>
@@ -114,7 +122,7 @@ const Header = () => {
             <IcBell size={3} color={palette.textPrimary} />
           </Button>
           <Notification $isToggle={isToggle}>
-            이 구역의 해결사님이 수락했어요
+            <NotificationItem />
           </Notification>
         </WrapNotification>
         <LoginButton>LOGIN</LoginButton>
