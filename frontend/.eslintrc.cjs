@@ -34,6 +34,10 @@ module.exports = {
     'no-shadow': 'off',
     '@typescript-eslint/no-shadow': 'warn',
     'prettier/prettier': ['error', { endOfLine: 'auto' }],
+    'react/function-component-definition': [
+      2,
+      { namedComponents: ['arrow-function', 'function-declaration'] },
+    ],
   },
   ignorePatterns: ['.eslintrc.cjs', 'vite.config.ts'],
 }
