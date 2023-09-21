@@ -35,4 +35,5 @@ module.exports = {
     '@typescript-eslint/no-shadow': 'warn',
     'prettier/prettier': ['error', { endOfLine: 'auto' }],
   },
+  ignorePatterns: ['.eslintrc.cjs', 'vite.config.ts'],
 }
