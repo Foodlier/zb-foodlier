@@ -16,7 +16,14 @@ const Login = () => {
         <L.Input type="email" placeholder="Email" />
         <L.Input type="password" placeholder="Password" />
         <L.FindPassword>비밀번호 찾기</L.FindPassword>
-        <L.Button type="submit">로그인</L.Button>
+        <L.Button
+          type="submit"
+          onClick={() => {
+            navigate('/cook-for-me')
+          }}
+        >
+          로그인
+        </L.Button>
         <L.RegisterButton
           onClick={() => {
             navigate('/register')
