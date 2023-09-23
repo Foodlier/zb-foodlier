@@ -53,7 +53,7 @@ public class JwtTokenProvider {
                 .build());
     }
 
-    public TokenDto generateToken(Member member) {
+    public TokenDto createToken(Member member) {
 
         String accessToken = createAccessToken(member);
         String refreshToken = createRefreshToken(member);
@@ -68,7 +68,7 @@ public class JwtTokenProvider {
     }
 
 
-    public TokenDto regenerateByRefreshToken(Member member, TokenDto tokenDto) {
+    public TokenDto reissueByRefreshToken(Member member, TokenDto tokenDto) {
         Claims accessTokenClaims = this.parseClaims(tokenDto.getAccessToken());
 
         if (!isTokenExpired(accessTokenClaims)) {
@@ -78,7 +78,7 @@ public class JwtTokenProvider {
         RefreshToken refreshToken = refreshTokenService.findRefreshToken(member.getEmail());
         refreshTokenService.delete(refreshToken);
 
-        return this.generateToken(member);
+        return this.createToken(member);
     }
 
     public void deleteRefreshToken(String email) {
@@ -88,6 +88,7 @@ public class JwtTokenProvider {
 
     public String setToken(CreateTokenDto createTokenDto) {
         Claims claims = Jwts.claims().setSubject(createTokenDto.getEmail());
+        claims.setId(String.valueOf(createTokenDto.getId()));
         claims.put(createTokenDto.getKeyRoles(), createTokenDto.getRoles());
 
         Date now = new Date();
@@ -106,7 +107,6 @@ public class JwtTokenProvider {
             throw new JwtException(MALFORMED_JWT_REQUEST);
         }
         Claims claims = this.parseClaims(accessToken);
-
         if (isTokenExpired(claims)) {
             if (!this.existRefreshToken(refreshToken)) {
                 throw new JwtException(ACCESS_TOKEN_EXPIRED);
