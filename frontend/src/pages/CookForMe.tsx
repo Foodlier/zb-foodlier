@@ -193,7 +193,7 @@ const CookForMe = () => {
     {
       nickName: '나는 요리사2',
       rating: 0.4,
-      description: '대존맛 코끼리 구이 레시피',
+      description: '대존맛 코끼리 간장 구이 레시피',
       distance: 100,
       reviewCount: 15,
     },
