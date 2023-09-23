@@ -2,6 +2,7 @@ import './reset.css'
 import { Routes, Route } from 'react-router-dom'
 import LoginPage from './pages/LoginPage'
 import RegisterPage from './pages/RegisterPage'
+import CookForMe from './pages/CookForMe'
 
 function App() {
   // const [count, setCount] = useState(0)
@@ -15,6 +16,7 @@ function App() {
     <Routes>
       <Route path="/" element={<LoginPage />} />
       <Route path="/register" element={<RegisterPage />} />
+      <Route path="/cook-for-me" element={<CookForMe />} />
     </Routes>
   )
 }
