@@ -3,7 +3,7 @@ package com.zerobase.foodlier.module.recipe.domain.model;
 
 import com.zerobase.foodlier.common.jpa.audit.Audit;
 import com.zerobase.foodlier.module.comment.comment.domain.model.Comment;
-import com.zerobase.foodlier.module.like.domain.model.Like;
+import com.zerobase.foodlier.module.heart.domain.model.Heart;
 import com.zerobase.foodlier.module.member.member.domain.model.Member;
 import com.zerobase.foodlier.module.recipe.domain.vo.RecipeDetail;
 import com.zerobase.foodlier.module.recipe.domain.vo.RecipeIngredient;
@@ -38,7 +38,7 @@ public class Recipe extends Audit {
 
     private int expectedTime;
 
-    private Long likeCount;
+    private Long heartCount;
 
     @Embedded
     private RecipeStatistics recipeStatistics;
@@ -65,7 +65,7 @@ public class Recipe extends Audit {
 
     @OneToMany(mappedBy = "recipe", fetch = FetchType.LAZY)
     @Builder.Default
-    private List<Like> likeList = new ArrayList<>();
+    private List<Heart> heartList = new ArrayList<>();
 
     @ElementCollection
     @CollectionTable(name = "recipe_detail")

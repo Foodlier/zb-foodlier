@@ -28,7 +28,6 @@ public class Comment extends Audit {
     private Recipe recipe;
     @Column(nullable = false)
     private String message;
-    @Builder.Default
     @Column(nullable = false)
     @ColumnDefault("false")
     private boolean isDeleted = false;

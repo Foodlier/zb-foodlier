@@ -20,7 +20,6 @@ public class ChefMember extends Audit {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @OneToOne
-    @Column(nullable = false)
     private Member member;
     private long exp;
     @Enumerated(EnumType.STRING)

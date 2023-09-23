@@ -1,4 +1,4 @@
-package com.zerobase.foodlier.module.history.transaction.model;
+package com.zerobase.foodlier.module.history.transaction.domain.model;
 
 import com.zerobase.foodlier.common.jpa.audit.Audit;
 import com.zerobase.foodlier.module.history.transaction.type.PaymentType;
@@ -23,14 +23,14 @@ public class MemberBalanceHistory extends Audit {
     @JoinColumn(name = "member_id")
     private Member member;
     @ManyToOne
-    @JoinColumn(name = "chef_id")
+    @JoinColumn(name = "chef_member_id")
     private ChefMember chefMember;
     @Column(nullable = false)
     private Integer changePoint;
     @Column(nullable = false)
     private Integer currentPoint;
     @Column(nullable = false)
-    private String from;
+    private String sender;
     @Column(nullable = false)
     private String description;
     @Column(nullable = false)

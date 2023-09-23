@@ -1,4 +1,4 @@
-package com.zerobase.foodlier.module.like.domain.model;
+package com.zerobase.foodlier.module.heart.domain.model;
 
 import com.zerobase.foodlier.module.member.member.domain.model.Member;
 import com.zerobase.foodlier.module.recipe.domain.model.Recipe;
@@ -12,13 +12,13 @@ import javax.persistence.*;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Like {
+public class Heart {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private boolean likeOrNot;
+    private boolean heartOrNot;
 
     @ManyToOne
     @JoinColumn(name = "recipe_id")
