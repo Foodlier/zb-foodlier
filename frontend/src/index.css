@@ -1,0 +1,110 @@
+@font-face {
+  font-family: 'Pretendard-ExtraBold';
+  src: url('https://cdn.jsdelivr.net/gh/Project-Noonnu/noonfonts_2107@1.1/Pretendard-ExtraBold.woff') format('woff');
+  font-weight: 800;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Pretendard-Bold';
+  src: url('https://cdn.jsdelivr.net/gh/Project-Noonnu/noonfonts_2107@1.1/Pretendard-Bold.woff') format('woff');
+  font-weight: 600;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Pretendard-Regular';
+  src: url('https://cdn.jsdelivr.net/gh/Project-Noonnu/noonfonts_2107@1.1/Pretendard-Regular.woff') format('woff');
+  font-weight: 400;
+  font-style: normal;
+}
+
+html, body, div, span, applet, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, em, img, ins, kbd, q, s, samp,
+small, strike, strong, sub, sup, tt, var,
+b, u, i, center,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td,
+article, aside, canvas, details, embed,
+figure, figcaption, footer, header, hgroup,
+menu, nav, output, ruby, section, summary,
+time, mark, audio, video {
+	margin: 0;
+	padding: 0;
+	border: 0;
+	font-size: 100%;
+	font: inherit;
+	vertical-align: baseline;
+}
+/* HTML5 display-role reset for older browsers */
+article, aside, details, figcaption, figure,
+footer, header, hgroup, menu, nav, section {
+	display: block;
+}
+body {
+	line-height: 1;
+}
+ol, ul {
+	list-style: none;
+}
+blockquote, q {
+	quotes: none;
+}
+blockquote:before, blockquote:after,
+q:before, q:after {
+	content: '';
+	content: none;
+}
+table {
+	border-collapse: collapse;
+	border-spacing: 0;
+}
+/* reset.css end */
+
+:root {
+  font-family: 'Pretendard-Regular', sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-text-size-adjust: 100%;
+
+  /* color */
+  --color-base-main: 6, 75%;
+  --color-main: hsla(var(--color-base-main), 57%, 100%);
+  --color-main-hover: hsla(var(--color-base-main), 40%, 100%);
+  --color-main-focus: hsla(var(--color-base-main), 30%, 100%);
+  --color-text-primary: hsl(0, 0%, 17%);
+  --color-text-secondary: hsl(0, 0%, 36%);
+  --color-text-disable: hsl(0, 0%, 47%);
+  --color-text-placeholder: hsl(0, 0%, 47%);
+  --color-divider: hsl(0, 0%, 85%);
+  --color-shadow: hsl(0, 0%, 0%, 10%);
+  --color-dim: hsl(0, 0%, 0%, 70%);
+  --color-white: hsl(0, 0%, 100%);
+
+  /* size */
+  --base--space: 8px;
+  --size-button: 60px;
+  --size-border: 4px;
+  --font-size: 18px;
+}
+
+
+body {
+  margin: 0;
+  /* display: flex; */
+  /* place-items: center; */
+  min-width: 320px;
+  min-height: 100vh;
+}
+
+@media (min-width: 768px) {
+
+}
