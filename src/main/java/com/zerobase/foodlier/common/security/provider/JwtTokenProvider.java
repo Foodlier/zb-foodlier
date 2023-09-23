@@ -32,7 +32,6 @@ import static com.zerobase.foodlier.common.security.exception.JwtErrorCode.*;
 public class JwtTokenProvider {
 
     private static final String KEY_ROLES = "roles";
-    private static final String ROLE_CHEF = "ROLE_CHEF";
 
     private final TokenExpiredConstant tokenExpiredConstant;
     private final RefreshTokenService refreshTokenService;
@@ -89,7 +88,6 @@ public class JwtTokenProvider {
 
     public void deleteRefreshToken(String email) {
         RefreshToken refreshToken = refreshTokenService.findRefreshToken(email);
-        log.info("{}", refreshToken);
         refreshTokenService.delete(refreshToken);
     }
 
@@ -115,6 +113,7 @@ public class JwtTokenProvider {
             throw new JwtException(MALFORMED_JWT_REQUEST);
         }
         Claims claims = this.parseClaims(accessToken);
+
         if (isTokenExpired(claims)) {
             if (!this.existRefreshToken(refreshToken)) {
                 throw new JwtException(ACCESS_TOKEN_EXPIRED);
