@@ -43,12 +43,16 @@ public class AuthController {
     }
 
     @PostMapping("/signin")
-    public ResponseEntity<TokenDto> signIn(@RequestBody @Valid SignInForm form) {
+    public ResponseEntity<TokenDto> signIn(
+            @RequestBody @Valid SignInForm form
+    ) {
         return ResponseEntity.ok(memberService.signIn(form));
     }
 
     @PostMapping("/signout")
-    public ResponseEntity<String> signOut(@AuthenticationPrincipal MemberVo memberVo) {
+    public ResponseEntity<String> signOut(
+            @AuthenticationPrincipal MemberVo memberVo
+    ) {
         memberService.signOut(memberVo.getEmail());
 
         return ResponseEntity.ok("로그아웃 되었습니다.");

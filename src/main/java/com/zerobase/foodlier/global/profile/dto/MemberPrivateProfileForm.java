@@ -6,7 +6,6 @@ import lombok.Getter;
 @Getter
 public class MemberPrivateProfileForm {
     private String nickName;
-    private String email;
     private String phoneNumber;
     private Address address;
     private String profileUrl;

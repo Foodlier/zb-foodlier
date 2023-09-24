@@ -23,6 +23,11 @@ public class MemberServiceImpl implements MemberService {
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider tokenProvider;
 
+    /**
+     * 작성자 : 이승현
+     * 작성일 :
+     * 이메일과 비밀번호를 받아와서 access token과 refresh token값을 반환해줍니다.
+     */
     @Override
     public TokenDto signIn(SignInForm form) {
         Member member = memberRepository.findByEmail(form.getEmail()).stream()
@@ -34,11 +39,21 @@ public class MemberServiceImpl implements MemberService {
         return tokenProvider.createToken(member);
     }
 
+    /**
+     * 작성자 : 이승현
+     * 작성일 :
+     * access token의 정보를 통해 redis 서버에 refresh token이 있다면 삭제해줍니다.
+     */
     @Override
     public void signOut(String email) {
         tokenProvider.deleteRefreshToken(email);
     }
 
+    /**
+     * 작성자 : 이승현
+     * 작성일 :
+     * 유저 개인 정보를 가져옵니다.
+     */
     @Override
     public MemberPrivateProfileResponse getPrivateProfile(String email) {
         Member member = findByEmail(email);
@@ -52,14 +67,19 @@ public class MemberServiceImpl implements MemberService {
                 .build();
     }
 
+    /**
+     * 작성자 : 이승현
+     * 작성일 :
+     * 프로필 정보를 수정합니다.
+     */
     @Override
-    public void updatePrivateProfile(String email, MemberPrivateProfileForm form) {
+    public void updatePrivateProfile(String email, MemberPrivateProfileForm form,String imageUrl) {
         Member member = findByEmail(email);
 
         member.setNickname(form.getNickName());
         member.setPhoneNumber(form.getPhoneNumber());
         member.setAddress(form.getAddress());
-        member.setProfileUrl(form.getProfileUrl());
+        member.setProfileUrl(imageUrl);
 
         memberRepository.save(member);
     }
@@ -67,6 +87,6 @@ public class MemberServiceImpl implements MemberService {
     @Override
     public Member findByEmail(String email) {
         return memberRepository.findByEmail(email)
-                .orElseThrow();
+                .orElseThrow(()->new MemberException(MEMBER_NOT_FOUND));
     }
 }

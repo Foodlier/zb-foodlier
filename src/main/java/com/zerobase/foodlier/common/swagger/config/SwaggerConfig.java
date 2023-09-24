@@ -22,9 +22,7 @@ import springfox.documentation.spring.web.plugins.WebFluxRequestHandlerProvider;
 import springfox.documentation.spring.web.plugins.WebMvcRequestHandlerProvider;
 
 import java.lang.reflect.Field;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Configuration
@@ -69,6 +67,8 @@ public class SwaggerConfig {
     public Docket api() {
         return new Docket(DocumentationType.SWAGGER_2)
                 .apiInfo(apiInfo())
+                .consumes(getConsumeContextTypes())
+                .produces(getProduceContentTypes())
                 .securityContexts(Arrays.asList(securityContext("Authorization"),
                         securityContext("RefreshToken")))
                 .securitySchemes(Arrays.asList(apiKey("Authorization"), apiKey("RefreshToken")))
@@ -76,6 +76,19 @@ public class SwaggerConfig {
                 .apis(RequestHandlerSelectors.basePackage("com.zerobase.foodlier"))
                 .paths(PathSelectors.any())
                 .build();
+    }
+
+    private Set<String > getConsumeContextTypes(){
+        Set<String> consumes=new HashSet<>();
+        consumes.add("application/json;charset=UTF-8");
+        consumes.add("application/x-www-form-urlencoded");
+        return consumes;
+    }
+
+    private Set<String> getProduceContentTypes() {
+        Set<String> produces = new HashSet<>();
+        produces.add("application/json;charset=UTF-8");
+        return produces;
     }
 
     private ApiInfo apiInfo() {

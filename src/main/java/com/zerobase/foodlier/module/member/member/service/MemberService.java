@@ -13,7 +13,7 @@ public interface MemberService {
 
     MemberPrivateProfileResponse getPrivateProfile(String email);
 
-    void updatePrivateProfile(String email, MemberPrivateProfileForm form);
+    void updatePrivateProfile(String email, MemberPrivateProfileForm form,String imageUrl);
 
     Member findByEmail(String email);
 }

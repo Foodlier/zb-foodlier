@@ -5,7 +5,6 @@ import com.zerobase.foodlier.common.redis.dto.RefreshTokenDto;
 import com.zerobase.foodlier.common.redis.exception.RefreshTokenException;
 import com.zerobase.foodlier.common.redis.repository.RefreshTokenRepository;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,14 +14,13 @@ import static com.zerobase.foodlier.common.redis.exception.RefreshTokenErrorCode
 @Service
 @RequiredArgsConstructor
 @Transactional
-@Slf4j
 public class RefreshTokenServiceImpl implements RefreshTokenService {
 
     private final RefreshTokenRepository refreshTokenRepository;
 
     public RefreshToken findRefreshToken(String email) {
         return refreshTokenRepository.findById(email)
-                .orElseThrow(()->new RefreshTokenException(REFRESH_NOT_FOUND));
+                .orElseThrow(() -> new RefreshTokenException(REFRESH_NOT_FOUND));
     }
 
     public void validRefreshToken(String email) {
