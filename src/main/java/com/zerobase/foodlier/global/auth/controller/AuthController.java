@@ -1,7 +1,7 @@
 package com.zerobase.foodlier.global.auth.controller;
 
 import com.zerobase.foodlier.common.redis.service.EmailVerificationService;
-import com.zerobase.foodlier.global.request.facade.EmailVerificationFacade;
+import com.zerobase.foodlier.global.member.mail.facade.EmailVerificationFacade;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

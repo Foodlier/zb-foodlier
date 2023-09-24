@@ -1,8 +1,8 @@
-package com.zerobase.foodlier.global.request.facade;
+package com.zerobase.foodlier.global.member.mail.facade;
 
 import com.zerobase.foodlier.common.redis.service.EmailVerificationService;
-import com.zerobase.foodlier.module.member.member.mail.service.MailService;
-import com.zerobase.foodlier.module.member.member.mail.service.VerificationCodeService;
+import com.zerobase.foodlier.global.member.mail.service.MailService;
+import com.zerobase.foodlier.global.member.mail.service.VerificationCodeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
