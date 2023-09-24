@@ -1,7 +1,7 @@
 package com.zerobase.foodlier.global.request.controller;
 
 import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.model.ObjectMetadata;
+import com.zerobase.foodlier.global.request.service.S3Service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
@@ -17,22 +17,16 @@ import java.io.IOException;
 public class S3Controller {
 
     private final AmazonS3 amazonS3;
+    private final S3Service s3Service;
 
     @Value("${cloud.aws.bucket}")
     private String bucket;
 
     @PostMapping("/aws")
     public ResponseEntity<?> saveFile(@RequestPart MultipartFile multipartFile) throws IOException {
-        String originalFilename = multipartFile.getOriginalFilename();
-
-        ObjectMetadata metadata = new ObjectMetadata();
-        metadata.setContentLength(multipartFile.getSize());
-        metadata.setContentType(multipartFile.getContentType());
-
-        amazonS3.putObject(bucket, originalFilename, multipartFile.getInputStream(), metadata);
         return ResponseEntity.
                 ok(
-                        amazonS3.getUrl(bucket, originalFilename).toString()
+                        s3Service.getImageUrl(multipartFile)
                 );
 
     }
