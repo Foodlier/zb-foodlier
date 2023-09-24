@@ -18,12 +18,9 @@ public class MailServiceImpl implements MailService {
     private final JavaMailSender mailSender;
 
     @Override
-    public String sendMailAndGetVerificationCode(String email,
-                                                 String verificationCode) {
+    public void sendMail(String email, String verificationCode) {
         SimpleMailMessage message = createMailMessage(email, verificationCode);
         mailSender.send(message);
-
-        return verificationCode;
     }
 
 
