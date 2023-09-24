@@ -1,22 +1,25 @@
 package com.zerobase.foodlier.common.security.provider;
 
 
-import com.zerobase.foodlier.common.redis.domain.model.RefreshToken;
 import com.zerobase.foodlier.common.redis.dto.RefreshTokenDto;
 import com.zerobase.foodlier.common.redis.service.RefreshTokenService;
 import com.zerobase.foodlier.common.security.exception.JwtException;
 import com.zerobase.foodlier.common.security.provider.constants.TokenExpiredConstant;
 import com.zerobase.foodlier.common.security.provider.dto.CreateTokenDto;
+import com.zerobase.foodlier.common.security.provider.dto.MemberAuthDto;
 import com.zerobase.foodlier.common.security.provider.dto.TokenDto;
-import com.zerobase.foodlier.module.member.member.domain.model.Member;
 import io.jsonwebtoken.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import java.util.Date;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import static com.zerobase.foodlier.common.security.exception.JwtErrorCode.*;
 
@@ -33,33 +36,33 @@ public class JwtTokenProvider {
     @Value("${spring.jwt.secret}")
     private String accessSecretKey;
 
-    public String createAccessToken(Member member) {
+    public String createAccessToken(MemberAuthDto memberAuthDto) {
         return setToken(CreateTokenDto.builder()
-                .id(member.getId())
-                .email(member.getEmail())
-                .roles(member.getRoles())
+                .id(memberAuthDto.getId())
+                .email(memberAuthDto.getEmail())
+                .roles(memberAuthDto.getRoles())
                 .keyRoles(KEY_ROLES)
                 .tokenExpiredTime(tokenExpiredConstant.getAccessTokenExpiredTime())
                 .secretKey(accessSecretKey)
                 .build());
     }
 
-    public String createRefreshToken(Member member) {
+    public String createRefreshToken(MemberAuthDto memberAuthDto) {
         return setToken(CreateTokenDto.builder()
-                .id(member.getId())
-                .email(member.getEmail())
+                .id(memberAuthDto.getId())
+                .email(memberAuthDto.getEmail())
                 .tokenExpiredTime(tokenExpiredConstant.getRefreshTokenExpiredTime())
                 .secretKey(accessSecretKey)
                 .build());
     }
 
-    public TokenDto createToken(Member member) {
+    public TokenDto createToken(MemberAuthDto memberAuthDto) {
 
-        String accessToken = createAccessToken(member);
-        String refreshToken = createRefreshToken(member);
+        String accessToken = createAccessToken(memberAuthDto);
+        String refreshToken = createRefreshToken(memberAuthDto);
 
         refreshTokenService.save(RefreshTokenDto.builder()
-                .userEmail(member.getEmail())
+                .userEmail(memberAuthDto.getEmail())
                 .refreshToken(refreshToken)
                 .timeToLive(tokenExpiredConstant.getRefreshTokenExpiredTime())
                 .build());
@@ -67,25 +70,31 @@ public class JwtTokenProvider {
         return new TokenDto(accessToken, refreshToken);
     }
 
-
-    public TokenDto reissueByRefreshToken(Member member, TokenDto tokenDto) {
-        Claims accessTokenClaims = this.parseClaims(tokenDto.getAccessToken());
-
-        if (!isTokenExpired(accessTokenClaims)) {
-            return tokenDto;
+    public String reissue(String accessToken) {
+        Claims accessTokenClaims = this.parseClaims(accessToken);
+        String userEmail = accessTokenClaims.getSubject();
+        Long userId = Long.parseLong(accessTokenClaims.getId());
+        List<String> roles = getRoles(accessToken);
+        if (!refreshTokenService.isRefreshTokenExisted(userEmail)) {
+            throw new JwtException(REFRESH_TOKEN_NOT_FOUND);
         }
-        refreshTokenService.validRefreshToken(tokenDto.getRefreshToken());
-        RefreshToken refreshToken = refreshTokenService.findRefreshToken(member.getEmail());
-        refreshTokenService.delete(refreshToken);
+        return this.createAccessToken(MemberAuthDto.builder()
+                                                    .id(userId)
+                                                    .email(userEmail)
+                                                    .roles(roles)
+                                                    .build());
+    }
 
-        return this.createToken(member);
+    private List<String> getRoles(String token) {
+        Claims claims = parseClaims(token);
+        List<?> list = claims.get(KEY_ROLES, List.class);
+        return list.stream().map(String::valueOf).collect(Collectors.toList());
     }
 
     public void deleteRefreshToken(String email) {
-        RefreshToken refreshToken = refreshTokenService.findRefreshToken(email);
-        refreshTokenService.delete(refreshToken);
+        refreshTokenService.delete(email);
     }
-
+    
     public String setToken(CreateTokenDto createTokenDto) {
         Claims claims = Jwts.claims().setSubject(createTokenDto.getEmail());
         claims.setId(String.valueOf(createTokenDto.getId()));
@@ -103,30 +112,27 @@ public class JwtTokenProvider {
                 .compact();
     }
 
+    public Authentication getAuthentication(String token) {
 
-    public void validateToken(String accessToken, String refreshToken) {
-        if (!StringUtils.hasText(accessToken)) {
-            throw new JwtException(MALFORMED_JWT_REQUEST);
-        }
+        Claims claims = this.parseClaims(token);
+        String userEmail = claims.getSubject();
+        Long id = Long.parseLong(claims.getId());
+        List<String> roles = this.getRoles(token);
+
+        return new UsernamePasswordAuthenticationToken();
+
+    }
+
+    public boolean existRefreshToken(String accessToken) {
+
         Claims claims = this.parseClaims(accessToken);
-        if (isTokenExpired(claims)) {
-            if (!this.existRefreshToken(refreshToken)) {
-                throw new JwtException(ACCESS_TOKEN_EXPIRED);
-            }
+        String userEmail = claims.getSubject();
 
-            Claims refreshClaims = this.parseClaims(refreshToken);
-
-            if (this.isTokenExpired(refreshClaims)) {
-                throw new JwtException(ALL_TOKEN_EXPIRED);
-            }
-        }
+        return refreshTokenService.isRefreshTokenExisted(userEmail);
     }
 
-    private boolean existRefreshToken(String refreshToken) {
-        return StringUtils.hasText(refreshToken);
-    }
-
-    private boolean isTokenExpired(Claims claims) {
+    public boolean isTokenExpired(String token) {
+        Claims claims = this.parseClaims(token);
         return claims.getExpiration().before(new Date());
     }
 

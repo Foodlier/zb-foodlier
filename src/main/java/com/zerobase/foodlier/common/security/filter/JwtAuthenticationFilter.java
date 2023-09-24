@@ -4,9 +4,7 @@ import com.zerobase.foodlier.common.security.exception.JwtException;
 import com.zerobase.foodlier.common.security.provider.JwtTokenProvider;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.stereotype.Component;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -18,15 +16,12 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 import static com.zerobase.foodlier.common.security.constants.AuthorizationConstants.*;
-import static com.zerobase.foodlier.common.security.exception.JwtErrorCode.EMPTY_TOKEN;
-import static com.zerobase.foodlier.common.security.exception.JwtErrorCode.MALFORMED_JWT_REQUEST;
+import static com.zerobase.foodlier.common.security.exception.JwtErrorCode.*;
 
 
-@Component
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
-    private static final String EMPTY_REFRESH_TOKEN = "";
 
     private final JwtTokenProvider tokenProvider;
 
@@ -38,16 +33,25 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             throws ServletException, IOException {
 
 
+        String accessToken = this.resolveTokenFromRequest(request);
 
-        String accessToken = this.resolveTokenFromRequest(request, TOKEN_HEADER);
-        String refreshToken = this.extractRefreshToken(request);
-        this.tokenProvider.validateToken(accessToken, refreshToken);
+        if (this.tokenProvider.isTokenExpired(accessToken) && !this.tokenProvider.existRefreshToken(accessToken)) {
+            throw new JwtException(ALL_TOKEN_EXPIRED);
+        }
 
-        filterChain.doFilter(request, response);
+        if (this.tokenProvider.isTokenExpired(accessToken) && this.tokenProvider.existRefreshToken(accessToken)) {
+            String reissuedAccessToken = this.tokenProvider.reissue(accessToken);
+            response.setHeader(TOKEN_HEADER, reissuedAccessToken);
+            throw new JwtException(ACCESS_TOKEN_EXPIRED);
+        }
+
+        if (!this.tokenProvider.isTokenExpired(accessToken)) {
+            setSecurityContext(accessToken);
+        }
     }
 
-    private String resolveTokenFromRequest(@NonNull HttpServletRequest request, String tokenHeader) {
-        String token = request.getHeader(tokenHeader);
+    private String resolveTokenFromRequest(@NonNull HttpServletRequest request) {
+        String token = request.getHeader(TOKEN_HEADER);
 
         if (ObjectUtils.isEmpty(token)) {
             throw new JwtException(EMPTY_TOKEN);
@@ -60,11 +64,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         return token.substring(TOKEN_PREFIX.length());
     }
 
-    public String extractRefreshToken(HttpServletRequest request){
-        if (StringUtils.hasText(request.getHeader(REFRESH_HEADER))) {
-            return this.resolveTokenFromRequest(request, REFRESH_HEADER);
-        }
-        return EMPTY_REFRESH_TOKEN;
+    private void setSecurityContext(String accessToken) {
+        SecurityContextHolder.getContext().setAuthentication(this.tokenProvider.getAuthentication(accessToken));
     }
-
 }
