@@ -1,8 +1,8 @@
 package com.zerobase.foodlier.module.member.member.service;
 
-import com.zerobase.foodlier.common.security.provider.jwt.JwtTokenProvider;
+import com.zerobase.foodlier.common.security.provider.JwtTokenProvider;
+import com.zerobase.foodlier.common.security.provider.dto.TokenDto;
 import com.zerobase.foodlier.global.auth.dto.SignInForm;
-import com.zerobase.foodlier.global.auth.dto.SignInResponse;
 import com.zerobase.foodlier.global.profile.dto.MemberPrivateProfileForm;
 import com.zerobase.foodlier.global.profile.dto.MemberPrivateProfileResponse;
 import com.zerobase.foodlier.module.member.member.domain.model.Member;
@@ -24,22 +24,24 @@ public class MemberServiceImpl implements MemberService {
     private final JwtTokenProvider tokenProvider;
 
     @Override
-    public SignInResponse signIn(SignInForm form) {
+    public TokenDto signIn(SignInForm form) {
         Member member = memberRepository.findByEmail(form.getEmail()).stream()
 //                .filter(m-> passwordEncoder.matches(form.getPassword(), m.getPassword()))
                 .filter(m -> form.getPassword().equals(m.getPassword()))
                 .findFirst()
                 .orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
 
-        return new SignInResponse(
-                tokenProvider.createAccessToken(member.getEmail(), member.getId()),
-                tokenProvider.createRefreshToken(member.getEmail(), member.getId()));
+        return tokenProvider.createToken(member);
     }
 
     @Override
-    public MemberPrivateProfileResponse getPrivateProfile(Long memberId) {
-        Member member = memberRepository.findById(memberId)
-                .orElseThrow(()->new MemberException(MEMBER_NOT_FOUND));
+    public void signOut(String email) {
+        tokenProvider.deleteRefreshToken(email);
+    }
+
+    @Override
+    public MemberPrivateProfileResponse getPrivateProfile(String email) {
+        Member member = findByEmail(email);
 
         return MemberPrivateProfileResponse.builder()
                 .nickName(member.getNickname())
@@ -51,9 +53,8 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
-    public void updatePrivateProfile(Long memberId,MemberPrivateProfileForm form) {
-        Member member = memberRepository.findById(memberId)
-                .orElseThrow();
+    public void updatePrivateProfile(String email, MemberPrivateProfileForm form) {
+        Member member = findByEmail(email);
 
         member.setNickname(form.getNickName());
         member.setPhoneNumber(form.getPhoneNumber());
@@ -61,5 +62,11 @@ public class MemberServiceImpl implements MemberService {
         member.setProfileUrl(form.getProfileUrl());
 
         memberRepository.save(member);
+    }
+
+    @Override
+    public Member findByEmail(String email) {
+        return memberRepository.findByEmail(email)
+                .orElseThrow();
     }
 }

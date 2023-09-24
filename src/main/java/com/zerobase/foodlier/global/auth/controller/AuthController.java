@@ -1,34 +1,59 @@
 package com.zerobase.foodlier.global.auth.controller;
 
-import com.zerobase.foodlier.common.redis.service.RefreshTokenService;
+import com.zerobase.foodlier.common.redis.service.EmailVerificationService;
+import com.zerobase.foodlier.common.security.provider.dto.TokenDto;
+import com.zerobase.foodlier.common.security.provider.vo.MemberVo;
 import com.zerobase.foodlier.global.auth.dto.SignInForm;
-import com.zerobase.foodlier.global.auth.dto.SignInResponse;
-import com.zerobase.foodlier.global.request.facade.TokenFacade;
+import com.zerobase.foodlier.global.member.mail.facade.EmailVerificationFacade;
+import com.zerobase.foodlier.module.member.member.service.MemberService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.time.LocalDateTime;
 
 @RestController
-@RequiredArgsConstructor
 @RequestMapping("/auth")
+@RequiredArgsConstructor
+@Slf4j
 public class AuthController {
-    private final TokenFacade tokenFacade;
-    private final RefreshTokenService refreshTokenService;
+    private final EmailVerificationFacade emailVerificationFacade;
+    private final EmailVerificationService emailVerificationService;
+    private final MemberService memberService;
+
+    @PostMapping("/verification/send/{email}")
+    public ResponseEntity<?> sendVerificationCode(
+            @PathVariable String email
+    ) {
+        emailVerificationFacade.sendMailAndCreateVerification(email);
+        return ResponseEntity.ok("인증 코드 전송 완료");
+    }
+
+    @PostMapping("/verify")
+    public ResponseEntity<?> verifyEmail(
+            @RequestParam("email") String email,
+            @RequestParam("verificationCode") String verificationCode
+    ) {
+        emailVerificationService.verify(email, verificationCode,
+                LocalDateTime.now());
+        return ResponseEntity.ok("인증 완료");
+    }
 
     @PostMapping("/signin")
-    public ResponseEntity<SignInResponse> signIn(@RequestBody @Valid SignInForm form) {
-        return ResponseEntity.ok(tokenFacade.createToken(form));
+    public ResponseEntity<TokenDto> signIn(@RequestBody @Valid SignInForm form) {
+        log.info("로그인");
+        return ResponseEntity.ok(memberService.signIn(form));
     }
 
     @PostMapping("/signout")
-    public ResponseEntity<String> signOut(@RequestBody String refreshToken) {
-        refreshTokenService.signOut(refreshToken);
+    public ResponseEntity<String> signOut(@AuthenticationPrincipal MemberVo memberVo) {
+        log.info("로그아웃");
+        memberService.signOut(memberVo.getEmail());
 
         return ResponseEntity.ok("로그아웃 되었습니다.");
     }
+
 }
