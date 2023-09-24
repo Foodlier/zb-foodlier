@@ -21,7 +21,7 @@ import static com.zerobase.foodlier.common.security.exception.JwtErrorCode.*;
 
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
-    
+
 
     private final JwtTokenProvider tokenProvider;
 
@@ -42,7 +42,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         if (this.tokenProvider.isTokenExpired(accessToken) && this.tokenProvider.existRefreshToken(accessToken)) {
             String reissuedAccessToken = this.tokenProvider.reissue(accessToken);
             response.setHeader(TOKEN_HEADER, reissuedAccessToken);
-            throw new JwtException(REFRESH_TOKEN_NOT_FOUND);
+            throw new JwtException(ACCESS_TOKEN_EXPIRED);
         }
 
         if (!this.tokenProvider.isTokenExpired(accessToken)) {
