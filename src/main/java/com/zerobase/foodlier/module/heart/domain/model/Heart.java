@@ -1,4 +1,4 @@
-package com.zerobase.foodlier.module.like.domain.model;
+package com.zerobase.foodlier.module.heart.domain.model;
 
 import com.zerobase.foodlier.module.member.member.domain.model.Member;
 import com.zerobase.foodlier.module.recipe.domain.model.Recipe;
