@@ -89,7 +89,9 @@ public class JwtTokenProvider {
     public String setToken(CreateTokenDto createTokenDto) {
         Claims claims = Jwts.claims().setSubject(createTokenDto.getEmail());
         claims.setId(String.valueOf(createTokenDto.getId()));
-        claims.put(createTokenDto.getKeyRoles(), createTokenDto.getRoles());
+        if (StringUtils.hasText(createTokenDto.getKeyRoles())) {
+            claims.put(createTokenDto.getKeyRoles(), createTokenDto.getRoles());
+        }
 
         Date now = new Date();
         Date expiredDate = new Date(now.getTime() + createTokenDto.getTokenExpiredTime());
