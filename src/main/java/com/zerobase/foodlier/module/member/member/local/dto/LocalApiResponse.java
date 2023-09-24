@@ -1,4 +1,4 @@
-package com.zerobase.foodlier.module.member.member.dto;
+package com.zerobase.foodlier.module.member.member.local.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
