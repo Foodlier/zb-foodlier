@@ -22,6 +22,7 @@ import static com.zerobase.foodlier.common.s3.exception.S3ErrorCode.*;
 @RequiredArgsConstructor
 public class S3ServiceImpl implements S3Service {
 
+    private static final int IMAGE_IDX = 3;
     private final AmazonS3 amazonS3;
     @Value("${cloud.aws.bucket}")
     private String bucket;
@@ -127,7 +128,7 @@ public class S3ServiceImpl implements S3Service {
      */
     @Override
     public String getImageName(String imageUrl) {
-        return imageUrl.split("/")[3];
+        return imageUrl.split("/")[IMAGE_IDX];
     }
 
     /**
