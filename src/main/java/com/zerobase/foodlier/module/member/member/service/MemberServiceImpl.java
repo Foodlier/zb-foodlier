@@ -24,7 +24,7 @@ public class MemberServiceImpl implements MemberService {
 
     /**
      * 작성자 : 이승현
-     * 작성일 :
+     * 작성일 : 2023-09-24
      * 이메일과 비밀번호를 받아와서 access token과 refresh token값을 반환해줍니다.
      */
     @Override
@@ -44,7 +44,7 @@ public class MemberServiceImpl implements MemberService {
 
     /**
      * 작성자 : 이승현
-     * 작성일 :
+     * 작성일 : 2023-09-24
      * access token의 정보를 통해 redis 서버에 refresh token이 있다면 삭제해줍니다.
      */
     @Override
@@ -54,7 +54,7 @@ public class MemberServiceImpl implements MemberService {
 
     /**
      * 작성자 : 이승현
-     * 작성일 :
+     * 작성일 : 2023-09-24
      * 유저 개인 정보를 가져옵니다.
      */
     @Override
@@ -72,7 +72,7 @@ public class MemberServiceImpl implements MemberService {
 
     /**
      * 작성자 : 이승현
-     * 작성일 :
+     * 작성일 : 2023-09-24
      * 프로필 정보를 수정합니다.
      */
     @Override
