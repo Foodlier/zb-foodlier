@@ -1,6 +1,6 @@
 package com.zerobase.foodlier.module.member.member.local.service;
 
-import com.zerobase.foodlier.module.member.member.dto.LocalApiResponse;
+import com.zerobase.foodlier.module.member.member.local.dto.LocalApiResponse;
 import com.zerobase.foodlier.module.member.member.local.constants.LocalApiConstants;
 import com.zerobase.foodlier.module.member.member.local.dto.CoordinateResponseDto;
 import com.zerobase.foodlier.module.member.member.local.exception.LocalErrorCode;
