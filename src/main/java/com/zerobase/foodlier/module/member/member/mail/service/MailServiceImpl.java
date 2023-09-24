@@ -1,4 +1,4 @@
-package com.zerobase.foodlier.global.member.mail.service;
+package com.zerobase.foodlier.module.member.member.mail.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -6,8 +6,8 @@ import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
-import static com.zerobase.foodlier.global.member.mail.constants.MailConstants.CONTENT;
-import static com.zerobase.foodlier.global.member.mail.constants.MailConstants.SUBJECT;
+import static com.zerobase.foodlier.module.member.member.mail.constants.MailConstants.CONTENT;
+import static com.zerobase.foodlier.module.member.member.mail.constants.MailConstants.SUBJECT;
 
 @Service
 @RequiredArgsConstructor
