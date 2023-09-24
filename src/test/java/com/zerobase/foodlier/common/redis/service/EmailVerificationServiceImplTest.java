@@ -204,7 +204,7 @@ class EmailVerificationServiceImplTest {
                                 .verificationCode("LzOXCMpEUz")
                                 .isAuthorized(false)
                                 .expiredAt(
-                                        LocalDateTime.of(2023, 10, 31,
+                                        LocalDateTime.of(2023, 10, 30,
                                                 9, 3, 0)
                                 )
                                 .build())
