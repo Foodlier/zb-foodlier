@@ -14,22 +14,20 @@ import static com.zerobase.foodlier.common.redis.exception.RefreshTokenErrorCode
 @Service
 @RequiredArgsConstructor
 @Transactional
-public class RefreshTokenServiceImpl implements RefreshTokenService {
+public class RefreshTokenServiceImpl implements RefreshTokenService{
 
     private final RefreshTokenRepository refreshTokenRepository;
 
-    public RefreshToken findRefreshToken(String email) {
+    public RefreshToken findRefreshToken(String email){
         return refreshTokenRepository.findById(email)
-                .orElseThrow(() -> new RefreshTokenException(REFRESH_NOT_FOUND));
+                .orElseThrow(()->new RefreshTokenException(REFRESH_NOT_FOUND));
     }
 
-    public void validRefreshToken(String email) {
-        if (!refreshTokenRepository.existsById(email)) {
-            throw new RefreshTokenException(REFRESH_NOT_FOUND);
-        }
+    public boolean isRefreshTokenExisted(String email) {
+        return refreshTokenRepository.existsById(email);
     }
 
-    public void save(RefreshTokenDto refreshTokenDto) {
+    public void save(RefreshTokenDto refreshTokenDto){
         refreshTokenRepository.save(RefreshToken.builder()
                 .email(refreshTokenDto.getUserEmail())
                 .refreshToken(refreshTokenDto.getRefreshToken())
@@ -37,9 +35,9 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
                 .build());
     }
 
-    public void delete(RefreshToken refreshToken) {
-        if (refreshTokenRepository.existsById(refreshToken.getEmail())) {
-            refreshTokenRepository.delete(refreshToken);
+    public void delete(String email){
+        if(refreshTokenRepository.existsById(email)){
+            refreshTokenRepository.deleteById(email);
         }
     }
 }

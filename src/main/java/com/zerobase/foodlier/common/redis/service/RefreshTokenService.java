@@ -5,9 +5,12 @@ import com.zerobase.foodlier.common.redis.dto.RefreshTokenDto;
 
 public interface RefreshTokenService {
 
-    void validRefreshToken(String email);
+    boolean isRefreshTokenExisted(String email);
+
     void save(RefreshTokenDto refreshTokenDto);
-    void delete(RefreshToken refreshToken);
+
+    void delete(String email);
+
     RefreshToken findRefreshToken(String email);
 
 }
