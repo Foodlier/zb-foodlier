@@ -26,15 +26,14 @@ public class SecurityConfig {
 
         httpSecurity.csrf().disable();
         httpSecurity.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
-        httpSecurity.authorizeHttpRequests()
-                .antMatchers("/**/auth/signup", "/**/auth/login", "/**/authKey/send", "/**/auth/verify", "/**/auth/signin").permitAll()
-                .anyRequest().authenticated()
-                .and()
+        httpSecurity
                 .addFilterBefore(
                         this.jwtAuthenticationFilter,
                         UsernamePasswordAuthenticationFilter.class
-                ).addFilterBefore(this.jwtExceptionFilter, JwtAuthenticationFilter.class);
-        httpSecurity.authorizeHttpRequests().anyRequest().authenticated();
+                )
+                .addFilterBefore(this.jwtExceptionFilter, JwtAuthenticationFilter.class)
+                .authorizeHttpRequests()
+                .anyRequest().authenticated();
         return httpSecurity.build();
 
     }
