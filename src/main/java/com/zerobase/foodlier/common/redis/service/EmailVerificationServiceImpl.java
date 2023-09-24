@@ -17,7 +17,14 @@ import static com.zerobase.foodlier.common.redis.exeption.EmailVerificationError
 public class EmailVerificationServiceImpl implements EmailVerificationService{
 
     private final EmailVerificationRepository emailVerificationRepository;
+    private static final int EMAIL_VERIFICATION_EXPIRED_TIME = 3;
 
+    /**
+     *  인증 객체를 생성하는 메서드
+     *
+     *  작성자 : 전현서
+     *  작성일 : 2023-09-23(2023-09-24)
+     */
     @Override
     public void createVerification(String email, String verificationCode,
                                    LocalDateTime nowTime){
@@ -25,7 +32,7 @@ public class EmailVerificationServiceImpl implements EmailVerificationService{
                 .builder()
                 .email(email)
                 .verificationCode(verificationCode)
-                .expiredAt(nowTime.plusMinutes(3))
+                .expiredAt(nowTime.plusMinutes(EMAIL_VERIFICATION_EXPIRED_TIME))
                 .isAuthorized(false)
                 .build();
 
