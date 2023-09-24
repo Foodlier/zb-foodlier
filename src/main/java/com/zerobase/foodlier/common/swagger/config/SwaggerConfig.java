@@ -1,5 +1,6 @@
 package com.zerobase.foodlier.common.swagger.config;
 
+import lombok.NonNull;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.context.annotation.Bean;
@@ -23,6 +24,7 @@ import springfox.documentation.spring.web.plugins.WebMvcRequestHandlerProvider;
 import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Configuration
@@ -34,8 +36,9 @@ public class SwaggerConfig {
         return new BeanPostProcessor() {
 
             @Override
-            public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
-                if (bean instanceof WebMvcRequestHandlerProvider || bean instanceof WebFluxRequestHandlerProvider) {
+            public Object postProcessAfterInitialization(@NonNull Object bean, @NonNull String beanName) throws BeansException {
+                if (bean instanceof WebMvcRequestHandlerProvider
+                        || bean instanceof WebFluxRequestHandlerProvider) {
                     customizeSpringfoxHandlerMappings(getHandlerMappings(bean));
                 }
                 return bean;
@@ -53,7 +56,7 @@ public class SwaggerConfig {
             private List<RequestMappingInfoHandlerMapping> getHandlerMappings(Object bean) {
                 try {
                     Field field = ReflectionUtils.findField(bean.getClass(), "handlerMappings");
-                    field.setAccessible(true);
+                    Objects.requireNonNull(field).setAccessible(true);
                     return (List<RequestMappingInfoHandlerMapping>) field.get(bean);
                 } catch (IllegalArgumentException | IllegalAccessException e) {
                     throw new IllegalStateException(e);
@@ -63,7 +66,7 @@ public class SwaggerConfig {
     }
 
     @Bean
-    public Docket api(){
+    public Docket api() {
         return new Docket(DocumentationType.SWAGGER_2)
                 .apiInfo(apiInfo())
                 .securityContexts(Arrays.asList(securityContext("Authorization"),
@@ -75,7 +78,7 @@ public class SwaggerConfig {
                 .build();
     }
 
-    private ApiInfo apiInfo(){
+    private ApiInfo apiInfo() {
         return new ApiInfoBuilder()
                 .title("FOODLIER")
                 .description("API를 테스팅하고, 문서화합니다.")
@@ -101,7 +104,7 @@ public class SwaggerConfig {
                 new AuthorizationScope[1];
 
         authorizationScopes[0] = authorizationScope;
-        return Arrays.asList(
+        return List.of(
                 new SecurityReference(name, authorizationScopes));
     }
 

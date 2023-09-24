@@ -44,13 +44,11 @@ public class AuthController {
 
     @PostMapping("/signin")
     public ResponseEntity<TokenDto> signIn(@RequestBody @Valid SignInForm form) {
-        log.info("로그인");
         return ResponseEntity.ok(memberService.signIn(form));
     }
 
     @PostMapping("/signout")
     public ResponseEntity<String> signOut(@AuthenticationPrincipal MemberVo memberVo) {
-        log.info("로그아웃");
         memberService.signOut(memberVo.getEmail());
 
         return ResponseEntity.ok("로그아웃 되었습니다.");

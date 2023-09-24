@@ -16,6 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
@@ -124,18 +125,18 @@ public class JwtTokenProvider {
             if (this.isTokenExpired(refreshClaims)) {
                 throw new JwtException(ALL_TOKEN_EXPIRED);
             }
-//            Member member =
-//                    memberService.findByEmail(refreshClaims.getSubject());
-//            this.reCreateByRefreshToken(member,
-//                    new TokenDto(null, refreshToken));
         }
     }
 
     public Authentication getAuthentication(String token) {
+        List<SimpleGrantedAuthority> grantedAuthorities = getRoles(token).stream()
+                .map(SimpleGrantedAuthority::new)
+                .collect(Collectors.toList());
+
         MemberVo memberVo = getMemberVo(token);
 
         return new UsernamePasswordAuthenticationToken(
-                memberVo, token);
+                memberVo, token, grantedAuthorities);
     }
 
     private List<String> getRoles(String token) {

@@ -21,15 +21,12 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
     private final RefreshTokenRepository refreshTokenRepository;
 
     public RefreshToken findRefreshToken(String email) {
-        log.info("findRefreshToken");
-//        return refreshTokenRepository.findById(email)
-//                .orElseThrow(()->new RefreshTokenException(REFRESH_NOT_FOUND));
-        return refreshTokenRepository.findByEmail(email)
-                .orElseThrow(() -> new RefreshTokenException(REFRESH_NOT_FOUND));
+        return refreshTokenRepository.findById(email)
+                .orElseThrow(()->new RefreshTokenException(REFRESH_NOT_FOUND));
     }
 
     public void validRefreshToken(String email) {
-        if (!refreshTokenRepository.existsByEmail(email)) {
+        if (!refreshTokenRepository.existsById(email)) {
             throw new RefreshTokenException(REFRESH_NOT_FOUND);
         }
     }
@@ -43,8 +40,7 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
     }
 
     public void delete(RefreshToken refreshToken) {
-        log.info("{}",refreshTokenRepository.existsById(refreshToken.getEmail()));
-        if (refreshTokenRepository.existsByEmail(refreshToken.getEmail())) {
+        if (refreshTokenRepository.existsById(refreshToken.getEmail())) {
             refreshTokenRepository.delete(refreshToken);
         }
     }
