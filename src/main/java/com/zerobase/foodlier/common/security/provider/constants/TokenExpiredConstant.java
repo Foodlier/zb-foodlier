@@ -6,6 +6,8 @@ import org.springframework.stereotype.Component;
 @Component
 public final class TokenExpiredConstant {
 
+    @Value("${spring.token-expired.millisecond-unit}")
+    private long accessMillis;
 
     @Value("${spring.token-expired.access.second}")
     private long accessSecond;
@@ -15,6 +17,9 @@ public final class TokenExpiredConstant {
 
     @Value("${spring.token-expired.access.hour}")
     private long accessHour;
+
+    @Value("${spring.token-expired.millisecond-unit}")
+    private long refreshMillis;
 
     @Value("${spring.token-expired.refresh.second}")
     private long refreshSecond;
@@ -30,11 +35,11 @@ public final class TokenExpiredConstant {
     }
 
     public long getAccessTokenExpiredTime(){
-        return accessHour * accessMinute * accessSecond;
+        return accessHour * accessMinute * accessSecond * accessMillis;
     }
 
     public long getRefreshTokenExpiredTime(){
-        return refreshHour * refreshMinute * refreshSecond;
+        return refreshHour * refreshMinute * refreshSecond * refreshMillis;
     }
 
 

@@ -19,9 +19,9 @@ public class RecipeDto {
     private String title;
     private String content;
     private MultipartFile image;
-    private List<RecipeIngredientDto> recipeIngredientList;
+    private List<RecipeIngredientDto> recipeIngredientDtoList;
     private Difficulty difficulty;
-    private List<RecipeDetailDto> recipeDetailList;
+    private List<RecipeDetailDto> recipeDetailDtoList;
     private int expectedTime;
 
     public Recipe toEntity() {

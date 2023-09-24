@@ -6,7 +6,8 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @RequiredArgsConstructor
 public enum RecipeErrorCode {
-    NO_SUCH_RECIPE("레시피가 없습니다.");
+    NO_SUCH_RECIPE("레시피가 없습니다."),
+    ;
 
     private final String description;
 }

@@ -46,10 +46,10 @@ public class Recipe extends Audit {
     @Enumerated(EnumType.STRING)
     private Difficulty difficulty;
 
-    private boolean isPublic;
+    private Boolean isPublic;
 
-    private boolean isQuotation;
-    private boolean isDeleted;
+    private Boolean isQuotation;
+    private Boolean isDeleted;
 
     @OneToMany(mappedBy = "recipe", fetch = FetchType.LAZY)
     @Builder.Default
