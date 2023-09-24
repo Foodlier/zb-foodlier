@@ -28,7 +28,7 @@ public class EmailVerificationFacade {
         emailVerificationService.createVerification(email, verificationCode,
                 LocalDateTime.now());
 
-        mailService.sendMailAndGetVerificationCode(email, verificationCode);
+        mailService.sendMail(email, verificationCode);
     }
 
 }
