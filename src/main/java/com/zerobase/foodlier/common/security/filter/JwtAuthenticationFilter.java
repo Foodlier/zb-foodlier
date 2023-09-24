@@ -37,12 +37,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                                     @NonNull FilterChain filterChain)
             throws ServletException, IOException {
 
-        String refreshToken = EMPTY_REFRESH_TOKEN;
+
 
         String accessToken = this.resolveTokenFromRequest(request, TOKEN_HEADER);
-        if (StringUtils.hasText(request.getHeader(REFRESH_HEADER))) {
-            refreshToken = this.resolveTokenFromRequest(request, REFRESH_HEADER);
-        }
+        String refreshToken = this.extractRefreshToken(request);
         this.tokenProvider.validateToken(accessToken, refreshToken);
 
         filterChain.doFilter(request, response);
@@ -61,4 +59,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         return token.substring(TOKEN_PREFIX.length());
     }
+
+    public String extractRefreshToken(HttpServletRequest request){
+        if (StringUtils.hasText(request.getHeader(REFRESH_HEADER))) {
+            return this.resolveTokenFromRequest(request, REFRESH_HEADER);
+        }
+        return EMPTY_REFRESH_TOKEN;
+    }
+
 }
