@@ -1,4 +1,4 @@
-package com.zerobase.foodlier.module.member.member.mail.constants;
+package com.zerobase.foodlier.global.member.mail.constants;
 
 public final class MailConstants {
 
