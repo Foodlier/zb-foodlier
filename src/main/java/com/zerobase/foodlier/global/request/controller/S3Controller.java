@@ -1,40 +1,38 @@
 package com.zerobase.foodlier.global.request.controller;
 
-import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.model.ObjectMetadata;
+import com.zerobase.foodlier.common.s3.service.S3Service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestPart;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
 public class S3Controller {
 
-    private final AmazonS3 amazonS3;
+    private final S3Service s3Service;
 
     @Value("${cloud.aws.bucket}")
     private String bucket;
 
     @PostMapping("/aws")
     public ResponseEntity<?> saveFile(@RequestPart MultipartFile multipartFile) throws IOException {
-        String originalFilename = multipartFile.getOriginalFilename();
+        return ResponseEntity.ok(s3Service.getImageUrl(multipartFile));
+    }
 
-        ObjectMetadata metadata = new ObjectMetadata();
-        metadata.setContentLength(multipartFile.getSize());
-        metadata.setContentType(multipartFile.getContentType());
+    @PostMapping("/awsList")
+    public ResponseEntity<?> saveFile(@RequestPart List<MultipartFile> multipartFileList) throws IOException {
+        return ResponseEntity.ok(s3Service.getImageUrlList(multipartFileList));
+    }
 
-        amazonS3.putObject(bucket, originalFilename, multipartFile.getInputStream(), metadata);
-        return ResponseEntity.
-                ok(
-                        amazonS3.getUrl(bucket, originalFilename).toString()
-                );
-
+    @DeleteMapping("/aws")
+    public ResponseEntity<?> deleteFile(@RequestParam String fileName) throws IOException {
+        s3Service.deleteImage(fileName);
+        return ResponseEntity.ok("delete complete");
     }
 
 }
