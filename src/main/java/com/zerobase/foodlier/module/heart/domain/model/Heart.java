@@ -12,14 +12,13 @@ import javax.persistence.*;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "lk")
-public class Like {
+public class Heart {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private boolean likeOrNot;
+    private boolean heartOrNot;
 
     @ManyToOne
     @JoinColumn(name = "recipe_id")

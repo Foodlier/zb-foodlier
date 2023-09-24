@@ -30,7 +30,7 @@ public class MemberBalanceHistory extends Audit {
     @Column(nullable = false)
     private Integer currentPoint;
     @Column(nullable = false)
-    private String fr;
+    private String sender;
     @Column(nullable = false)
     private String description;
     @Column(nullable = false)
