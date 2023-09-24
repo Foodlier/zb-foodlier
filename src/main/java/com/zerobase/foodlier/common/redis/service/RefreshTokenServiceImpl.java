@@ -1,30 +1,51 @@
 package com.zerobase.foodlier.common.redis.service;
 
 import com.zerobase.foodlier.common.redis.domain.model.RefreshToken;
+import com.zerobase.foodlier.common.redis.dto.RefreshTokenDto;
+import com.zerobase.foodlier.common.redis.exception.RefreshTokenException;
 import com.zerobase.foodlier.common.redis.repository.RefreshTokenRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import static com.zerobase.foodlier.common.redis.exception.RefreshTokenErrorCode.REFRESH_NOT_FOUND;
+
 
 @Service
 @RequiredArgsConstructor
+@Transactional
+@Slf4j
 public class RefreshTokenServiceImpl implements RefreshTokenService {
+
     private final RefreshTokenRepository refreshTokenRepository;
 
-    @Override
-    public void createRefreshToken(String refreshToken, String email) {
-        RefreshToken token = RefreshToken.builder()
-                .refreshToken(refreshToken)
-                .email(email)
-                .build();
-
-        refreshTokenRepository.save(token);
+    public RefreshToken findRefreshToken(String email) {
+        log.info("findRefreshToken");
+//        return refreshTokenRepository.findById(email)
+//                .orElseThrow(()->new RefreshTokenException(REFRESH_NOT_FOUND));
+        return refreshTokenRepository.findByEmail(email)
+                .orElseThrow(() -> new RefreshTokenException(REFRESH_NOT_FOUND));
     }
 
-    @Override
-    public void signOut(String refreshToken) {
-        RefreshToken token = refreshTokenRepository.findById(refreshToken)
-                .orElseThrow();
+    public void validRefreshToken(String email) {
+        if (!refreshTokenRepository.existsByEmail(email)) {
+            throw new RefreshTokenException(REFRESH_NOT_FOUND);
+        }
+    }
 
-        refreshTokenRepository.delete(token);
+    public void save(RefreshTokenDto refreshTokenDto) {
+        refreshTokenRepository.save(RefreshToken.builder()
+                .email(refreshTokenDto.getUserEmail())
+                .refreshToken(refreshTokenDto.getRefreshToken())
+                .expiration(refreshTokenDto.getTimeToLive())
+                .build());
+    }
+
+    public void delete(RefreshToken refreshToken) {
+        log.info("{}",refreshTokenRepository.existsById(refreshToken.getEmail()));
+        if (refreshTokenRepository.existsByEmail(refreshToken.getEmail())) {
+            refreshTokenRepository.delete(refreshToken);
+        }
     }
 }
