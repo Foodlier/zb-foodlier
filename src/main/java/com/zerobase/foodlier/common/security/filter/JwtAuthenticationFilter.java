@@ -21,8 +21,7 @@ import static com.zerobase.foodlier.common.security.exception.JwtErrorCode.*;
 
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
-
-    private static final String EMPTY_REFRESH_TOKEN = "";
+    
 
     private final JwtTokenProvider tokenProvider;
 
