@@ -8,5 +8,4 @@ public class MemberPrivateProfileForm {
     private String nickName;
     private String phoneNumber;
     private Address address;
-    private String profileUrl;
 }

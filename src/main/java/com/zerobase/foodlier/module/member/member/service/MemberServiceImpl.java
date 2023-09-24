@@ -1,6 +1,7 @@
 package com.zerobase.foodlier.module.member.member.service;
 
 import com.zerobase.foodlier.common.security.provider.JwtTokenProvider;
+import com.zerobase.foodlier.common.security.provider.dto.MemberAuthDto;
 import com.zerobase.foodlier.common.security.provider.dto.TokenDto;
 import com.zerobase.foodlier.global.auth.dto.SignInForm;
 import com.zerobase.foodlier.global.profile.dto.MemberPrivateProfileForm;
@@ -36,7 +37,11 @@ public class MemberServiceImpl implements MemberService {
                 .findFirst()
                 .orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
 
-        return tokenProvider.createToken(member);
+        return tokenProvider.createToken(MemberAuthDto.builder()
+                .id(member.getId())
+                .email(member.getEmail())
+                .roles(member.getRoles())
+                .build());
     }
 
     /**
@@ -73,7 +78,7 @@ public class MemberServiceImpl implements MemberService {
      * 프로필 정보를 수정합니다.
      */
     @Override
-    public void updatePrivateProfile(String email, MemberPrivateProfileForm form,String imageUrl) {
+    public void updatePrivateProfile(String email, MemberPrivateProfileForm form, String imageUrl) {
         Member member = findByEmail(email);
 
         member.setNickname(form.getNickName());
@@ -87,6 +92,6 @@ public class MemberServiceImpl implements MemberService {
     @Override
     public Member findByEmail(String email) {
         return memberRepository.findByEmail(email)
-                .orElseThrow(()->new MemberException(MEMBER_NOT_FOUND));
+                .orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
     }
 }

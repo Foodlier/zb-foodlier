@@ -1,4 +1,4 @@
-package com.zerobase.foodlier.global.member.profile.facade;
+package com.zerobase.foodlier.global.profile.facade;
 
 import com.zerobase.foodlier.common.s3.service.S3Service;
 import com.zerobase.foodlier.global.profile.dto.MemberPrivateProfileForm;
@@ -10,14 +10,14 @@ import org.springframework.web.multipart.MultipartFile;
 
 @Component
 @RequiredArgsConstructor
-public class MemberProfileFacade {
+public class ProfileFacade {
     private final MemberService memberService;
     private final S3Service s3Service;
 
-    public void deleteProfileUrlAndUpdateProfile(MultipartFile multipartFile, String email, MemberPrivateProfileForm form){
+    public void deleteProfileUrlAndUpdateProfile(MultipartFile multipartFile, String email, MemberPrivateProfileForm form) {
         String imageUrl = s3Service.getImageUrl(multipartFile);
         Member member = memberService.findByEmail(email);
         s3Service.deleteImage(member.getProfileUrl());
-        memberService.updatePrivateProfile(email,form,imageUrl);
+        memberService.updatePrivateProfile(email, form, imageUrl);
     }
 }

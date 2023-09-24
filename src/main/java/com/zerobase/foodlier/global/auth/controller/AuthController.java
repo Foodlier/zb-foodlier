@@ -1,13 +1,12 @@
 package com.zerobase.foodlier.global.auth.controller;
 
 import com.zerobase.foodlier.common.redis.service.EmailVerificationService;
+import com.zerobase.foodlier.common.security.provider.dto.MemberAuthDto;
 import com.zerobase.foodlier.common.security.provider.dto.TokenDto;
-import com.zerobase.foodlier.common.security.provider.vo.MemberVo;
 import com.zerobase.foodlier.global.auth.dto.SignInForm;
 import com.zerobase.foodlier.global.member.mail.facade.EmailVerificationFacade;
 import com.zerobase.foodlier.module.member.member.service.MemberService;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -18,7 +17,6 @@ import java.time.LocalDateTime;
 @RestController
 @RequestMapping("/auth")
 @RequiredArgsConstructor
-@Slf4j
 public class AuthController {
     private final EmailVerificationFacade emailVerificationFacade;
     private final EmailVerificationService emailVerificationService;
@@ -51,9 +49,9 @@ public class AuthController {
 
     @PostMapping("/signout")
     public ResponseEntity<String> signOut(
-            @AuthenticationPrincipal MemberVo memberVo
+            @AuthenticationPrincipal MemberAuthDto memberAuthDto
     ) {
-        memberService.signOut(memberVo.getEmail());
+        memberService.signOut(memberAuthDto.getEmail());
 
         return ResponseEntity.ok("로그아웃 되었습니다.");
     }

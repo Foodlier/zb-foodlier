@@ -87,6 +87,7 @@ public class SwaggerConfig {
 
     private Set<String> getProduceContentTypes() {
         Set<String> produces = new HashSet<>();
+        produces.add("text/plain;charset=UTF-8");
         produces.add("application/json;charset=UTF-8");
         return produces;
     }

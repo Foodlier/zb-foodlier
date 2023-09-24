@@ -6,7 +6,6 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.util.ObjectUtils;
-import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import javax.servlet.FilterChain;
@@ -15,7 +14,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-import static com.zerobase.foodlier.common.security.constants.AuthorizationConstants.*;
+import static com.zerobase.foodlier.common.security.constants.AuthorizationConstants.TOKEN_HEADER;
+import static com.zerobase.foodlier.common.security.constants.AuthorizationConstants.TOKEN_PREFIX;
 import static com.zerobase.foodlier.common.security.exception.JwtErrorCode.*;
 
 
@@ -35,11 +35,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         String accessToken = this.resolveTokenFromRequest(request);
 
-        if (this.tokenProvider.isTokenExpired(accessToken) && !this.tokenProvider.existRefreshToken(accessToken)) {
+        if (this.tokenProvider.isTokenExpired(accessToken)
+                && !this.tokenProvider.existRefreshToken(accessToken)) {
             throw new JwtException(ALL_TOKEN_EXPIRED);
         }
 
-        if (this.tokenProvider.isTokenExpired(accessToken) && this.tokenProvider.existRefreshToken(accessToken)) {
+        if (this.tokenProvider.isTokenExpired(accessToken)
+                && this.tokenProvider.existRefreshToken(accessToken)) {
             String reissuedAccessToken = this.tokenProvider.reissue(accessToken);
             response.setHeader(TOKEN_HEADER, reissuedAccessToken);
             throw new JwtException(ACCESS_TOKEN_EXPIRED);
@@ -48,6 +50,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         if (!this.tokenProvider.isTokenExpired(accessToken)) {
             setSecurityContext(accessToken);
         }
+
+        filterChain.doFilter(request,response);
     }
 
     private String resolveTokenFromRequest(@NonNull HttpServletRequest request) {
@@ -65,6 +69,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     }
 
     private void setSecurityContext(String accessToken) {
-        SecurityContextHolder.getContext().setAuthentication(this.tokenProvider.getAuthentication(accessToken));
+        SecurityContextHolder
+                .getContext()
+                .setAuthentication(this.tokenProvider
+                        .getAuthentication(accessToken));
     }
 }
