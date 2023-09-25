@@ -5,6 +5,7 @@ import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.MediaType;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfoHandlerMapping;
@@ -81,6 +82,7 @@ public class SwaggerConfig {
     private Set<String > getConsumeContextTypes(){
         Set<String> consumes=new HashSet<>();
         consumes.add("application/json;charset=UTF-8");
+        consumes.add(MediaType.MULTIPART_FORM_DATA_VALUE);
         consumes.add("application/x-www-form-urlencoded");
         return consumes;
     }

@@ -12,6 +12,7 @@ import com.zerobase.foodlier.module.member.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import static com.zerobase.foodlier.module.member.member.exception.MemberErrorCode.MEMBER_NOT_FOUND;
 
@@ -79,7 +80,9 @@ public class MemberServiceImpl implements MemberService {
     public void updatePrivateProfile(String email, MemberPrivateProfileForm form, String imageUrl) {
         Member member = findByEmail(email);
 
-        member.setNickname(form.getNickName());
+        if (StringUtils.hasText(form.getNickName())) {
+            member.setNickname(form.getNickName());
+        }
         member.setPhoneNumber(form.getPhoneNumber());
         member.setAddress(form.getAddress());
         member.setProfileUrl(imageUrl);

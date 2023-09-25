@@ -1,9 +1,9 @@
 package com.zerobase.foodlier.global.profile.controller;
 
 import com.zerobase.foodlier.common.security.provider.dto.MemberAuthDto;
-import com.zerobase.foodlier.global.profile.facade.ProfileFacade;
 import com.zerobase.foodlier.global.profile.dto.MemberPrivateProfileForm;
 import com.zerobase.foodlier.global.profile.dto.MemberPrivateProfileResponse;
+import com.zerobase.foodlier.global.profile.facade.ProfileFacade;
 import com.zerobase.foodlier.module.member.member.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -25,11 +25,11 @@ public class profileController {
         return ResponseEntity.ok(memberService.getPrivateProfile(memberAuthDto.getEmail()));
     }
 
-    @PutMapping("/private")
+    @PutMapping(value = "/private")
     public ResponseEntity<String> updatePrivateProfile(
             @AuthenticationPrincipal MemberAuthDto memberAuthDto,
-            @RequestBody MemberPrivateProfileForm form,
-            @RequestPart MultipartFile multipartFile
+            @RequestPart MultipartFile multipartFile,
+            MemberPrivateProfileForm form
     ) {
         profileFacade.deleteProfileUrlAndUpdateProfile(multipartFile,
                 memberAuthDto.getEmail(), form);
