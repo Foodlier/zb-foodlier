@@ -1,6 +1,7 @@
 package com.zerobase.foodlier.global.profile.facade;
 
 import com.zerobase.foodlier.common.s3.service.S3Service;
+import com.zerobase.foodlier.module.member.member.constants.ProfileUrlConstants;
 import com.zerobase.foodlier.module.member.member.profile.dto.MemberPrivateProfileForm;
 import com.zerobase.foodlier.module.member.member.domain.model.Member;
 import com.zerobase.foodlier.module.member.member.local.dto.CoordinateResponseDto;
@@ -29,7 +30,9 @@ public class ProfileFacade {
         String imageUrl = form.getProfileImage() != null ?
                 s3Service.getImageUrl(form.getProfileImage()) :
                 member.getProfileUrl();
-        s3Service.deleteImage(member.getProfileUrl());
+        if (!imageUrl.equals(ProfileUrlConstants.PROFILE_DEFAULT_URL)) {
+            s3Service.deleteImage(member.getProfileUrl());
+        }
         memberService.updatePrivateProfile(
                 MemberUpdateDto.from(
                         form, coordinateResponseDto, imageUrl
