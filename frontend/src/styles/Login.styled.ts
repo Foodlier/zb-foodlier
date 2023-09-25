@@ -2,25 +2,6 @@
 // TODO
 import styled from 'styled-components'
 
-export const inputStyles = `
-  height: 55px;
-  padding: 10px 30px;
-  margin-bottom: 15px;
-  border: 1px solid #ccc;
-  border-radius: 12px;
-  font-size: 16px;
-`
-
-export const buttonStyles = `
-  height: 55px;
-  padding: 10px;
-  margin-bottom: 10px;
-  border: none;
-  border-radius: 12px;
-  font-size: 16px;
-  cursor: pointer;
-`
-
 export const Container = styled.div`
   margin: 0 auto;
   display: flex;
@@ -30,16 +11,9 @@ export const Container = styled.div`
   height: 100vh;
 `
 
-export const Title = styled.div`
-  width: 70%;
+export const Title = styled.h1`
   font-size: 24px;
   margin-bottom: 50px;
-  text-align: center;
-`
-
-export const Logo = styled.img`
-  margin-bottom: 50px;
-  margin: 0 auto;
 `
 
 export const Form = styled.form`
@@ -50,24 +24,24 @@ export const Form = styled.form`
 `
 
 export const Input = styled.input`
-  ${inputStyles}
-`
-
-export const FindPassword = styled.div`
-  display: flex;
-  justify-content: flex-start;
   height: 30px;
   padding: 10px;
   margin-bottom: 15px;
-  font-size: 14px;
-  color: #000;
-  cursor: pointer;
+  border: 1px solid #ccc;
+  border-radius: 12px;
+  font-size: 16px;
 `
 
 export const Button = styled.button`
-  ${buttonStyles}
+  height: 55px;
+  padding: 10px;
+  margin-bottom: 10px;
   background-color: #e45141;
   color: #fff;
+  border: none;
+  border-radius: 12px;
+  font-size: 16px;
+  cursor: pointer;
 `
 
 // 구분선 컴포넌트
@@ -79,7 +53,6 @@ export const Divider = styled.div`
 `
 
 export const RegisterButton = styled(Button)`
-  ${buttonStyles}
   background-color: #fff;
   margin-top: 10px;
   color: #e45141;
@@ -87,7 +60,6 @@ export const RegisterButton = styled(Button)`
 `
 
 export const SocialLoginButton = styled(Button)`
-  ${buttonStyles}
   width: 80%;
   background-color: #fff;
   margin-top: 10px;
