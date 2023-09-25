@@ -1,7 +1,7 @@
-import { useState } from 'react'
+import React, { useState } from 'react'
 import styled from 'styled-components'
 import logo from '../assets/foodlier_logo.png'
-import useIcon from '../hooks/useIcon'
+import useIcon from '../hooks/UseIcon'
 import { breakpoints, palette } from '../constants/Styles'
 import NotificationItem from './notification/NotificationItem'
 

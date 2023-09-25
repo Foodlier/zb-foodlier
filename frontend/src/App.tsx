@@ -1,8 +1,9 @@
 import './reset.css'
 import { Routes, Route } from 'react-router-dom'
 import LoginPage from './pages/LoginPage'
-import RegisterPage from './pages/RegisterPage'
-import CookForMe from './pages/CookForMe'
+import MainPage from './pages/MainPage'
+import Header from './components/Header'
+import BottomNavigation from './components/BottomNavigation'
 
 function App() {
   // const [count, setCount] = useState(0)
@@ -13,11 +14,14 @@ function App() {
   // }, [])
 
   return (
-    <Routes>
-      <Route path="/" element={<LoginPage />} />
-      <Route path="/register" element={<RegisterPage />} />
-      <Route path="/cook-for-me" element={<CookForMe />} />
-    </Routes>
+    <>
+      <Header />
+      <Routes>
+        <Route path="/" element={<MainPage />} />
+        <Route path="/" element={<LoginPage />} />
+      </Routes>
+      <BottomNavigation />
+    </>
   )
 }
 
