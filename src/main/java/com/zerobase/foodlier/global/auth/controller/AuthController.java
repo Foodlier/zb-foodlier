@@ -29,7 +29,7 @@ public class AuthController {
     public ResponseEntity<?> sendVerificationCode(
             @PathVariable String email
     ) {
-        emailVerificationFacade.sendMailAndCreateVerification(email);
+        emailVerificationFacade.sendMailAndCreateVerification(email, LocalDateTime.now());
         return ResponseEntity.ok("인증 코드 전송 완료");
     }
 
