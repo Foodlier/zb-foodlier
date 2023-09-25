@@ -1,5 +1,5 @@
 import styled from 'styled-components'
-import useIcon from '../hooks/UseIcon'
+import useIcon from '../hooks/useIcon'
 import { breakpoints, palette } from '../constants/Styles'
 
 const Container = styled.div`
