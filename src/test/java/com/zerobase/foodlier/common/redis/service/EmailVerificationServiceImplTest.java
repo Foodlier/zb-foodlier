@@ -1,7 +1,7 @@
 package com.zerobase.foodlier.common.redis.service;
 
 import com.zerobase.foodlier.common.redis.domain.model.EmailVerification;
-import com.zerobase.foodlier.common.redis.exeption.EmailVerificationException;
+import com.zerobase.foodlier.common.redis.exception.EmailVerificationException;
 import com.zerobase.foodlier.common.redis.repository.EmailVerificationRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -14,7 +14,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
-import static com.zerobase.foodlier.common.redis.exeption.EmailVerificationErrorCode.*;
+import static com.zerobase.foodlier.common.redis.exception.EmailVerificationErrorCode.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
