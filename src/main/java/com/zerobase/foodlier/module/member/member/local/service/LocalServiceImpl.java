@@ -1,8 +1,7 @@
 package com.zerobase.foodlier.module.member.member.local.service;
 
-import com.zerobase.foodlier.module.member.member.local.dto.LocalApiResponse;
-import com.zerobase.foodlier.module.member.member.local.constants.LocalApiConstants;
 import com.zerobase.foodlier.module.member.member.local.dto.CoordinateResponseDto;
+import com.zerobase.foodlier.module.member.member.local.dto.LocalApiResponse;
 import com.zerobase.foodlier.module.member.member.local.exception.LocalErrorCode;
 import com.zerobase.foodlier.module.member.member.local.exception.LocalException;
 import org.springframework.beans.factory.annotation.Value;
@@ -18,6 +17,8 @@ import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 
+import static com.zerobase.foodlier.module.member.member.local.constants.LocalApiConstants.*;
+
 @Service
 public class LocalServiceImpl implements LocalService{
 
@@ -29,8 +30,8 @@ public class LocalServiceImpl implements LocalService{
 
         HttpEntity<String> httpEntity = new HttpEntity<>(getHeaders()); //엔티티로 만들기
         URI targetUrl = UriComponentsBuilder
-                .fromUriString(LocalApiConstants.LOCAL_API_URL)
-                .queryParam("query", roadAddress)
+                .fromUriString(LOCAL_API_URL)
+                .queryParam(PARAMETER, roadAddress)
                 .build()
                 .encode(StandardCharsets.UTF_8)
                 .toUri();
@@ -51,10 +52,10 @@ public class LocalServiceImpl implements LocalService{
     private HttpHeaders getHeaders() {
         HttpHeaders httpHeaders = new HttpHeaders();
 
-        String auth = "KakaoAK " + ADMIN_KEY;
+        String auth = KAKAO_PREFIX + ADMIN_KEY;
 
-        httpHeaders.set("Authorization", auth);
-        httpHeaders.set("Content-type", "application/x-www-form-urlencoded;charset=utf-8");
+        httpHeaders.set(HEADER, auth);
+        httpHeaders.set(CONTENT_TYPE_TITLE, CONTENT_TYPE);
 
         return httpHeaders;
     }
