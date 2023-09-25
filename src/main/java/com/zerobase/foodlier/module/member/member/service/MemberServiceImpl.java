@@ -3,13 +3,13 @@ package com.zerobase.foodlier.module.member.member.service;
 import com.zerobase.foodlier.common.security.provider.JwtTokenProvider;
 import com.zerobase.foodlier.common.security.provider.dto.MemberAuthDto;
 import com.zerobase.foodlier.common.security.provider.dto.TokenDto;
-import com.zerobase.foodlier.global.auth.dto.SignInForm;
-import com.zerobase.foodlier.global.profile.dto.MemberPrivateProfileForm;
-import com.zerobase.foodlier.global.profile.dto.MemberPrivateProfileResponse;
+import com.zerobase.foodlier.module.member.member.dto.SignInForm;
+import com.zerobase.foodlier.module.member.member.profile.dto.MemberPrivateProfileResponse;
 import com.zerobase.foodlier.module.member.member.domain.model.Member;
 import com.zerobase.foodlier.module.member.member.domain.vo.Address;
 import com.zerobase.foodlier.module.member.member.dto.MemberRegisterDto;
 import com.zerobase.foodlier.module.member.member.exception.MemberException;
+import com.zerobase.foodlier.module.member.member.profile.dto.MemberUpdateDto;
 import com.zerobase.foodlier.module.member.member.repository.MemberRepository;
 import com.zerobase.foodlier.module.member.member.type.RoleType;
 import lombok.RequiredArgsConstructor;
@@ -41,7 +41,7 @@ public class MemberServiceImpl implements MemberService {
                         .email(memberRegisterDto.getEmail())
                         .password(passwordEncoder.encode(memberRegisterDto.getPassword()))
                         .phoneNumber(memberRegisterDto.getPhoneNumber())
-                        .profileUrl(memberRegisterDto.getPhoneNumber())
+                        .profileUrl(memberRegisterDto.getProfileUrl())
                         .address(
                                 Address.builder()
                                         .roadAddress(memberRegisterDto.getRoadAddress())
@@ -60,14 +60,13 @@ public class MemberServiceImpl implements MemberService {
 
     /**
      * 작성자 : 이승현
-     * 작성일 : 2023-09-24
+     * 작성일 : 2023-09-24(2023-09-25)
      * 이메일과 비밀번호를 받아와서 access token과 refresh token값을 반환해줍니다.
      */
     @Override
     public TokenDto signIn(SignInForm form) {
         Member member = memberRepository.findByEmail(form.getEmail()).stream()
-//                .filter(m-> passwordEncoder.matches(form.getPassword(), m.getPassword()))
-                .filter(m -> form.getPassword().equals(m.getPassword()))
+                .filter(m-> passwordEncoder.matches(form.getPassword(), m.getPassword()))
                 .findFirst()
                 .orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
 
@@ -108,18 +107,31 @@ public class MemberServiceImpl implements MemberService {
 
     /**
      * 작성자 : 이승현
-     * 작성일 : 2023-09-24
+     * 작성일 : 2023-09-24(2023-09-25)
      * 프로필 정보를 수정합니다.
      */
-    public void updatePrivateProfile(String email, MemberPrivateProfileForm form, String imageUrl) {
-        Member member = findByEmail(email);
-
-        if (StringUtils.hasText(form.getNickName())) {
-            member.setNickname(form.getNickName());
+    @Override
+    public void updatePrivateProfile(MemberUpdateDto memberUpdateDto, Member member) {
+        validateUpdateProfile(memberUpdateDto);
+        if (StringUtils.hasText(memberUpdateDto.getNickName())) {
+            member.setNickname(memberUpdateDto.getNickName());
         }
-        member.setPhoneNumber(form.getPhoneNumber());
-        member.setAddress(form.getAddress());
-        member.setProfileUrl(imageUrl);
+
+        if (StringUtils.hasText(memberUpdateDto.getPhoneNumber())) {
+            member.setPhoneNumber(memberUpdateDto.getPhoneNumber());
+        }
+
+        member.setAddress(Address.builder()
+                .roadAddress(memberUpdateDto.getRoadAddress())
+                .addressDetail(memberUpdateDto.getAddressDetail() != null ?
+                        memberUpdateDto.getAddressDetail() :
+                        member.getAddress().getAddressDetail())
+                .lat(memberUpdateDto.getLat())
+                .lnt(memberUpdateDto.getLnt())
+                .build());
+
+
+        member.setProfileUrl(memberUpdateDto.getProfileUrl());
 
         memberRepository.save(member);
     }
@@ -132,14 +144,25 @@ public class MemberServiceImpl implements MemberService {
 
     //======================= Validates =========================
 
-    private void validateRegister(MemberRegisterDto memberRegisterDto){
-        if(memberRepository.existsByEmail(memberRegisterDto.getEmail())){
+    private void validateRegister(MemberRegisterDto memberRegisterDto) {
+        if (memberRepository.existsByEmail(memberRegisterDto.getEmail())) {
             throw new MemberException(EMAIL_IS_ALREADY_EXIST);
         }
-        if(memberRepository.existsByNickname(memberRegisterDto.getNickname())){
+        if (memberRepository.existsByNickname(memberRegisterDto.getNickname())) {
             throw new MemberException(NICKNAME_IS_ALREADY_EXIST);
         }
-        if(memberRepository.existsByPhoneNumber(memberRegisterDto.getPhoneNumber())){
+        if (memberRepository.existsByPhoneNumber(memberRegisterDto.getPhoneNumber())) {
+            throw new MemberException(PHONE_NUMBER_IS_ALREADY_EXIST);
+        }
+    }
+
+    private void validateUpdateProfile(MemberUpdateDto memberUpdateDto) {
+        if (StringUtils.hasText(memberUpdateDto.getNickName())
+                && memberRepository.existsByNickname(memberUpdateDto.getNickName())) {
+            throw new MemberException(NICKNAME_IS_ALREADY_EXIST);
+        }
+        if (StringUtils.hasText(memberUpdateDto.getPhoneNumber())
+                && memberRepository.existsByPhoneNumber(memberUpdateDto.getPhoneNumber())) {
             throw new MemberException(PHONE_NUMBER_IS_ALREADY_EXIST);
         }
     }
