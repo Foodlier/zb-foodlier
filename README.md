@@ -85,4 +85,170 @@ resolves: #1234, #1235
    * css 파일들이 포함되는 폴더입니다.
 7. utils
    * 정규표현식 패턴이나 공통함수 등 공통으로 사용하는 유틸 파일들이 위치하는 폴더입니다.
+     
+<hr>
 
+```text
+
+src
+|-- main
+|   |-- java
+|   |   `-- com
+|   |       `-- zerobase
+|   |           `-- foodlier
+|   |               |-- FoodlierApplication.java
+|   |               |-- common
+|   |               |   |-- elasticsearch
+|   |               |   |   `-- config
+|   |               |   |       `-- file
+|   |               |   |-- exception
+|   |               |   |   |-- dto
+|   |               |   |   |-- exception
+|   |               |   |   `-- handler
+|   |               |   |-- jpa
+|   |               |   |   |-- audit
+|   |               |   |   `-- config
+|   |               |   |-- redis
+|   |               |   |   |-- domain
+|   |               |   |   |   `-- model
+|   |               |   |   |-- dto
+|   |               |   |   |-- exception
+|   |               |   |   |-- exeption
+|   |               |   |   |-- repository
+|   |               |   |   `-- service
+|   |               |   |-- s3
+|   |               |   |   |-- config
+|   |               |   |   |-- exception
+|   |               |   |   `-- service
+|   |               |   |-- security
+|   |               |   |   |-- config
+|   |               |   |   |-- constants
+|   |               |   |   |-- exception
+|   |               |   |   |-- filter
+|   |               |   |   `-- provider
+|   |               |   |       |-- constants
+|   |               |   |       `-- dto
+|   |               |   `-- swagger
+|   |               |       `-- config
+|   |               |-- global
+|   |               |   |-- auth
+|   |               |   |   `-- controller
+|   |               |   |-- member
+|   |               |   |   `-- mail
+|   |               |   |       `-- facade
+|   |               |   |-- recipe
+|   |               |   |   `-- facade
+|   |               |   `-- request
+|   |               |       |-- controller
+|   |               |       |-- dto
+|   |               |       `-- facade
+|   |               `-- module
+|   |                   |-- comment
+|   |                   |   |-- comment
+|   |                   |   |   |-- domain
+|   |                   |   |   |   `-- model
+|   |                   |   |   |-- exception
+|   |                   |   |   |-- repository
+|   |                   |   |   `-- service
+|   |                   |   `-- reply
+|   |                   |       |-- domain
+|   |                   |       |   `-- model
+|   |                   |       |-- exception
+|   |                   |       |-- reposiotry
+|   |                   |       `-- servcie
+|   |                   |-- dm
+|   |                   |   |-- dm
+|   |                   |   |   |-- domain
+|   |                   |   |   |   `-- model
+|   |                   |   |   |-- exception
+|   |                   |   |   |-- repository
+|   |                   |   |   `-- service
+|   |                   |   `-- room
+|   |                   |       |-- domain
+|   |                   |       |   `-- model
+|   |                   |       |-- exception
+|   |                   |       |-- repository
+|   |                   |       `-- service
+|   |                   |-- heart
+|   |                   |   |-- domain
+|   |                   |   |   `-- model
+|   |                   |   |-- exception
+|   |                   |   |-- reposiotry
+|   |                   |   `-- service
+|   |                   |-- history
+|   |                   |   |-- charge
+|   |                   |   |   |-- exception
+|   |                   |   |   |-- model
+|   |                   |   |   |-- repository
+|   |                   |   |   `-- service
+|   |                   |   `-- transaction
+|   |                   |       |-- exception
+|   |                   |       |-- model
+|   |                   |       |-- repository
+|   |                   |       |-- service
+|   |                   |       `-- type
+|   |                   |-- member
+|   |                   |   |-- chef
+|   |                   |   |   |-- domain
+|   |                   |   |   |   `-- model
+|   |                   |   |   |-- exception
+|   |                   |   |   |-- repository
+|   |                   |   |   |-- service
+|   |                   |   |   `-- type
+|   |                   |   `-- member
+|   |                   |       |-- domain
+|   |                   |       |   |-- model
+|   |                   |       |   `-- vo
+|   |                   |       |-- exception
+|   |                   |       |-- mail
+|   |                   |       |   |-- constants
+|   |                   |       |   `-- service
+|   |                   |       |-- repository
+|   |                   |       |-- service
+|   |                   |       `-- type
+|   |                   |-- notification
+|   |                   |   |-- domain
+|   |                   |   |   `-- model
+|   |                   |   |-- exception
+|   |                   |   |-- repository
+|   |                   |   `-- service
+|   |                   |-- recipe
+|   |                   |   |-- controller
+|   |                   |   |-- domain
+|   |                   |   |   |-- dto
+|   |                   |   |   |-- model
+|   |                   |   |   |-- type
+|   |                   |   |   `-- vo
+|   |                   |   |-- exception
+|   |                   |   |-- repository
+|   |                   |   `-- service
+|   |                   |-- request
+|   |                   |   |-- domain
+|   |                   |   |   |-- model
+|   |                   |   |   `-- vo
+|   |                   |   |-- exception
+|   |                   |   |-- repository
+|   |                   |   `-- service
+|   |                   `-- review
+|   |                       |-- chef
+|   |                       |   |-- domain
+|   |                       |   |   `-- model
+|   |                       |   |-- exception
+|   |                       |   |-- repository
+|   |                       |   `-- service
+|   |                       `-- recipe
+|   |                           |-- domain
+|   |                           |   `-- model
+|   |                           |-- exception
+|   |                           |-- repository
+|   |                           `-- service
+
+```
+도메인을 기준으로 패키지 계층을 분리하였습니다.
+
+1. common
+   * 여러 모듈에서 공통적으로 사용되는 코드를 포함합니다. 데이터베이스와 관련된 설정, 예외 처리, 보안 등과 같은 공통 기능들을 위치시켰습니다.
+2. global
+   * 전역적인 기능을 다루는 모듈들을 포함합니다. 파사드 패턴을 준수하여 사용자 인증, 회원 관리, 레시피 관리 등과 같이 여러 모듈에서 공유되는 전역적인 기능들을 위치시켰습니다.  
+4. module
+   * 프로젝트의 기능을 도메인 별로 분류하여 구조화하는 역할을 합니다. 각각의 도메인은 특정한 기능 또는 업무를 담당하며, 그 안에는 독립적인 기능을 구현하는데 필요한 다양한 패키지와 클래스들이 포함됩니다.
