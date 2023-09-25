@@ -48,3 +48,5 @@ const Login = () => {
     </L.Container>
   )
 }
+
+export default Login
