@@ -7,21 +7,56 @@ import com.zerobase.foodlier.global.auth.dto.SignInForm;
 import com.zerobase.foodlier.global.profile.dto.MemberPrivateProfileForm;
 import com.zerobase.foodlier.global.profile.dto.MemberPrivateProfileResponse;
 import com.zerobase.foodlier.module.member.member.domain.model.Member;
+import com.zerobase.foodlier.module.member.member.domain.vo.Address;
+import com.zerobase.foodlier.module.member.member.dto.MemberRegisterDto;
 import com.zerobase.foodlier.module.member.member.exception.MemberException;
 import com.zerobase.foodlier.module.member.member.repository.MemberRepository;
+import com.zerobase.foodlier.module.member.member.type.RoleType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
-import static com.zerobase.foodlier.module.member.member.exception.MemberErrorCode.MEMBER_NOT_FOUND;
+import javax.transaction.Transactional;
+import java.util.ArrayList;
+import java.util.List;
+
+import static com.zerobase.foodlier.module.member.member.exception.MemberErrorCode.*;
 
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class MemberServiceImpl implements MemberService {
+
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider tokenProvider;
+
+    @Override
+    public void register(MemberRegisterDto memberRegisterDto) {
+        validateRegister(memberRegisterDto);
+        memberRepository.save(
+                Member.builder()
+                        .nickname(memberRegisterDto.getNickname())
+                        .email(memberRegisterDto.getEmail())
+                        .password(passwordEncoder.encode(memberRegisterDto.getPassword()))
+                        .phoneNumber(memberRegisterDto.getPhoneNumber())
+                        .profileUrl(memberRegisterDto.getPhoneNumber())
+                        .address(
+                                Address.builder()
+                                        .roadAddress(memberRegisterDto.getRoadAddress())
+                                        .addressDetail(memberRegisterDto.getAddressDetail())
+                                        .lat(memberRegisterDto.getLat())
+                                        .lnt(memberRegisterDto.getLnt())
+                                        .build()
+                        )
+                        .registrationType(memberRegisterDto.getRegistrationType())
+                        .roles(new ArrayList<>(
+                                List.of(RoleType.ROLE_USER.name())
+                        ))
+                        .build()
+        );
+    }
 
     /**
      * 작성자 : 이승현
@@ -76,7 +111,6 @@ public class MemberServiceImpl implements MemberService {
      * 작성일 : 2023-09-24
      * 프로필 정보를 수정합니다.
      */
-    @Override
     public void updatePrivateProfile(String email, MemberPrivateProfileForm form, String imageUrl) {
         Member member = findByEmail(email);
 
@@ -94,5 +128,19 @@ public class MemberServiceImpl implements MemberService {
     public Member findByEmail(String email) {
         return memberRepository.findByEmail(email)
                 .orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
+    }
+
+    //======================= Validates =========================
+
+    private void validateRegister(MemberRegisterDto memberRegisterDto){
+        if(memberRepository.existsByEmail(memberRegisterDto.getEmail())){
+            throw new MemberException(EMAIL_IS_ALREADY_EXIST);
+        }
+        if(memberRepository.existsByNickname(memberRegisterDto.getNickname())){
+            throw new MemberException(NICKNAME_IS_ALREADY_EXIST);
+        }
+        if(memberRepository.existsByPhoneNumber(memberRegisterDto.getPhoneNumber())){
+            throw new MemberException(PHONE_NUMBER_IS_ALREADY_EXIST);
+        }
     }
 }

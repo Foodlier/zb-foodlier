@@ -1,4 +1,4 @@
-package com.zerobase.foodlier.common.redis.exeption;
+package com.zerobase.foodlier.common.redis.exception;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

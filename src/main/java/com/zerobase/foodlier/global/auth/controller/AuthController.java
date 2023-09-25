@@ -5,6 +5,8 @@ import com.zerobase.foodlier.common.security.provider.dto.MemberAuthDto;
 import com.zerobase.foodlier.common.security.provider.dto.TokenDto;
 import com.zerobase.foodlier.global.auth.dto.SignInForm;
 import com.zerobase.foodlier.global.member.mail.facade.EmailVerificationFacade;
+import com.zerobase.foodlier.global.member.regiser.facade.MemberRegisterFacade;
+import com.zerobase.foodlier.module.member.member.dto.MemberInputDto;
 import com.zerobase.foodlier.module.member.member.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -20,6 +22,7 @@ import java.time.LocalDateTime;
 public class AuthController {
     private final EmailVerificationFacade emailVerificationFacade;
     private final EmailVerificationService emailVerificationService;
+    private final MemberRegisterFacade memberRegisterFacade;
     private final MemberService memberService;
 
     @PostMapping("/verification/send/{email}")
@@ -38,6 +41,14 @@ public class AuthController {
         emailVerificationService.verify(email, verificationCode,
                 LocalDateTime.now());
         return ResponseEntity.ok("인증 완료");
+    }
+
+    @PostMapping("/signup")
+    public ResponseEntity<?> signUp(@ModelAttribute MemberInputDto memberInputDto){
+        memberRegisterFacade.domainRegister(memberInputDto);
+        return ResponseEntity.ok(
+                "회원가입 완료"
+        );
     }
 
     @PostMapping("/signin")
