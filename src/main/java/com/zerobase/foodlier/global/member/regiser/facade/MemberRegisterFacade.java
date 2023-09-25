@@ -2,6 +2,7 @@ package com.zerobase.foodlier.global.member.regiser.facade;
 
 import com.zerobase.foodlier.common.redis.service.EmailVerificationService;
 import com.zerobase.foodlier.common.s3.service.S3Service;
+import com.zerobase.foodlier.module.member.member.constants.ProfileUrlConstants;
 import com.zerobase.foodlier.module.member.member.dto.MemberInputDto;
 import com.zerobase.foodlier.module.member.member.dto.MemberRegisterDto;
 import com.zerobase.foodlier.module.member.member.local.dto.CoordinateResponseDto;
@@ -37,7 +38,9 @@ public class MemberRegisterFacade {
         CoordinateResponseDto coordinateResponseDto = localService.getCoordinate(
                 memberInputDto.getRoadAddress()
         );
-        String profileUrl = s3Service.getImageUrl(memberInputDto.getProfileImage());
+        String profileUrl = memberInputDto.getProfileImage() != null ?
+                s3Service.getImageUrl(memberInputDto.getProfileImage()) :
+                ProfileUrlConstants.PROFILE_DEFAULT_URL;
 
         memberService.register(
                 MemberRegisterDto.from(
