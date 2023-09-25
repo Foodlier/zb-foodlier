@@ -46,6 +46,7 @@
 
   /* size */
   --size-border: 1rem;
+  
 }
 
 *,
@@ -99,6 +100,10 @@ html {
 }
 body {
   font-size: 1.6rem;
+}
+
+.container {
+  max-width: 1536px;
 }
 
 button {

@@ -10,3 +10,10 @@ export const palette = {
   divider: '#D9D9D9',
   shadow: 'rgba(0,0,0,10%)',
 }
+
+export const innerWidth = `
+  width: 120rem;
+  max-width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+`
