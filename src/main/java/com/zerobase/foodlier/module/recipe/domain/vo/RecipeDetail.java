@@ -21,11 +21,11 @@ public class RecipeDetail {
     private String cookingOrder;
     private String cookingOrderImageUrl;
 
-    public static List<RecipeDetail> getRecipeDetailList(
-            List<RecipeDetailDto> recipeDetailDtoList) {
-        RecipeDetail.builder()
-                .cookingOrder()
-                .cookingOrderImageUrl
-                .build();
-    }
+//    public static List<RecipeDetail> getRecipeDetailList(
+//            List<RecipeDetailDto> recipeDetailDtoList) {
+//        RecipeDetail.builder()
+//                .cookingOrder()
+//                .cookingOrderImageUrl
+//                .build();
+//    }
 }

@@ -1,6 +1,5 @@
 package com.zerobase.foodlier.common.redis.service;
 
-import com.zerobase.foodlier.common.redis.domain.model.RefreshToken;
 import com.zerobase.foodlier.common.redis.dto.RefreshTokenDto;
 
 public interface RefreshTokenService {
@@ -10,7 +9,5 @@ public interface RefreshTokenService {
     void save(RefreshTokenDto refreshTokenDto);
 
     void delete(String email);
-
-    RefreshToken findRefreshToken(String email);
 
 }

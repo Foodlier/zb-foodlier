@@ -10,10 +10,10 @@ import com.zerobase.foodlier.common.security.provider.dto.MemberAuthDto;
 import com.zerobase.foodlier.common.security.provider.dto.TokenDto;
 import io.jsonwebtoken.*;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
@@ -23,7 +23,6 @@ import java.util.stream.Collectors;
 
 import static com.zerobase.foodlier.common.security.exception.JwtErrorCode.*;
 
-@Slf4j
 @Component
 @RequiredArgsConstructor
 public class JwtTokenProvider {
@@ -62,7 +61,7 @@ public class JwtTokenProvider {
         String refreshToken = createRefreshToken(memberAuthDto);
 
         refreshTokenService.save(RefreshTokenDto.builder()
-                .userEmail(memberAuthDto.getEmail())
+                .memberEmail(memberAuthDto.getEmail())
                 .refreshToken(refreshToken)
                 .timeToLive(tokenExpiredConstant.getRefreshTokenExpiredTime())
                 .build());
@@ -79,22 +78,16 @@ public class JwtTokenProvider {
             throw new JwtException(REFRESH_TOKEN_NOT_FOUND);
         }
         return this.createAccessToken(MemberAuthDto.builder()
-                                                    .id(userId)
-                                                    .email(userEmail)
-                                                    .roles(roles)
-                                                    .build());
-    }
-
-    private List<String> getRoles(String token) {
-        Claims claims = parseClaims(token);
-        List<?> list = claims.get(KEY_ROLES, List.class);
-        return list.stream().map(String::valueOf).collect(Collectors.toList());
+                .id(userId)
+                .email(userEmail)
+                .roles(roles)
+                .build());
     }
 
     public void deleteRefreshToken(String email) {
         refreshTokenService.delete(email);
     }
-    
+
     public String setToken(CreateTokenDto createTokenDto) {
         Claims claims = Jwts.claims().setSubject(createTokenDto.getEmail());
         claims.setId(String.valueOf(createTokenDto.getId()));
@@ -113,22 +106,42 @@ public class JwtTokenProvider {
     }
 
     public Authentication getAuthentication(String token) {
+        MemberAuthDto memberAuthDto = getMemberAuthDto(token);
+        List<SimpleGrantedAuthority> grantedAuthorities =
+                memberAuthDto.getRoles().stream()
+                        .map(SimpleGrantedAuthority::new)
+                        .collect(Collectors.toList());
 
-        Claims claims = this.parseClaims(token);
-        String userEmail = claims.getSubject();
-        Long id = Long.parseLong(claims.getId());
-        List<String> roles = this.getRoles(token);
+        return new UsernamePasswordAuthenticationToken(
+                memberAuthDto, token, grantedAuthorities);
+    }
 
-        return new UsernamePasswordAuthenticationToken();
+    private List<String> getRoles(String token) {
+        Claims claims = parseClaims(token);
+        List<?> list = claims.get(KEY_ROLES, List.class);
 
+        return list.stream()
+                .map(String::valueOf)
+                .collect(Collectors.toList());
+    }
+
+    private MemberAuthDto getMemberAuthDto(String token) {
+        Claims claims = parseClaims(token);
+        List<String> roles = getRoles(token);
+
+        return MemberAuthDto.builder()
+                .id(Long.valueOf(claims.getId()))
+                .email(claims.getSubject())
+                .roles(roles)
+                .build();
     }
 
     public boolean existRefreshToken(String accessToken) {
 
         Claims claims = this.parseClaims(accessToken);
-        String userEmail = claims.getSubject();
+        String memberEmail = claims.getSubject();
 
-        return refreshTokenService.isRefreshTokenExisted(userEmail);
+        return refreshTokenService.isRefreshTokenExisted(memberEmail);
     }
 
     public boolean isTokenExpired(String token) {
@@ -149,4 +162,5 @@ public class JwtTokenProvider {
             throw new UnsupportedJwtException(INVALID_JWT_COMPONENT.getDescription());
         }
     }
+
 }

@@ -36,6 +36,7 @@ public class Member extends Audit {
     private Address address;
     private long point;
     @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
     private RegistrationType registrationType;
     private boolean isDeleted;
     @ElementCollection
