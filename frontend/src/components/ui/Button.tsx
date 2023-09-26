@@ -98,4 +98,3 @@ CommonButton.defaultProps = {
 }
 
 export default CommonButton
-
