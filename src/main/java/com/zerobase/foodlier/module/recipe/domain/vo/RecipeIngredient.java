@@ -1,6 +1,7 @@
 package com.zerobase.foodlier.module.recipe.domain.vo;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -10,6 +11,7 @@ import javax.persistence.*;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class RecipeIngredient {
 
     private String name;

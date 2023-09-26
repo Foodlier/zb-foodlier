@@ -84,12 +84,12 @@ public class S3ServiceImpl implements S3Service {
 
     /**
      * 작성자 : 황태원
-     * 작성일 : 2023-09-24(2023-09-25)
+     * 작성일 : 2023-09-24
      * 해당 이미지를 S3에서 삭제
      */
     @Override
     public void deleteImage(String imageUrl) {
-        if (!validImageUrl(imageUrl)) {
+        if (validImageUrl(imageUrl)) {
             throw new S3Exception(IMAGE_DOES_NOT_EXIST);
         }
 
@@ -108,13 +108,13 @@ public class S3ServiceImpl implements S3Service {
      */
     @Override
     public String getUpdateImageURL(MultipartFile multipartFile, String imageUrl) {
-        if (!validImageUrl(imageUrl)) {
+        if (validImageUrl(imageUrl)) {
             throw new S3Exception(IMAGE_DOES_NOT_EXIST);
         }
         if (multipartFile.isEmpty()) {
             return imageUrl;
         }
-        deleteImage(getImageName(imageUrl));
+        deleteImage(imageUrl);
 
         return getImageUrl(multipartFile);
     }
@@ -137,6 +137,6 @@ public class S3ServiceImpl implements S3Service {
     @Override
     public boolean validImageUrl(String imageUrl) {
         String imageName = getImageName(imageUrl);
-        return !amazonS3.doesObjectExist(bucket, imageName);
+        return amazonS3.doesObjectExist(bucket, imageName);
     }
 }
