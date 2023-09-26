@@ -4,6 +4,7 @@ import com.zerobase.foodlier.module.member.member.local.dto.CoordinateResponseDt
 import com.zerobase.foodlier.module.member.member.local.dto.LocalApiResponse;
 import com.zerobase.foodlier.module.member.member.local.exception.LocalErrorCode;
 import com.zerobase.foodlier.module.member.member.local.exception.LocalException;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -20,13 +21,16 @@ import java.util.Objects;
 import static com.zerobase.foodlier.module.member.member.local.constants.LocalApiConstants.*;
 
 @Service
+@RequiredArgsConstructor
 public class LocalServiceImpl implements LocalService{
 
     @Value("${spring.kakao.admin-key}")
     private String ADMIN_KEY;
 
+    private final RestTemplate restTemplate;
+
     public CoordinateResponseDto getCoordinate(String roadAddress){
-        RestTemplate restTemplate = new RestTemplate();
+//        RestTemplate restTemplate = new RestTemplate();
 
         HttpEntity<String> httpEntity = new HttpEntity<>(getHeaders()); //엔티티로 만들기
         URI targetUrl = UriComponentsBuilder
