@@ -57,7 +57,6 @@ const SearchHeaderTxt = styled.div`
 
 const MoSearch: React.FC<MoSearchProps> = ({ setIsMoSearchOpen }) => {
   const { IcPrevLight } = useIcon()
-
   const handleSearch = (query: string) => {
     console.log(`MoSearch에서 검색: ${query}`)
   }
