@@ -1,9 +1,10 @@
-// SlickSlider.tsx
 import React from 'react'
 import Slider, { Settings } from 'react-slick'
-
+import 'slick-carousel/slick/slick.css'
+import 'slick-carousel/slick/slick-theme.css'
 import styled from 'styled-components'
 import SliderCard from './SliderCard'
+import { palette } from '../../constants/Styles'
 
 interface Slide {
   id: number
@@ -20,6 +21,7 @@ interface SlickSliderProps {
 const SlickSliderContainer = styled.div`
   & > div {
     display: flex;
+    margin-bottom: 10rem;
   }
 `
 
@@ -53,7 +55,7 @@ const CustomSlider = styled(Slider)`
   }
 
   .slick-dots li button:before {
-    color: var(--color-main);
+    color: ${palette.main};
     font-size: 1.3rem;
   }
 `
