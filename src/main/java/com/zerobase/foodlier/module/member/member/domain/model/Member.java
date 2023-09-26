@@ -23,12 +23,13 @@ public class Member extends Audit {
     private Long id;
     @OneToOne
     private ChefMember chefMember;
-    @Column(nullable = false)
+    @Column(unique = true, nullable = false)
     private String nickname;
     @Column(unique = true, nullable = false)
     private String email;
     @Column(nullable = false)
     private String password;
+    @Column(unique = true, nullable = false)
     private String phoneNumber;
     @Column(nullable = false)
     private String profileUrl;
@@ -36,8 +37,10 @@ public class Member extends Audit {
     private Address address;
     private long point;
     @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
     private RegistrationType registrationType;
-    private boolean isDeleted;
+    @Builder.Default
+    private boolean isDeleted = false;
     @ElementCollection
     @Builder.Default
     private List<String> roles = new ArrayList<>();

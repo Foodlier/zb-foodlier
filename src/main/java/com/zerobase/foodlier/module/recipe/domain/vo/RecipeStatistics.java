@@ -12,7 +12,7 @@ import javax.persistence.Embeddable;
 @AllArgsConstructor
 public class RecipeStatistics {
 
-    private int reviewCount;
-    private int reviewStarSum;
-    private double reviewStarAverage;
+    private int reviewCount; //
+    private int reviewStarSum; //
+    private double reviewStarAverage; //
 }
