@@ -9,9 +9,9 @@ public class RecipeException extends BaseException {
     private final RecipeErrorCode errorCode;
     private final String description;
 
-    public RecipeException(RecipeErrorCode recipeExceptionCode) {
-        this.errorCode = recipeExceptionCode;
-        this.description = recipeExceptionCode.getDescription();
+    public RecipeException(RecipeErrorCode recipeErrorCode) {
+        this.errorCode = recipeErrorCode;
+        this.description = recipeErrorCode.getDescription();
     }
 
 }
