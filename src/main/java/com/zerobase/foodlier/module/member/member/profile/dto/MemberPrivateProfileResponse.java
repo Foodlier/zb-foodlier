@@ -1,4 +1,4 @@
-package com.zerobase.foodlier.global.profile.dto;
+package com.zerobase.foodlier.module.member.member.profile.dto;
 
 import com.zerobase.foodlier.module.member.member.domain.vo.Address;
 import lombok.AllArgsConstructor;
