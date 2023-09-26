@@ -38,3 +38,10 @@ export const spacing = {
   // large: '16px',
   // xLarge: '32px',
 }
+
+export const innerWidth = `
+  width: 120rem;
+  max-width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+`

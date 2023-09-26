@@ -1,61 +1,57 @@
 import React, { useState } from 'react'
-import * as R from '../../styles/recipe/RecipeItem.styled'
+import * as S from '../../styles/recipe/RecipeItem.styled'
 import { palette } from '../../constants/Styles'
 import useIcon from '../../hooks/useIcon'
 
-// interface RecipeItemProps {
-//   recipeId: string | number
-//   title: string
-//   nickname : string
-//   introduce: string
-//   imagePath: string
-//   likeCount: number
-//   isLike: boolean
-// }
+interface RecipeItemProps {
+  recipeId: string | number
+  title: string
+  nickname: string
+  introduce: string
+  imagePath: string
+  likeCount: number
+  isLike: boolean
+}
 
-const RecipeItem = () => {
+const RecipeItem: React.FC<RecipeItemProps> = ({
+  recipeId,
+  title,
+  nickname,
+  introduce,
+  imagePath,
+  likeCount,
+  isLike,
+}) => {
   const { IcFavorite, IcFavoriteFill } = useIcon()
+  const [isLiked, setIsLiked] = useState(isLike)
+  const [likes, setLikes] = useState(likeCount)
 
-  const dummyData = {
-    id: 1,
-    title: '마크정식',
-    nickname: '닉네임입니다',
-    introduce:
-      '마크정식 어쩌구 저쩌구마크정식 어쩌구 저쩌구마크정식 어쩌구 저쩌구마크정식 어쩌구 저쩌구마크정식 어쩌구 저쩌구',
-    imagePath: '',
-    likeCount: 150,
-    isLike: true,
-  }
-
-  const [isLike, setIsLike] = useState(dummyData.isLike)
-  const [likeCount, setLikeCount] = useState(dummyData.likeCount)
-
-  const onClickLikeButton = () => {
-    setIsLike(!isLike)
-    setLikeCount(isLike ? likeCount - 1 : likeCount + 1)
+  const handleLikeClick = () => {
+    setIsLiked(!isLiked)
+    setLikes(isLiked ? likes - 1 : likes + 1)
   }
 
   return (
-    <R.Container>
-      <R.Image />
-      <R.WrapContent>
-        <R.FlexRowJustiBet>
-          <R.FlexRow>
-            <R.Title>{dummyData.title}</R.Title>
-            <R.Nickname>{dummyData.nickname}</R.Nickname>
-          </R.FlexRow>
-          <R.LikeButton onClick={onClickLikeButton}>
-            {isLike ? (
+    <S.Container>
+      <S.Image src={imagePath} alt={title} />
+      <S.WrapContent>
+        <S.FlexRowJustiBet>
+          <S.FlexRow>
+            <S.Title>{title}</S.Title>
+            <S.Nickname>{nickname}</S.Nickname>
+          </S.FlexRow>
+          <S.LikeButton onClick={handleLikeClick}>
+            {isLiked ? (
               <IcFavoriteFill size={2} color="#EA5455" />
             ) : (
               <IcFavorite size={2} color={palette.textPrimary} />
             )}
-            <R.LikeCount>{likeCount}</R.LikeCount>
-          </R.LikeButton>
-        </R.FlexRowJustiBet>
-        <R.Introduce>{dummyData.introduce}</R.Introduce>
-      </R.WrapContent>
-    </R.Container>
+            <S.LikeCount>{likes}</S.LikeCount>
+          </S.LikeButton>
+        </S.FlexRowJustiBet>
+        <S.Introduce>{introduce}</S.Introduce>
+      </S.WrapContent>
+    </S.Container>
   )
 }
 
