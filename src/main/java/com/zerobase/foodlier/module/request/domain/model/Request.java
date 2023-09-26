@@ -36,7 +36,7 @@ public class Request extends Audit {
     @ElementCollection
     @CollectionTable(name = "ingredient")
     @Builder.Default
-    private List<Ingredient> ingredientList=new ArrayList<>();
+    private List<Ingredient> ingredientList = new ArrayList<>();
 
     @OneToOne
     private ChefReview chefReview;
