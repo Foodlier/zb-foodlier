@@ -1,5 +1,7 @@
 import React from 'react'
 import styled, { css } from 'styled-components'
+import { palette } from '../../constants/Styles'
+
 import '../../reset.css'
 
 const colorVariables = {
@@ -21,7 +23,7 @@ const colorStyles = css<CommonButtonProps>`
     const bgColor = colorVariables[color || 'main']
     return css`
       background-color: ${bgColor};
-      color: var(--color-white);
+      color: ${palette.white};
       &:hover {
         opacity: 0.9;
       }
@@ -60,8 +62,8 @@ const StyledButton = styled.button<CommonButtonProps>`
   outline: none;
   border: none;
   border-radius: 0.4rem;
-  color: var(--color-white);
-  font-weight: bold;
+  color: ${palette.white};
+  font-weight: 600;
   cursor: pointer;
   padding: 0 1.2rem;
   font-size: 1.6rem;
@@ -71,8 +73,8 @@ const StyledButton = styled.button<CommonButtonProps>`
     margin-left: 1rem;
   }
 
-  background-color: var(--color-main);
-  color: var(--color-white);
+  background-color: ${palette.main};
+  color: ${palette.white};
 
   ${sizeStyles}
   ${colorStyles}

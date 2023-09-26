@@ -1,6 +1,6 @@
 import React from 'react'
 import styled from 'styled-components'
-// import { palette } from '../../constants/Styles'
+import { palette } from '../../constants/Styles'
 import CommonButton from './Button'
 
 interface DialogProps {
@@ -22,12 +22,12 @@ const DarkBackground = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--color-dim);
+  background: ${palette.white};
 `
 const DialogBlock = styled.div`
   width: 32rem;
   padding: 1.5rem;
-  background: var(--color-white);
+  background: ${palette.white};
   border-radius: 0.2rem;
 
   h3 {

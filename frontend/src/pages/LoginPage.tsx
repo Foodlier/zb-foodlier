@@ -1,34 +1,34 @@
 import logo from '../assets/foodlier_logo.png'
 import naver from '../assets/btn_naver.png'
 import kakao from '../assets/btn_kakao.png'
-import * as L from '../styles/LoginPage.styled'
+import * as S from '../styles/LoginPage.styled'
 
 const Login = () => {
   return (
-    <L.Container>
-      <L.Title>
+    <S.Container>
+      <S.Title>
         <img src={logo} alt="Foodlier Logo" />
-      </L.Title>
-      <L.Form>
-        <L.Input type="email" placeholder="Email" />
-        <L.Input type="password" placeholder="Password" />
-        <L.Button type="submit">로그인</L.Button>
-        <L.RegisterButton>회원가입</L.RegisterButton>
-      </L.Form>
-      <L.Divider>
-        <L.Text>OR</L.Text>
-      </L.Divider>
-      <L.Form>
-        <L.SocialLoginButton>
-          <L.SocialLogo src={naver} alt="" />
+      </S.Title>
+      <S.Form>
+        <S.Input type="email" placeholder="Email" />
+        <S.Input type="password" placeholder="Password" />
+        <S.Button type="submit">로그인</S.Button>
+        <S.RegisterButton>회원가입</S.RegisterButton>
+      </S.Form>
+      <S.Divider>
+        <S.Text>OR</S.Text>
+      </S.Divider>
+      <S.Form>
+        <S.SocialLoginButton>
+          <S.SocialLogo src={naver} alt="" />
           <span>Sign in With Naver</span>
-        </L.SocialLoginButton>
-        <L.SocialLoginButton>
-          <L.SocialLogo src={kakao} alt="" />
+        </S.SocialLoginButton>
+        <S.SocialLoginButton>
+          <S.SocialLogo src={kakao} alt="" />
           <span>Sign in With Kakao</span>
-        </L.SocialLoginButton>
-      </L.Form>
-    </L.Container>
+        </S.SocialLoginButton>
+      </S.Form>
+    </S.Container>
   )
 }
 

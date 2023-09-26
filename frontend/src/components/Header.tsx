@@ -1,133 +1,57 @@
 import React, { useState } from 'react'
-import styled from 'styled-components'
+import * as S from '../styles/HeaderPage.styled'
+import { palette } from '../constants/Styles'
 import logo from '../assets/foodlier_logo.png'
 import useIcon from '../hooks/useIcon'
-import { innerWidth, breakpoints, palette } from '../constants/Styles'
 import NotificationItem from './notification/NotificationItem'
-
-const Container = styled.header`
-  padding: 5%;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-
-  ${breakpoints.large} {
-    padding: 2% 0;
-    ${innerWidth}
-  }
-`
-
-const Logo = styled.img`
-  width: 30%;
-  height: auto;
-
-  ${breakpoints.large} {
-    width: 15%;
-  }
-`
-
-const WrapMenu = styled.ul`
-  display: none;
-  align-items: center;
-
-  ${breakpoints.large} {
-    display: flex;
-  }
-`
-
-const Menu = styled.button`
-  padding: 0px 1.8rem;
-  font-size: 1.8rem;
-  font-weight: 600;
-  color: ${palette.textPrimary};
-`
-
-const Notification = styled.div<{ $isToggle: boolean }>`
-  position: absolute;
-  display: ${props => (props.$isToggle ? 'flex' : 'none')};
-  flex-direction: column;
-  min-width: 25rem;
-  top: 5rem;
-  padding: 1rem;
-  border: 1px solid ${palette.divider};
-  border-radius: 1rem;
-  font-size: 1.4rem;
-`
-
-const WrapIcon = styled.ul`
-  display: flex;
-
-  ${breakpoints.large} {
-    display: none;
-  }
-`
-
-const Icon = styled.button`
-  margin-left: 1rem;
-`
-
-const LoginButton = styled.button`
-  padding: 0.8rem 1.2rem;
-  background-color: ${palette.main};
-  color: white;
-  border-radius: 1rem;
-  margin-left: 1rem;
-  font-size: 1.6rem;
-  font-weight: 600;
-`
-
-const Button = styled.button``
-
-const WrapNotification = styled.div`
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  padding: 0px 1.8rem;
-  font-size: 1.8rem;
-  font-weight: 600;
-  color: ${palette.textPrimary};
-`
+import MoSearch from './search/MoSearch'
 
 const Header = () => {
   const { IcSearch, IcBell } = useIcon()
 
   const [isToggle, setIsToggle] = useState(false)
+  const [isMoSearchOpen, setIsMoSearchOpen] = useState(false)
+
+  const toggleMoSearch = () => {
+    setIsMoSearchOpen(!isMoSearchOpen)
+  }
 
   const HEADER_MENU_LIST = ['꿀조합', '냉마카세']
 
   return (
-    <Container>
-      <Logo src={logo} alt="로고 이미지" />
-      <WrapIcon>
-        <WrapNotification>
-          <Icon onClick={() => setIsToggle(!isToggle)}>
+    <S.Container>
+      <S.Logo src={logo} alt="로고 이미지" />
+      <S.WrapIcon>
+        <S.WrapNotification>
+          <S.Icon onClick={() => setIsToggle(!isToggle)}>
             <IcBell size={3} color={palette.textPrimary} />
-          </Icon>
-          <Notification $isToggle={isToggle}>
+          </S.Icon>
+          <S.Notification $isToggle={isToggle}>
             <NotificationItem />
-          </Notification>
-        </WrapNotification>
+          </S.Notification>
+        </S.WrapNotification>
 
-        <Icon>
+        <S.Icon onClick={toggleMoSearch}>
           <IcSearch size={3} color={palette.textPrimary} />
-        </Icon>
-      </WrapIcon>
-      <WrapMenu>
+        </S.Icon>
+      </S.WrapIcon>
+      <S.WrapMenu>
         {HEADER_MENU_LIST.map(item => (
-          <Menu key={item}>{item}</Menu>
+          <S.Menu key={item}>{item}</S.Menu>
         ))}
-        <WrapNotification>
-          <Button onClick={() => setIsToggle(!isToggle)}>
+        <S.WrapNotification>
+          <S.Button onClick={() => setIsToggle(!isToggle)}>
             <IcBell size={3} color={palette.textPrimary} />
-          </Button>
-          <Notification $isToggle={isToggle}>
+          </S.Button>
+          <S.Notification $isToggle={isToggle}>
             <NotificationItem />
-          </Notification>
-        </WrapNotification>
-        <LoginButton>LOGIN</LoginButton>
-      </WrapMenu>
-    </Container>
+          </S.Notification>
+        </S.WrapNotification>
+        <S.LoginButton>LOGIN</S.LoginButton>
+      </S.WrapMenu>
+
+      {isMoSearchOpen && <MoSearch setIsMoSearchOpen={setIsMoSearchOpen} />}
+    </S.Container>
   )
 }
 
