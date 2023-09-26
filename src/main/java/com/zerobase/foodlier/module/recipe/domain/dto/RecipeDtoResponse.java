@@ -29,7 +29,7 @@ public class RecipeDtoResponse {
 
     private int expectedTime;
 
-    private Long heartCount;
+    private int heartCount;
 
     private Difficulty difficulty;
 

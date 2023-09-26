@@ -89,7 +89,7 @@ public class S3ServiceImpl implements S3Service {
      */
     @Override
     public void deleteImage(String imageUrl) {
-        if (validImageUrl(imageUrl)) {
+        if (!validImageUrl(imageUrl)) {
             throw new S3Exception(IMAGE_DOES_NOT_EXIST);
         }
 
@@ -108,7 +108,7 @@ public class S3ServiceImpl implements S3Service {
      */
     @Override
     public String getUpdateImageURL(MultipartFile multipartFile, String imageUrl) {
-        if (validImageUrl(imageUrl)) {
+        if (!validImageUrl(imageUrl)) {
             throw new S3Exception(IMAGE_DOES_NOT_EXIST);
         }
         if (multipartFile.isEmpty()) {

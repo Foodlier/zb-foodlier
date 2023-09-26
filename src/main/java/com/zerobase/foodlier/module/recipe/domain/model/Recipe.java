@@ -36,7 +36,7 @@ public class Recipe extends Audit {
 
     private int expectedTime;
 
-    private Long heartCount;
+    private int heartCount;
 
     @Embedded
     private RecipeStatistics recipeStatistics;
@@ -46,8 +46,11 @@ public class Recipe extends Audit {
 
     private Boolean isPublic;
 
-    private Boolean isQuotation;
-    private Boolean isDeleted;
+    @Builder.Default
+    private Boolean isQuotation = false;
+
+    @Builder.Default
+    private Boolean isDeleted = false;
 
     @OneToMany(mappedBy = "recipe", fetch = FetchType.LAZY)
     @Builder.Default

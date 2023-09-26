@@ -1,11 +1,9 @@
 package com.zerobase.foodlier.module.recipe.service;
 
 import com.zerobase.foodlier.module.member.member.domain.model.Member;
-import com.zerobase.foodlier.module.recipe.domain.dto.RecipeDetailDto;
-import com.zerobase.foodlier.module.recipe.domain.dto.RecipeDtoRequest;
-import com.zerobase.foodlier.module.recipe.domain.dto.RecipeDtoResponse;
-import com.zerobase.foodlier.module.recipe.domain.dto.RecipeIngredientDto;
+import com.zerobase.foodlier.module.recipe.domain.dto.*;
 import com.zerobase.foodlier.module.recipe.domain.model.Recipe;
+import com.zerobase.foodlier.module.recipe.domain.vo.RecipeStatistics;
 import com.zerobase.foodlier.module.recipe.domain.vo.Summary;
 import com.zerobase.foodlier.module.recipe.exception.RecipeException;
 import com.zerobase.foodlier.module.recipe.repository.RecipeRepository;
@@ -13,7 +11,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static com.zerobase.foodlier.module.recipe.exception.RecipeErrorCode.NO_SUCH_RECIPE;
@@ -22,11 +19,30 @@ import static com.zerobase.foodlier.module.recipe.exception.RecipeErrorCode.NO_S
 @RequiredArgsConstructor
 public class RecipeServiceImpl implements RecipeService {
 
-    RecipeRepository recipeRepository;
+    private final RecipeRepository recipeRepository;
 
     @Override
     public void createRecipe(Member member, RecipeDtoRequest recipeDtoRequest) {
-        Recipe recipe = recipeDtoRequest.toEntity(member);
+        Recipe recipe = Recipe.builder()
+                .summary(Summary.builder()
+                        .title(recipeDtoRequest.getTitle())
+                        .content(recipeDtoRequest.getContent())
+                        .build())
+                .mainImageUrl(recipeDtoRequest.getMainImageUrl())
+                .expectedTime(recipeDtoRequest.getExpectedTime())
+                .recipeStatistics(new RecipeStatistics())
+                .difficulty(recipeDtoRequest.getDifficulty())
+                .isPublic(true)
+                .member(member)
+                .recipeIngredientList(recipeDtoRequest.getRecipeIngredientDtoList()
+                        .stream()
+                        .map(RecipeIngredientDto::toEntity)
+                        .collect(Collectors.toList()))
+                .recipeDetailList(recipeDtoRequest.getRecipeDetailDtoList()
+                        .stream()
+                        .map(RecipeDetailDto::toEntity)
+                        .collect(Collectors.toList()))
+                .build();
         recipeRepository.save(recipe);
     }
 
@@ -57,8 +73,9 @@ public class RecipeServiceImpl implements RecipeService {
     }
 
     @Override
-    public Optional<Recipe> getRecipe(Long id) {
-        return recipeRepository.findById(id);
+    public Recipe getRecipe(Long id) {
+        return recipeRepository.findById(id)
+                .orElseThrow(() -> new RecipeException(NO_SUCH_RECIPE));
     }
 
     /**
@@ -74,14 +91,15 @@ public class RecipeServiceImpl implements RecipeService {
         return RecipeDtoResponse.fromEntity(recipe);
     }
 
-    @Transactional
     @Override
-    public void deleteRecipe(Long id) {
-        if (!recipeRepository.existsById(id)) {
-            throw new RecipeException(NO_SUCH_RECIPE);
-        }
-
+    public ImageUrlDto deleteRecipe(Long id) {
+        Recipe recipe = recipeRepository.findById(id)
+                .orElseThrow(() -> new RecipeException(NO_SUCH_RECIPE));
         recipeRepository.deleteById(id);
+        return ImageUrlDto.builder()
+                .mainImageUrl(recipe.getMainImageUrl())
+                .recipeDetailList(recipe.getRecipeDetailList())
+                .build();
     }
 
 }
