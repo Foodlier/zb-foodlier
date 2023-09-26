@@ -48,10 +48,12 @@ class ProfileFacadeTest {
                 .email("test@test.com")
                 .password("1")
                 .phoneNumber("010-1234-5678")
-                .profileUrl("https://foodlier-lsh.s3.ap-northeast-2.amazonaws.com/c04d7a2865644a7dbd8f502d2d964269.jpg")
+                .profileUrl("https://test.s3/s3Image.png")
                 .address(Address.builder()
                         .roadAddress("경기도 성남시 분당구 판교역로 166")
                         .addressDetail("카카오 판교")
+                        .lat(37.1)
+                        .lnt(127.1)
                         .build())
                 .nickname("test")
                 .build();
@@ -60,32 +62,22 @@ class ProfileFacadeTest {
         String content = "";
         MultipartFile multipartFile =
                 new MockMultipartFile(fileName, fileName,
-                        "image/jpeg", content.getBytes());
+                        "image/png", content.getBytes());
         MemberPrivateProfileForm form = MemberPrivateProfileForm.builder()
                 .nickName("test2")
                 .profileImage(multipartFile)
                 .phoneNumber("010-8765-4321")
-                .roadAddress("경기도 연천군 청산면 청창로 474")
+                .roadAddress("경기도 연천군 청산면 청창로 471")
                 .addressDetail("신교대")
                 .build();
 
         CoordinateResponseDto coordinateResponseDto =
-                new CoordinateResponseDto(0, 0);
+                new CoordinateResponseDto(38.0, 127.1);
 
         given(memberService.findByEmail(anyString()))
-                .willReturn(Member.builder()
-                        .email("test@test.com")
-                        .password("1")
-                        .phoneNumber("010-1234-5678")
-                        .profileUrl("https://foodlier-lsh.s3.ap-northeast-2.amazonaws.com/c04d7a2865644a7dbd8f502d2d964269.jpg")
-                        .address(Address.builder()
-                                .roadAddress("경기도 성남시 분당구 판교역로 166")
-                                .addressDetail("카카오 판교")
-                                .build())
-                        .nickname("test")
-                        .build());
+                .willReturn(member);
         given(s3Service.getImageUrl(any()))
-                .willReturn("https://foodlier-lsh.s3.ap-northeast-2.amazonaws.com/6e224f935c914e62aab1e7fb5d2ac350.jpg");
+                .willReturn("https://test.s3/s3Image2.png");
         given(localService.getCoordinate(anyString()))
                 .willReturn(coordinateResponseDto);
 
@@ -118,24 +110,28 @@ class ProfileFacadeTest {
                         memberCaptorValue.getAddress().getAddressDetail()),
                 () -> assertEquals("test@test.com",
                         memberCaptorValue.getEmail()),
-                () -> assertEquals("https://foodlier-lsh.s3.ap-northeast-2.amazonaws.com/c04d7a2865644a7dbd8f502d2d964269.jpg",
-                        memberCaptorValue.getProfileUrl())
+                () -> assertEquals("https://test.s3/s3Image.png",
+                        memberCaptorValue.getProfileUrl()),
+                () -> assertEquals(37.1,
+                        memberCaptorValue.getAddress().getLat()),
+                () -> assertEquals(127.1,
+                        memberCaptorValue.getAddress().getLnt())
         );
 
         assertAll(
                 () -> assertEquals("test2",
                         memberUpdateDtoCaptorValue.getNickName()),
-                () -> assertEquals("https://foodlier-lsh.s3.ap-northeast-2.amazonaws.com/6e224f935c914e62aab1e7fb5d2ac350.jpg",
+                () -> assertEquals("https://test.s3/s3Image2.png",
                         memberUpdateDtoCaptorValue.getProfileUrl()),
                 () -> assertEquals("010-8765-4321",
                         memberUpdateDtoCaptorValue.getPhoneNumber()),
-                () -> assertEquals("경기도 연천군 청산면 청창로 474",
+                () -> assertEquals("경기도 연천군 청산면 청창로 471",
                         memberUpdateDtoCaptorValue.getRoadAddress()),
                 () -> assertEquals("신교대",
                         memberUpdateDtoCaptorValue.getAddressDetail()),
-                () -> assertEquals(0,
+                () -> assertEquals(38.0,
                         memberUpdateDtoCaptorValue.getLat()),
-                () -> assertEquals(0,
+                () -> assertEquals(127.1,
                         memberUpdateDtoCaptorValue.getLnt())
         );
     }
