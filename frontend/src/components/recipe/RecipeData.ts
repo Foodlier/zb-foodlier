@@ -1,5 +1,5 @@
 export interface Recipe {
-  id: string | number
+  recipeId: string | number
   title: string
   nickname: string
   introduce: string
@@ -10,7 +10,7 @@ export interface Recipe {
 
 const RecipeData: Recipe[] = [
   {
-    id: 1,
+    recipeId: 1,
     title: '마크정식',
     nickname: '닉네임1',
     introduce: '요리 소개 1',
@@ -19,7 +19,7 @@ const RecipeData: Recipe[] = [
     isLike: true,
   },
   {
-    id: 2,
+    recipeId: 2,
     title: '요리 제목 2',
     nickname: '닉네임2',
     introduce: '요리 소개 2',
@@ -28,7 +28,7 @@ const RecipeData: Recipe[] = [
     isLike: false,
   },
   {
-    id: 3,
+    recipeId: 3,
     title: '요리 제목 3',
     nickname: '닉네임3',
     introduce: '요리 소개 3',

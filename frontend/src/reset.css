@@ -1,10 +1,25 @@
 @font-face {
-  font-family: 'Pretendard-ExtraBold';
-  src: url('https://cdn.jsdelivr.net/gh/Project-Noonnu/noonfonts_2107@1.1/Pretendard-ExtraBold.woff') format('woff');
-  font-weight: 800;
+  font-family: 'Pretendard';
+  font-weight: 200;
   font-style: normal;
+  src: url('https://cdn.jsdelivr.net/gh/webfontworld/pretendard/Pretendard-ExtraLight.eot');
+  src: url('https://cdn.jsdelivr.net/gh/webfontworld/pretendard/Pretendard-ExtraLight.eot?#iefix') format('embedded-opentype'),
+      url('https://cdn.jsdelivr.net/gh/webfontworld/pretendard/Pretendard-ExtraLight.woff2') format('woff2'),
+      url('https://cdn.jsdelivr.net/gh/webfontworld/pretendard/Pretendard-ExtraLight.woff') format('woff'),
+      url('https://cdn.jsdelivr.net/gh/webfontworld/pretendard/Pretendard-ExtraLight.ttf') format("truetype");
+  font-display: swap;
 }
-
+@font-face {
+  font-family: 'Pretendard';
+  font-weight: 400;
+  font-style: normal;
+  src: url('https://cdn.jsdelivr.net/gh/webfontworld/pretendard/Pretendard-Regular.eot');
+  src: url('https://cdn.jsdelivr.net/gh/webfontworld/pretendard/Pretendard-Regular.eot?#iefix') format('embedded-opentype'),
+      url('https://cdn.jsdelivr.net/gh/webfontworld/pretendard/Pretendard-Regular.woff2') format('woff2'),
+      url('https://cdn.jsdelivr.net/gh/webfontworld/pretendard/Pretendard-Regular.woff') format('woff'),
+      url('https://cdn.jsdelivr.net/gh/webfontworld/pretendard/Pretendard-Regular.ttf') format("truetype");
+  font-display: swap;
+}
 @font-face {
   font-family: 'Pretendard';
   font-weight: 600;
@@ -28,6 +43,18 @@
   font-display: swap;
 }
 
+:root {
+  font-family: 'Pretendard-Regular', sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-text-size-adjust: 100%;
+}
+
 *,
 :after,
 :before {
@@ -40,10 +67,6 @@
 body,
 html {
   height: 100%;
-  width: 1240px;
-  max-width: 100%;
-  margin-left: auto;
-  margin-right: auto;
 }
 body {
   -webkit-font-smoothing: antialiased;
@@ -93,6 +116,10 @@ body {
   font-size: 1.6rem;
 }
 
+.container {
+  max-width: 1536px;
+}
+
 button {
   background: inherit;
   border: none;
@@ -113,10 +140,3 @@ a:visited {
 ul {
   list-style: none;
 }
-
-/* .inner {
-  width: 124rem;
-  max-width: 100%;
-  margin-left: auto;
-  margin-right: auto;
-} */

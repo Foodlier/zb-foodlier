@@ -4,7 +4,7 @@ import { palette } from '../../constants/Styles'
 import useIcon from '../../hooks/useIcon'
 
 interface RecipeItemProps {
-  // recipeId: string | number
+  recipeId: string | number
   title: string
   nickname: string
   introduce: string
@@ -14,7 +14,7 @@ interface RecipeItemProps {
 }
 
 const RecipeItem: React.FC<RecipeItemProps> = ({
-  // recipeId,
+  recipeId,
   title,
   nickname,
   introduce,
