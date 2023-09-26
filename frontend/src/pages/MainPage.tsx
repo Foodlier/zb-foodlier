@@ -5,6 +5,7 @@ import { slides } from '../components/slider/Slide'
 import { breakpoints } from '../constants/Styles'
 import WebSearch from '../components/search/WebSearch'
 import RecipeItem from '../components/recipe/RecipeItem'
+import RecipeData from '../components/recipe/RecipeData'
 import Header from '../components/Header'
 
 const SlickContainer = styled.section`
@@ -14,7 +15,7 @@ const SlickContainer = styled.section`
 const Tit = styled.h1`
   font-size: 2.5rem;
   font-weight: 800;
-  padding: 0 5%;
+  padding: 0 2%;
 
   ${breakpoints.large} {
     font-size: 3rem;
@@ -38,6 +39,8 @@ const RecipeTit = styled.section``
 const RecipeList = styled.section`
   flex-direction: column;
   display: flex;
+  padding: 0 1rem;
+  margin-top: 2rem;
 
   ${breakpoints.large} {
     flex-direction: row;
@@ -69,7 +72,18 @@ const MainPage = () => {
           <Tit>꿀조합 레시피</Tit>
         </RecipeTit>
         <RecipeList>
-          <RecipeItem />
+          {RecipeData.map(data => (
+            <RecipeItem
+              key={`recipe-${data.recipeId}`}
+              recipeId={data.recipeId}
+              title={data.title}
+              nickname={data.nickname}
+              introduce={data.introduce}
+              imagePath={data.imagePath}
+              likeCount={data.likeCount}
+              isLike={data.isLike}
+            />
+          ))}
         </RecipeList>
       </RecipeContainer>
     </>

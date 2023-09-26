@@ -7,11 +7,12 @@ import SliderCard from './SliderCard'
 import { palette } from '../../constants/Styles'
 
 interface Slide {
-  id: number
+  recipeId: string | number
   title: string
-  content: string
-  like: boolean
-  image: string
+  introduce: string
+  imagePath: string
+  likeCount: number
+  isLike: boolean
 }
 
 interface SlickSliderProps {
@@ -19,6 +20,12 @@ interface SlickSliderProps {
 }
 
 const SlickSliderContainer = styled.div`
+  width: 100vw;  
+  overflow-x: visible;   
+  position: relative; 
+  left: 50%;   
+  transform: translate(-50%);
+  
   & > div {
     display: flex;
     margin-bottom: 10rem;
@@ -85,12 +92,15 @@ const SlickSlider: React.FC<SlickSliderProps> = ({ slides }) => {
         autoplaySpeed={settings.autoplaySpeed}
       >
         {slides.map(slide => (
-          <div key={`slide-${slide.id}`}>
+          <div key={`slide-${slide.recipeId}`}>
             <SliderCard
+              recipeId={slide.recipeId}
               title={slide.title}
-              content={slide.content}
-              like={slide.like}
-              image={slide.image}
+              introduce={slide.introduce}
+              likeCount={slide.likeCount}
+              isLike={slide.isLike}
+              imagePath={slide.imagePath}
+              
             />
           </div>
         ))}

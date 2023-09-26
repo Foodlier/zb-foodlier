@@ -2,25 +2,28 @@ import React, { useState } from 'react'
 import * as S from '../../styles/slider/SliderCard.styled'
 import '../../reset.css'
 import useIcon from '../../hooks/useIcon'
-
 import { palette } from '../../constants/Styles'
 
 interface SliderCardProps {
+  recipeId: string | number
   title: string
-  content: string
-  like: boolean
-  image: string
+  introduce: string
+  imagePath: string
+  likeCount: number
+  isLike: boolean
 }
 
 const SliderCard: React.FC<SliderCardProps> = ({
   title,
-  content,
-  like,
-  image,
+  introduce,
+  imagePath,
+  
 }) => {
   const { IcFavorite, IcFavoriteFill } = useIcon()
-  const [isLike, setIsLike] = useState(like)
-  const [likeCount, setLikeCount] = useState(like ? 1 : 0)
+
+  const [isLike, setIsLike] = useState(false);
+  const [likeCount, setLikeCount] = useState(0);
+  
 
   const onClickLikeButton = () => {
     setIsLike(!isLike)
@@ -30,7 +33,7 @@ const SliderCard: React.FC<SliderCardProps> = ({
   return (
     <S.BoxContainer>
       <S.ImgWrap>
-        <img src={image} alt={title} />
+        <img src={imagePath} alt={title} />
       </S.ImgWrap>
       <S.TextWrap>
         <div>
@@ -44,7 +47,7 @@ const SliderCard: React.FC<SliderCardProps> = ({
             {likeCount}
           </S.LikeButton>
         </div>
-        <S.Content>{content}</S.Content>
+        <S.Content>{introduce}</S.Content>
       </S.TextWrap>
     </S.BoxContainer>
   )
