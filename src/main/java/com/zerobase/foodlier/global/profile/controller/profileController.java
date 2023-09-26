@@ -1,10 +1,11 @@
 package com.zerobase.foodlier.global.profile.controller;
 
 import com.zerobase.foodlier.common.security.provider.dto.MemberAuthDto;
+import com.zerobase.foodlier.global.profile.facade.ProfileFacade;
+import com.zerobase.foodlier.module.member.chef.dto.ChefIntroduceForm;
 import com.zerobase.foodlier.module.member.chef.service.ChefMemberService;
 import com.zerobase.foodlier.module.member.member.profile.dto.MemberPrivateProfileForm;
 import com.zerobase.foodlier.module.member.member.profile.dto.MemberPrivateProfileResponse;
-import com.zerobase.foodlier.global.profile.facade.ProfileFacade;
 import com.zerobase.foodlier.module.member.member.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -40,9 +41,20 @@ public class profileController {
 
     @PostMapping("/private/registerchef")
     public ResponseEntity<String> registerChef(
-            @AuthenticationPrincipal MemberAuthDto memberAuthDto
+            @AuthenticationPrincipal MemberAuthDto memberAuthDto,
+            @RequestBody ChefIntroduceForm chefIntroduceForm
     ){
+        chefMemberService.registerChef(memberAuthDto.getId(), chefIntroduceForm);
         return ResponseEntity.ok("요리사가 되었습니다.");
+    }
+
+    @PutMapping("/private/introduce")
+    public ResponseEntity<String> updateChefIntroduce(
+            @AuthenticationPrincipal MemberAuthDto memberAuthDto,
+            @RequestBody ChefIntroduceForm chefIntroduceForm
+            ){
+        chefMemberService.updateChefIntroduce(memberAuthDto.getId(), chefIntroduceForm);
+        return ResponseEntity.ok("요리사 소개가 수정되었습니다.");
     }
 
 }
