@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import * as S from '../styles/HeaderPage.styled'
 import { palette } from '../constants/Styles'
 import logo from '../assets/foodlier_logo.png'

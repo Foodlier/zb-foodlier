@@ -52,7 +52,6 @@ export const Notification = styled.div<{ $isToggle: boolean }>`
   border-radius: 1rem;
   font-size: 1.4rem;
   z-index: 10;
-  background-color: ${palette.white};
 `
 
 export const WrapIcon = styled.ul`
@@ -70,7 +69,7 @@ export const Icon = styled.button`
 export const LoginButton = styled.button`
   padding: 0.8rem 1.2rem;
   background-color: ${palette.main};
-  color: ${palette.white};
+
   border-radius: 1rem;
   margin-left: 1rem;
   font-size: 1.6rem;
