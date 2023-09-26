@@ -48,6 +48,11 @@ public class ChefMemberServiceImpl implements ChefMemberService{
         memberRepository.save(member);
     }
 
+    /**
+     *  작성자 : 전현서
+     *  작성일 : 2023-09-26
+     *  요리사의 소개를 변경함.
+     */
     public void updateChefIntroduce(Long memberId, ChefIntroduceForm chefIntroduceForm){
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_NOT_FOUND));
