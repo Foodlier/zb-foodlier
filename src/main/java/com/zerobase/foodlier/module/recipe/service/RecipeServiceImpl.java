@@ -57,7 +57,7 @@ public class RecipeServiceImpl implements RecipeService {
                 .title(recipeDtoRequest.getTitle())
                 .content(recipeDtoRequest.getContent())
                 .build());
-        recipe.setMainImageUrl(recipe.getMainImageUrl());
+        recipe.setMainImageUrl(recipeDtoRequest.getMainImageUrl());
         recipe.setExpectedTime(recipeDtoRequest.getExpectedTime());
         recipe.setDifficulty(recipeDtoRequest.getDifficulty());
         recipe.setRecipeDetailList(recipeDtoRequest.getRecipeDetailDtoList()
