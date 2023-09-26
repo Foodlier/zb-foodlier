@@ -1,6 +1,7 @@
 package com.zerobase.foodlier.module.request.domain.model;
 
 import com.zerobase.foodlier.common.jpa.audit.Audit;
+import com.zerobase.foodlier.module.member.chef.domain.model.ChefMember;
 import com.zerobase.foodlier.module.recipe.domain.model.Recipe;
 import com.zerobase.foodlier.module.request.domain.vo.Ingredient;
 import com.zerobase.foodlier.module.review.chef.domain.model.ChefReview;
@@ -37,7 +38,9 @@ public class Request extends Audit {
     @CollectionTable(name = "ingredient")
     @Builder.Default
     private List<Ingredient> ingredientList = new ArrayList<>();
-    private Long chefId;
+    @ManyToOne
+    @JoinColumn(name = "chef_member_id")
+    private ChefMember chefMember;
 
     @OneToOne
     private ChefReview chefReview;
