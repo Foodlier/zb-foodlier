@@ -71,10 +71,11 @@ public class MemberServiceImpl implements MemberService {
                 .orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
 
         return tokenProvider.createToken(MemberAuthDto.builder()
-                .id(member.getId())
-                .email(member.getEmail())
-                .roles(member.getRoles())
-                .build());
+                        .id(member.getId())
+                        .email(member.getEmail())
+                        .roles(member.getRoles())
+                        .build(),
+                form.getCurrentDate());
     }
 
     /**
