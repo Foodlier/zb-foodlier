@@ -1,7 +1,7 @@
 package com.zerobase.foodlier.common.redis.service;
 
 import com.zerobase.foodlier.common.redis.domain.model.EmailVerification;
-import com.zerobase.foodlier.common.redis.exeption.EmailVerificationException;
+import com.zerobase.foodlier.common.redis.exception.EmailVerificationException;
 import com.zerobase.foodlier.common.redis.repository.EmailVerificationRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 
-import static com.zerobase.foodlier.common.redis.exeption.EmailVerificationErrorCode.*;
+import static com.zerobase.foodlier.common.redis.exception.EmailVerificationErrorCode.*;
 
 @Service
 @Transactional

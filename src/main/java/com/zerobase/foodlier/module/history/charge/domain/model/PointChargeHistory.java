@@ -1,4 +1,4 @@
-package com.zerobase.foodlier.module.history.charge.model;
+package com.zerobase.foodlier.module.history.charge.domain.model;
 
 import com.zerobase.foodlier.common.jpa.audit.Audit;
 import com.zerobase.foodlier.module.member.member.domain.model.Member;

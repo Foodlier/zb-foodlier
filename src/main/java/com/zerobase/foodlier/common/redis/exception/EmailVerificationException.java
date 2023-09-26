@@ -1,6 +1,7 @@
-package com.zerobase.foodlier.common.redis.exeption;
+package com.zerobase.foodlier.common.redis.exception;
 
 import com.zerobase.foodlier.common.exception.exception.BaseException;
+import com.zerobase.foodlier.common.redis.exception.EmailVerificationErrorCode;
 import lombok.Getter;
 
 @Getter

@@ -18,12 +18,12 @@ public class EmailVerificationFacade {
     private final VerificationCodeService verificationCodeService;
     private final MailService mailService;
 
-    public void sendMailAndCreateVerification(String email){
+    public void sendMailAndCreateVerification(String email, LocalDateTime nowTime){
         String verificationCode = verificationCodeService
                 .createAuthenticationCode();
 
         emailVerificationService.createVerification(email, verificationCode,
-                LocalDateTime.now());
+                nowTime);
 
         mailService.sendMail(email, verificationCode);
     }

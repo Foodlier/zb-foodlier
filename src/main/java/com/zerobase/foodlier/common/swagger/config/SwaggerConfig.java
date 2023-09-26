@@ -1,9 +1,11 @@
 package com.zerobase.foodlier.common.swagger.config;
 
+import lombok.NonNull;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.MediaType;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfoHandlerMapping;
@@ -21,8 +23,7 @@ import springfox.documentation.spring.web.plugins.WebFluxRequestHandlerProvider;
 import springfox.documentation.spring.web.plugins.WebMvcRequestHandlerProvider;
 
 import java.lang.reflect.Field;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Configuration
@@ -34,8 +35,9 @@ public class SwaggerConfig {
         return new BeanPostProcessor() {
 
             @Override
-            public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
-                if (bean instanceof WebMvcRequestHandlerProvider || bean instanceof WebFluxRequestHandlerProvider) {
+            public Object postProcessAfterInitialization(@NonNull Object bean, @NonNull String beanName) throws BeansException {
+                if (bean instanceof WebMvcRequestHandlerProvider
+                        || bean instanceof WebFluxRequestHandlerProvider) {
                     customizeSpringfoxHandlerMappings(getHandlerMappings(bean));
                 }
                 return bean;
@@ -53,7 +55,7 @@ public class SwaggerConfig {
             private List<RequestMappingInfoHandlerMapping> getHandlerMappings(Object bean) {
                 try {
                     Field field = ReflectionUtils.findField(bean.getClass(), "handlerMappings");
-                    field.setAccessible(true);
+                    Objects.requireNonNull(field).setAccessible(true);
                     return (List<RequestMappingInfoHandlerMapping>) field.get(bean);
                 } catch (IllegalArgumentException | IllegalAccessException e) {
                     throw new IllegalStateException(e);
@@ -63,9 +65,11 @@ public class SwaggerConfig {
     }
 
     @Bean
-    public Docket api(){
+    public Docket api() {
         return new Docket(DocumentationType.SWAGGER_2)
                 .apiInfo(apiInfo())
+                .consumes(getConsumeContextTypes())
+                .produces(getProduceContentTypes())
                 .securityContexts(Arrays.asList(securityContext("Authorization"),
                         securityContext("RefreshToken")))
                 .securitySchemes(Arrays.asList(apiKey("Authorization"), apiKey("RefreshToken")))
@@ -75,7 +79,22 @@ public class SwaggerConfig {
                 .build();
     }
 
-    private ApiInfo apiInfo(){
+    private Set<String > getConsumeContextTypes(){
+        Set<String> consumes=new HashSet<>();
+        consumes.add("application/json;charset=UTF-8");
+        consumes.add(MediaType.MULTIPART_FORM_DATA_VALUE);
+        consumes.add("application/x-www-form-urlencoded");
+        return consumes;
+    }
+
+    private Set<String> getProduceContentTypes() {
+        Set<String> produces = new HashSet<>();
+        produces.add("text/plain;charset=UTF-8");
+        produces.add("application/json;charset=UTF-8");
+        return produces;
+    }
+
+    private ApiInfo apiInfo() {
         return new ApiInfoBuilder()
                 .title("FOODLIER")
                 .description("API를 테스팅하고, 문서화합니다.")
@@ -101,7 +120,7 @@ public class SwaggerConfig {
                 new AuthorizationScope[1];
 
         authorizationScopes[0] = authorizationScope;
-        return Arrays.asList(
+        return List.of(
                 new SecurityReference(name, authorizationScopes));
     }
 
