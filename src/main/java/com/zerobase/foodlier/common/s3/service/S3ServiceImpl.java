@@ -1,9 +1,7 @@
 package com.zerobase.foodlier.common.s3.service;
 
-import com.amazonaws.SdkClientException;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.ObjectMetadata;
-import com.zerobase.foodlier.common.s3.exception.S3ErrorCode;
 import com.zerobase.foodlier.common.s3.exception.S3Exception;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -104,7 +102,7 @@ public class S3ServiceImpl implements S3Service {
 
     /**
      * 작성자 : 황태원
-     * 작성일 : 2023-09-24
+     * 작성일 : 2023-09-24(2023-09-25)
      * 기존의 이미지를 삭제 후 새로운 이미지를 업로드
      * 새로운 이미지가 null 이라면 기존의 이미지 링크를 return
      */
@@ -116,7 +114,7 @@ public class S3ServiceImpl implements S3Service {
         if (multipartFile.isEmpty()) {
             return imageUrl;
         }
-        deleteImage(getImageName(imageUrl));
+        deleteImage(imageUrl);
 
         return getImageUrl(multipartFile);
     }

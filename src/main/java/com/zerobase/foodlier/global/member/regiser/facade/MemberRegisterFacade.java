@@ -33,7 +33,7 @@ public class MemberRegisterFacade {
      *  작성일 : 2023-09-25
      */
     public void domainRegister(MemberInputDto memberInputDto){
-//        emailVerificationService.isAuthorized(memberInputDto.getEmail());
+        emailVerificationService.isAuthorized(memberInputDto.getEmail());
 
         CoordinateResponseDto coordinateResponseDto = localService.getCoordinate(
                 memberInputDto.getRoadAddress()
