@@ -6,17 +6,6 @@
   font-style: normal;
 }
 
-:root {
-  /* color */
-  --color-main: #e45141;
-  --color-text-primary: #2c2c2c;
-  --color-text-secondary: #5b5b5b;
-  --color-text-disable: #777777;
-  --color-text-placeholder: #777777;
-  --color-divider: #d9d9d9;
-  --color-shadow: rgba(0, 0, 0, 10%);
-}
-
 *,
 :after,
 :before {
@@ -28,6 +17,10 @@
 }
 body,
 html {
+  width: 124rem;
+  max-width: 100%;
+  margin-left: auto;
+  margin-right: auto;
   height: 100%;
 }
 body {

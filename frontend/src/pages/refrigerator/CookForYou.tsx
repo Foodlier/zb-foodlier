@@ -16,9 +16,6 @@ const Map = styled.div`
 
 const ChefListContainer = styled.div`
   padding: 20px 20px 0 20px;
-  @media (min-width: 768px) {
-    padding-bottom: 93px;
-  }
 `
 const Info = styled.div`
   display: flex;
@@ -92,12 +89,13 @@ const Card = styled.li`
 const CardInfo = styled.div`
   display: flex;
   gap: 20px;
-  .mainImg {
-    width: 90px;
-    height: 90px;
-    background-color: yellowgreen;
-    border-radius: 10px;
-  }
+`
+
+const MainImg = styled.img`
+  min-width: 90px;
+  height: 90px;
+  background-color: yellowgreen;
+  border-radius: 10px;
 `
 
 const ChefInfo = styled.div`
@@ -116,6 +114,10 @@ const ChefTopInfo = styled.div`
     font-weight: bold;
   }
 `
+
+const ChefBottomInfo = styled.p`
+  max-width: 188px;
+`
 const ElseInfo = styled.div`
   display: flex;
   justify-content: space-between;
@@ -127,40 +129,13 @@ const RequestButton = styled.button`
   height: 44px;
   line-height: 44px;
   text-align: center;
-  background-color: #e45141;
-  color: #ffffff;
+  border: 1px solid #e45141;
+  color: #e45141;
+  font-weight: bold;
   border-radius: 5px;
 `
 
-const WritingButton = styled.button`
-  width: 146px;
-  height: 44px;
-  line-height: 44px;
-  text-align: center;
-  background-color: #e45141;
-  color: #ffffff;
-  border-radius: 5px;
-`
-
-const ButtonList = styled.div`
-  display: flex;
-  justify-content: center;
-  gap: 10px;
-  border-top: 1px solid #d9d9d9d9;
-  padding: 10px 20px 0 0;
-  @media (min-width: 768px) {
-    display: flex;
-    justify-content: end;
-  }
-  button {
-    margin-bottom: 110px;
-    @media (min-width: 768px) {
-      margin-bottom: 0px;
-    }
-  }
-`
-
-const CookForMe = () => {
+const CookForYou = () => {
   const [optionToggle, setOptionToggle] = useState(false)
   const [option, setOption] = useState<string | null>('거리 순')
   const optionHandler = (e: React.MouseEvent) => {
@@ -184,43 +159,37 @@ const CookForMe = () => {
 
   const CHEF_LIST_EXAMPLE = [
     {
-      nickName: '나는 요리사',
-      rating: 2.1,
-      description: '대존맛 호랑이 구이 레시피',
+      nickName: '나는 사용자',
+      description: '호랑이 구이 만들어주세요',
       distance: 400,
       reviewCount: 15,
     },
     {
-      nickName: '나는 요리사2',
-      rating: 0.4,
-      description: '대존맛 코끼리 간장 구이 레시피',
+      nickName: '나는 사용자2',
+      description: '코끼리 간장 구이 만들어주세요',
       distance: 100,
       reviewCount: 15,
     },
     {
-      nickName: '나는 요리사3',
-      rating: 4.7,
-      description: '대존맛 맷비둘기 구이 레시피',
+      nickName: '나는 사용자3',
+      description: '맷비둘기 구이 만들어주세요ㅇdddd',
       distance: 300,
       reviewCount: 15,
     },
     {
-      nickName: '나는 요리사4',
-      rating: 3.5,
-      description: '대존맛 고라니 구이 레시피',
+      nickName: '나는 사용자4',
+      description: '고라니 구이 만들어주세요',
       distance: 180,
       reviewCount: 15,
     },
   ]
-
-  const BUTTON_LIST = ['+ 요청서 작성', '요청서 목록']
 
   return (
     <Container>
       <Map />
       <ChefListContainer>
         <Info>
-          <SubTitle>내 주변 요리사</SubTitle>
+          <SubTitle>내 주변 요청</SubTitle>
           <SelectBox>
             <SelectedBox>
               <OptionButton
@@ -247,33 +216,26 @@ const CookForMe = () => {
           {CHEF_LIST_EXAMPLE.map(el => (
             <Card key={el.nickName}>
               <CardInfo className="card-info">
-                <img src="" alt="대표 사진" className="mainImg" />
+                <MainImg src="" alt="대표 사진" className="mainImg" />
                 <ChefInfo className="chef-info">
                   <ChefTopInfo className="top-info">
                     <span className="nickName">{el.nickName}</span>
-                    <img src="" alt="평점" className="star" />
-                    <span className="rating">{`${el.rating}(${el.reviewCount})`}</span>
                   </ChefTopInfo>
-                  <p className="bottom-info">{el.description}</p>
+                  <ChefBottomInfo className="bottom-info">
+                    {el.description}
+                  </ChefBottomInfo>
                 </ChefInfo>
               </CardInfo>
               <ElseInfo>
                 <span>{el.distance}m</span>
-                <RequestButton type="button">요청하기</RequestButton>
+                <RequestButton type="button">요청서 보기</RequestButton>
               </ElseInfo>
             </Card>
           ))}
         </CardList>
-        <ButtonList>
-          {BUTTON_LIST.map(el => (
-            <WritingButton key={el} type="button" className="d">
-              {el}
-            </WritingButton>
-          ))}
-        </ButtonList>
       </ChefListContainer>
     </Container>
   )
 }
 
-export default CookForMe
+export default CookForYou

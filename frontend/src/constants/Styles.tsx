@@ -9,4 +9,6 @@ export const palette = {
   textDisablePlace: '#777777',
   divider: '#D9D9D9',
   shadow: 'rgba(0,0,0,10%)',
+  dim: 'rgba(0,0,0,70%)',
+  white: '#fff',
 }
