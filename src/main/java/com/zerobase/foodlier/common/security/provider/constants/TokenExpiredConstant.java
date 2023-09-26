@@ -3,10 +3,12 @@ package com.zerobase.foodlier.common.security.provider.constants;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-@Component
-public final class TokenExpiredConstant {
+import java.util.Date;
 
-    private final Long THOUSAND = 1000L;
+@Component
+public class TokenExpiredConstant {
+
+    private final Long MILLISECOND = 1000L;
 
     @Value("${spring.token-expired.access.second}")
     private long accessSecond;
@@ -31,12 +33,23 @@ public final class TokenExpiredConstant {
     }
 
     public long getAccessTokenExpiredTime() {
-        return accessHour * accessMinute * accessSecond * THOUSAND;
+        return accessHour * accessMinute * accessSecond * MILLISECOND;
     }
 
     public long getRefreshTokenExpiredTime() {
+        return refreshHour * refreshMinute * refreshSecond * MILLISECOND;
+    }
+
+    public long getRefreshTokenExpiredMinute() {
         return refreshHour * refreshMinute * refreshSecond;
     }
 
+    public Date getAccessTokenExpiredDate(Date date) {
+        return new Date(date.getTime() + getAccessTokenExpiredTime());
+    }
+
+    public Date getRefreshTokenExpiredDate(Date date) {
+        return new Date(date.getTime() + getRefreshTokenExpiredTime());
+    }
 
 }

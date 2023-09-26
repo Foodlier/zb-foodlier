@@ -4,6 +4,7 @@ import com.zerobase.foodlier.module.member.member.local.dto.CoordinateResponseDt
 import com.zerobase.foodlier.module.member.member.local.dto.LocalApiResponse;
 import com.zerobase.foodlier.module.member.member.local.exception.LocalErrorCode;
 import com.zerobase.foodlier.module.member.member.local.exception.LocalException;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -20,13 +21,21 @@ import java.util.Objects;
 import static com.zerobase.foodlier.module.member.member.local.constants.LocalApiConstants.*;
 
 @Service
+@RequiredArgsConstructor
 public class LocalServiceImpl implements LocalService{
 
     @Value("${spring.kakao.admin-key}")
     private String ADMIN_KEY;
 
+    private final RestTemplate restTemplate;
+
+    /**
+     *  작성자 : 전현서
+     *  작성일 : 2023-9-25 (2023-9-26)
+     *  주소를 입력하여, 좌표(위도, 경도)를 가져오는 메서드
+     */
     public CoordinateResponseDto getCoordinate(String roadAddress){
-        RestTemplate restTemplate = new RestTemplate();
+//        RestTemplate restTemplate = new RestTemplate();
 
         HttpEntity<String> httpEntity = new HttpEntity<>(getHeaders()); //엔티티로 만들기
         URI targetUrl = UriComponentsBuilder
@@ -36,16 +45,24 @@ public class LocalServiceImpl implements LocalService{
                 .encode(StandardCharsets.UTF_8)
                 .toUri();
 
-        CoordinateResponseDto coordinateResponseDto = null;
-
-        try {
-            ResponseEntity<LocalApiResponse> result = restTemplate.exchange(targetUrl, HttpMethod.GET, httpEntity, LocalApiResponse.class);
-            coordinateResponseDto = new CoordinateResponseDto(
-                    Objects.requireNonNull(result.getBody()).getDocuments().get(0).getLat(),
-                    result.getBody().getDocuments().get(0).getLnt());
+        //API 호출
+        ResponseEntity<LocalApiResponse> apiResponse = null;
+        try{
+            apiResponse = restTemplate.exchange(targetUrl, HttpMethod.GET, httpEntity, LocalApiResponse.class);
         }catch (Exception e){
-            throw new LocalException(LocalErrorCode.CANNOT_ADDRESS_PARSING);
+            throw new LocalException(LocalErrorCode.CANNOT_GET_API_RESPONSE);
         }
+
+        //데이터 추출
+        CoordinateResponseDto coordinateResponseDto = null;
+        try {
+            coordinateResponseDto = new CoordinateResponseDto(
+                    Objects.requireNonNull(apiResponse.getBody()).getDocuments().get(0).getLat(),
+                    apiResponse.getBody().getDocuments().get(0).getLnt());
+        }catch (Exception e){
+            throw new LocalException(LocalErrorCode.EMPTY_ADDRESS_LIST);
+        }
+
         return coordinateResponseDto;
     }
 
