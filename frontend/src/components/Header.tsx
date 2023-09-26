@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import logo from '../assets/foodlier_logo.png'
 import useIcon from '../hooks/useIcon'
@@ -8,10 +8,23 @@ import * as R from '../styles/Header.styled'
 
 const Header = () => {
   const navigate = useNavigate()
-
   const { IcSearch, IcBell } = useIcon()
 
+  const notiRef = useRef<HTMLDivElement | null>(null)
   const [isToggle, setIsToggle] = useState(false)
+
+  useEffect(() => {
+    // 토글이 열려있을 경우 화면 클릭 시 토글 닫히게 설정
+    const handleOutsideClose = () => {
+      if (isToggle) {
+        setIsToggle(false)
+      }
+    }
+
+    document.addEventListener('click', handleOutsideClose, { capture: true })
+
+    return () => document.removeEventListener('click', handleOutsideClose)
+  }, [isToggle])
 
   const HEADER_MENU_LIST = [
     {
@@ -48,7 +61,7 @@ const Header = () => {
             {item.title}
           </R.Menu>
         ))}
-        <R.WrapNotification>
+        <R.WrapNotification ref={notiRef}>
           <R.Button onClick={() => setIsToggle(!isToggle)}>
             <IcBell size={3} color={palette.textPrimary} />
           </R.Button>

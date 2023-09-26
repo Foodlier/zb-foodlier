@@ -1,8 +1,8 @@
 import styled from 'styled-components'
-import { breakpoints } from '../constants/Styles'
+import { breakpoints, palette } from '../constants/Styles'
 
 export const Container = styled.header`
-  width: 100vw;
+  width: 100%;
   padding: 5%;
   display: flex;
   align-items: center;
@@ -35,7 +35,7 @@ export const Menu = styled.button`
   padding: 0px 1.8rem;
   font-size: 1.8rem;
   font-weight: 600;
-  color: var(--color-text-primary);
+  color: ${palette.textPrimary};
 `
 
 export const Notification = styled.div<{ $isToggle: boolean }>`
@@ -44,8 +44,7 @@ export const Notification = styled.div<{ $isToggle: boolean }>`
   flex-direction: column;
   min-width: 25rem;
   top: 5rem;
-  padding: 1rem;
-  border: 1px solid var(--color-divide);
+  border: 1px solid ${palette.divider};
   border-radius: 1rem;
   font-size: 1.4rem;
 `
@@ -64,7 +63,7 @@ export const Icon = styled.button`
 
 export const LoginButton = styled.button`
   padding: 0.8rem 1.2rem;
-  background-color: var(--color-main);
+  background-color: ${palette.main};
   color: white;
   border-radius: 1rem;
   margin-left: 1rem;
@@ -82,5 +81,6 @@ export const WrapNotification = styled.div`
   padding: 0px 1.8rem;
   font-size: 1.8rem;
   font-weight: 600;
-  color: var(--color-text-primary);
+  color: ${palette.textPrimary};
+  z-index: 9999;
 `
