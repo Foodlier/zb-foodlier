@@ -41,7 +41,8 @@ class ProfileFacadeTest {
     private ProfileFacade profileFacade;
 
     @Test
-    @DisplayName("프로필 파서드 성공 케이스")
+    @DisplayName("프로필 파서드 성공 케이스 " +
+            "- 입력받은 값을 통해 s3에 이미지가 존재하면 해당 이미지를 삭제하고 입력받은 이미지를 s3에 등록, 입력받은 도로명 주소가 있다면 해당 주소의 위도,경도를 받아서 전달, 변경된 값을 멤버의 값에 업데이트해준다.")
     void success_deleteProfileUrlAndGetAddressUpdateProfile() {
         //given
         Member member = Member.builder()
