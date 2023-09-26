@@ -29,6 +29,11 @@ public class LocalServiceImpl implements LocalService{
 
     private final RestTemplate restTemplate;
 
+    /**
+     *  작성자 : 전현서
+     *  작성일 : 2023-9-25 (2023-9-26)
+     *  주소를 입력하여, 좌표(위도, 경도)를 가져오는 메서드
+     */
     public CoordinateResponseDto getCoordinate(String roadAddress){
 //        RestTemplate restTemplate = new RestTemplate();
 
@@ -40,16 +45,24 @@ public class LocalServiceImpl implements LocalService{
                 .encode(StandardCharsets.UTF_8)
                 .toUri();
 
-        CoordinateResponseDto coordinateResponseDto = null;
-
-        try {
-            ResponseEntity<LocalApiResponse> result = restTemplate.exchange(targetUrl, HttpMethod.GET, httpEntity, LocalApiResponse.class);
-            coordinateResponseDto = new CoordinateResponseDto(
-                    Objects.requireNonNull(result.getBody()).getDocuments().get(0).getLat(),
-                    result.getBody().getDocuments().get(0).getLnt());
+        //API 호출
+        ResponseEntity<LocalApiResponse> apiResponse = null;
+        try{
+            apiResponse = restTemplate.exchange(targetUrl, HttpMethod.GET, httpEntity, LocalApiResponse.class);
         }catch (Exception e){
-            throw new LocalException(LocalErrorCode.CANNOT_ADDRESS_PARSING);
+            throw new LocalException(LocalErrorCode.CANNOT_GET_API_RESPONSE);
         }
+
+        //데이터 추출
+        CoordinateResponseDto coordinateResponseDto = null;
+        try {
+            coordinateResponseDto = new CoordinateResponseDto(
+                    Objects.requireNonNull(apiResponse.getBody()).getDocuments().get(0).getLat(),
+                    apiResponse.getBody().getDocuments().get(0).getLnt());
+        }catch (Exception e){
+            throw new LocalException(LocalErrorCode.EMPTY_ADDRESS_LIST);
+        }
+
         return coordinateResponseDto;
     }
 

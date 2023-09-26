@@ -15,7 +15,7 @@ import org.springframework.web.client.RestTemplate;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.zerobase.foodlier.module.member.member.local.exception.LocalErrorCode.CANNOT_ADDRESS_PARSING;
+import static com.zerobase.foodlier.module.member.member.local.exception.LocalErrorCode.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
@@ -35,7 +35,7 @@ class LocalServiceImplTest {
 
         //given
 
-        String roadAddress = "경기도 성남시 분당구 판교역로 99999";
+        String roadAddress = "경기도 성남시 분당구 판교역로 99";
 
         given(restTemplate.exchange(any(), any(), any(), any(Class.class)))
                 .willReturn(ResponseEntity.ok(
@@ -58,27 +58,27 @@ class LocalServiceImplTest {
     }
 
     @Test
-    @DisplayName("주소 -> 좌표 변환 실패 - 파싱 에러 데이터 응답 오류")
-    void success_getCoordinate_cannot_address_parsing_response_error(){
+    @DisplayName("주소 -> 좌표 변환 실패 - API 호출 오류")
+    void success_getCoordinate_cannot_get_api_response(){
 
         //given
-        String roadAddress = "경기도 성남시 분당구 판교역로 99999";
+        String roadAddress = "주소";
 
         given(restTemplate.exchange(any(), any(), any(), any(Class.class)))
-                .willThrow(new LocalException(CANNOT_ADDRESS_PARSING));
+                .willThrow(new LocalException(CANNOT_GET_API_RESPONSE));
 
         //when
         LocalException exception = assertThrows(LocalException.class,
                 () -> localService.getCoordinate(roadAddress));
 
         //then
-        assertEquals(CANNOT_ADDRESS_PARSING, exception.getErrorCode());
+        assertEquals(CANNOT_GET_API_RESPONSE, exception.getErrorCode());
 
     }
 
     @Test
-    @DisplayName("주소 -> 좌표 변환 실패 - 데이터 파싱 에러")
-    void success_getCoordinate_cannot_address_parsing_data_parsing_error(){
+    @DisplayName("주소 -> 좌표 변환 실패 - 검색 결과 비어 있음.")
+    void success_getCoordinate_empty_address_list(){
 
         //given
         String roadAddress = "경기도 성남시 분당구 판교역로 99999";
@@ -95,7 +95,7 @@ class LocalServiceImplTest {
                 () -> localService.getCoordinate(roadAddress));
 
         //then
-        assertEquals(CANNOT_ADDRESS_PARSING, exception.getErrorCode());
+        assertEquals(EMPTY_ADDRESS_LIST, exception.getErrorCode());
 
     }
 
