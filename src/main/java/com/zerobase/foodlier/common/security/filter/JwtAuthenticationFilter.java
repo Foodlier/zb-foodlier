@@ -13,6 +13,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Date;
 
 import static com.zerobase.foodlier.common.security.constants.AuthorizationConstants.TOKEN_HEADER;
 import static com.zerobase.foodlier.common.security.constants.AuthorizationConstants.TOKEN_PREFIX;
@@ -42,7 +43,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         if (this.tokenProvider.isTokenExpired(accessToken)
                 && this.tokenProvider.existRefreshToken(accessToken)) {
-            String reissuedAccessToken = this.tokenProvider.reissue(accessToken);
+            String reissuedAccessToken = this.tokenProvider.reissue(accessToken, new Date());
             response.setHeader(TOKEN_HEADER, reissuedAccessToken);
             throw new JwtException(ACCESS_TOKEN_EXPIRED);
         }
