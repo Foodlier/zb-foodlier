@@ -5,17 +5,14 @@ import com.zerobase.foodlier.common.redis.dto.RefreshTokenDto;
 import com.zerobase.foodlier.common.redis.service.RefreshTokenService;
 import com.zerobase.foodlier.common.security.exception.JwtException;
 import com.zerobase.foodlier.common.security.provider.constants.TokenExpiredConstant;
-import com.zerobase.foodlier.common.security.provider.dto.CreateTokenDto;
 import com.zerobase.foodlier.common.security.provider.dto.MemberAuthDto;
 import com.zerobase.foodlier.common.security.provider.dto.TokenDto;
 import io.jsonwebtoken.*;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
 
 import java.util.Date;
 import java.util.List;
@@ -24,52 +21,82 @@ import java.util.stream.Collectors;
 import static com.zerobase.foodlier.common.security.exception.JwtErrorCode.*;
 
 @Component
-@RequiredArgsConstructor
 public class JwtTokenProvider {
 
     private static final String KEY_ROLES = "roles";
 
     private final TokenExpiredConstant tokenExpiredConstant;
     private final RefreshTokenService refreshTokenService;
+    private final String accessSecretKey;
 
-    @Value("${spring.jwt.secret}")
-    private String accessSecretKey;
-
-    public String createAccessToken(MemberAuthDto memberAuthDto) {
-        return setToken(CreateTokenDto.builder()
-                .id(memberAuthDto.getId())
-                .email(memberAuthDto.getEmail())
-                .roles(memberAuthDto.getRoles())
-                .keyRoles(KEY_ROLES)
-                .tokenExpiredTime(tokenExpiredConstant.getAccessTokenExpiredTime())
-                .secretKey(accessSecretKey)
-                .build());
+    public JwtTokenProvider(@Value("${spring.jwt.secret}") String accessSecretKey,
+                            TokenExpiredConstant tokenExpiredConstant,
+                            RefreshTokenService refreshTokenService) {
+        this.accessSecretKey = accessSecretKey;
+        this.refreshTokenService = refreshTokenService;
+        this.tokenExpiredConstant = tokenExpiredConstant;
     }
 
-    public String createRefreshToken(MemberAuthDto memberAuthDto) {
-        return setToken(CreateTokenDto.builder()
-                .id(memberAuthDto.getId())
-                .email(memberAuthDto.getEmail())
-                .tokenExpiredTime(tokenExpiredConstant.getRefreshTokenExpiredTime())
-                .secretKey(accessSecretKey)
-                .build());
+    /**
+     * 작성자: 이종욱
+     * 작성일: 2023-09-26
+     * 사용자 정보를 바탕으로 접근 토큰 생성
+     */
+    public String createAccessToken(MemberAuthDto memberAuthDto, Date date) {
+        Claims claims = Jwts.claims().setSubject(memberAuthDto.getEmail());
+        claims.setId(String.valueOf(memberAuthDto.getId()));
+        claims.put(KEY_ROLES, memberAuthDto.getRoles());
+
+        return Jwts.builder()
+                .setClaims(claims)
+                .setIssuedAt(date)
+                .setExpiration(tokenExpiredConstant.getAccessTokenExpiredDate(date))
+                .signWith(SignatureAlgorithm.HS512, accessSecretKey)
+                .compact();
     }
 
-    public TokenDto createToken(MemberAuthDto memberAuthDto) {
+    /**
+     * 작성자: 이종욱
+     * 작성일: 2023-09-26
+     * 사용자 정보를 바탕으로 재발급 토큰 생성
+     */
+    public String createRefreshToken(MemberAuthDto memberAuthDto, Date date) {
+        Claims claims = Jwts.claims().setSubject(memberAuthDto.getEmail());
+        claims.setId(String.valueOf(memberAuthDto.getId()));
 
-        String accessToken = createAccessToken(memberAuthDto);
-        String refreshToken = createRefreshToken(memberAuthDto);
+        return Jwts.builder()
+                .setClaims(claims)
+                .setIssuedAt(date)
+                .setExpiration(tokenExpiredConstant.getRefreshTokenExpiredDate(date))
+                .signWith(SignatureAlgorithm.HS512, accessSecretKey)
+                .compact();
+    }
+
+    /**
+     * 작성자: 이종욱
+     * 작성일: 2023-09-26
+     * 사용자 정보를 바탕으로 접근 토큰과 재발급 토큰 생성
+     */
+    public TokenDto createToken(MemberAuthDto memberAuthDto, Date date) {
+
+        String accessToken = createAccessToken(memberAuthDto, date);
+        String refreshToken = createRefreshToken(memberAuthDto, date);
 
         refreshTokenService.save(RefreshTokenDto.builder()
                 .memberEmail(memberAuthDto.getEmail())
                 .refreshToken(refreshToken)
-                .timeToLive(tokenExpiredConstant.getRefreshTokenExpiredTime())
+                .timeToLive(tokenExpiredConstant.getRefreshTokenExpiredMinute())
                 .build());
 
         return new TokenDto(accessToken, refreshToken);
     }
 
-    public String reissue(String accessToken) {
+    /**
+     * 작성자: 이종욱
+     * 작성일: 2023-09-26
+     * 접근 토큰 만료 시 재발급 토큰이 유효할 경우 새로운 접근 토큰 발급
+     */
+    public String reissue(String accessToken, Date date) {
         Claims accessTokenClaims = this.parseClaims(accessToken);
         String userEmail = accessTokenClaims.getSubject();
         Long userId = Long.parseLong(accessTokenClaims.getId());
@@ -78,33 +105,27 @@ public class JwtTokenProvider {
             throw new JwtException(REFRESH_TOKEN_NOT_FOUND);
         }
         return this.createAccessToken(MemberAuthDto.builder()
-                .id(userId)
-                .email(userEmail)
-                .roles(roles)
-                .build());
+                        .id(userId)
+                        .email(userEmail)
+                        .roles(roles)
+                        .build(),
+                date);
     }
 
+    /**
+     * 작성자: 이종욱
+     * 작성일: 2023-09-26
+     * 사용자의 재발급 토큰 삭제
+     */
     public void deleteRefreshToken(String email) {
         refreshTokenService.delete(email);
     }
 
-    public String setToken(CreateTokenDto createTokenDto) {
-        Claims claims = Jwts.claims().setSubject(createTokenDto.getEmail());
-        claims.setId(String.valueOf(createTokenDto.getId()));
-        if (StringUtils.hasText(createTokenDto.getKeyRoles())) {
-            claims.put(createTokenDto.getKeyRoles(), createTokenDto.getRoles());
-        }
-
-        Date now = new Date();
-        Date expiredDate = new Date(now.getTime() + createTokenDto.getTokenExpiredTime());
-        return Jwts.builder()
-                .setClaims(claims)
-                .setIssuedAt(now)
-                .setExpiration(expiredDate)
-                .signWith(SignatureAlgorithm.HS512, createTokenDto.getSecretKey())
-                .compact();
-    }
-
+    /**
+     * 작성자: 이종욱
+     * 작성일: 2023-09-26
+     * 사용자의 이메일, 식별자와 권한 정보를 토큰에서 추출
+     */
     public Authentication getAuthentication(String token) {
         MemberAuthDto memberAuthDto = getMemberAuthDto(token);
         List<SimpleGrantedAuthority> grantedAuthorities =
@@ -116,6 +137,11 @@ public class JwtTokenProvider {
                 memberAuthDto, token, grantedAuthorities);
     }
 
+    /**
+     * 작성자: 이종욱
+     * 작성일: 2023-09-26
+     * 사용자의 권한을 토큰으로부터 얻음
+     */
     private List<String> getRoles(String token) {
         Claims claims = parseClaims(token);
         List<?> list = claims.get(KEY_ROLES, List.class);
@@ -125,6 +151,11 @@ public class JwtTokenProvider {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * 작성자: 이종욱
+     * 작성일: 2023-09-26
+     * 사용자의 정보 객체를 토큰으로부터 생성
+     */
     private MemberAuthDto getMemberAuthDto(String token) {
         Claims claims = parseClaims(token);
         List<String> roles = getRoles(token);
@@ -136,6 +167,11 @@ public class JwtTokenProvider {
                 .build();
     }
 
+    /**
+     * 작성자: 이종욱
+     * 작성일: 2023-09-26
+     * 접근 토큰으로부터 사용자의 이메일을 얻어 재발급 토큰 저장 유무 판별
+     */
     public boolean existRefreshToken(String accessToken) {
 
         Claims claims = this.parseClaims(accessToken);
@@ -144,11 +180,21 @@ public class JwtTokenProvider {
         return refreshTokenService.isRefreshTokenExisted(memberEmail);
     }
 
+    /**
+     * 작성자: 이종욱
+     * 작성일: 2023-09-26
+     * 전달받은 토큰의 만료 여부 판별
+     */
     public boolean isTokenExpired(String token) {
         Claims claims = this.parseClaims(token);
         return claims.getExpiration().before(new Date());
     }
 
+    /**
+     * 작성자: 이종욱
+     * 작성일: 2023-09-26
+     * 전달받은 토큰을 비밀 키로 복호화하여 토큰 정보 추출
+     */
     private Claims parseClaims(String token) {
         try {
             return Jwts.parser().setSigningKey(this.accessSecretKey).parseClaimsJws(token).getBody();

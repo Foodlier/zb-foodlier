@@ -59,8 +59,8 @@ public class MemberServiceImpl implements MemberService {
     }
 
     /**
-     * 작성자 : 이승현
-     * 작성일 : 2023-09-24(2023-09-25)
+     * 작성자 : 이승현, 이종욱
+     * 작성일 : 2023-09-24(2023-09-25, 2023-09-26)
      * 이메일과 비밀번호를 받아와서 access token과 refresh token값을 반환해줍니다.
      */
     @Override
@@ -71,10 +71,11 @@ public class MemberServiceImpl implements MemberService {
                 .orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
 
         return tokenProvider.createToken(MemberAuthDto.builder()
-                .id(member.getId())
-                .email(member.getEmail())
-                .roles(member.getRoles())
-                .build());
+                        .id(member.getId())
+                        .email(member.getEmail())
+                        .roles(member.getRoles())
+                        .build(),
+                form.getCurrentDate());
     }
 
     /**
