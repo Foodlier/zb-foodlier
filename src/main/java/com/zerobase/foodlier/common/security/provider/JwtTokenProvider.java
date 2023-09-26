@@ -87,7 +87,7 @@ public class JwtTokenProvider {
                 .refreshToken(refreshToken)
                 .timeToLive(tokenExpiredConstant.getRefreshTokenExpiredMinute())
                 .build());
-        
+
         return new TokenDto(accessToken, refreshToken);
     }
 
