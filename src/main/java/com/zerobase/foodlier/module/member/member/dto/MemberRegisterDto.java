@@ -24,7 +24,7 @@ public class MemberRegisterDto {
 
     public static MemberRegisterDto from(MemberInputDto memberInputDto,
                                          CoordinateResponseDto coordinateResponseDto,
-                                         String profileUrl, RegistrationType registrationType){
+                                         String profileUrl, RegistrationType registrationType) {
         return MemberRegisterDto.builder()
                 .nickname(memberInputDto.getNickname())
                 .profileUrl(profileUrl)
