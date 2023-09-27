@@ -1,10 +1,10 @@
 package com.zerobase.foodlier.module.recipe.controller;
 
 import com.zerobase.foodlier.common.security.provider.dto.MemberAuthDto;
+import com.zerobase.foodlier.global.recipe.dto.RecipeImageResponse;
 import com.zerobase.foodlier.global.recipe.facade.RecipeFacade;
-import com.zerobase.foodlier.module.recipe.domain.dto.RecipeDtoRequest;
-import com.zerobase.foodlier.module.recipe.domain.dto.RecipeDtoResponse;
-import com.zerobase.foodlier.module.recipe.domain.dto.RecipeImageResponse;
+import com.zerobase.foodlier.module.recipe.dto.RecipeDtoRequest;
+import com.zerobase.foodlier.module.recipe.dto.RecipeDtoResponse;
 import com.zerobase.foodlier.module.recipe.service.RecipeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
