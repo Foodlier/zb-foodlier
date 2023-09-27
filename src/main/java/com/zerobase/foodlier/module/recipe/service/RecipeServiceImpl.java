@@ -148,5 +148,24 @@ public class RecipeServiceImpl implements RecipeService {
                 .build();
     }
 
+    /**
+
+     - 작성자: 이종욱
+     - 레시피 제목을 이용하여 유사한 제목을 갖는 레시피 목록 반환
+     - 작성일자: 2023-09-27
+     */
+
+    @Override
+    public List<Recipe> getRecipeByTitle(String recipeTitle, Pageable pageable) {
+        Page<RecipeDocument> byTitle = recipeSearchRepository.findByTitle(recipeTitle, pageable);
+        List<Recipe> recipeList = new ArrayList<>();
+        for (RecipeDocument recipeDocument : byTitle.toList()) {
+            recipeList.add(recipeRepository.findById(recipeDocument.getId())
+                    .orElseThrow(() -> new RecipeException(NO_SUCH_RECIPE)));
+        }
+
+        return recipeList;
+
+    }
 
 }

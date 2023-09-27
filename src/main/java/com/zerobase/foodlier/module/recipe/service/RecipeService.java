@@ -20,4 +20,5 @@ public interface RecipeService {
 
     ImageUrlDto deleteRecipe(Long id);
 
+    List<Recipe> getRecipeByTitle(String recipeTitle, Pageable pageable);
 }
