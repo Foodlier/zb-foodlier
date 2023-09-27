@@ -32,8 +32,7 @@ public class ChefMemberServiceImpl implements ChefMemberService{
      */
     @Transactional
     public void registerChef(Long memberId, ChefIntroduceForm chefIntroduceForm){
-        Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_NOT_FOUND));
+        Member member = getMember(memberId);
 
         validateRegisterChef(member);
 
@@ -54,8 +53,7 @@ public class ChefMemberServiceImpl implements ChefMemberService{
      *  요리사의 소개를 변경함.
      */
     public void updateChefIntroduce(Long memberId, ChefIntroduceForm chefIntroduceForm){
-        Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_NOT_FOUND));
+        Member member = getMember(memberId);
 
         if(member.getChefMember() == null){
             throw new ChefMemberException(CHEF_MEMBER_NOT_FOUND);
@@ -64,6 +62,11 @@ public class ChefMemberServiceImpl implements ChefMemberService{
         ChefMember chefMember = member.getChefMember();
         chefMember.setIntroduce(chefIntroduceForm.getIntroduce());
         chefMemberRepository.save(chefMember);
+    }
+
+    private Member getMember(Long memberId){
+        return memberRepository.findById(memberId)
+                .orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_NOT_FOUND));
     }
 
     //================= Validates ====================
