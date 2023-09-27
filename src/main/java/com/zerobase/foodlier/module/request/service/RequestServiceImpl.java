@@ -79,8 +79,8 @@ public class RequestServiceImpl implements RequestService {
             request.setRecipe(null);
         } else {
             validRequestChefMember(memberAuthDto, request);
-            request.setChefMember(null);
         }
+        request.setChefMember(null);
 
         requestRepository.save(request);
     }
