@@ -298,6 +298,61 @@ const useIcon = () => {
     )
   }
 
+  const IcAddLight = ({ size, color }: { size: number; color: string }) => {
+    return (
+      <svg
+        width={`${size}rem`}
+        height={`${size}rem`}
+        viewBox="0 0 24 24"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path d="M12 6L12 18" stroke={color} strokeLinecap="round" />
+        <path d="M18 12L6 12" stroke={color} strokeLinecap="round" />
+      </svg>
+    )
+  }
+
+  const IcPrevLight = ({ size, color }: { size: number; color: string }) => {
+    return (
+      <svg
+        width={`${size}rem`}
+        height={`${size}rem`}
+        viewBox="0 0 24 24"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path d="M15 6L9 12L15 18" stroke={color} />
+      </svg>
+    )
+  }
+
+  const IcCloseLight = ({ size, color }: { size: number; color: string }) => {
+    return (
+      <svg
+        width={`${size}rem`}
+        height={`${size}rem`}
+        viewBox="0 0 24 24"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M18 6L6 18"
+          stroke={color}
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+        <path
+          d="M6 6L18 18"
+          stroke={color}
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+      </svg>
+    )
+  }
+
+
   return {
     IcMenu,
     IcSearch,
@@ -312,6 +367,9 @@ const useIcon = () => {
     IcAddRound,
     IcAddRoundDuotone,
     IcFileDockLight,
+    IcAddLight,
+    IcPrevLight,
+    IcCloseLight,
   }
 }
 

@@ -5,6 +5,7 @@ import useIcon from '../hooks/useIcon'
 import { palette } from '../constants/Styles'
 import NotificationItem from './notification/NotificationItem'
 import * as R from '../styles/Header.styled'
+import MoSearch from './search/MoSearch'
 
 const Header = () => {
   const navigate = useNavigate()
@@ -25,6 +26,13 @@ const Header = () => {
 
     return () => document.removeEventListener('click', handleOutsideClose)
   }, [isToggle])
+
+  // 모바일 검색 - 토글
+  const [isMoSearchOpen, setIsMoSearchOpen] = useState(false)
+
+  const toggleMoSearch = () => {
+    setIsMoSearchOpen(!isMoSearchOpen)
+  }
 
   const HEADER_MENU_LIST = [
     {
@@ -50,8 +58,8 @@ const Header = () => {
             <NotificationItem />
           </R.Notification>
         </R.WrapNotification>
-
-        <R.Icon>
+        {/* 모바일 검색 - onClick 추가 */}
+        <R.Icon onClick={toggleMoSearch}>
           <IcSearch size={3} color={palette.textPrimary} />
         </R.Icon>
       </R.WrapIcon>
@@ -71,7 +79,10 @@ const Header = () => {
         </R.WrapNotification>
         <R.LoginButton>LOGIN</R.LoginButton>
       </R.WrapMenu>
+      {/* 모바일 검색 - MoSearch 컴포넌트 추가  */}
+      {isMoSearchOpen && <MoSearch setIsMoSearchOpen={setIsMoSearchOpen} />}
     </R.Container>
+
   )
 }
 
