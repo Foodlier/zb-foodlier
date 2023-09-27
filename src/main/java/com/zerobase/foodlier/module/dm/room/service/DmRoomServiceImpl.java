@@ -16,6 +16,11 @@ public class DmRoomServiceImpl implements DmRoomService {
     private final DmRoomRepository dmRoomRepository;
     private final RequestRepository requestRepository;
 
+    /**
+     * 작성자 : 이승현
+     * 작성일 : 2023-09-27
+     * 요청을 수락 시 DM 방이 생성됩니다.
+     */
     @Override
     public void createDmRoom(Long requestId) {
         Request request = requestRepository.findById(requestId)
