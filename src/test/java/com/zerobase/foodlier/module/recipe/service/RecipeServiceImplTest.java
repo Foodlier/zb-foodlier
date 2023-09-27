@@ -24,7 +24,6 @@ import static com.zerobase.foodlier.module.recipe.domain.type.Difficulty.HARD;
 import static com.zerobase.foodlier.module.recipe.exception.RecipeErrorCode.NO_SUCH_RECIPE;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -246,7 +245,7 @@ class RecipeServiceImplTest {
         Recipe recipe = recipeService.getRecipe(id);
 
         //then
-        verify(recipeRepository, times(1)).findById(anyLong());
+        verify(recipeRepository, times(1)).findById(id);
 
         assertEquals("title", recipe.getSummary().getTitle());
         assertEquals("content", recipe.getSummary().getContent());
@@ -299,7 +298,7 @@ class RecipeServiceImplTest {
         RecipeDtoResponse recipeDtoResponse = recipeService.getRecipeDetail(id);
 
         //then
-        verify(recipeRepository, times(1)).findById(anyLong());
+        verify(recipeRepository, times(1)).findById(id);
 
         assertEquals("title", recipeDtoResponse.getTitle());
         assertEquals("content", recipeDtoResponse.getContent());
