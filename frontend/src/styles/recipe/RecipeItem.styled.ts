@@ -14,7 +14,7 @@ export const Container = styled.div`
     width: clamp(40rem, 50vw, 50vw);
     flex-direction: column;
     padding: 0;
-    margin: 2rem 1.5rem;
+    margin: 0 1.5rem;
   }
 `
 
@@ -49,8 +49,9 @@ export const Image = styled.img`
   width: 8rem;
   height: 8rem;
   background-color: ${palette.divider};
-  margin-right: 1rem;
+  margin-right: 2rem;
   border-radius: 1rem;
+  object-fit: cover;
 
   ${breakpoints.large} {
     width: 100%;
@@ -59,7 +60,6 @@ export const Image = styled.img`
     border-radius: 1rem 1rem 0 0;
     margin: 0;
   }
-
 `
 
 export const WrapContent = styled.div`

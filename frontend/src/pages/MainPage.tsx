@@ -1,77 +1,47 @@
 import React from 'react'
 import styled from 'styled-components'
+import * as S from '../styles/MainPage.styled'
 import SlickSlider from '../components/slider/Slider'
 import { slides } from '../components/slider/Slide'
-import { breakpoints } from '../constants/Styles'
+import { palette } from '../constants/Styles'
+import useIcon from '../hooks/useIcon'
+import Header from '../components/Header'
 import WebSearch from '../components/search/WebSearch'
 import RecipeItem from '../components/recipe/RecipeItem'
 import RecipeData from '../components/recipe/RecipeData'
-import Header from '../components/Header'
+import ChefItem from '../components/chef/ChefItem'
+import ChefData from '../components/chef/ChefData'
 
-const SlickContainer = styled.section`
-  margin-top: 3rem;
-`
-
-const Tit = styled.h1`
-  font-size: 2.5rem;
-  font-weight: 800;
-  padding: 0 2%;
-
-  ${breakpoints.large} {
-    font-size: 3rem;
-  }
-`
-
-const WebSearchWrapper = styled.div`
-  display: none;
-
-  ${breakpoints.large} {
-    display: block;
-  }
-`
-
-const WebSearchContainer = styled.div`
-  padding: 0 5%;
-`
-
-const RecipeContainer = styled.section``
-const RecipeTit = styled.section``
-const RecipeList = styled.section`
-  flex-direction: column;
-  display: flex;
-  padding: 0 1rem;
-  margin-top: 2rem;
-
-  ${breakpoints.large} {
-    flex-direction: row;
-  }
-`
 
 const MainPage = () => {
+  const { IcAddLight } = useIcon()
+
   const handleSearch = (query: string) => {
     console.log(`WebSearch에서 검색: ${query}`)
   }
+
   return (
     <>
       {/* 헤더 */}
       <Header />
       {/* 검색 */}
-      <WebSearchWrapper>
-        <WebSearchContainer>
+      <S.WebSearchWrapper>
+        <S.WebSearchContainer>
           <WebSearch onSearch={handleSearch} />
-        </WebSearchContainer>
-      </WebSearchWrapper>
+        </S.WebSearchContainer>
+      </S.WebSearchWrapper>
       {/* 배너 */}
-      <SlickContainer>
-        <Tit>오늘 이 요리 어때요?</Tit>
+      <S.SlickContainer>
+        <S.Tit>오늘 이 요리 어때요?</S.Tit>
         <SlickSlider slides={slides} />
-      </SlickContainer>
+      </S.SlickContainer>
       {/* 레시피 */}
-      <RecipeContainer>
-        <RecipeTit>
-          <Tit>꿀조합 레시피</Tit>
-        </RecipeTit>
-        <RecipeList>
+      <S.RecipeContainer>
+        <S.RecipeTit>
+          <S.Tit>꿀조합 레시피</S.Tit>
+          <IcAddLight size={4} color={palette.textPrimary} />
+        </S.RecipeTit>
+        <S.RecipeList>
           {RecipeData.map(data => (
             <RecipeItem
               key={`recipe-${data.recipeId}`}
@@ -84,8 +54,24 @@ const MainPage = () => {
               isLike={data.isLike}
             />
           ))}
-        </RecipeList>
-      </RecipeContainer>
+        </S.RecipeList>
+      </S.RecipeContainer>
+      {/* TOP 요리사 */}
+      <S.ChefContainer>
+        <S.ChefTit>
+          <S.Tit>TOP 요리사</S.Tit>
+        </S.ChefTit>
+        <S.ChefList>
+        {ChefData.map(data => (
+            <ChefItem
+              key={`chef-${data.chefId}`}
+              chefId={data.chefId}
+              nickname={data.nickname}
+              imagePath={data.imagePath}
+            />
+          ))}
+        </S.ChefList>
+      </S.ChefContainer>
     </>
   )
 }
