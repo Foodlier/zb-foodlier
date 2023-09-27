@@ -57,12 +57,11 @@ public class ChefMemberServiceImpl implements ChefMemberService{
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_NOT_FOUND));
 
-        ChefMember chefMember = member.getChefMember();
-
-        if(chefMember == null){
+        if(member.getChefMember() == null){
             throw new ChefMemberException(CHEF_MEMBER_NOT_FOUND);
         }
 
+        ChefMember chefMember = member.getChefMember();
         chefMember.setIntroduce(chefIntroduceForm.getIntroduce());
         chefMemberRepository.save(chefMember);
     }
