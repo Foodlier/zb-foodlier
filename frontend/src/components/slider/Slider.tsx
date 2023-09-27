@@ -21,7 +21,7 @@ interface SlickSliderProps {
 
 const SlickSliderContainer = styled.div`
   width: 100vw;  
-  overflow-x: visible;   
+  overflow: hidden;  
   position: relative; 
   left: 50%;   
   transform: translate(-50%);

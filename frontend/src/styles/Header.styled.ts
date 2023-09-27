@@ -2,6 +2,7 @@ import styled from 'styled-components'
 import { breakpoints, palette } from '../constants/Styles'
 
 export const Container = styled.header`
+  width: 100%;
   padding: 5%;
   display: flex;
   align-items: center;
@@ -9,10 +10,6 @@ export const Container = styled.header`
 
   ${breakpoints.large} {
     padding: 2%;
-
-    & + div.inner {
-      width: 100%;
-    }
   }
 `
 
@@ -47,12 +44,9 @@ export const Notification = styled.div<{ $isToggle: boolean }>`
   flex-direction: column;
   min-width: 25rem;
   top: 5rem;
-  padding: 1rem;
   border: 1px solid ${palette.divider};
   border-radius: 1rem;
   font-size: 1.4rem;
-  z-index: 10;
-  background-color: ${palette.white};
 `
 
 export const WrapIcon = styled.ul`
@@ -70,7 +64,7 @@ export const Icon = styled.button`
 export const LoginButton = styled.button`
   padding: 0.8rem 1.2rem;
   background-color: ${palette.main};
-  color: ${palette.white};
+  color: white;
   border-radius: 1rem;
   margin-left: 1rem;
   font-size: 1.6rem;
@@ -88,4 +82,5 @@ export const WrapNotification = styled.div`
   font-size: 1.8rem;
   font-weight: 600;
   color: ${palette.textPrimary};
+  z-index: 9999;
 `

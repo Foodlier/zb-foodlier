@@ -12,7 +12,7 @@ export const MoSearchContainer = styled.div`
   width: 100%;
   height: 100%;
   background-color: ${palette.white};
-  z-index: 100;
+  z-index: 10000;
   overflow-y: scroll;
 
   ${breakpoints.large} {

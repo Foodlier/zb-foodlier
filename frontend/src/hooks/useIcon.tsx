@@ -209,6 +209,95 @@ const useIcon = () => {
     )
   }
 
+  const IcAddRound = ({ size, color }: { size: number; color: string }) => {
+    return (
+      <svg
+        width={`${size}rem`}
+        height={`${size}rem`}
+        viewBox="0 0 24 24"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M12 6L12 18"
+          stroke={color}
+          strokeWidth="2"
+          strokeLinecap="round"
+        />
+        <path
+          d="M18 12L6 12"
+          stroke={color}
+          strokeWidth="2"
+          strokeLinecap="round"
+        />
+      </svg>
+    )
+  }
+
+  // color 필요 X
+  const IcAddRoundDuotone = ({ size }: { size: number }) => {
+    return (
+      <svg
+        width={`${size}rem`}
+        height={`${size}rem`}
+        viewBox="0 0 40 40"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <circle cx="20" cy="20" r="15" fill="#7E869E" fillOpacity="0.25" />
+        <path
+          d="M20 13.334L20 26.6673"
+          stroke="#222222"
+          strokeWidth="1.2"
+          strokeLinecap="round"
+        />
+        <path
+          d="M26.666 20L13.3327 20"
+          stroke="#222222"
+          strokeWidth="1.2"
+          strokeLinecap="round"
+        />
+      </svg>
+    )
+  }
+
+  const IcFileDockLight = ({
+    size,
+    color,
+  }: {
+    size: number
+    color: string
+  }) => {
+    return (
+      <svg
+        width={`${size}rem`}
+        height={`${size}rem`}
+        viewBox="0 0 20 20"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M7.08398 10.416L12.9173 10.416"
+          stroke={color}
+          strokeLinecap="round"
+        />
+        <path
+          d="M7.08398 12.916L10.4173 12.916"
+          stroke="#222222"
+          strokeLinecap="round"
+        />
+        <path
+          d="M4.58398 5.31602C4.58398 4.47594 4.58398 4.0559 4.74747 3.73503C4.89128 3.45279 5.12076 3.22332 5.403 3.07951C5.72387 2.91602 6.14391 2.91602 6.98398 2.91602H10.2565C10.6234 2.91602 10.8069 2.91602 10.9795 2.95746C11.1326 2.99421 11.2789 3.05481 11.4131 3.13706C11.5645 3.22982 11.6942 3.35953 11.9536 3.61896L14.7144 6.37974C14.9738 6.63917 15.1035 6.76888 15.1963 6.92025C15.2785 7.05446 15.3391 7.20078 15.3759 7.35383C15.4173 7.52647 15.4173 7.70991 15.4173 8.0768V14.6827C15.4173 15.5228 15.4173 15.9428 15.2538 16.2637C15.11 16.5459 14.8805 16.7754 14.5983 16.9192C14.2774 17.0827 13.8574 17.0827 13.0173 17.0827H6.98398C6.14391 17.0827 5.72387 17.0827 5.403 16.9192C5.12076 16.7754 4.89128 16.5459 4.74747 16.2637C4.58398 15.9428 4.58398 15.5228 4.58398 14.6827V5.31602Z"
+          stroke={color}
+        />
+        <path
+          d="M10.416 2.91602V5.51602C10.416 6.35609 10.416 6.77613 10.5795 7.097C10.7233 7.37924 10.9528 7.60872 11.235 7.75253C11.5559 7.91602 11.9759 7.91602 12.816 7.91602H15.416"
+          stroke={color}
+        />
+      </svg>
+    )
+  }
+
   const IcAddLight = ({ size, color }: { size: number; color: string }) => {
     return (
       <svg
@@ -263,6 +352,7 @@ const useIcon = () => {
     )
   }
 
+
   return {
     IcMenu,
     IcSearch,
@@ -274,6 +364,9 @@ const useIcon = () => {
     IcUserLight,
     IcFavorite,
     IcFavoriteFill,
+    IcAddRound,
+    IcAddRoundDuotone,
+    IcFileDockLight,
     IcAddLight,
     IcPrevLight,
     IcCloseLight,

@@ -4,17 +4,18 @@ import { breakpoints, palette } from '../../constants/Styles'
 export const Container = styled.div`
   display: flex;
   align-items: center;
-  width: 100%;
+  width: 90%;
   margin: 0 auto 1rem;
   padding: 1rem;
   border: 1px solid ${palette.divider};
   border-radius: 1rem;
 
   ${breakpoints.large} {
-    width: clamp(40rem, 50vw, 50vw);
     flex-direction: column;
+    max-width: 30rem;
+    width: 30%;
     padding: 0;
-    margin: 0 1.5rem;
+    margin: 0 2rem;
   }
 `
 
@@ -46,24 +47,22 @@ export const LikeCount = styled.span`
 `
 
 export const Image = styled.img`
-  width: 8rem;
-  height: 8rem;
+  width: 30%;
+  height: 10rem;
   background-color: ${palette.divider};
-  margin-right: 2rem;
+  margin-right: 1rem;
   border-radius: 1rem;
-  object-fit: cover;
 
   ${breakpoints.large} {
     width: 100%;
-    height: 100%;
-    object-fit: cover;
-    border-radius: 1rem 1rem 0 0;
+    height: 20rem;
     margin: 0;
+    border-radius: 1rem 1rem 0 0;
   }
 `
 
 export const WrapContent = styled.div`
-  width: 100%;
+  width: 70%;
   display: flex;
   flex-direction: column;
 

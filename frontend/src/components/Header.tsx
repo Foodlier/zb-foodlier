@@ -1,57 +1,88 @@
-import React, { useState } from 'react'
-import * as S from '../styles/HeaderPage.styled'
-import { palette } from '../constants/Styles'
+import { useEffect, useRef, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import logo from '../assets/foodlier_logo.png'
 import useIcon from '../hooks/useIcon'
+import { palette } from '../constants/Styles'
 import NotificationItem from './notification/NotificationItem'
+import * as R from '../styles/Header.styled'
 import MoSearch from './search/MoSearch'
 
 const Header = () => {
+  const navigate = useNavigate()
   const { IcSearch, IcBell } = useIcon()
 
+  const notiRef = useRef<HTMLDivElement | null>(null)
   const [isToggle, setIsToggle] = useState(false)
+
+  useEffect(() => {
+    // 토글이 열려있을 경우 화면 클릭 시 토글 닫히게 설정
+    const handleOutsideClose = () => {
+      if (isToggle) {
+        setIsToggle(false)
+      }
+    }
+
+    document.addEventListener('click', handleOutsideClose, { capture: true })
+
+    return () => document.removeEventListener('click', handleOutsideClose)
+  }, [isToggle])
+
+  // 모바일 검색 - 토글
   const [isMoSearchOpen, setIsMoSearchOpen] = useState(false)
 
   const toggleMoSearch = () => {
     setIsMoSearchOpen(!isMoSearchOpen)
   }
 
-  const HEADER_MENU_LIST = ['꿀조합', '냉마카세']
+  const HEADER_MENU_LIST = [
+    {
+      title: '꿀조합',
+      navigate: 'recipe',
+    },
+    { title: '냉마카세', navigate: '' },
+  ]
+
+  const navigateTo = (pageName: string) => {
+    navigate(`/${pageName}`)
+  }
 
   return (
-    <S.Container>
-      <S.Logo src={logo} alt="로고 이미지" />
-      <S.WrapIcon>
-        <S.WrapNotification>
-          <S.Icon onClick={() => setIsToggle(!isToggle)}>
+    <R.Container>
+      <R.Logo src={logo} alt="로고 이미지" />
+      <R.WrapIcon>
+        <R.WrapNotification>
+          <R.Icon onClick={() => setIsToggle(!isToggle)}>
             <IcBell size={3} color={palette.textPrimary} />
-          </S.Icon>
-          <S.Notification $isToggle={isToggle}>
+          </R.Icon>
+          <R.Notification $isToggle={isToggle}>
             <NotificationItem />
-          </S.Notification>
-        </S.WrapNotification>
-
-        <S.Icon onClick={toggleMoSearch}>
+          </R.Notification>
+        </R.WrapNotification>
+        {/* 모바일 검색 - onClick 추가 */}
+        <R.Icon onClick={toggleMoSearch}>
           <IcSearch size={3} color={palette.textPrimary} />
-        </S.Icon>
-      </S.WrapIcon>
-      <S.WrapMenu>
+        </R.Icon>
+      </R.WrapIcon>
+      <R.WrapMenu>
         {HEADER_MENU_LIST.map(item => (
-          <S.Menu key={item}>{item}</S.Menu>
+          <R.Menu key={item.title} onClick={() => navigateTo(item.navigate)}>
+            {item.title}
+          </R.Menu>
         ))}
-        <S.WrapNotification>
-          <S.Button onClick={() => setIsToggle(!isToggle)}>
+        <R.WrapNotification ref={notiRef}>
+          <R.Button onClick={() => setIsToggle(!isToggle)}>
             <IcBell size={3} color={palette.textPrimary} />
-          </S.Button>
-          <S.Notification $isToggle={isToggle}>
+          </R.Button>
+          <R.Notification $isToggle={isToggle}>
             <NotificationItem />
-          </S.Notification>
-        </S.WrapNotification>
-        <S.LoginButton>LOGIN</S.LoginButton>
-      </S.WrapMenu>
-
+          </R.Notification>
+        </R.WrapNotification>
+        <R.LoginButton>LOGIN</R.LoginButton>
+      </R.WrapMenu>
+      {/* 모바일 검색 - MoSearch 컴포넌트 추가  */}
       {isMoSearchOpen && <MoSearch setIsMoSearchOpen={setIsMoSearchOpen} />}
-    </S.Container>
+    </R.Container>
+
   )
 }
 
