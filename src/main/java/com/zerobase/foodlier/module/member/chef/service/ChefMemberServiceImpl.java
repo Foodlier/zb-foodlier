@@ -79,7 +79,7 @@ public class ChefMemberServiceImpl implements ChefMemberService{
         }
 
         if(recipeRepository.countByMember(member) < MIN_RECIPES_FOR_CHEF){
-            throw new ChefMemberException(CANNOT_REGISTER_LESS_THEN_THREE_RECIPE);
+            throw new ChefMemberException(CANNOT_REGISTER_LESS_THAN_THREE_RECIPE);
         }
     }
 
