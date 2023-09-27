@@ -1,14 +1,11 @@
-package com.zerobase.foodlier.module.recipe.domain.dto;
+package com.zerobase.foodlier.module.recipe.dto;
 
 import com.zerobase.foodlier.module.member.member.domain.model.Member;
 import com.zerobase.foodlier.module.recipe.domain.model.Recipe;
 import com.zerobase.foodlier.module.recipe.domain.type.Difficulty;
 import com.zerobase.foodlier.module.recipe.domain.vo.RecipeStatistics;
 import com.zerobase.foodlier.module.recipe.domain.vo.Summary;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -17,6 +14,7 @@ import java.util.stream.Collectors;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class RecipeDtoRequest {
     private String title;
     private String content;

@@ -1,7 +1,7 @@
 package com.zerobase.foodlier.module.dm.room.service;
 
-import org.springframework.stereotype.Service;
+import com.zerobase.foodlier.module.request.domain.model.Request;
 
-@Service
 public interface DmRoomService {
+    void createDmRoom(Request request);
 }
