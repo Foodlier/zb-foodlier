@@ -1,6 +1,7 @@
 package com.zerobase.foodlier.module.request.service;
 
 import com.zerobase.foodlier.common.security.provider.dto.MemberAuthDto;
+import com.zerobase.foodlier.module.member.chef.domain.model.ChefMember;
 import com.zerobase.foodlier.module.member.chef.exception.ChefMemberException;
 import com.zerobase.foodlier.module.member.chef.repository.ChefMemberRepository;
 import com.zerobase.foodlier.module.request.domain.model.Request;
@@ -60,7 +61,9 @@ public class RequestServiceImpl implements RequestService {
         if (request.getRecipe().getIsQuotation()) {
             validRequestMember(memberAuthDto, request);
         } else {
-            validRequestChefMember(memberAuthDto, request);
+            ChefMember chefMember = chefMemberRepository.findById(memberAuthDto.getId())
+                    .orElseThrow(() -> new ChefMemberException(CHEF_MEMBER_NOT_FOUND));
+            validRequestChefMember(chefMember.getId(), request);
         }
 
         return request;
@@ -78,7 +81,9 @@ public class RequestServiceImpl implements RequestService {
             validRequestMember(memberAuthDto, request);
             request.setRecipe(null);
         } else {
-            validRequestChefMember(memberAuthDto, request);
+            ChefMember chefMember = chefMemberRepository.findById(memberAuthDto.getId())
+                    .orElseThrow(() -> new ChefMemberException(CHEF_MEMBER_NOT_FOUND));
+            validRequestChefMember(chefMember.getId(), request);
         }
         request.setChefMember(null);
 
@@ -96,8 +101,8 @@ public class RequestServiceImpl implements RequestService {
         }
     }
 
-    private void validRequestChefMember(MemberAuthDto memberAuthDto, Request request) {
-        if (!Objects.equals(memberAuthDto.getId(), request.getChefMember().getId())) {
+    private void validRequestChefMember(Long chefMemberId, Request request) {
+        if (!Objects.equals(chefMemberId, request.getChefMember().getId())) {
             throw new RequestException(CHEF_MEMBER_REQUEST_NOT_MATCH);
         }
     }
