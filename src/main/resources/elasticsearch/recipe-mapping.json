@@ -1,0 +1,10 @@
+{
+  "properties" : {
+    "id" : {"type" : "long"},
+    "title" : {"type" : "text", "fields": {"kor":  {"type":  "text", "analyzer": "korean"}}},
+    "chefName" : {"type" : "text", "fields": {"kor":  {"type":  "text", "analyzer": "korean"}}},
+    "ingredients" :{"type": "text", "fields": {"kor": {"type": "text", "analyzer":  "korean"}}},
+    "numberOfHeart" : {"type" : "long"},
+    "numberOfComment": {"type": "long"}
+  }
+}
