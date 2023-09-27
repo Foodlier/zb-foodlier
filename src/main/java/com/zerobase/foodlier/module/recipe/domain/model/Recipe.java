@@ -54,7 +54,7 @@ public class Recipe extends Audit {
 
     @OneToMany(mappedBy = "recipe", fetch = FetchType.LAZY)
     @Builder.Default
-    private List<RecipeReview> recipeReviews = new ArrayList<>();
+    private List<RecipeReview> recipeReviewList = new ArrayList<>();
 
     @ManyToOne
     @JoinColumn(name = "member_id")
