@@ -20,7 +20,7 @@ public class DmRoomServiceImpl implements DmRoomService {
     public void createDmRoom(Request request) {
         dmRoomRepository.save(DmRoom.builder()
                 .request(request)
-                .isExist(false)
+                .isExit(false)
                 .build());
     }
 }

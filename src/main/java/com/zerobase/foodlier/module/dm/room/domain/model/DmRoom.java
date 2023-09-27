@@ -24,5 +24,5 @@ public class DmRoom extends Audit {
     @Builder.Default
     @Column(nullable = false)
     @ColumnDefault("false")
-    private boolean isExist = false;
+    private boolean isExit = false;
 }
