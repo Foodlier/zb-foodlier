@@ -21,6 +21,7 @@ import static com.zerobase.foodlier.module.member.chef.exception.ChefMemberError
 @RequiredArgsConstructor
 public class ChefMemberServiceImpl implements ChefMemberService{
 
+    private static final int MIN_RECIPES_FOR_CHEF = 3;
     private final ChefMemberRepository chefMemberRepository;
     private final MemberRepository memberRepository;
     private final RecipeRepository recipeRepository;
@@ -77,7 +78,7 @@ public class ChefMemberServiceImpl implements ChefMemberService{
             throw new ChefMemberException(ALREADY_REGISTER_CHEF);
         }
 
-        if(recipeRepository.countByMember(member) < 3){
+        if(recipeRepository.countByMember(member) < MIN_RECIPES_FOR_CHEF){
             throw new ChefMemberException(CANNOT_REGISTER_LESS_THEN_THREE_RECIPE);
         }
     }
