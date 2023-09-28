@@ -13,12 +13,16 @@ export const Container = styled.header`
   }
 `
 
-export const Logo = styled.img`
+export const LogoButton = styled.button`
   width: 30%;
+`
+
+export const Logo = styled.img`
+  width: 100%;
   height: auto;
 
   ${breakpoints.large} {
-    width: 15%;
+    width: 50%;
   }
 `
 

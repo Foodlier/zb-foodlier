@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom'
-import * as R from '../styles/BottomNavigation.styled'
+import * as S from '../styles/BottomNavigation.styled'
 import useIcon from '../hooks/useIcon'
 import { palette } from '../constants/Styles'
 
@@ -42,14 +42,14 @@ const BottomNavigation = () => {
   }
 
   return (
-    <R.Container>
+    <S.Container>
       {BOTTOM_NAVIGATION_MENU_LIST.map(item => (
-        <R.WrapIcon key={item.title} onClick={() => navigateTo(item.navigate)}>
+        <S.WrapIcon key={item.title} onClick={() => navigateTo(item.navigate)}>
           {item.icon}
-          <R.Text>{item.title}</R.Text>
-        </R.WrapIcon>
+          <S.Text>{item.title}</S.Text>
+        </S.WrapIcon>
       ))}
-    </R.Container>
+    </S.Container>
   )
 }
 
