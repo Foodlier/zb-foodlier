@@ -18,7 +18,7 @@ public class DmRoom extends Audit {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @ManyToOne
+    @OneToOne
     @JoinColumn(name = "request_id")
     private Request request;
     @Builder.Default
