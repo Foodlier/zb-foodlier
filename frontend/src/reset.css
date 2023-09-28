@@ -71,6 +71,10 @@ html {
   margin-left: auto;
   margin-right: auto;
   height: 100%;
+  width: 124rem;
+  max-width: 100%;
+  margin-left: auto;
+  margin-right: auto;
 }
 body {
   -webkit-font-smoothing: antialiased;

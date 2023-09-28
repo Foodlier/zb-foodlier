@@ -3,6 +3,7 @@ import { Routes, Route } from 'react-router-dom'
 import LoginPage from './pages/LoginPage'
 import RegisterPage from './pages/RegisterPage'
 import CookForMe from './pages/refrigerator/CookForMe'
+import MainPage from './pages/MainPage'
 import RequestDetail from './pages/refrigerator/RequestDetail'
 import Request from './pages/refrigerator/Request'
 import CookForYou from './pages/refrigerator/CookForYou'
@@ -18,6 +19,7 @@ function App() {
   return (
     <Routes>
       <Route path="/" element={<LoginPage />} />
+      <Route path="/main" element={<MainPage />} />
       <Route path="/register" element={<RegisterPage />} />
       <Route path="/cook-for-me" element={<CookForMe />} />
       <Route path="/cook-for-you" element={<CookForYou />} />

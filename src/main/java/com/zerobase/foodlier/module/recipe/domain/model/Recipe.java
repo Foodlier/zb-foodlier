@@ -11,10 +11,7 @@ import com.zerobase.foodlier.module.recipe.domain.vo.RecipeIngredient;
 import com.zerobase.foodlier.module.recipe.domain.vo.RecipeStatistics;
 import com.zerobase.foodlier.module.recipe.domain.vo.Summary;
 import com.zerobase.foodlier.module.review.recipe.domain.model.RecipeReview;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -22,6 +19,7 @@ import java.util.List;
 
 @Entity
 @Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -38,7 +36,7 @@ public class Recipe extends Audit {
 
     private int expectedTime;
 
-    private Long heartCount;
+    private int heartCount;
 
     @Embedded
     private RecipeStatistics recipeStatistics;
@@ -46,14 +44,17 @@ public class Recipe extends Audit {
     @Enumerated(EnumType.STRING)
     private Difficulty difficulty;
 
-    private boolean isPublic;
+    private Boolean isPublic;
 
-    private boolean isQuotation;
-    private boolean isDeleted;
+    @Builder.Default
+    private Boolean isQuotation = false;
+
+    @Builder.Default
+    private Boolean isDeleted = false;
 
     @OneToMany(mappedBy = "recipe", fetch = FetchType.LAZY)
     @Builder.Default
-    private List<RecipeReview> recipeReviews = new ArrayList<>();
+    private List<RecipeReview> recipeReviewList = new ArrayList<>();
 
     @ManyToOne
     @JoinColumn(name = "member_id")
