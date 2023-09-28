@@ -65,7 +65,6 @@ public class RecipeFacade {
      */
     public void createRecipe(String email, RecipeDtoRequest recipeDtoRequest) {
         Member member = memberService.findByEmail(email);
-
         recipeService.createRecipe(member, recipeDtoRequest);
     }
 
@@ -76,8 +75,8 @@ public class RecipeFacade {
      */
     public void updateRecipe(String email, RecipeDtoRequest recipeDtoRequest, Long id) {
         checkPermission(email, id);
-        recipeService.updateRecipe(recipeDtoRequest, id);
         Recipe recipe = recipeService.getRecipe(id);
+        recipeService.updateRecipe(recipeDtoRequest, id);
         deleteRecipeImage(ImageUrlDto.builder()
                 .mainImageUrl(recipe.getMainImageUrl())
                 .recipeDetailList(recipe.getRecipeDetailList())
@@ -92,7 +91,6 @@ public class RecipeFacade {
     @Transactional
     public void deleteRecipe(String email, Long id) {
         checkPermission(email, id);
-
         ImageUrlDto imageUrlDto = recipeService.deleteRecipe(id);
         deleteRecipeImage(imageUrlDto);
     }
