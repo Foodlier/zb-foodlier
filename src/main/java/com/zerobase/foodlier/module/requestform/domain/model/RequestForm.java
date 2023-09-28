@@ -1,5 +1,6 @@
 package com.zerobase.foodlier.module.requestform.domain.model;
 
+import com.zerobase.foodlier.common.jpa.audit.Audit;
 import com.zerobase.foodlier.module.member.member.domain.model.Member;
 import com.zerobase.foodlier.module.recipe.domain.model.Recipe;
 import com.zerobase.foodlier.module.request.domain.vo.Ingredient;
@@ -17,7 +18,7 @@ import java.util.List;
 @Builder
 @Entity
 @Table(name = "request_form")
-public class RequestForm {
+public class RequestForm extends Audit {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
