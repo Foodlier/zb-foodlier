@@ -5,6 +5,7 @@ import com.zerobase.foodlier.global.refrigerator.facade.RefrigeratorFacade;
 import com.zerobase.foodlier.module.request.service.RequestService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -43,6 +44,7 @@ public class RefrigeratorController {
         return ResponseEntity.ok("요청을 수락하였습니다.");
     }
 
+    @PreAuthorize("hasRole('CHEF')")
     @PostMapping("/chef/approve/{requestId}")
     public ResponseEntity<String> chefApproveRequest(
             @AuthenticationPrincipal MemberAuthDto memberAuthDto,
@@ -52,6 +54,7 @@ public class RefrigeratorController {
         return ResponseEntity.ok("요청을 수락하였습니다.");
     }
 
+    @PreAuthorize("hasRole('CHEF')")
     @PatchMapping("/reject/{requestId}")
     public ResponseEntity<String> rejectRequest(
             @AuthenticationPrincipal MemberAuthDto memberAuthDto,

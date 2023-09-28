@@ -1,5 +1,6 @@
 package com.zerobase.foodlier.module.request.service;
 
+import com.zerobase.foodlier.module.dm.room.domain.model.DmRoom;
 import com.zerobase.foodlier.module.member.chef.domain.model.ChefMember;
 import com.zerobase.foodlier.module.member.chef.exception.ChefMemberException;
 import com.zerobase.foodlier.module.member.chef.repository.ChefMemberRepository;
@@ -7,15 +8,18 @@ import com.zerobase.foodlier.module.member.member.domain.model.Member;
 import com.zerobase.foodlier.module.member.member.exception.MemberException;
 import com.zerobase.foodlier.module.member.member.repository.MemberRepository;
 import com.zerobase.foodlier.module.request.domain.model.Request;
+import com.zerobase.foodlier.module.request.domain.vo.Ingredient;
 import com.zerobase.foodlier.module.request.exception.RequestException;
 import com.zerobase.foodlier.module.request.repository.RequestRepository;
 import com.zerobase.foodlier.module.requestform.domain.model.RequestForm;
 import com.zerobase.foodlier.module.requestform.exception.RequestFormException;
 import com.zerobase.foodlier.module.requestform.repository.RequestFormRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import static com.zerobase.foodlier.module.member.chef.exception.ChefMemberErrorCode.CHEF_MEMBER_NOT_FOUND;
 import static com.zerobase.foodlier.module.member.member.exception.MemberErrorCode.MEMBER_NOT_FOUND;
@@ -30,10 +34,20 @@ public class RequestServiceImpl implements RequestService {
     private final ChefMemberRepository chefMemberRepository;
     private final MemberRepository memberRepository;
 
-
     /**
      *  작성자 : 전현서
      *  작성일 : 2023-09-28
+     *  Request에 DmRoom을 할당함.
+     */
+    @Override
+    public void setDmRoom(Request request, DmRoom dmRoom){
+        request.setDmRoom(dmRoom);
+        requestRepository.save(request);
+    }
+
+    /**
+     *  작성자 : 이승현 (전현서)
+     *  작성일 : 2023-09-27 (2023-09-28)
      *
      *  요청을 보내는 메서드, 같은 요리사에게는 중복 요청 X
      */
@@ -54,7 +68,11 @@ public class RequestServiceImpl implements RequestService {
                 .chefMember(chefMember)
                 .title(requestForm.getTitle())
                 .content(requestForm.getContent())
-                .ingredientList(requestForm.getIngredientList())
+                .ingredientList(
+                        requestForm.getIngredientList().stream()
+                                .map(x -> new Ingredient(x.getIngredientName()))
+                                .collect(Collectors.toList())
+                )
                 .expectPrice(requestForm.getExpectPrice())
                 .expectedAt(requestForm.getExpectedAt())
                 .recipe(requestForm.getRecipe())
@@ -65,8 +83,8 @@ public class RequestServiceImpl implements RequestService {
     }
 
     /**
-     *  작성자 : 전현서
-     *  작성일 : 2023-09-28
+     *  작성자 : 이승현 (전현서)
+     *  작성일 : 2023-09-27 (2023-09-28)
      *  요청자가 보낸 요청을 취소함, 성사된 요청 취소 X
      */
     @Override
@@ -109,8 +127,8 @@ public class RequestServiceImpl implements RequestService {
     }
 
     /**
-     *  작성자 : 전현서
-     *  작성일 : 2023-09-28
+     *  작성자 : 이승현 (전현서)
+     *  작성일 : 2023-09-27 (2023-09-28)
      *  요리사가 요청을 거절함.
      */
     @Override
@@ -135,6 +153,10 @@ public class RequestServiceImpl implements RequestService {
 
     // ===================== Validates =======================
     private void validateSendRequest(Member member, ChefMember chefMember){
+
+        if(Objects.equals(member.getId(), chefMember.getMember().getId())){
+            throw new RequestException(CANNOT_REQUEST_TO_ME);
+        }
         if(requestRepository.existsByMemberAndChefMemberAndIsPaid(
                 member, chefMember, false
         )){

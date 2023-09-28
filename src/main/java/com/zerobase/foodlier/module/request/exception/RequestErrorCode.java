@@ -17,6 +17,7 @@ public enum RequestErrorCode {
     CANNOT_CHEF_APPROVE_HAS_NOT_RECIPE("요청서에 태깅된 레시피가 존재하지 않습니다."),
     CANNOT_CHEF_APPROVE_IS_QUOTATION("견적서인 요청을 수락할 수 없습니다."),
     ALREADY_APPROVED("이미 수락된 요청입니다."),
+    CANNOT_REQUEST_TO_ME("자기 자신에 대한 요청은 불가능 합니다."),
     ;
 
     private final String description;

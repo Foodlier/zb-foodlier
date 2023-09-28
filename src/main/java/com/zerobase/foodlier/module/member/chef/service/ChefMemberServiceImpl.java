@@ -9,6 +9,7 @@ import com.zerobase.foodlier.module.member.member.domain.model.Member;
 import com.zerobase.foodlier.module.member.member.exception.MemberErrorCode;
 import com.zerobase.foodlier.module.member.member.exception.MemberException;
 import com.zerobase.foodlier.module.member.member.repository.MemberRepository;
+import com.zerobase.foodlier.module.member.member.type.RoleType;
 import com.zerobase.foodlier.module.recipe.repository.RecipeRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -45,6 +46,7 @@ public class ChefMemberServiceImpl implements ChefMemberService{
 
         ChefMember chefMemberEntity = chefMemberRepository.save(chefMember);
         member.setChefMember(chefMemberEntity);
+        member.getRoles().add(RoleType.ROLE_CHEF.name());
         memberRepository.save(member);
     }
 
