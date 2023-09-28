@@ -85,19 +85,21 @@ class S3ServiceImplTest {
         MultipartFile imageFile2 = new MockMultipartFile(imageName2,
                 imageName2, "image/jpg", content2.getBytes());
 
-        String expectedImageUrl = "https://zb-foodlier.s3.ap-northeast-2.amazonaws.com/img1.jpg";
+        String expectedImageUrl1 = "https://zb-foodlier.s3.ap-northeast-2.amazonaws.com/img1.jpg";
+        String expectedImageUrl2 = "https://zb-foodlier.s3.ap-northeast-2.amazonaws.com/img2.jpg";
 
         List<MultipartFile> imageFileList = new ArrayList<>(List.of(imageFile1, imageFile2));
-        given(amazonS3.getUrl(any(), any())).willReturn(new URL(expectedImageUrl));
 
         //when
+        when(amazonS3.getUrl(any(), any()))
+                .thenReturn(new URL(expectedImageUrl1), new URL(expectedImageUrl2));
         List<String> imageUrlList = s3Service.getImageUrlList(imageFileList);
 
         //then
         verify(amazonS3, times(2)).putObject(any(), any(), any(), any());
         verify(amazonS3, times(2)).getUrl(any(), any());
-        assertEquals(expectedImageUrl, imageUrlList.get(0));
-        assertEquals(expectedImageUrl, imageUrlList.get(1));
+        assertEquals(expectedImageUrl1, imageUrlList.get(0));
+        assertEquals(expectedImageUrl2, imageUrlList.get(1));
     }
 
     @Test
