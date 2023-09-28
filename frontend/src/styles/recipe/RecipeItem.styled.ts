@@ -5,7 +5,7 @@ export const Container = styled.div`
   display: flex;
   align-items: center;
   width: 90%;
-  margin: 0 auto;
+  margin: 0 auto 1rem;
   padding: 1rem;
   border: 1px solid ${palette.divider};
   border-radius: 1rem;
