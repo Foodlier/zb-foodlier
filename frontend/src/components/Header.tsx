@@ -40,6 +40,7 @@ const Header = () => {
       navigate: 'recipe',
     },
     { title: '냉마카세', navigate: '' },
+    { title: '채팅', navigate: 'chat' },
   ]
 
   const navigateTo = (pageName: string) => {
