@@ -285,9 +285,9 @@ class RecipeFacadeTest {
 
         // when
         recipeFacade.updateRecipe(email, recipeDtoRequest, recipeId);
-        ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
 
         // then
+        ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
         verify(recipeService, times(1)).updateRecipe(recipeDtoRequest, recipeId);
         verify(s3Service, times(3)).deleteImage(captor.capture());
 
@@ -324,43 +324,44 @@ class RecipeFacadeTest {
         assertEquals(NO_PERMISSION, recipeException.getErrorCode());
     }
 
-//    @Test
-//    @DisplayName("꿀조합 게시글 삭제, 삭제 후 이미지 삭제 성공")
-//    void success_delete_recipe() {
-//        //given
-//        String email = "email@email.com";
-//        Long recipeId = 10L;
-//        Long id = 1L;
-//        String mainImageUrl = "https://zb-foodlier.s3.ap-northeast-2.amazonaws.com/img1.jpg";
-//        String cookingOrderImageUrl1 = "https://zb-foodlier.s3.ap-northeast-2.amazonaws.com/img2.jpg";
-//        String cookingOrderImageUrl2 = "https://zb-foodlier.s3.ap-northeast-2.amazonaws.com/img3.jpg";
-//
-//        given(memberService.findByEmail(email)).willReturn(Member.builder()
-//                .id(id)
-//                .build());
-//        given(recipeService.getRecipe(recipeId)).willReturn(Recipe.builder()
-//                .member(Member.builder()
-//                        .id(id)
-//                        .build())
-//                .build());
-//        given(recipeService.deleteRecipe(recipeId))
-//                .willReturn(ImageUrlDto.builder()
-//                        .mainImageUrl(mainImageUrl)
-//                        .recipeDetailList(new ArrayList<>(List.of(
-//                                RecipeDetail.builder()
-//                                        .cookingOrderImageUrl(cookingOrderImageUrl1)
-//                                        .build(),
-//                                RecipeDetail.builder()
-//                                        .cookingOrderImageUrl(cookingOrderImageUrl2)
-//                                        .build())))
-//                        .build());
-//
-//        //when
-//        recipeFacade.deleteRecipe(email, recipeId);
-//
-//        //then
-//        verify(s3Service, times(3)).deleteImage(any());
-//    }
+    @Test
+    @DisplayName("꿀조합 게시글 삭제, 삭제 후 이미지 삭제 성공")
+    void success_delete_recipe() {
+        //given
+        String email = "email@email.com";
+        Long recipeId = 10L;
+        Long id = 1L;
+
+        given(memberService.findByEmail(email)).willReturn(Member.builder()
+                .id(id)
+                .build());
+        given(recipeService.getRecipe(recipeId)).willReturn(Recipe.builder()
+                .member(Member.builder()
+                        .id(id)
+                        .build())
+                .build());
+        given(recipeService.getBeforeImageUrl(recipeId)).willReturn(
+                ImageUrlDto.builder()
+                        .mainImageUrl("old://image.com/image1.jpg")
+                        .cookingOrderImageUrlList(new ArrayList<>(List.of(
+                                "old://image.com/image2.jpg",
+                                "old://image.com/image3.jpg"
+                        )))
+                        .build());
+
+        //when
+        recipeFacade.deleteRecipe(email, recipeId);
+
+        //then
+        ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
+        verify(recipeService, times(1)).deleteRecipe(recipeId);
+        verify(s3Service, times(3)).deleteImage(captor.capture());
+
+        List<String> captorList = captor.getAllValues();
+        assertEquals("old://image.com/image1.jpg", captorList.get(0));
+        assertEquals("old://image.com/image2.jpg", captorList.get(1));
+        assertEquals("old://image.com/image3.jpg", captorList.get(2));
+    }
 
     @Test
     @DisplayName("꿀조합 게시글 삭제, 삭제 후 이미지 삭제 실패 - 권한없음")
