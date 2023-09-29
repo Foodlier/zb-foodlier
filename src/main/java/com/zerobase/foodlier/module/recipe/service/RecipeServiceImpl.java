@@ -3,6 +3,7 @@ package com.zerobase.foodlier.module.recipe.service;
 import com.zerobase.foodlier.module.member.member.domain.model.Member;
 import com.zerobase.foodlier.module.recipe.domain.document.RecipeDocument;
 import com.zerobase.foodlier.module.recipe.domain.model.Recipe;
+import com.zerobase.foodlier.module.recipe.domain.vo.RecipeDetail;
 import com.zerobase.foodlier.module.recipe.domain.vo.RecipeIngredient;
 import com.zerobase.foodlier.module.recipe.domain.vo.RecipeStatistics;
 import com.zerobase.foodlier.module.recipe.domain.vo.Summary;
@@ -137,15 +138,11 @@ public class RecipeServiceImpl implements RecipeService {
      * 작성일자: 2023-09-27
      */
     @Override
-    public ImageUrlDto deleteRecipe(Long id) {
+    public void deleteRecipe(Long id) {
         Recipe recipe = recipeRepository.findById(id)
                 .orElseThrow(() -> new RecipeException(NO_SUCH_RECIPE));
         recipeRepository.deleteById(id);
         recipeSearchRepository.deleteById(recipe.getId());
-        return ImageUrlDto.builder()
-                .mainImageUrl(recipe.getMainImageUrl())
-                .recipeDetailList(recipe.getRecipeDetailList())
-                .build();
     }
 
     /**
@@ -166,6 +163,21 @@ public class RecipeServiceImpl implements RecipeService {
 
         return recipeList;
 
+    }
+
+    /**
+     * 업데이트 시 기존의 이미지 반환
+     */
+    @Override
+    public ImageUrlDto getBeforeImageUrl(Long id) {
+        Recipe recipe = recipeRepository.findById(id)
+                .orElseThrow(() -> new RecipeException(NO_SUCH_RECIPE));
+        return ImageUrlDto.builder()
+                .mainImageUrl(recipe.getMainImageUrl())
+                .cookingOrderImageUrlList(recipe.getRecipeDetailList()
+                        .stream().map(RecipeDetail::getCookingOrderImageUrl)
+                        .collect(Collectors.toList()))
+                .build();
     }
 
 }
