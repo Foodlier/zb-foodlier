@@ -79,7 +79,7 @@ public class RefrigeratorController {
             @RequestBody RequestFormDto requestFormDto
     ) {
         requestFormService.createRequestForm(memberAuthDto.getId(), requestFormDto);
-        return ResponseEntity.ok("요청이 완료되었습니다.");
+        return ResponseEntity.ok("요청서 작성이 완료되었습니다.");
     }
 
     @GetMapping("/{pageIdx}/{pageSize}")
