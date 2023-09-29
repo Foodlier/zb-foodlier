@@ -328,14 +328,14 @@ class RecipeServiceImplTest {
                 .willReturn(true);
         doNothing().when(recipeSearchRepository).deleteById(any());
         //when
-        ImageUrlDto imageUrlDto = recipeService.deleteRecipe(id);
+        ImageUrlDto imageUrlDto = recipeService.getBeforeImageUrl(id);
+        recipeService.deleteRecipe(id);
 
         //then
         verify(recipeRepository, times(1)).deleteById(id);
         verify(recipeSearchRepository, times(1)).deleteById(any());
 
         assertEquals("image.jpg", imageUrlDto.getMainImageUrl());
-        assertEquals(RecipeDetail.class, imageUrlDto.getRecipeDetailList().get(0).getClass());
     }
 
     @Test

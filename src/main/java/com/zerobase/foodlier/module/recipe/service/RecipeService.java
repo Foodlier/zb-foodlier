@@ -18,7 +18,9 @@ public interface RecipeService {
 
     RecipeDtoResponse getRecipeDetail(Long id);
 
-    ImageUrlDto deleteRecipe(Long id);
+    void deleteRecipe(Long id);
 
     List<Recipe> getRecipeByTitle(String recipeTitle, Pageable pageable);
+
+    ImageUrlDto getBeforeImageUrl(Long id);
 }

@@ -3,6 +3,7 @@ package com.zerobase.foodlier.module.recipe.service;
 import com.zerobase.foodlier.module.member.member.domain.model.Member;
 import com.zerobase.foodlier.module.recipe.domain.document.RecipeDocument;
 import com.zerobase.foodlier.module.recipe.domain.model.Recipe;
+import com.zerobase.foodlier.module.recipe.domain.vo.RecipeDetail;
 import com.zerobase.foodlier.module.recipe.domain.vo.RecipeIngredient;
 import com.zerobase.foodlier.module.recipe.domain.vo.RecipeStatistics;
 import com.zerobase.foodlier.module.recipe.domain.vo.Summary;
@@ -12,14 +13,12 @@ import com.zerobase.foodlier.module.recipe.exception.RecipeException;
 import com.zerobase.foodlier.module.recipe.repository.RecipeRepository;
 import com.zerobase.foodlier.module.recipe.repository.RecipeSearchRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static com.zerobase.foodlier.module.recipe.exception.RecipeErrorCode.NO_SUCH_RECIPE;
@@ -138,7 +137,7 @@ public class RecipeServiceImpl implements RecipeService {
      * 작성일자: 2023-09-27
      */
     @Override
-    public ImageUrlDto deleteRecipe(Long id) {
+    public void deleteRecipe(Long id) {
         Recipe recipe = recipeRepository.findById(id)
                 .orElseThrow(() -> new RecipeException(NO_SUCH_RECIPE));
         recipeRepository.deleteById(recipe.getId());
@@ -147,11 +146,6 @@ public class RecipeServiceImpl implements RecipeService {
             throw new RecipeException(RecipeErrorCode.NO_SUCH_RECIPE_DOCUMENT);
         }
         recipeSearchRepository.deleteById(id);
-
-        return ImageUrlDto.builder()
-                .mainImageUrl(recipe.getMainImageUrl())
-                .recipeDetailList(recipe.getRecipeDetailList())
-                .build();
     }
 
     /**
@@ -171,5 +165,21 @@ public class RecipeServiceImpl implements RecipeService {
         }
 
         return recipeList;
+
+    }
+
+    /**
+     * 업데이트 시 기존의 이미지 반환
+     */
+    @Override
+    public ImageUrlDto getBeforeImageUrl(Long id) {
+        Recipe recipe = recipeRepository.findById(id)
+                .orElseThrow(() -> new RecipeException(NO_SUCH_RECIPE));
+        return ImageUrlDto.builder()
+                .mainImageUrl(recipe.getMainImageUrl())
+                .cookingOrderImageUrlList(recipe.getRecipeDetailList()
+                        .stream().map(RecipeDetail::getCookingOrderImageUrl)
+                        .collect(Collectors.toList()))
+                .build();
     }
 }

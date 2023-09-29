@@ -1,14 +1,14 @@
 package com.zerobase.foodlier.global.recipe.facade;
 
 import com.zerobase.foodlier.common.s3.service.S3Service;
-import com.zerobase.foodlier.module.recipe.dto.RecipeImageResponse;
 import com.zerobase.foodlier.module.member.member.domain.model.Member;
 import com.zerobase.foodlier.module.member.member.exception.MemberException;
 import com.zerobase.foodlier.module.member.member.service.MemberService;
 import com.zerobase.foodlier.module.recipe.domain.model.Recipe;
-import com.zerobase.foodlier.module.recipe.domain.vo.RecipeDetail;
 import com.zerobase.foodlier.module.recipe.dto.ImageUrlDto;
+import com.zerobase.foodlier.module.recipe.dto.RecipeDetailDto;
 import com.zerobase.foodlier.module.recipe.dto.RecipeDtoRequest;
+import com.zerobase.foodlier.module.recipe.dto.RecipeImageResponse;
 import com.zerobase.foodlier.module.recipe.exception.RecipeException;
 import com.zerobase.foodlier.module.recipe.service.RecipeService;
 import org.junit.jupiter.api.DisplayName;
@@ -252,37 +252,49 @@ class RecipeFacadeTest {
         RecipeDtoRequest recipeDtoRequest = RecipeDtoRequest.builder()
                 .title("title")
                 .content("content")
-                .mainImageUrl("https://s3/image.jpg")
-                .difficulty(HARD)
-                .expectedTime(30)
-                .build();
-        Recipe recipe = Recipe.builder()
-                .id(recipeId)
-                .mainImageUrl("https://zb-foodlier.s3.ap-northeast-2.amazonaws.com/img1.jpg")
-                .recipeDetailList(new ArrayList<>(List.of(
-                        RecipeDetail.builder()
-                                .cookingOrderImageUrl("https://zb-foodlier.s3.ap-northeast-2.amazonaws.com/img2.jpg")
+                .mainImageUrl("new://image.com/image1.jpg")
+                .recipeDetailDtoList(new ArrayList<>(List.of(
+                        RecipeDetailDto.builder()
+                                .cookingOrderImageUrl("new://image.com/img2.jpg")
                                 .build(),
-                        RecipeDetail.builder()
-                                .cookingOrderImageUrl("https://zb-foodlier.s3.ap-northeast-2.amazonaws.com/img3.jpg")
+                        RecipeDetailDto.builder()
+                                .cookingOrderImageUrl("new://image.com/img3.jpg")
                                 .build()
                 )))
-                .member(Member.builder()
-                        .id(id)
-                        .build())
+                .difficulty(HARD)
+                .expectedTime(30)
                 .build();
 
         given(memberService.findByEmail(email)).willReturn(Member.builder()
                 .id(id)
                 .build());
-        given(recipeService.getRecipe(recipeId)).willReturn(recipe);
+        given(recipeService.getRecipe(recipeId)).willReturn(Recipe.builder()
+                .member(Member.builder()
+                        .id(id)
+                        .build())
+                .build());
+        given(recipeService.getBeforeImageUrl(recipeId)).willReturn(
+                ImageUrlDto.builder()
+                        .mainImageUrl("old://image.com/image1.jpg")
+                        .cookingOrderImageUrlList(new ArrayList<>(List.of(
+                                "old://image.com/image2.jpg",
+                                "old://image.com/image3.jpg"
+                        )))
+                        .build()
+        );
 
         // when
         recipeFacade.updateRecipe(email, recipeDtoRequest, recipeId);
 
         // then
+        ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
         verify(recipeService, times(1)).updateRecipe(recipeDtoRequest, recipeId);
-        verify(s3Service, times(3)).deleteImage(any());
+        verify(s3Service, times(3)).deleteImage(captor.capture());
+
+        List<String> captorList = captor.getAllValues();
+        assertEquals("old://image.com/image1.jpg", captorList.get(0));
+        assertEquals("old://image.com/image2.jpg", captorList.get(1));
+        assertEquals("old://image.com/image3.jpg", captorList.get(2));
     }
 
     @Test
@@ -319,9 +331,6 @@ class RecipeFacadeTest {
         String email = "email@email.com";
         Long recipeId = 10L;
         Long id = 1L;
-        String mainImageUrl = "https://zb-foodlier.s3.ap-northeast-2.amazonaws.com/img1.jpg";
-        String cookingOrderImageUrl1 = "https://zb-foodlier.s3.ap-northeast-2.amazonaws.com/img2.jpg";
-        String cookingOrderImageUrl2 = "https://zb-foodlier.s3.ap-northeast-2.amazonaws.com/img3.jpg";
 
         given(memberService.findByEmail(email)).willReturn(Member.builder()
                 .id(id)
@@ -331,23 +340,27 @@ class RecipeFacadeTest {
                         .id(id)
                         .build())
                 .build());
-        given(recipeService.deleteRecipe(recipeId))
-                .willReturn(ImageUrlDto.builder()
-                        .mainImageUrl(mainImageUrl)
-                        .recipeDetailList(new ArrayList<>(List.of(
-                                RecipeDetail.builder()
-                                        .cookingOrderImageUrl(cookingOrderImageUrl1)
-                                        .build(),
-                                RecipeDetail.builder()
-                                        .cookingOrderImageUrl(cookingOrderImageUrl2)
-                                        .build())))
+        given(recipeService.getBeforeImageUrl(recipeId)).willReturn(
+                ImageUrlDto.builder()
+                        .mainImageUrl("old://image.com/image1.jpg")
+                        .cookingOrderImageUrlList(new ArrayList<>(List.of(
+                                "old://image.com/image2.jpg",
+                                "old://image.com/image3.jpg"
+                        )))
                         .build());
 
         //when
         recipeFacade.deleteRecipe(email, recipeId);
 
         //then
-        verify(s3Service, times(3)).deleteImage(any());
+        ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
+        verify(recipeService, times(1)).deleteRecipe(recipeId);
+        verify(s3Service, times(3)).deleteImage(captor.capture());
+
+        List<String> captorList = captor.getAllValues();
+        assertEquals("old://image.com/image1.jpg", captorList.get(0));
+        assertEquals("old://image.com/image2.jpg", captorList.get(1));
+        assertEquals("old://image.com/image3.jpg", captorList.get(2));
     }
 
     @Test

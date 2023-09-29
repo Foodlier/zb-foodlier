@@ -12,6 +12,6 @@ import java.util.List;
 @Builder
 public class ImageUrlDto {
     private String mainImageUrl;
-    private List<RecipeDetail> recipeDetailList;
+    private List<String> cookingOrderImageUrlList;
 
 }
