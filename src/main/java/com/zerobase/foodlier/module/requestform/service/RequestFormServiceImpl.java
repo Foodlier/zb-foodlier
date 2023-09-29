@@ -74,7 +74,7 @@ public class RequestFormServiceImpl implements RequestFormService {
             Long id, int pageIdx, int pageSize) {
         PageRequest pageRequest = PageRequest.of(pageIdx, pageSize);
         Page<RequestForm> requestFormPage = requestFormRepository
-                .findAllByIdOrderByDateDesc(id, pageRequest);
+                .findAllByIdOrderByCreatedAtDesc(id, pageRequest);
         return requestFormPage.map(RequestFormResponseDto::fromEntity);
     }
 

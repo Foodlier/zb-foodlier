@@ -6,5 +6,5 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface RequestFormRepository extends JpaRepository<RequestForm, Long> {
-    Page<RequestForm> findAllByIdOrderByDateDesc(Long id, PageRequest pageRequest);
+    Page<RequestForm> findAllByIdOrderByCreatedAtDesc(Long id, PageRequest pageRequest);
 }
