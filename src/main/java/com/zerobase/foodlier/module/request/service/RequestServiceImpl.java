@@ -15,7 +15,6 @@ import com.zerobase.foodlier.module.requestform.domain.model.RequestForm;
 import com.zerobase.foodlier.module.requestform.exception.RequestFormException;
 import com.zerobase.foodlier.module.requestform.repository.RequestFormRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.util.Objects;
@@ -157,8 +156,8 @@ public class RequestServiceImpl implements RequestService {
         if(Objects.equals(member.getId(), chefMember.getMember().getId())){
             throw new RequestException(CANNOT_REQUEST_TO_ME);
         }
-        if(requestRepository.existsByMemberAndChefMemberAndIsPaid(
-                member, chefMember, false
+        if(requestRepository.existsByMemberAndChefMemberAndIsPaidFalse(
+                member, chefMember
         )){
             throw new RequestException(ALREADY_REQUESTED_CHEF);
         }
