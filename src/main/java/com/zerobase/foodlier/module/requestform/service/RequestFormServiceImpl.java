@@ -24,7 +24,7 @@ import java.util.stream.Collectors;
 import static com.zerobase.foodlier.module.member.member.exception.MemberErrorCode.MEMBER_NOT_FOUND;
 import static com.zerobase.foodlier.module.recipe.exception.RecipeErrorCode.*;
 import static com.zerobase.foodlier.module.requestform.exception.RequestFormErrorCode.REQUEST_FORM_NOT_FOUND;
-import static com.zerobase.foodlier.module.requestform.exception.RequestFormErrorCode.SELECT_REQUEST_FORM_PERMISSION_DENIED;
+import static com.zerobase.foodlier.module.requestform.exception.RequestFormErrorCode.REQUEST_FORM_PERMISSION_DENIED;
 
 @Service
 @RequiredArgsConstructor
@@ -43,10 +43,14 @@ public class RequestFormServiceImpl implements RequestFormService {
     public void createRequestForm(Long id, RequestFormDto requestFormDto) {
         Member member = memberRepository.findById(id)
                 .orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
-        Recipe recipe = recipeRepository.findById(requestFormDto.getRecipeId())
-                .orElseThrow(() -> new RecipeException(NO_SUCH_RECIPE));
+        Recipe recipe = null;
 
-        checkValidation(recipe);
+        if (requestFormDto.getRecipeId() != null && requestFormDto.getRecipeId() != 0) {
+            recipe = recipeRepository.findById(requestFormDto.getRecipeId())
+                    .orElseThrow(() -> new RecipeException(NO_SUCH_RECIPE));
+
+            checkValidation(recipe);
+        }
 
         requestFormRepository.save(RequestForm.builder()
                 .title(requestFormDto.getTitle())
@@ -73,8 +77,10 @@ public class RequestFormServiceImpl implements RequestFormService {
     public Page<RequestFormResponseDto> getMyRequestForm(
             Long id, int pageIdx, int pageSize) {
         PageRequest pageRequest = PageRequest.of(pageIdx, pageSize);
+        Member member = memberRepository.findById(id)
+                .orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
         Page<RequestForm> requestFormPage = requestFormRepository
-                .findAllByIdOrderByCreatedAtDesc(id, pageRequest);
+                .findAllByMemberOrderByCreatedAtDesc(member, pageRequest);
         return requestFormPage.map(RequestFormResponseDto::fromEntity);
     }
 
@@ -89,7 +95,7 @@ public class RequestFormServiceImpl implements RequestFormService {
                 .orElseThrow(() -> new RequestFormException(REQUEST_FORM_NOT_FOUND));
         checkPermission(id, requestForm.getMember().getId());
         return RequestFormDetailDto.builder()
-                .requestId(requestForm.getId())
+                .requestFormId(requestForm.getId())
                 .title(requestForm.getTitle())
                 .content(requestForm.getContent())
                 .ingredientList(requestForm.getIngredientList().stream()
@@ -168,7 +174,7 @@ public class RequestFormServiceImpl implements RequestFormService {
      */
     private void checkPermission(Long id, Long memberId) {
         if (!Objects.equals(id, memberId)) {
-            throw new RequestFormException(SELECT_REQUEST_FORM_PERMISSION_DENIED);
+            throw new RequestFormException(REQUEST_FORM_PERMISSION_DENIED);
         }
     }
 }

@@ -12,7 +12,7 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 public class RequestFormDetailDto {
-    private Long requestId;
+    private Long requestFormId;
     private String title;
     private String content;
     private List<String> ingredientList;
