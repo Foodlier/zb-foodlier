@@ -3,6 +3,8 @@ import { breakpoints, palette } from '../constants/Styles'
 
 export const Container = styled.header`
   width: 100%;
+  max-height: 9rem;
+  height: 9rem;
   padding: 5%;
   display: flex;
   align-items: center;
