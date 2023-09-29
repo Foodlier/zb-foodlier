@@ -30,7 +30,7 @@ public class Request extends Audit {
     @Column(nullable = false)
     private String content;
     @Column(nullable = false)
-    private Long expectPrice;
+    private Long expectedPrice;
     @Column(nullable = false)
     private LocalDateTime expectedAt;
     @Column(nullable = false)
