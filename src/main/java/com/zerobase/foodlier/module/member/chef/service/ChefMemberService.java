@@ -3,6 +3,7 @@ package com.zerobase.foodlier.module.member.chef.service;
 import com.zerobase.foodlier.module.member.chef.dto.AroundChefDto;
 import com.zerobase.foodlier.module.member.chef.dto.ChefIntroduceForm;
 import com.zerobase.foodlier.module.member.chef.dto.RequestedChefDto;
+import com.zerobase.foodlier.module.member.chef.type.ChefSearchType;
 
 import java.util.List;
 
@@ -14,5 +15,5 @@ public interface ChefMemberService {
                                                 int pageIdx, int pageSize);
 
     List<AroundChefDto> getAroundChefList(Long memberId,
-                                          int pageIdx, int pageSize);
+                                          int pageIdx, int pageSize, ChefSearchType type);
 }

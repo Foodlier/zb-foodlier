@@ -33,29 +33,30 @@ public interface ChefMemberRepository extends JpaRepository<ChefMember, Long> {
         @Param("end") int end
     );
 
+    String baseAroundSearchQuery = "SELECT c.id as chefId, c.introduce as introduce, c.star_avg as starAvg,\n" +
+            "c.review_count as reviewCount, m.profile_url as profileUrl, m.nickname as nickname,\n" +
+            "ROUND(st_distance_sphere(point(m.lnt, m.lat), point(:lnt, :lat))/1000, 2) as distance\n" +
+            "FROM chef_member c\n" +
+            "LEFT JOIN member m ON m.chef_member_id = c.id\n" +
+            "WHERE m.id <> :requester\n" +
+            "AND ST_CONTAINS(\n" +
+            "    ST_BUFFER(POINT(:lat, :lnt), :distance),\n" +
+            "    POINT(m.lat, m.lnt))\n" +
+            "AND c.id NOT IN\n" +
+            "(\n" +
+            "\tSELECT c.id\n" +
+            "\tFROM member rm\n" +
+            "\tRIGHT JOIN cook_request rq ON rq.member_id = rm.id\n" +
+            "\tLEFT JOIN chef_member c ON c.id = rq.chef_member_id\n" +
+            "\twhere rm.id = :requester AND rq.is_paid = false AND rq.dm_room_id is null\n" +
+            ")\n";
     @Query(
-            value = "SELECT c.id as chefId, c.introduce as introduce, c.star_avg as starAvg,\n" +
-                    "c.review_count as reviewCount, m.profile_url as profileUrl, m.nickname as nickname,\n" +
-                    "ROUND(st_distance_sphere(point(m.lnt, m.lat), point(:lnt, :lat))/1000, 2) as distance\n" +
-                    "FROM chef_member c\n" +
-                    "LEFT JOIN member m ON m.chef_member_id = c.id\n" +
-                    "WHERE m.id <> :requester\n" +
-                    "AND ST_CONTAINS(\n" +
-                    "    ST_BUFFER(POINT(:lat, :lnt), :distance),\n" +
-                    "    POINT(m.lat, m.lnt))\n" +
-                    "AND c.id NOT IN\n" +
-                    "(\n" +
-                    "\tSELECT c.id\n" +
-                    "\tFROM member rm\n" +
-                    "\tRIGHT JOIN cook_request rq ON rq.member_id = rm.id\n" +
-                    "\tLEFT JOIN chef_member c ON c.id = rq.chef_member_id\n" +
-                    "\twhere rm.id = :requester AND rq.is_paid = false AND rq.dm_room_id is null\n" +
-                    ")\n" +
+            value = baseAroundSearchQuery +
                     "ORDER BY distance ASC\n" +
                     "LIMIT :start, :end",
             nativeQuery = true
     )
-    List<AroundChefDto> findAroundChef(
+    List<AroundChefDto> findAroundChefOrderByDistance(
             @Param("requester") Long memberId,
             @Param("lat") double lat,
             @Param("lnt") double lnt,
@@ -63,5 +64,37 @@ public interface ChefMemberRepository extends JpaRepository<ChefMember, Long> {
             @Param("start") int start,
             @Param("end") int end
     );
+
+    @Query(
+            value = baseAroundSearchQuery +
+                    "ORDER BY reviewCount ASC\n" +
+                    "LIMIT :start, :end",
+            nativeQuery = true
+    )
+    List<AroundChefDto> findAroundChefOrderByReview(
+            @Param("requester") Long memberId,
+            @Param("lat") double lat,
+            @Param("lnt") double lnt,
+            @Param("distance") double distance,
+            @Param("start") int start,
+            @Param("end") int end
+    );
+
+    @Query(
+            value = baseAroundSearchQuery +
+                    "ORDER BY starAvg ASC\n" +
+                    "LIMIT :start, :end",
+            nativeQuery = true
+    )
+    List<AroundChefDto> findAroundChefOrderByStar(
+            @Param("requester") Long memberId,
+            @Param("lat") double lat,
+            @Param("lnt") double lnt,
+            @Param("distance") double distance,
+            @Param("start") int start,
+            @Param("end") int end
+    );
+
+
 
 }

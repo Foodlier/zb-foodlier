@@ -6,6 +6,7 @@ import com.zerobase.foodlier.module.member.chef.dto.ChefIntroduceForm;
 import com.zerobase.foodlier.module.member.chef.dto.RequestedChefDto;
 import com.zerobase.foodlier.module.member.chef.exception.ChefMemberException;
 import com.zerobase.foodlier.module.member.chef.repository.ChefMemberRepository;
+import com.zerobase.foodlier.module.member.chef.type.ChefSearchType;
 import com.zerobase.foodlier.module.member.chef.type.GradeType;
 import com.zerobase.foodlier.module.member.member.domain.model.Member;
 import com.zerobase.foodlier.module.member.member.domain.vo.Address;
@@ -27,7 +28,7 @@ import static com.zerobase.foodlier.module.member.chef.exception.ChefMemberError
 @RequiredArgsConstructor
 public class ChefMemberServiceImpl implements ChefMemberService{
 
-    private static final double AROUND_DISTANCE = 0.01;
+    private static final double AROUND_DISTANCE = 0.012;
     private static final int MIN_RECIPES_FOR_CHEF = 3;
     private final ChefMemberRepository chefMemberRepository;
     private final MemberRepository memberRepository;
@@ -87,11 +88,25 @@ public class ChefMemberServiceImpl implements ChefMemberService{
      *  작성자 : 전현서
      *  작성일 : 2023-09-29
      *  반경 1km내의 요리사 리스트를 페이징하여 반환
+     *  type이 지정되지 않은 경우는 기본적으로 가까운 거리순
      */
     public List<AroundChefDto> getAroundChefList(Long memberId,
-                                                  int pageIdx, int pageSize){
+                                                 int pageIdx, int pageSize,
+                                                 ChefSearchType type){
         Address address = getMember(memberId).getAddress();
-        return chefMemberRepository.findAroundChef(memberId, address.getLat(),
+
+        switch (type){
+            case STAR:
+                return chefMemberRepository.findAroundChefOrderByStar(memberId, address.getLat(),
+                        address.getLnt(), AROUND_DISTANCE, pageIdx * pageSize, pageSize);
+            case REVIEW:
+                return chefMemberRepository.findAroundChefOrderByReview(memberId, address.getLat(),
+                        address.getLnt(), AROUND_DISTANCE, pageIdx * pageSize, pageSize);
+            case RECIPE:
+                break;
+        }
+
+        return chefMemberRepository.findAroundChefOrderByDistance(memberId, address.getLat(),
                 address.getLnt(), AROUND_DISTANCE, pageIdx * pageSize, pageSize);
     }
 
