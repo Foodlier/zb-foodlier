@@ -1,6 +1,7 @@
 package com.zerobase.foodlier.module.request.domain.model;
 
 import com.zerobase.foodlier.common.jpa.audit.Audit;
+import com.zerobase.foodlier.module.dm.room.domain.model.DmRoom;
 import com.zerobase.foodlier.module.member.chef.domain.model.ChefMember;
 import com.zerobase.foodlier.module.member.member.domain.model.Member;
 import com.zerobase.foodlier.module.recipe.domain.model.Recipe;
@@ -45,6 +46,9 @@ public class Request extends Audit {
     @ManyToOne
     @JoinColumn(name = "member_id")
     private Member member;
+
+    @OneToOne
+    private DmRoom dmRoom;
 
     @OneToOne
     private ChefReview chefReview;
