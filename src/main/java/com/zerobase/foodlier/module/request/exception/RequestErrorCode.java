@@ -12,6 +12,8 @@ public enum RequestErrorCode {
     ALREADY_REQUESTED_CHEF("이미 요청한 요리사입니다."),
     CANNOT_CANCEL_APPROVED("수락한 요청은 취소할 수 없습니다."),
     CANNOT_CANCEL_IS_PAID("결제된 요청은 취소할 수 없습니다."),
+    CANNOT_REJECT_APPROVED("수락된 요청은 거절할 수 없습니다."),
+    CANNOT_REJECT_IS_PAID("결제된 요청은 거절할 수 없습니다."),
     CANNOT_REQUESTER_APPROVE_HAS_NOT_QUOTATION("견적서가 없는 요청을 수락할 수 없습니다."),
     CANNOT_REQUESTER_APPROVE_IS_NOT_QUOTATION("견적서가 아닌 요청을 수락할 수 없습니다."),
     CANNOT_CHEF_APPROVE_HAS_NOT_RECIPE("요청서에 태깅된 레시피가 존재하지 않습니다."),

@@ -72,7 +72,7 @@ public class RequestServiceImpl implements RequestService {
                                 .map(x -> new Ingredient(x.getIngredientName()))
                                 .collect(Collectors.toList())
                 )
-                .expectPrice(requestForm.getExpectPrice())
+                .expectedPrice(requestForm.getExpectedPrice())
                 .expectedAt(requestForm.getExpectedAt())
                 .recipe(requestForm.getRecipe())
                 .isPaid(false)
@@ -210,10 +210,10 @@ public class RequestServiceImpl implements RequestService {
             throw new RequestException(CHEF_MEMBER_REQUEST_NOT_MATCH);
         }
         if(request.getDmRoom() != null){
-            throw new RequestException(CANNOT_CANCEL_APPROVED);
+            throw new RequestException(CANNOT_REJECT_APPROVED);
         }
         if(request.isPaid()){
-            throw new RequestException(CANNOT_CANCEL_IS_PAID);
+            throw new RequestException(CANNOT_REJECT_IS_PAID);
         }
     }
 }
