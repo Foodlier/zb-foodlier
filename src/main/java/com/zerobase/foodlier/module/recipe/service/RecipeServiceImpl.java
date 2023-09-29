@@ -8,11 +8,11 @@ import com.zerobase.foodlier.module.recipe.domain.vo.RecipeIngredient;
 import com.zerobase.foodlier.module.recipe.domain.vo.RecipeStatistics;
 import com.zerobase.foodlier.module.recipe.domain.vo.Summary;
 import com.zerobase.foodlier.module.recipe.dto.*;
+import com.zerobase.foodlier.module.recipe.exception.RecipeErrorCode;
 import com.zerobase.foodlier.module.recipe.exception.RecipeException;
 import com.zerobase.foodlier.module.recipe.repository.RecipeRepository;
 import com.zerobase.foodlier.module.recipe.repository.RecipeSearchRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -62,7 +62,7 @@ public class RecipeServiceImpl implements RecipeService {
         recipeSearchRepository.save(RecipeDocument.builder()
                 .id(recipe.getId())
                 .title(recipe.getSummary().getTitle())
-                .chefName(recipe.getMember().getNickname())
+                .writer(recipe.getMember().getNickname())
                 .ingredients(recipe.getRecipeIngredientList().stream()
                         .map(RecipeIngredient::getName)
                         .collect(Collectors.toList()))
@@ -100,16 +100,15 @@ public class RecipeServiceImpl implements RecipeService {
                 .collect(Collectors.toList()));
 
         recipeRepository.save(recipe);
-        recipeSearchRepository.save(RecipeDocument.builder()
-                .id(recipe.getId())
-                .title(recipe.getSummary().getTitle())
-                .chefName(recipe.getMember().getNickname())
-                .ingredients(recipe.getRecipeIngredientList().stream()
-                        .map(RecipeIngredient::getName)
-                        .collect(Collectors.toList()))
-                .numberOfHeart(recipe.getHeartList().size())
-                .numberOfComment(recipe.getCommentList().size())
-                .build());
+        RecipeDocument recipeDocument = recipeSearchRepository.findById(recipe.getId())
+                .orElseThrow(() -> new RecipeException(RecipeErrorCode.NO_SUCH_RECIPE_DOCUMENT));
+
+        recipeDocument.updateTitle(recipe.getSummary().getTitle());
+        recipeDocument.updateIngredients(recipe.getRecipeIngredientList().stream()
+                .map(RecipeIngredient::getName)
+                .collect(Collectors.toList()));
+
+        recipeSearchRepository.save(recipeDocument);
     }
 
     @Override
@@ -141,24 +140,28 @@ public class RecipeServiceImpl implements RecipeService {
     public void deleteRecipe(Long id) {
         Recipe recipe = recipeRepository.findById(id)
                 .orElseThrow(() -> new RecipeException(NO_SUCH_RECIPE));
-        recipeRepository.deleteById(id);
-        recipeSearchRepository.deleteById(recipe.getId());
+        recipeRepository.deleteById(recipe.getId());
+
+        if (!recipeSearchRepository.existsById(id)) {
+            throw new RecipeException(RecipeErrorCode.NO_SUCH_RECIPE_DOCUMENT);
+        }
+        recipeSearchRepository.deleteById(id);
     }
 
     /**
-
-     - 작성자: 이종욱
-     - 레시피 제목을 이용하여 유사한 제목을 갖는 레시피 목록 반환
-     - 작성일자: 2023-09-27
+     * - 작성자: 이종욱
+     * - 레시피 제목을 이용하여 유사한 제목을 갖는 레시피 목록 반환
+     * - 작성일자: 2023-09-27
      */
 
     @Override
     public List<Recipe> getRecipeByTitle(String recipeTitle, Pageable pageable) {
-        Page<RecipeDocument> byTitle = recipeSearchRepository.findByTitle(recipeTitle, pageable);
+        List<RecipeDocument> byTitle = recipeSearchRepository.findByTitle(recipeTitle, pageable).getContent();
         List<Recipe> recipeList = new ArrayList<>();
-        for (RecipeDocument recipeDocument : byTitle.toList()) {
-            recipeList.add(recipeRepository.findById(recipeDocument.getId())
-                    .orElseThrow(() -> new RecipeException(NO_SUCH_RECIPE)));
+        for (RecipeDocument recipeDocument : byTitle) {
+            Recipe recipe = recipeRepository.findById(recipeDocument.getId())
+                    .orElseThrow(() -> new RecipeException(NO_SUCH_RECIPE));
+            recipeList.add(recipe);
         }
 
         return recipeList;
@@ -179,5 +182,4 @@ public class RecipeServiceImpl implements RecipeService {
                         .collect(Collectors.toList()))
                 .build();
     }
-
 }
