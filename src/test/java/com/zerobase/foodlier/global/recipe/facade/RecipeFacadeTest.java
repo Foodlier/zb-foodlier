@@ -1,7 +1,7 @@
 package com.zerobase.foodlier.global.recipe.facade;
 
 import com.zerobase.foodlier.common.s3.service.S3Service;
-import com.zerobase.foodlier.global.recipe.dto.RecipeImageResponse;
+import com.zerobase.foodlier.module.recipe.dto.RecipeImageResponse;
 import com.zerobase.foodlier.module.member.member.domain.model.Member;
 import com.zerobase.foodlier.module.member.member.exception.MemberException;
 import com.zerobase.foodlier.module.member.member.service.MemberService;
