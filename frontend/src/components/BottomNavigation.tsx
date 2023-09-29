@@ -28,7 +28,7 @@ const BottomNavigation = () => {
     {
       title: '채팅',
       icon: <IcChatLight size={ICON_SIZE} color={palette.textPrimary} />,
-      navigate: '',
+      navigate: 'chat',
     },
     {
       title: '내 정보',
