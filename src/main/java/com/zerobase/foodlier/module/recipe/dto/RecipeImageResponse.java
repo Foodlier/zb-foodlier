@@ -1,4 +1,4 @@
-package com.zerobase.foodlier.global.recipe.dto;
+package com.zerobase.foodlier.module.recipe.dto;
 
 import lombok.*;
 
