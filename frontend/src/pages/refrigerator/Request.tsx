@@ -3,22 +3,36 @@ import Header from '../../components/Header'
 import BottomNavigation from '../../components/BottomNavigation'
 import * as S from '../../styles/refrigerator/Request.styled'
 
-const Request = () => {
-  const [count, setCount] = useState(1)
-  const [inputs, setInputs] = useState<string[]>([])
-  console.log(inputs)
+interface RequestValue {
+  title: string
+  content: string
+  ingredientList: string[]
+  expectedPrice: string
+  expectedAt: string
+}
 
-  // 입력된 값을 배열에 저장하는 함수
-  const handleInputChange = (value: string, index: number) => {
-    setInputs(prevInputs => {
-      const newInputs = [...prevInputs] // 이전 배열 복사
-      newInputs[index] = value // 인덱스에 값 할당
-      return newInputs // 새로운 배열로 상태 업데이트
-    })
+const Request = () => {
+  const [ingredientCount, setIngredientCount] = useState(1)
+  const [requestValue, setRequestValue] = useState<RequestValue>({
+    title: '',
+    content: '',
+    ingredientList: [],
+    expectedPrice: '',
+    expectedAt: '',
+  })
+
+  // 재료 개수 추가하는 함수
+  const ingredientPlus = () => {
+    setIngredientCount(ingredientCount + 1)
   }
 
-  const countPlus = () => {
-    setCount(count + 1)
+  // 입력된 재료 'requestValue' 객체에 저장하는 함수
+  const ingredientInputChange = (value: string, index: number) => {
+    setRequestValue(prevInputs => {
+      const newInputs = { ...prevInputs } // 이전 정보 가져오기
+      newInputs.ingredientList[index] = value // 이전 정보에 새로운 정보 업데이트
+      return newInputs
+    })
   }
 
   const BUTTON_LIST = ['작성 취소', '저장하기']
@@ -31,24 +45,39 @@ const Request = () => {
           <S.RequestFormList>
             <S.RequestFormEl>
               <S.ElementTitle>제목</S.ElementTitle>
-              <S.ElementInput type="text" placeholder="제목을 입력해주세요." />
+              <S.ElementInput
+                type="text"
+                placeholder="제목을 입력해주세요."
+                onChange={e =>
+                  setRequestValue({ ...requestValue, title: e.target.value })
+                }
+              />
             </S.RequestFormEl>
             <S.RequestFormEl>
               <S.ElementTitle>요청 내용</S.ElementTitle>
-              <S.ElementInput type="text" placeholder="내용을 입력해주세요." />
+              <S.ElementInput
+                type="text"
+                placeholder="내용을 입력해주세요."
+                onChange={e =>
+                  setRequestValue({ ...requestValue, content: e.target.value })
+                }
+              />
             </S.RequestFormEl>
             <S.RequestFormEl>
               <S.ElementTitle>보유 재료</S.ElementTitle>
-              {Array.from({ length: count }, (value: string | '', index) => (
-                <S.ElementSourceInput
-                  key={index}
-                  defaultValue={value}
-                  type="text"
-                  placeholder="재료 이름"
-                  onChange={e => handleInputChange(e.target.value, index)}
-                />
-              ))}
-              <S.PlusButton type="button" onClick={countPlus}>
+              {Array.from(
+                { length: ingredientCount },
+                (value: string | '', index) => (
+                  <S.ElementSourceInput
+                    key={index}
+                    defaultValue={value}
+                    type="text"
+                    placeholder="재료 이름"
+                    onChange={e => ingredientInputChange(e.target.value, index)}
+                  />
+                )
+              )}
+              <S.PlusButton type="button" onClick={ingredientPlus}>
                 +
               </S.PlusButton>
             </S.RequestFormEl>
@@ -59,17 +88,32 @@ const Request = () => {
                 <S.InvisibleInput
                   type="text"
                   placeholder="금액을 입력해주세요."
+                  onChange={e =>
+                    setRequestValue({
+                      ...requestValue,
+                      expectedPrice: e.target.value,
+                    })
+                  }
                 />
               </S.LikeInputDiv>
             </S.RequestFormEl>
             <S.RequestFormEl>
               <S.ElementTitle>요청시간</S.ElementTitle>
-              <S.ElementInput type="text" placeholder="시간을 선택해주세요." />
+              <S.ElementInput
+                type="text"
+                placeholder="희망 시간을 입력 해주세요."
+                onChange={e =>
+                  setRequestValue({
+                    ...requestValue,
+                    expectedAt: e.target.value,
+                  })
+                }
+              />
             </S.RequestFormEl>
             <S.RequestFormEl>
               <S.ElementTitle>사용자 지역</S.ElementTitle>
               <S.LikeInputDiv>
-                <S.ElementSpan>강원도 양구군 박수근로 137</S.ElementSpan>
+                <S.ElementSpan>사용자 지역 초기값</S.ElementSpan>
               </S.LikeInputDiv>
             </S.RequestFormEl>
             <S.RequestFormEl>

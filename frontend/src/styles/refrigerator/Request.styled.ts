@@ -33,12 +33,9 @@ export const RequestFormList = styled.ul`
 
 export const RequestFormEl = styled.li`
   display: flex;
+  flex-direction: column;
+  align-items: start;
   gap: 10px;
-  align-items: center;
-  @media (max-width: 768px) {
-    align-items: start;
-    flex-direction: column;
-  }
 `
 
 export const ElementTitle = styled.span`
@@ -62,7 +59,6 @@ export const ElementInput = styled.input`
     outline: none;
   }
   ${breakpoints.large} {
-    width: calc(100% - 150px);
     height: 72px;
     font-size: 24px;
   }
@@ -82,7 +78,6 @@ export const ElementSourceInput = styled.input`
   }
   ${breakpoints.large} {
     height: 72px;
-    width: 25%;
     font-size: 24px;
     margin-bottom: 0px;
   }
@@ -100,7 +95,6 @@ export const LikeInputDiv = styled.div`
   gap: 10px;
   align-items: center;
   ${breakpoints.large} {
-    width: calc(100% - 150px);
     height: 72px;
   }
 `
@@ -153,6 +147,7 @@ export const SearchButton = styled.button`
   border: 1px solid ${palette.main};
   border-radius: 10px;
   ${breakpoints.large} {
+    width: 160px;
     height: 72px;
     font-size: 20px;
   }

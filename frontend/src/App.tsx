@@ -7,6 +7,9 @@ import MainPage from './pages/MainPage'
 import RequestDetail from './pages/refrigerator/RequestDetail'
 import Request from './pages/refrigerator/Request'
 import CookForYou from './pages/refrigerator/CookForYou'
+import WriteRecipePage from './pages/recipe/WriteRecipePage'
+import WriteEstimatePage from './pages/refrigerator/WriteEstimatePage'
+import EstimateDetail from './pages/refrigerator/EstimateDetail'
 
 function App() {
   // const [count, setCount] = useState(0)
@@ -25,6 +28,9 @@ function App() {
       <Route path="/cook-for-you" element={<CookForYou />} />
       <Route path="/request" element={<Request />} />
       <Route path="/request-detail" element={<RequestDetail />} />
+      <Route path="/a" element={<WriteRecipePage />} />
+      <Route path="/b" element={<WriteEstimatePage />} />
+      <Route path="/c" element={<EstimateDetail />} />
     </Routes>
   )
 }

@@ -82,7 +82,6 @@ const Header = () => {
       {/* 모바일 검색 - MoSearch 컴포넌트 추가  */}
       {isMoSearchOpen && <MoSearch setIsMoSearchOpen={setIsMoSearchOpen} />}
     </R.Container>
-
   )
 }
 

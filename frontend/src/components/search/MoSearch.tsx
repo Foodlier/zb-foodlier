@@ -1,9 +1,8 @@
 import React from 'react'
-import styled from 'styled-components'
 import * as S from '../../styles/search/MoSearch.styled'
 import SearchBar from './SearchBar'
 import useIcon from '../../hooks/useIcon'
-import { breakpoints, palette } from '../../constants/Styles'
+import { palette } from '../../constants/Styles'
 
 interface MoSearchProps {
   setIsMoSearchOpen: (isOpen: boolean) => void

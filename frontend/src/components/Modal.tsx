@@ -1,72 +1,76 @@
-// import styled from 'styled-components'
-// import { breakpoints } from '../constants/Styles'
+import React from 'react'
+import * as S from '../styles/Modal.styled'
 
-// interface ModalProps {
-//   setModalOpen: React.Dispatch<React.SetStateAction<boolean>>
-// }
+interface ModalProps {
+  setModalOpen: React.Dispatch<React.SetStateAction<boolean>>
+  modalType: string
+}
 
-// const GreyBackground = styled.div`
-//   position: absolute;
-//   top: 0;
-//   left: 0;
-//   width: 100vw;
-//   height: 100%;
-//   background-color: #000000;
-//   opacity: 0.4;
-//   z-index: 99;
-// `
+const Modal: React.FC<ModalProps> = ({ setModalOpen, modalType }) => {
+  const closeModal = () => {
+    setModalOpen(false)
+  }
 
-// const ModalScreen = styled.div`
-//   position: absolute;
-//   top: 50%;
-//   left: 50%;
-//   transform: translate(-50%, -50%);
-//   width: 90%;
-//   height: 80%;
-//   max-width: 1000px;
-//   background-color: #ffffff;
-//   padding: 5%;
-//   border-radius: 10px;
-//   z-index: 100;
-//   ${breakpoints.large} {
-//     padding: 3%;
-//     width: 70%;
-//   }
-// `
+  const modalOPtion = {
+    type: '',
+    button: '',
+  }
 
-// const ModalTop = styled.div`
-//   display: flex;
-//   justify-content: space-between;
-//   span,
-//   button {
-//     font-size: 20px;
-//     font-weight: bold;
-//   }
-// `
+  if (modalType === 'estimate') {
+    modalOPtion.type = '견적서'
+    modalOPtion.button = '선택하기'
+  } else {
+    modalOPtion.type = '요청서'
+    modalOPtion.button = '요청하기'
+  }
 
-// const Modal: React.FC<ModalProps> = ({ setModalOpen }) => {
-//   const closeModal = () => {
-//     setModalOpen(false)
-//   }
+  const REQUEST_LIST_EXAMPLE = [
+    {
+      title: '남아버린 치킨을 되살릴 수 있을까요?',
+      contents: '도와주세요, 집에 치킨이랑 마요네즈 정도만 있어요',
+    },
+    {
+      title: '남아버린 치킨을 되살릴 수 있을까요?',
+      contents: '높은 하늘을 다시 날 수 있도록 도와주세요..!',
+    },
+  ]
 
-//   return (
-//     <>
-//       <GreyBackground />
-//       <ModalScreen>
-//         <ModalTop>
-//           <span>요청서 목록</span>
-//           <button type="button" onClick={closeModal}>
-//             X
-//           </button>
-//         </ModalTop>
-//         <div>
-//           <ul>
-//             <li></li>
-//           </ul>
-//         </div>
-//       </ModalScreen>
-//     </>
-//   )
-// }
+  return (
+    <>
+      <S.GreyBackground />
+      <S.ModalScreen>
+        <S.ModalTop>
+          <span>나의 {modalOPtion.type} 목록</span>
+          <button type="button" onClick={closeModal}>
+            X
+          </button>
+        </S.ModalTop>
+        <div>
+          <S.ElContainer>
+            {REQUEST_LIST_EXAMPLE.map(el => (
+              // key 값 뭘로 해야하지?
+              <S.El key={el.contents}>
+                {/* <S.ElImg src="" alt="" /> */}
+                <div>
+                  <S.ElTitle>{el.title}</S.ElTitle>
+                  <S.ElContents>{el.contents}</S.ElContents>
+                </div>
+                <S.ButtonContainer>
+                  <S.RequestButton type="button">
+                    {modalOPtion.button}
+                  </S.RequestButton>
+                  <S.MoreButtonContainer>
+                    <S.MoreButton type="button">수정</S.MoreButton>
+                    <S.MoreButton type="button">삭제</S.MoreButton>
+                  </S.MoreButtonContainer>
+                </S.ButtonContainer>
+              </S.El>
+            ))}
+          </S.ElContainer>
+        </div>
+      </S.ModalScreen>
+    </>
+  )
+}
 
-// export default Modal
+export default Modal

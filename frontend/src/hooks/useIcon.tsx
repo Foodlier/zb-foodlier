@@ -352,7 +352,6 @@ const useIcon = () => {
     )
   }
 
-
   return {
     IcMenu,
     IcSearch,

@@ -1,5 +1,5 @@
-import { useState } from 'react'
-// import Modal from '../../components/Modal'
+import { useState, useEffect } from 'react'
+import Modal from '../../components/Modal'
 import Header from '../../components/Header'
 import BottomNavigation from '../../components/BottomNavigation'
 import * as S from '../../styles/refrigerator/CookForMe.styled'
@@ -13,11 +13,20 @@ const CookForMe = () => {
     setOptionToggle(!optionToggle)
   }
 
-  // const [modalOpen, setModalOpen] = useState<boolean>(false)
-  // const showRequest = () => {
-  //   setModalOpen(true)
-  // }
+  const [modalOpen, setModalOpen] = useState(false)
+  const showRequest = () => {
+    setModalOpen(true)
+  }
 
+  // 다른 화면 클릭 시 토글 닫힘 구현 중
+  // const closeOption = () => {
+  //   if (optionToggle) {
+  //     setOptionToggle(false)
+  //   }
+  // }
+  // document.addEventListener('click', closeOption)
+
+  // 요청하기 클릭시 및 견적서 도착시 버튼 구현 중
   // const [requestToggle, setRequestToggle] = useState(false)
   // const requestHandler = (e: React.MouseEvent) => {
   //   const target = e.target as HTMLButtonElement
@@ -37,34 +46,55 @@ const CookForMe = () => {
       rating: 2.1,
       description: '호랑이 구이 레시피',
       distance: 400,
-      reviewCount: 15,
+      reviewCount: 11,
     },
     {
       nickName: '나는 요리사2',
       rating: 0.4,
       description: '코끼리 간장 구이 레시피',
       distance: 100,
-      reviewCount: 15,
+      reviewCount: 12,
     },
     {
       nickName: '나는 요리사3',
       rating: 4.7,
       description: '맷비둘기 구이 레시피',
       distance: 300,
-      reviewCount: 15,
+      reviewCount: 13,
     },
     {
       nickName: '나는 요리사4',
       rating: 3.5,
       description: '고라니 구이 레시피',
       distance: 180,
-      reviewCount: 15,
+      reviewCount: 14,
     },
   ]
 
+  // 필터 정렬
+  const sortedChefList = CHEF_LIST_EXAMPLE
+  const [chefList, setChefList] = useState(CHEF_LIST_EXAMPLE)
+
+  useEffect(() => {
+    if (option === '거리 순') {
+      const sortedChefList2 = sortedChefList.sort(
+        (a, b) => a.distance - b.distance
+      )
+      setChefList(sortedChefList2)
+    } else if (option === '평점 순') {
+      const sortedChefList2 = sortedChefList.sort((a, b) => b.rating - a.rating)
+      setChefList(sortedChefList2)
+    } else if (option === '리뷰 많은 순') {
+      const sortedChefList2 = sortedChefList.sort(
+        (a, b) => b.reviewCount - a.reviewCount
+      )
+      setChefList(sortedChefList2)
+    }
+  }, [option, sortedChefList])
+
   return (
     <>
-      {/* {modalOpen && <Modal setModalOpen={setModalOpen} />} */}
+      {modalOpen && <Modal setModalOpen={setModalOpen} modalType="request" />}
       <Header />
       <S.Container>
         <S.Map />
@@ -94,7 +124,7 @@ const CookForMe = () => {
             </S.SelectBox>
           </S.Info>
           <S.CardList>
-            {CHEF_LIST_EXAMPLE.map(el => (
+            {chefList.map(el => (
               <S.Card key={el.nickName}>
                 <S.CardInfo className="card-info">
                   <img src="" alt="대표 사진" className="mainImg" />
@@ -118,8 +148,9 @@ const CookForMe = () => {
           </S.CardList>
           <S.ButtonList>
             <S.WritingButton type="button">+ 요청서 작성하기</S.WritingButton>
-            {/* <WritingButton type="button" onClick={showRequest}> */}
-            <S.WritingButton type="button">요청서 목록</S.WritingButton>
+            <S.WritingButton type="button" onClick={showRequest}>
+              요청서 목록
+            </S.WritingButton>
           </S.ButtonList>
         </S.ChefListContainer>
       </S.Container>
