@@ -1,37 +1,30 @@
 /* eslint-disable import/no-extraneous-dependencies */
 /* eslint-disable import/prefer-default-export */
 import { rest } from 'msw'
-import users from './dummy.json'
+import people from './dummy.json'
 
-// Path: frontend/src/mocks/handlers.ts
+async function sleep(timeout: number) {
+  return new Promise(resolve => {
+    setTimeout(resolve, timeout)
+  })
+}
+
 const handlers = [
-  rest.get('/', (req, res, ctx) => {
-    return res(
-      ctx.status(200),
-      ctx.delay(1000),
-      ctx.json({
-        message: 'Hello World!',
-      })
-    )
+  rest.get('/', async (req, res, ctx) => {
+    await sleep(200)
+
+    return res(ctx.status(200), ctx.json(people))
   }),
+  rest.post('/people', async (req, res, ctx) => {
+    await sleep(200)
+    people.push({
+      id: '345',
+      name: 'son',
+      country: 'asia',
+      lang: 'php',
+    })
 
-  rest.post('/auth/signin', (req, res, ctx) => {
-    const { email, password } = req.body as { email: string; password: string }
-
-    const finded = users.find(user => user.email === email)
-
-    if (!finded) {
-      return res(ctx.status(401))
-    }
-
-    return res(
-      ctx.status(200),
-      ctx.delay(1000),
-      ctx.json({
-        email,
-        password,
-      })
-    )
+    return res(ctx.status(201), ctx.json(people))
   }),
 ]
 
