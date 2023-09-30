@@ -7,7 +7,12 @@ import com.zerobase.foodlier.module.member.chef.dto.RequestedChefDto;
 import com.zerobase.foodlier.module.member.chef.service.ChefMemberService;
 import com.zerobase.foodlier.module.member.chef.type.ChefSearchType;
 import com.zerobase.foodlier.module.request.service.RequestService;
+import com.zerobase.foodlier.module.requestform.dto.RequestFormDetailDto;
+import com.zerobase.foodlier.module.requestform.dto.RequestFormDto;
+import com.zerobase.foodlier.module.requestform.dto.RequestFormResponseDto;
+import com.zerobase.foodlier.module.requestform.service.RequestFormService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -22,6 +27,7 @@ public class RefrigeratorController {
     private final RequestService requestService;
     private final RefrigeratorFacade refrigeratorFacade;
     private final ChefMemberService chefMemberService;
+    private final RequestFormService requestFormService;
 
     @PatchMapping("/send")
     public ResponseEntity<String> sendRequest(
@@ -69,6 +75,56 @@ public class RefrigeratorController {
     ) {
         requestService.rejectRequest(memberAuthDto.getId(), requestId);
         return ResponseEntity.ok("요청을 거절하였습니다.");
+    }
+
+    @PostMapping
+    public ResponseEntity<String> createRequestForm(
+            @AuthenticationPrincipal MemberAuthDto memberAuthDto,
+            @RequestBody RequestFormDto requestFormDto
+    ) {
+        requestFormService.createRequestForm(memberAuthDto.getId(), requestFormDto);
+        return ResponseEntity.ok("요청서 작성이 완료되었습니다.");
+    }
+
+    @GetMapping("/{pageIdx}/{pageSize}")
+    public ResponseEntity<Page<RequestFormResponseDto>> getMyRequestForm(
+            @AuthenticationPrincipal MemberAuthDto memberAuthDto,
+            @PathVariable int pageIdx,
+            @PathVariable int pageSize
+    ) {
+        return ResponseEntity.ok(requestFormService.getMyRequestForm(
+                memberAuthDto.getId(), pageIdx, pageSize));
+    }
+
+    @GetMapping("/{requestFormId}")
+    public ResponseEntity<RequestFormDetailDto> getRequestFormDetail(
+            @AuthenticationPrincipal MemberAuthDto memberAuthDto,
+            @PathVariable Long requestFormId
+    ) {
+        return ResponseEntity.ok(requestFormService.getRequestFormDetail(
+                memberAuthDto.getId(), requestFormId));
+    }
+
+    @PutMapping("{requestFormId}")
+    public ResponseEntity<String> updateRequestForm(
+            @AuthenticationPrincipal MemberAuthDto memberAuthDto,
+            @RequestBody RequestFormDto requestFormDto,
+            @PathVariable Long requestFormId
+    ) {
+        requestFormService.updateRequestForm(
+                memberAuthDto.getId(), requestFormDto, requestFormId);
+        return ResponseEntity.ok("요청서 변경을 완료했습니다.");
+    }
+
+    @DeleteMapping("{requestFormId}")
+    public ResponseEntity<String> deleteRequestForm(
+            @AuthenticationPrincipal MemberAuthDto memberAuthDto,
+            @PathVariable Long requestFormId
+    ) {
+        requestFormService.deleteRequestForm(
+                memberAuthDto.getId(), requestFormId
+        );
+        return ResponseEntity.ok("요청서 삭제를 완료하였습니다.");
     }
 
     @GetMapping("/chef/requested/{pageIdx}/{pageSize}")

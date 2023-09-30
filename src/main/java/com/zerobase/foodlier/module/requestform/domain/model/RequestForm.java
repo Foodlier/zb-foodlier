@@ -28,12 +28,12 @@ public class RequestForm extends Audit {
     @Column(nullable = false)
     private String content;
     @Column(nullable = false)
-    private Long expectPrice;
+    private Long expectedPrice;
     @Column(nullable = false)
     private LocalDateTime expectedAt;
 
     @ElementCollection
-    @CollectionTable(name = "request_from_ingredient")
+    @CollectionTable(name = "request_form_ingredient")
     @Builder.Default
     private List<Ingredient> ingredientList = new ArrayList<>();
 
