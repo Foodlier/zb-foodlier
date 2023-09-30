@@ -14,6 +14,7 @@ public interface RequestedChefDto {
 
     //etc
     double getDistance();
+    int getRecipeCount();
 
     //request
     Long getRequestId();

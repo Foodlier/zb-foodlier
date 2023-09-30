@@ -103,7 +103,8 @@ public class ChefMemberServiceImpl implements ChefMemberService{
                 return chefMemberRepository.findAroundChefOrderByReview(memberId, address.getLat(),
                         address.getLnt(), AROUND_DISTANCE, pageIdx * pageSize, pageSize);
             case RECIPE:
-                break;
+                return chefMemberRepository.findAroundChefOrderByRecipeCount(memberId, address.getLat(),
+                        address.getLnt(), AROUND_DISTANCE, pageIdx * pageSize, pageSize);
         }
 
         return chefMemberRepository.findAroundChefOrderByDistance(memberId, address.getLat(),

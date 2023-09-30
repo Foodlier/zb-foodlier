@@ -14,5 +14,6 @@ public interface AroundChefDto {
 
     //etc
     double getDistance();
+    int getRecipeCount();
 
 }
