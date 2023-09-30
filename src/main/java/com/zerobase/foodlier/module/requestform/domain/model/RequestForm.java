@@ -33,7 +33,7 @@ public class RequestForm extends Audit {
     private LocalDateTime expectedAt;
 
     @ElementCollection
-    @CollectionTable(name = "request_from_ingredient")
+    @CollectionTable(name = "request_form_ingredient")
     @Builder.Default
     private List<Ingredient> ingredientList = new ArrayList<>();
 
