@@ -29,6 +29,7 @@ public interface ChefMemberRepository extends JpaRepository<ChefMember, Long> {
                     "    FROM chef_member c\n" +
                     "    JOIN member m ON m.chef_member_id = c.id\n" +
                     "    JOIN recipe r ON r.member_id = m.id\n" +
+                    "    WHERE r.is_quotation = false and r.is_deleted = false and r.is_public = true\n" +
                     "    GROUP BY c.id\n" +
                     ") as rc ON rc.chef_member_id = c.id\n" +
                     "WHERE rm.id = :requester\n" +
@@ -44,7 +45,7 @@ public interface ChefMemberRepository extends JpaRepository<ChefMember, Long> {
     String baseAroundSearchQuery = "SELECT c.id as chefId, c.introduce as introduce, c.star_avg as starAvg,\n" +
             "c.review_count as reviewCount, m.profile_url as profileUrl, m.nickname as nickname,\n" +
             "ROUND(st_distance_sphere(point(m.lnt, m.lat), point(:lnt, :lat))/1000, 2) as distance,\n" +
-            "rc.recipeCount\n" +
+            "rc.recipeCount as recipeCount\n" +
             "FROM chef_member c\n" +
             "JOIN member m ON m.chef_member_id = c.id\n" +
             "JOIN\n" +
@@ -53,6 +54,7 @@ public interface ChefMemberRepository extends JpaRepository<ChefMember, Long> {
             "    FROM chef_member c\n" +
             "    JOIN member m ON m.chef_member_id = c.id\n" +
             "    JOIN recipe r ON r.member_id = m.id\n" +
+            "    WHERE r.is_quotation = false and r.is_deleted = false and r.is_public = true\n" +
             "    GROUP BY c.id\n" +
             ") as rc ON rc.chef_member_id = c.id\n" +
             "WHERE m.id <> :requester AND m.is_deleted = false\n" +
