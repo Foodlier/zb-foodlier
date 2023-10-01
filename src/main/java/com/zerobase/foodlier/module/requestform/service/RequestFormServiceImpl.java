@@ -116,10 +116,14 @@ public class RequestFormServiceImpl implements RequestFormService {
     public void updateRequestForm(Long id, RequestFormDto requestFormDto, Long requestFormId) {
         memberRepository.findById(id)
                 .orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
-        Recipe recipe = recipeRepository.findById(requestFormDto.getRecipeId())
-                .orElseThrow(() -> new RecipeException(NO_SUCH_RECIPE));
+        Recipe recipe = null;
 
-        checkValidation(recipe);
+        if (requestFormDto.getRecipeId() != null && requestFormDto.getRecipeId() != 0) {
+            recipe = recipeRepository.findById(requestFormDto.getRecipeId())
+                    .orElseThrow(() -> new RecipeException(NO_SUCH_RECIPE));
+
+            checkValidation(recipe);
+        }
         RequestForm requestForm = requestFormRepository.findById(requestFormId)
                 .orElseThrow(() -> new RequestFormException(REQUEST_FORM_NOT_FOUND));
         checkPermission(id, requestForm.getMember().getId());
@@ -139,6 +143,11 @@ public class RequestFormServiceImpl implements RequestFormService {
         requestFormRepository.save(requestForm);
     }
 
+    /**
+     * 작성일 : 2023-09-29
+     * 작성자 : 황태원
+     * 요청서 삭제, 삭제 시 권한 검증
+     */
     @Override
     public void deleteRequestForm(Long id, Long requestFormId) {
         memberRepository.findById(id)
