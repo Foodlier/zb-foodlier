@@ -10,7 +10,6 @@ import com.zerobase.foodlier.module.member.chef.type.ChefSearchType;
 import com.zerobase.foodlier.module.member.chef.type.GradeType;
 import com.zerobase.foodlier.module.member.member.domain.model.Member;
 import com.zerobase.foodlier.module.member.member.domain.vo.Address;
-import com.zerobase.foodlier.module.member.member.exception.MemberErrorCode;
 import com.zerobase.foodlier.module.member.member.exception.MemberException;
 import com.zerobase.foodlier.module.member.member.repository.MemberRepository;
 import com.zerobase.foodlier.module.recipe.repository.RecipeRepository;
@@ -26,6 +25,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static com.zerobase.foodlier.module.member.chef.exception.ChefMemberErrorCode.*;
+import static com.zerobase.foodlier.module.member.member.exception.MemberErrorCode.MEMBER_NOT_FOUND;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
@@ -139,7 +139,7 @@ class ChefMemberServiceImplTest {
                         .registerChef(1L, new ChefIntroduceForm("소개")));
 
         //then
-        assertEquals(MemberErrorCode.MEMBER_NOT_FOUND, exception.getErrorCode());
+        assertEquals(MEMBER_NOT_FOUND, exception.getErrorCode());
 
     }
 
@@ -213,7 +213,7 @@ class ChefMemberServiceImplTest {
                         .updateChefIntroduce(3L, new ChefIntroduceForm("소개")));
 
         //then
-        assertEquals(MemberErrorCode.MEMBER_NOT_FOUND, exception.getErrorCode());
+        assertEquals(MEMBER_NOT_FOUND, exception.getErrorCode());
 
     }
 
@@ -542,6 +542,21 @@ class ChefMemberServiceImplTest {
                 () -> assertEquals(chef1.getNickname(), response.get(1).getNickname()),
                 () -> assertEquals(chef1.getRecipeCount(), response.get(1).getRecipeCount())
         );
+    }
+
+    @Test
+    @DisplayName("주변 요리사 조회하기 실패 - 회원 X")
+    void fail_success_getAroundChefList_member_not_found(){
+        //given
+        given(memberRepository.findById(anyLong()))
+                .willReturn(Optional.empty());
+        //when
+        MemberException exception = assertThrows(MemberException.class,
+                () -> chefMemberService.getAroundChefList(1L,
+                        0, 10, ChefSearchType.DISTANCE));
+
+        //then
+        assertEquals(MEMBER_NOT_FOUND, exception.getErrorCode());
     }
 
     private AroundChefDto getChef1(){
