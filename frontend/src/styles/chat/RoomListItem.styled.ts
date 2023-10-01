@@ -2,16 +2,16 @@ import styled from 'styled-components'
 import { breakpoints, palette } from '../../constants/Styles'
 
 export const WrapChatItem = styled.div`
-  min-width: 15%;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: space-between;
-
-  margin: 0 1rem;
+  border-radius: inherit;
+  padding: 0 1rem;
 
   ${breakpoints.large} {
+    flex-direction: row;
     padding: 2rem;
-    border-bottom: 1px solid ${palette.divider};
     margin: 0;
   }
 `
@@ -72,4 +72,9 @@ export const Price = styled.span`
   ${breakpoints.large} {
     font-size: 1.4rem;
   }
+`
+
+export const RequestButton = styled.div`
+  padding: 1rem;
+  background-color: red;
 `
