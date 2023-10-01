@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="kor">
+<head>
+    <meta charset="UTF-8">
+    <script src="https://js.tosspayments.com/v1"></script>
+    <title>결제하기</title>
+
+</head>
+<body>
+<section>
+    <span>총 주문금액</span>
+    <span>100 원</span>
+    <button id="payment-button">100원 결제하기</button>
+</section>
+<script>
+    var clientKey = 'test_ck_PBal2vxj81PyjdLKoOAr5RQgOAND'
+    var tossPayments = TossPayments(clientKey)
+    var button = document.getElementById('payment-button')
+    button.addEventListener('click', function () {
+        tossPayments.requestPayment('CARD', {
+            amount: 100,
+            orderId: '1aee44f7-d19e-46a3-bbef-374eb9b5aa38',
+            orderName: 'CHARGE',
+            customerNickName: 'test',
+            successUrl: 'http://localhost:8080/point/success',
+            failUrl: 'http://localhost:8080/point/fail',
+        })
+    })
+</script>
+</body>
+</html>
