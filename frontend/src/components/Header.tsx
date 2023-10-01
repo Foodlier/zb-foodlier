@@ -4,7 +4,7 @@ import logo from '../assets/foodlier_logo.png'
 import useIcon from '../hooks/useIcon'
 import { palette } from '../constants/Styles'
 import NotificationItem from './notification/NotificationItem'
-import * as R from '../styles/Header.styled'
+import * as S from '../styles/Header.styled'
 import MoSearch from './search/MoSearch'
 
 const Header = () => {
@@ -40,6 +40,7 @@ const Header = () => {
       navigate: 'recipe',
     },
     { title: '냉마카세', navigate: '' },
+    { title: '채팅', navigate: 'chat' },
   ]
 
   const navigateTo = (pageName: string) => {
@@ -47,42 +48,43 @@ const Header = () => {
   }
 
   return (
-    <R.Container>
-      <R.Logo src={logo} alt="로고 이미지" />
-      <R.WrapIcon>
-        <R.WrapNotification>
-          <R.Icon onClick={() => setIsToggle(!isToggle)}>
+    <S.Container>
+      <S.LogoButton onClick={() => navigateTo('')}>
+        <S.Logo src={logo} alt="로고 이미지" />
+      </S.LogoButton>
+      <S.WrapIcon>
+        <S.WrapNotification>
+          <S.Icon onClick={() => setIsToggle(!isToggle)}>
             <IcBell size={3} color={palette.textPrimary} />
-          </R.Icon>
-          <R.Notification $isToggle={isToggle}>
+          </S.Icon>
+          <S.Notification $isToggle={isToggle}>
             <NotificationItem />
-          </R.Notification>
-        </R.WrapNotification>
+          </S.Notification>
+        </S.WrapNotification>
         {/* 모바일 검색 - onClick 추가 */}
-        <R.Icon onClick={toggleMoSearch}>
+        <S.Icon onClick={toggleMoSearch}>
           <IcSearch size={3} color={palette.textPrimary} />
-        </R.Icon>
-      </R.WrapIcon>
-      <R.WrapMenu>
+        </S.Icon>
+      </S.WrapIcon>
+      <S.WrapMenu>
         {HEADER_MENU_LIST.map(item => (
-          <R.Menu key={item.title} onClick={() => navigateTo(item.navigate)}>
+          <S.Menu key={item.title} onClick={() => navigateTo(item.navigate)}>
             {item.title}
-          </R.Menu>
+          </S.Menu>
         ))}
-        <R.WrapNotification ref={notiRef}>
-          <R.Button onClick={() => setIsToggle(!isToggle)}>
+        <S.WrapNotification ref={notiRef}>
+          <S.Button onClick={() => setIsToggle(!isToggle)}>
             <IcBell size={3} color={palette.textPrimary} />
-          </R.Button>
-          <R.Notification $isToggle={isToggle}>
+          </S.Button>
+          <S.Notification $isToggle={isToggle}>
             <NotificationItem />
-          </R.Notification>
-        </R.WrapNotification>
-        <R.LoginButton>LOGIN</R.LoginButton>
-      </R.WrapMenu>
+          </S.Notification>
+        </S.WrapNotification>
+        <S.LoginButton onClick={() => navigateTo('login')}>LOGIN</S.LoginButton>
+      </S.WrapMenu>
       {/* 모바일 검색 - MoSearch 컴포넌트 추가  */}
       {isMoSearchOpen && <MoSearch setIsMoSearchOpen={setIsMoSearchOpen} />}
-    </R.Container>
-
+    </S.Container>
   )
 }
 
