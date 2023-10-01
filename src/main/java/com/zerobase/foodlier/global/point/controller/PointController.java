@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 public class PointController {
     private final PaymentService paymentService;
 
-    @PostMapping
+    @PostMapping("/charge")
     public ResponseEntity<?> requestPayments(
             @AuthenticationPrincipal MemberAuthDto memberAuthDto,
             @ModelAttribute PaymentRequest paymentRequest
