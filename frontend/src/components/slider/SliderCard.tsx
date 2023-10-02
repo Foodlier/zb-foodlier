@@ -17,13 +17,11 @@ const SliderCard: React.FC<SliderCardProps> = ({
   title,
   introduce,
   imagePath,
-  
 }) => {
   const { IcFavorite, IcFavoriteFill } = useIcon()
 
-  const [isLike, setIsLike] = useState(false);
-  const [likeCount, setLikeCount] = useState(0);
-  
+  const [isLike, setIsLike] = useState(false)
+  const [likeCount, setLikeCount] = useState(0)
 
   const onClickLikeButton = () => {
     setIsLike(!isLike)
