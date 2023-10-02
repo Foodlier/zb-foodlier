@@ -2,8 +2,11 @@ package com.zerobase.foodlier.global.refrigerator.controller;
 
 import com.zerobase.foodlier.common.security.provider.dto.MemberAuthDto;
 import com.zerobase.foodlier.global.refrigerator.facade.RefrigeratorFacade;
+import com.zerobase.foodlier.module.member.chef.dto.AroundChefDto;
+import com.zerobase.foodlier.module.member.chef.dto.RequestedChefDto;
+import com.zerobase.foodlier.module.member.chef.service.ChefMemberService;
+import com.zerobase.foodlier.module.member.chef.type.ChefSearchType;
 import com.zerobase.foodlier.module.request.service.RequestService;
-import com.zerobase.foodlier.module.requestform.domain.model.RequestForm;
 import com.zerobase.foodlier.module.requestform.dto.RequestFormDetailDto;
 import com.zerobase.foodlier.module.requestform.dto.RequestFormDto;
 import com.zerobase.foodlier.module.requestform.dto.RequestFormResponseDto;
@@ -23,6 +26,7 @@ import java.util.List;
 public class RefrigeratorController {
     private final RequestService requestService;
     private final RefrigeratorFacade refrigeratorFacade;
+    private final ChefMemberService chefMemberService;
     private final RequestFormService requestFormService;
 
     @PatchMapping("/send")
@@ -121,5 +125,30 @@ public class RefrigeratorController {
                 memberAuthDto.getId(), requestFormId
         );
         return ResponseEntity.ok("요청서 삭제를 완료하였습니다.");
+    }
+
+    @GetMapping("/chef/requested/{pageIdx}/{pageSize}")
+    public ResponseEntity<List<RequestedChefDto>> getRequestedChefList(
+            @AuthenticationPrincipal MemberAuthDto memberAuthDto,
+            @PathVariable int pageIdx,
+            @PathVariable int pageSize
+    ){
+        return ResponseEntity.ok(
+                chefMemberService.getRequestedChefList(memberAuthDto.getId(),
+                        pageIdx, pageSize)
+        );
+    }
+
+    @GetMapping("/chef/{pageIdx}/{pageSize}")
+    public ResponseEntity<List<AroundChefDto>> getAroundChefList(
+            @AuthenticationPrincipal MemberAuthDto memberAuthDto,
+            @PathVariable int pageIdx,
+            @PathVariable int pageSize,
+            @RequestParam ChefSearchType type
+    ){
+        return ResponseEntity.ok(
+                chefMemberService.getAroundChefList(memberAuthDto.getId(),
+                        pageIdx, pageSize, type)
+        );
     }
 }

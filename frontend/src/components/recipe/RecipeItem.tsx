@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import * as R from '../../styles/recipe/RecipeItem.styled'
+import * as S from '../../styles/recipe/RecipeItem.styled'
 import { palette } from '../../constants/Styles'
 import useIcon from '../../hooks/useIcon'
 
@@ -36,26 +36,26 @@ const RecipeItem = () => {
   }
 
   return (
-    <R.Container>
-      <R.Image />
-      <R.WrapContent>
-        <R.FlexRowJustiBet>
-          <R.FlexRow>
-            <R.Title>{dummyData.title}</R.Title>
-            <R.Nickname>{dummyData.nickname}</R.Nickname>
-          </R.FlexRow>
-          <R.LikeButton onClick={onClickLikeButton}>
+    <S.Container>
+      <S.Image />
+      <S.WrapContent>
+        <S.FlexRowJustiBet>
+          <S.FlexRow>
+            <S.Title>{dummyData.title}</S.Title>
+            <S.Nickname>{dummyData.nickname}</S.Nickname>
+          </S.FlexRow>
+          <S.LikeButton onClick={onClickLikeButton}>
             {isLike ? (
               <IcFavoriteFill size={2} color="#EA5455" />
             ) : (
               <IcFavorite size={2} color={palette.textPrimary} />
             )}
-            <R.LikeCount>{likeCount}</R.LikeCount>
-          </R.LikeButton>
-        </R.FlexRowJustiBet>
-        <R.Introduce>{dummyData.introduce}</R.Introduce>
-      </R.WrapContent>
-    </R.Container>
+            <S.LikeCount>{likeCount}</S.LikeCount>
+          </S.LikeButton>
+        </S.FlexRowJustiBet>
+        <S.Introduce>{dummyData.introduce}</S.Introduce>
+      </S.WrapContent>
+    </S.Container>
   )
 }
 

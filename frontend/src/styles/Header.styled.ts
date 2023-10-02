@@ -3,6 +3,8 @@ import { breakpoints, palette } from '../constants/Styles'
 
 export const Container = styled.header`
   width: 100%;
+  max-height: 9rem;
+  height: 9rem;
   padding: 5%;
   display: flex;
   align-items: center;
@@ -13,12 +15,16 @@ export const Container = styled.header`
   }
 `
 
-export const Logo = styled.img`
+export const LogoButton = styled.button`
   width: 30%;
+`
+
+export const Logo = styled.img`
+  width: 100%;
   height: auto;
 
   ${breakpoints.large} {
-    width: 15%;
+    width: 50%;
   }
 `
 

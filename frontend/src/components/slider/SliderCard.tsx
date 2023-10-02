@@ -5,19 +5,15 @@ import useIcon from '../../hooks/useIcon'
 import { palette } from '../../constants/Styles'
 
 interface SliderCardProps {
-  recipeId: string | number
+  // recipeId: string | number
   title: string
   introduce: string
   imagePath: string
-  likeCount: number
-  isLike: boolean
+  // likeCount: number
+  // isLike: boolean
 }
 
-const SliderCard: React.FC<SliderCardProps> = ({
-  title,
-  introduce,
-  imagePath,
-}) => {
+function SliderCard({ title, introduce, imagePath }: SliderCardProps) {
   const { IcFavorite, IcFavoriteFill } = useIcon()
 
   const [isLike, setIsLike] = useState(false)

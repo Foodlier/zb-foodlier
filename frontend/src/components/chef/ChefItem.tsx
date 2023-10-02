@@ -1,23 +1,20 @@
-import React, { useState } from 'react'
+import React from 'react'
 import * as S from '../../styles/chef/ChefItem.styled'
-import { palette } from '../../constants/Styles'
-import styled from 'styled-components'
 
 interface ChefItemProps {
   chefId: string | number
   nickname: string
-  imagePath: string
+  profileUrl: string
 }
 
-const ChefItem: React.FC<ChefItemProps> = ({
+const ChefItem = ({
   chefId,
-  imagePath,
   nickname,
-}) => {
-
+  profileUrl,
+}: ChefItemProps) => {
   return (
     <S.Container>
-      <S.Image src={imagePath} />
+      <S.Image src={profileUrl} />
       <S.Nickname>{nickname}</S.Nickname>
     </S.Container>
   )

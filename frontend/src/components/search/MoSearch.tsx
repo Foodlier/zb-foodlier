@@ -1,15 +1,14 @@
 import React from 'react'
-import styled from 'styled-components'
 import * as S from '../../styles/search/MoSearch.styled'
 import SearchBar from './SearchBar'
 import useIcon from '../../hooks/useIcon'
-import { breakpoints, palette } from '../../constants/Styles'
+import { palette } from '../../constants/Styles'
 
 interface MoSearchProps {
   setIsMoSearchOpen: (isOpen: boolean) => void
 }
 
-const MoSearch: React.FC<MoSearchProps> = ({ setIsMoSearchOpen }) => {
+function MoSearch({ setIsMoSearchOpen }: MoSearchProps) {
   const { IcPrevLight } = useIcon()
 
   const handleSearch = (query: string) => {
