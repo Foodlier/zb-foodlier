@@ -1,7 +1,7 @@
-package com.zerobase.foodlier.module.recipe.controller;
+package com.zerobase.foodlier.global.recipe.controller;
 
 import com.zerobase.foodlier.common.security.provider.dto.MemberAuthDto;
-import com.zerobase.foodlier.global.recipe.dto.RecipeImageResponse;
+import com.zerobase.foodlier.module.recipe.dto.RecipeImageResponse;
 import com.zerobase.foodlier.global.recipe.facade.RecipeFacade;
 import com.zerobase.foodlier.module.recipe.domain.model.Recipe;
 import com.zerobase.foodlier.module.recipe.dto.RecipeDtoRequest;

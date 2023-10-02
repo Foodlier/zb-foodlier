@@ -1,7 +1,8 @@
 import styled from 'styled-components'
+import { palette } from '../constants/Styles'
+
 // 회원가입 페이지 스타일 컴포넌트
 const inputStyles = `
-  width: 100%;
   height: 55px;
   padding: 10px 10px;
   margin-bottom: 15px;
@@ -35,7 +36,7 @@ export const Profile = styled.div`
   padding: 10px 10px;
   border: 1px solid #ccc;
   border-radius: 20%;
-  margin-bottom: 30px;
+  margin-bottom: 15px;
   text-align: center;
 `
 
@@ -49,16 +50,17 @@ export const ProfileImage = styled.img`
 export const InputContainer = styled.div`
   width: 100%;
   align-items: center;
-  justify-content: center;
   display: flex;
-  flex-direction: row;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  margin-bottom: 5px;
 `
 export const InputInfo = styled.span`
   display: flex;
   flex-direction: column;
   width: 35%;
   max-width: 400px;
-  margin-bottom: 5px;
+  margin-bottom: 10px;
 `
 
 export const Title = styled.h1`
@@ -75,6 +77,7 @@ export const Form = styled.form`
 
 export const Input1 = styled.input`
   ${inputStyles}
+  width: 100%;
 `
 
 export const Input2 = styled.input`
@@ -97,9 +100,9 @@ export const Button = styled.button`
 
 export const DetailButton = styled.button`
   ${buttonStyles}
-  width: 30%;
-  border: 1px solid var(--color-main);
-  color: var(--color-main);
+  width: 25%;
+  border: 1px solid ${palette.main};
+  color: ${palette.main};
   background-color: #fff;
   padding: 10px 10px;
   margin-bottom: 15px;
@@ -109,8 +112,16 @@ export const ConfirmButton = styled.button`
   ${buttonStyles}
   width: 80%;
   height: 65px;
-  background-color: var(--color-main);
+  background-color: ${palette.main};
   color: #fff;
   font-size: 18px;
   margin: 0 auto;
+`
+
+export const ErrorMessage = styled.div`
+  width: 100%;
+  color: red;
+  font-size: 14px;
+  margin-left: 10px;
+  margin-bottom: 5px;
 `

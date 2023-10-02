@@ -68,22 +68,25 @@ resolves: #1234, #1235
 
 ### 2️⃣ FE 폴더 구조
 
-![image](https://github.com/Foodlier/zb-foodlier/assets/80212139/8c04cf3d-a3ac-4518-9551-7e5004179012)
->  사진은 구조가 완성되어 가면서 수정합니다.
+![image](https://github.com/Foodlier/zb-foodlier/assets/80212139/f3f1f4fd-b2c9-40be-812f-83d5b11c4319)
 
-1. assets
+* assets
    * 컴포넌트 내부에서 사용하는 이미지 파일인 경우 이 assets 폴더에 위치시켜야 합니다.
-2. components
+* components
    * 재사용 가능한 컴포넌트들이 위치하는 폴더입니다. 컴포넌트는 매우 많아질 수 있기 때문에 이 폴더 내부에서 하위폴더로 추가로 분류하는 경우가 많습니다.
-3. pages
+* constants
+   * 공통적으로 사용되는 상수들을 정의한 파일들이 위치하는 폴더입니다.
+* mocks
+   * MSW에 대해 정의한 파일들이 위치하는 폴더입니다.  
+* pages
    * react router등을 이용하여 라우팅을 적용할 때 페이지 컴포넌트를 이 폴더에 위치시킵니다.
-4. services
+* services
    * api관련 로직의 모듈 파일이 위치하며 auth와 같이 인증과 관련된 파일이 포함되기도 합니다.
-5. store
+* store
    * redux 등을 사용할 때 관련 파일들이 위치합니다.
-6. styles
+* styles
    * css 파일들이 포함되는 폴더입니다.
-7. utils
+* utils
    * 정규표현식 패턴이나 공통함수 등 공통으로 사용하는 유틸 파일들이 위치하는 폴더입니다.
      
 <hr>

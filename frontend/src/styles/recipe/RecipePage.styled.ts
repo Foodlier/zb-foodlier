@@ -1,5 +1,5 @@
 import styled from 'styled-components'
-import { breakpoints } from '../../constants/Styles'
+import { breakpoints, palette } from '../../constants/Styles'
 
 export const Container = styled.div`
   position: relative;
@@ -37,7 +37,7 @@ export const WritePage = styled.button`
   right: 5%;
   padding: 1rem;
   border-radius: 1rem;
-  background-color: var(--color-main);
+  background-color: ${palette.main};
   color: white;
 
   ${breakpoints.large} {
