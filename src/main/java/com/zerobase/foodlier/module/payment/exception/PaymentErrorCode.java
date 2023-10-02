@@ -11,6 +11,7 @@ public enum PaymentErrorCode {
     PAYMENT_ERROR_ORDER_AMOUNT("결제 금액이 맞지 않습니다."),
     UNDEFINED_ERROR("정의되지 않은 오류입니다."),
     ALREADY_PROCESSED_PAYMENT("이미 처리된 결제 입니다."),
+    PAYMENT_CANCEL_ERROR("결제 취소에 실패했습니다."),
     NEW_ENUM("enum 추가");
 
     private final String description;

@@ -9,7 +9,6 @@ import com.zerobase.foodlier.module.member.member.repository.MemberRepository;
 import com.zerobase.foodlier.module.payment.domain.model.Payment;
 import com.zerobase.foodlier.module.payment.dto.PaymentRequest;
 import com.zerobase.foodlier.module.payment.dto.PaymentResponse;
-import com.zerobase.foodlier.module.payment.dto.PaymentResponseHandleDto;
 import com.zerobase.foodlier.module.payment.dto.PaymentResponseHandleFailDto;
 import com.zerobase.foodlier.module.payment.exception.PaymentException;
 import com.zerobase.foodlier.module.payment.repository.PaymentRepository;
@@ -30,6 +29,7 @@ import java.util.Base64;
 import java.util.Collections;
 
 import static com.zerobase.foodlier.module.member.member.exception.MemberErrorCode.MEMBER_NOT_FOUND;
+import static com.zerobase.foodlier.module.payment.constants.PaymentConstants.*;
 import static com.zerobase.foodlier.module.payment.exception.PaymentErrorCode.*;
 
 @Service
@@ -51,6 +51,11 @@ public class PaymentServiceImpl implements PaymentService {
     @Value("${payments.toss.origin_url}")
     private String tossOriginUrl;
 
+    /**
+     * 작성자 : 이승현
+     * 작성일 : 2023-10-02
+     * 주문 요청을 보냅니다
+     */
     @Transactional
     @Override
     public PaymentResponse requestPayments(PaymentRequest paymentRequest, MemberAuthDto memberAuthDto) {
@@ -70,10 +75,15 @@ public class PaymentServiceImpl implements PaymentService {
         return paymentResponse;
     }
 
+    /**
+     * 작성자 : 이승현
+     * 작성일 : 2023-10-02
+     * 페이지에서 toss 결제창을 통해 결제를 진행 후 성공 했을 때 결제가 완료됩니다.
+     */
     @Transactional
     @Override
-    public PaymentResponseHandleDto requestFinalPayment(String paymentKey, String orderId, Long amount) {
-        verifyRequest(paymentKey, orderId, amount);
+    public void requestFinalPayment(String paymentKey, String orderId, Long amount) {
+        validRequest(paymentKey, orderId, amount);
 
         HttpHeaders httpHeaders = new HttpHeaders();
 
@@ -85,12 +95,20 @@ public class PaymentServiceImpl implements PaymentService {
         httpHeaders.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
 
         JSONObject param = new JSONObject();
-        param.put("orderId", orderId);
-        param.put("amount", amount);
+        param.put(ORDER_ID, orderId);
+        param.put(AMOUNT, amount);
+
+        try {
+            restTemplate.postForEntity(tossOriginUrl + paymentKey,
+                    new HttpEntity<>(param, httpHeaders),
+                    String.class);
+        } catch (HttpClientErrorException e) {
+            throw new PaymentException(ALREADY_PROCESSED_PAYMENT);
+        }
 
         Payment payment = paymentRepository.findByOrderId(orderId)
                 .orElseThrow(() -> new PaymentException(PAYMENT_REQUEST_NOT_FOUND));
-        payment.setPaySuccessYn("Y");
+        payment.setPaySuccessYn(SUCCESS_Y);
         payment.getMember().setPoint(payment.getMember().getPoint() + amount);
         paymentRepository.save(payment);
 
@@ -99,23 +117,19 @@ public class PaymentServiceImpl implements PaymentService {
                 .member(payment.getMember())
                 .chargePoint(amount)
                 .build());
-
-        try {
-            return restTemplate.postForEntity(tossOriginUrl + paymentKey,
-                            new HttpEntity<>(param, httpHeaders),
-                            PaymentResponseHandleDto.class)
-                    .getBody();
-        } catch (HttpClientErrorException e) {
-            throw new PaymentException(ALREADY_PROCESSED_PAYMENT);
-        }
     }
 
+    /**
+     * 작성자 : 이승현
+     * 작성일 : 2023-10-02
+     * 결제가 실패했을 때 redirect됩니다.
+     */
     @Transactional
     @Override
     public PaymentResponseHandleFailDto requestFail(String errorCode, String errorMsg, String orderId) {
         Payment payment = paymentRepository.findByOrderId(orderId)
                 .orElseThrow(() -> new PaymentException(PAYMENT_REQUEST_NOT_FOUND));
-        payment.setPaySuccessYn("N");
+        payment.setPaySuccessYn(SUCCESS_N);
         payment.setPayFailReason(errorMsg);
         paymentRepository.save(payment);
 
@@ -126,9 +140,14 @@ public class PaymentServiceImpl implements PaymentService {
                 .build();
     }
 
+    /**
+     * 작성자 : 이승현
+     * 작성일 : 2023-10-02
+     * 결제를 취소합니다.
+     */
     @Transactional
     @Override
-    public String requestPaymentCancel(String paymentKey, String cancelReason) {
+    public void requestPaymentCancel(String paymentKey, String cancelReason) {
         URI uri = URI.create(tossOriginUrl + paymentKey + "/cancel");
 
         HttpHeaders httpHeaders = new HttpHeaders();
@@ -138,21 +157,25 @@ public class PaymentServiceImpl implements PaymentService {
         httpHeaders.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
 
         JSONObject param = new JSONObject();
-        param.put("cancelReason", cancelReason);
+        param.put(CANCEL_REASON, cancelReason);
+
+        try {
+            restTemplate.postForObject(uri,
+                    new HttpEntity<>(param, httpHeaders), String.class);
+        }catch (HttpClientErrorException e){
+            throw  new PaymentException(PAYMENT_CANCEL_ERROR);
+        }
 
         Payment payment = paymentRepository.findByPaymentKey(paymentKey)
-                .filter(p -> p.getPaySuccessYn().equals("Y"))
+                .filter(p -> p.getPaySuccessYn().equals(SUCCESS_Y))
                 .orElseThrow(() -> new PaymentException(PAYMENT_REQUEST_NOT_FOUND));
         Long amount = payment.getAmount();
         payment.getMember().setPoint(payment.getMember().getPoint() - amount);
         payment.setCanceled(true);
         paymentRepository.save(payment);
-
-        return restTemplate.postForObject(uri,
-                new HttpEntity<>(param, httpHeaders), String.class);
     }
 
-    private void verifyRequest(String paymentKey, String orderId, Long amount) {
+    private void validRequest(String paymentKey, String orderId, Long amount) {
         paymentRepository.findByOrderId(orderId)
                 .ifPresentOrElse(
                         P -> {

@@ -17,23 +17,22 @@ public class PointController {
     @PostMapping("/charge")
     public ResponseEntity<?> requestPayments(
             @AuthenticationPrincipal MemberAuthDto memberAuthDto,
-            @ModelAttribute PaymentRequest paymentRequest
+            @RequestBody PaymentRequest paymentRequest
     ) {
         return ResponseEntity.ok(paymentService.requestPayments(paymentRequest, memberAuthDto));
     }
 
+    /**
+     * redirect 되는 부분 협의 필요
+     */
     @GetMapping("/success")
     public ResponseEntity<?> requestFinalPayments(
             @RequestParam String paymentKey,
             @RequestParam String orderId,
             @RequestParam Long amount
     ) {
-        return ResponseEntity.ok(paymentService.requestFinalPayment(paymentKey, orderId, amount));
-    }
-
-    @GetMapping("/redirect/success")
-    public void requestSuccess(){
-
+        paymentService.requestFinalPayment(paymentKey, orderId, amount);
+        return ResponseEntity.ok("결제 완료, 금액 : " + amount);
     }
 
     @GetMapping("/fail")
@@ -50,6 +49,7 @@ public class PointController {
             @RequestParam String paymentKey,
             @RequestParam String cancelReason
     ) {
-        return ResponseEntity.ok(paymentService.requestPaymentCancel(paymentKey, cancelReason));
+        paymentService.requestPaymentCancel(paymentKey, cancelReason);
+        return ResponseEntity.ok("결제 취소 완료");
     }
 }
