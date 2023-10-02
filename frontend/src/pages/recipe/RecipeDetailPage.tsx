@@ -1,23 +1,29 @@
-import React from 'react';
-import * as S from '../../styles/recipe/detail/RecipeDetailPage.styled';
-import Header from '../../components/Header';
-import BottomNavigation from '../../components/BottomNavigation';
-import DetailMain from '../../components/recipe/detail/DetailMain';
-import DetailIngredients from '../../components/recipe/detail/DetailIngredients';
-import DetailProcedure from '../../components/recipe/detail/DetailProcedure';
+import React from 'react'
+import styled from 'styled-components'
+import Header from '../../components/Header'
+import BottomNavigation from '../../components/BottomNavigation'
+import DetailMainItem from '../../components/recipe/detail/DetailMain'
+import DetailIngredients from '../../components/recipe/detail/DetailIngredients'
+import DetailProcedure from '../../components/recipe/detail/DetailProcedure'
+
+export const DetailContainer = styled.div`
+  width: 100%;
+  padding: 0 2%;
+`
 
 const RecipeDetailPage = () => {
   const recipe = {
     recipeId: '',
-    memberId: '', 
+    memberId: '',
     nickname: '닉네임',
     profileUrl: '/src/assets/chef.svg',
     mainImageUrl: '/src/assets/contents/food_img_05.jpg',
     title: '레시피 제목',
-    content: 'Lorem Ipsum is simply dummy text of the printing  and typesetting industry. Lorem Ipsum has been the industrys standard dummy text ever since the  1500s, when an unknown printer took a galley',
+    content:
+      'Lorem Ipsum is simply dummy text of the printing  and typesetting industry. Lorem Ipsum has been the industrys standard dummy text ever since the  1500s, when an unknown printer took a galley',
     difficulty: '어려움',
-    expectedTime: '30분'
-  };
+    expectedTime: '30분',
+  }
   const ingredients = [
     {
       name: '재료1',
@@ -34,37 +40,38 @@ const RecipeDetailPage = () => {
       count: 1,
       unit: '팩',
     },
-  ];
+  ]
 
   const detail = [
     {
       cookingOrderImageUrl: '/src/assets/contents/food_img_03.jpg',
-      cookingOrder: 'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industrys standard dummy text ever since the 1500s, when an unknown printer took a galley',
+      cookingOrder:
+        'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industrys standard dummy text ever since the 1500s, when an unknown printer took a galley',
     },
     {
       cookingOrderImageUrl: '/src/assets/contents/food_img_04.jpg',
-      cookingOrder: 'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has',
+      cookingOrder:
+        'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has',
     },
     {
       cookingOrderImageUrl: '/src/assets/contents/food_img_05.jpg',
       cookingOrder: 'Lorem Ipsum is simply dummy',
     },
-  ];
+  ]
 
-  
   return (
     <>
       <Header />
 
-      <S.Container>
-        <DetailMain recipe={recipe} />
+      <DetailContainer>
+        <DetailMainItem recipe={recipe} />
         <DetailIngredients ingredients={ingredients} />
         <DetailProcedure detail={detail} />
-      </S.Container>
+      </DetailContainer>
 
       <BottomNavigation />
     </>
-  );
+  )
 }
 
-export default RecipeDetailPage;
+export default RecipeDetailPage

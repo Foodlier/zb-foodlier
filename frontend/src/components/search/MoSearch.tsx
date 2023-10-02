@@ -1,24 +1,23 @@
-import React from 'react';
-import styled from 'styled-components';
-import * as S from '../../styles/search/MoSearch.styled';
-import SearchBar from './SearchBar';
-import useIcon from '../../hooks/useIcon';
-import { breakpoints, palette } from '../../constants/Styles';
+import React from 'react'
+import * as S from '../../styles/search/MoSearch.styled'
+import SearchBar from './SearchBar'
+import useIcon from '../../hooks/useIcon'
+import { palette } from '../../constants/Styles'
 
 interface MoSearchProps {
-  setIsMoSearchOpen: (isOpen: boolean) => void;
+  setIsMoSearchOpen: (isOpen: boolean) => void
 }
 
 function MoSearch({ setIsMoSearchOpen }: MoSearchProps) {
-  const { IcPrevLight } = useIcon();
+  const { IcPrevLight } = useIcon()
 
   const handleSearch = (query: string) => {
-    console.log(`MoSearch에서 검색: ${query}`);
-  };
+    console.log(`MoSearch에서 검색: ${query}`)
+  }
 
   const closeMoSearch = () => {
-    setIsMoSearchOpen(false);
-  };
+    setIsMoSearchOpen(false)
+  }
 
   return (
     <S.MoSearchContainer>
@@ -32,7 +31,7 @@ function MoSearch({ setIsMoSearchOpen }: MoSearchProps) {
       </S.SearchHeader>
       <SearchBar onSearch={handleSearch} />
     </S.MoSearchContainer>
-  );
+  )
 }
 
-export default MoSearch;
+export default MoSearch

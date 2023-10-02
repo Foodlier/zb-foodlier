@@ -33,23 +33,22 @@ export const ProcedureBox = styled.li`
 `
 
 export const ImgWrap = styled.div`
-    display: flex;
-    width: 10rem;
-    height: 10rem;
-    min-width: 10rem;
-    min-height: 10rem;
-    justify-content: center;
-    align-items: center;
-    margin-bottom: 2rem;
-    border-radius: 1rem;
-    overflow: hidden;
-    margin-left: 1rem;
+  display: flex;
+  width: 10rem;
+  height: 10rem;
+  min-width: 10rem;
+  min-height: 10rem;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 2rem;
+  border-radius: 1rem;
+  overflow: hidden;
+  margin-left: 1rem;
 
-    ${breakpoints.large} {
-      min-width: 15rem;
-      min-height: 15rem;
+  ${breakpoints.large} {
+    min-width: 15rem;
+    min-height: 15rem;
   }
-    
 `
 
 export const ProcedureImg = styled.img`
@@ -58,5 +57,4 @@ export const ProcedureImg = styled.img`
   object-fit: cover;
 `
 
-export const stepTxt = styled.p`
-`
+export const stepTxt = styled.p``
