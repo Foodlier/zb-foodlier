@@ -49,7 +49,7 @@ public class PointController {
             @RequestParam String paymentKey,
             @RequestParam String cancelReason
     ) {
-        paymentService.requestPaymentCancel(paymentKey, cancelReason);
-        return ResponseEntity.ok("결제 취소 완료");
+        String reason = paymentService.requestPaymentCancel(paymentKey, cancelReason);
+        return ResponseEntity.ok("결제 취소 완료, 이유 : " + reason);
     }
 }

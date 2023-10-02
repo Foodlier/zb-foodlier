@@ -17,5 +17,5 @@ public interface PaymentService {
     PaymentResponseHandleFailDto requestFail(String errorCode, String errorMsg, String orderId);
 
     @Transactional
-    void requestPaymentCancel(String paymentKey, String cancelReason);
+    String requestPaymentCancel(String paymentKey, String cancelReason);
 }
