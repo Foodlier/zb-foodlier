@@ -15,11 +15,13 @@ public class RedissonConfig {
     @Value("${spring.redis.port}")
     private int redisPort;
 
+    private final String REDISSON_PREFIX = "redis://";
+
     @Bean
     public RedissonClient redissonClient() {
         Config config = new Config();
         config.useSingleServer()
-                .setAddress("redis://" + redisHost + ":" + redisPort);
+                .setAddress(REDISSON_PREFIX + redisHost + ":" + redisPort);
 
         return Redisson.create(config);
     }
