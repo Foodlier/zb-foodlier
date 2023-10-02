@@ -1,9 +1,16 @@
 package com.zerobase.foodlier.module.dm.room.service;
 
+import com.zerobase.foodlier.common.security.provider.dto.MemberAuthDto;
 import com.zerobase.foodlier.module.dm.room.domain.model.DmRoom;
+import com.zerobase.foodlier.module.dm.room.dto.DmRoomDto;
 import com.zerobase.foodlier.module.dm.room.repository.DmRoomRepository;
 import com.zerobase.foodlier.module.request.domain.model.Request;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -22,5 +29,17 @@ public class DmRoomServiceImpl implements DmRoomService {
         return dmRoomRepository.save(DmRoom.builder()
                 .request(request)
                 .build());
+    }
+
+    /**
+     * 작성자 : 황태원
+     * 작성일 : 2023-10-02
+     * 채팅방 목록을 가져옵니다.
+     */
+    @Override
+    public Page<DmRoomDto> getDmRoomPage(Long id, int pageIdx, int pageSize) {
+        Pageable pageable = PageRequest.of(pageIdx, pageSize,
+                Sort.by("d.createdAt").descending());
+        return dmRoomRepository.getDmRoomPage(id, pageable);
     }
 }
