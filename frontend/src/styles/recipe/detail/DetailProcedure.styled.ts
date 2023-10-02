@@ -57,3 +57,6 @@ export const ProcedureImg = styled.img`
   height: 100%;
   object-fit: cover;
 `
+
+export const stepTxt = styled.p`
+`
