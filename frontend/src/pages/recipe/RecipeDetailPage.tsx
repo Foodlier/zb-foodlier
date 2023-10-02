@@ -7,7 +7,6 @@ import DetailIngredients from '../../components/recipe/detail/DetailIngredients'
 import DetailProcedure from '../../components/recipe/detail/DetailProcedure';
 
 const RecipeDetailPage = () => {
-  // 서버에서 레시피 정보를 가져오거나, 상태 관리를 통해 데이터를 설정해야 합니다.
   const recipe = {
     recipeId: '',
     memberId: '', 
