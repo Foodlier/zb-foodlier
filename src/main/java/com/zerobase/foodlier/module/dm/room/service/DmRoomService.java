@@ -11,4 +11,6 @@ public interface DmRoomService {
     DmRoom createDmRoom(Request request);
 
     Page<DmRoomDto> getDmRoomPage(Long id, int pageIdx, int pageSize);
+
+    void exitDmRoom(Long id, Long roomId);
 }

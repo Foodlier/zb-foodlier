@@ -6,6 +6,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -22,16 +23,30 @@ public interface DmRoomRepository extends JpaRepository<DmRoom, Long> {
     @Query("SELECT new com.zerobase.foodlier.module.dm.room.dto.DmRoomDto" +
             "(d.id, " +
             "CASE " +
-            "  WHEN r.chefMember.member.id <> :requester THEN r.chefMember.member.nickname " +
-            "  ELSE r.member.nickname " +
+            "  WHEN d.request.chefMember.member.id <> :requester " +
+            "THEN d.request.chefMember.member.nickname " +
+            "  ELSE d.request.member.nickname " +
             "END, " +
             "CASE " +
-            "  WHEN r.chefMember.member.id <> :requester THEN r.chefMember.member.profileUrl " +
-            "  ELSE r.member.profileUrl " +
+            "  WHEN d.request.chefMember.member.id <> :requester " +
+            "THEN d.request.chefMember.member.profileUrl " +
+            "  ELSE d.request.member.profileUrl " +
             "END, " +
-            "r.id, " +
-            "r.expectedPrice) " +
-            "FROM DmRoom d " +
-            "JOIN Request r ON (r.chefMember.member.id = :requester OR r.member.id = :requester)")
+            "d.request.id, " +
+            "d.request.expectedPrice) " +
+            "FROM DmRoom d WHERE " +
+            "((d.request.chefMember.member.id = :requester AND d.isChefExit = false) " +
+            "OR " +
+            "(d.request.member.id = :requester AND d.isMemberExit = false))")
     Page<DmRoomDto> getDmRoomPage(@Param("requester") Long id, Pageable pageable);
+
+    @Modifying
+    @Query("UPDATE DmRoom d SET d.isMemberExit = true WHERE d.id = :roomId")
+    void updateDmRoomByMember(@Param("roomId") Long roomId);
+
+    @Modifying
+    @Query("UPDATE DmRoom d SET d.isChefExit = true WHERE d.id = :roomId")
+    void updateDmRoomByChef(@Param("roomId") Long roomId);
+
+    void deleteDmRoomById(Long id);
 }

@@ -13,6 +13,8 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
+
 @Service
 @RequiredArgsConstructor
 public class DmRoomServiceImpl implements DmRoomService {
@@ -39,7 +41,28 @@ public class DmRoomServiceImpl implements DmRoomService {
     @Override
     public Page<DmRoomDto> getDmRoomPage(Long id, int pageIdx, int pageSize) {
         Pageable pageable = PageRequest.of(pageIdx, pageSize,
-                Sort.by("d.createdAt").descending());
+                Sort.by("createdAt").descending());
         return dmRoomRepository.getDmRoomPage(id, pageable);
+    }
+
+    /**
+     * 작성자 : 황태원
+     * 작성일 : 2023-10-02
+     * 해당 채팅방에서 나갑니다. 마지막 사용자가 나가면 채팅방을 삭제합니다.
+     */
+    @Override
+    @Transactional
+    public void exitDmRoom(Long id, Long roomId) {
+        DmRoom dmRoom = dmRoomRepository.findById(roomId)
+                .orElseThrow();
+        if (id.equals(dmRoom.getRequest().getMember().getId())) {
+            dmRoomRepository.updateDmRoomByMember(roomId);
+        } else {
+            dmRoomRepository.updateDmRoomByChef(roomId);
+        }
+
+        if (dmRoom.isMemberExit() && dmRoom.isChefExit()) {
+            dmRoomRepository.deleteDmRoomById(roomId);
+        }
     }
 }
