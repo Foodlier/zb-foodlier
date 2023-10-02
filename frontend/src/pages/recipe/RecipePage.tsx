@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import * as R from '../../styles/recipe/RecipePage.styled'
+import * as S from '../../styles/recipe/RecipePage.styled'
 import Header from '../../components/Header'
 import BottomNavigation from '../../components/BottomNavigation'
 import RecipeItem from '../../components/recipe/RecipeItem'
@@ -19,28 +19,31 @@ const RecipePage = () => {
     navigate('/recipe/write')
   }
 
+  // const navigateToRecipeDetail = () => {
+  //   navigate('/recipe/detail')
+  // }
   return (
     <>
       <Header />
-      <R.Container>
-        <R.WrapFilter>
-          <R.FilterSelect onChange={handleSelect}>
+      <S.Container>
+        <S.WrapFilter>
+          <S.FilterSelect onChange={handleSelect}>
             {selectList.map(select => (
-              <R.FilterOption key={select} value={select}>
+              <S.FilterOption key={select} value={select}>
                 {select}
-              </R.FilterOption>
+              </S.FilterOption>
             ))}
-          </R.FilterSelect>
-        </R.WrapFilter>
-        <R.WrapRecipeItem>
+          </S.FilterSelect>
+        </S.WrapFilter>
+        <S.WrapRecipeItem>
           <RecipeItem />
           <RecipeItem />
           <RecipeItem />
-        </R.WrapRecipeItem>
-        <R.WritePage onClick={navigateToWriteRecipe}>
+        </S.WrapRecipeItem>
+        <S.WritePage onClick={navigateToWriteRecipe}>
           + 꿀조합 레시피 작성하기
-        </R.WritePage>
-      </R.Container>
+        </S.WritePage>
+      </S.Container>
       <BottomNavigation />
     </>
   )

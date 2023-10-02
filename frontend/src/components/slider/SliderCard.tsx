@@ -1,34 +1,32 @@
-import React, { useState } from 'react'
-import * as S from '../../styles/slider/SliderCard.styled'
-import '../../reset.css'
-import useIcon from '../../hooks/useIcon'
-import { palette } from '../../constants/Styles'
+import React, { useState } from 'react';
+import * as S from '../../styles/slider/SliderCard.styled';
+import '../../reset.css';
+import useIcon from '../../hooks/useIcon';
+import { palette } from '../../constants/Styles';
 
 interface SliderCardProps {
-  recipeId: string | number
-  title: string
-  introduce: string
-  imagePath: string
-  likeCount: number
-  isLike: boolean
+  recipeId: string | number;
+  title: string;
+  introduce: string;
+  imagePath: string;
+  likeCount: number;
+  isLike: boolean;
 }
 
-const SliderCard: React.FC<SliderCardProps> = ({
+function SliderCard({
   title,
   introduce,
   imagePath,
-  
-}) => {
-  const { IcFavorite, IcFavoriteFill } = useIcon()
+}: SliderCardProps) {
+  const { IcFavorite, IcFavoriteFill } = useIcon();
 
   const [isLike, setIsLike] = useState(false);
   const [likeCount, setLikeCount] = useState(0);
-  
 
   const onClickLikeButton = () => {
-    setIsLike(!isLike)
-    setLikeCount(isLike ? likeCount - 1 : likeCount + 1)
-  }
+    setIsLike(!isLike);
+    setLikeCount(isLike ? likeCount - 1 : likeCount + 1);
+  };
 
   return (
     <S.BoxContainer>
@@ -50,7 +48,7 @@ const SliderCard: React.FC<SliderCardProps> = ({
         <S.Content>{introduce}</S.Content>
       </S.TextWrap>
     </S.BoxContainer>
-  )
+  );
 }
 
-export default SliderCard
+export default SliderCard;

@@ -10,8 +10,9 @@ export const Container = styled.div`
   padding: 2rem 0;
   border-radius: 2rem 2rem 0 0;
   background-color: white;
-  box-shadow: 0px 4px 15px var(--color-shadow);
-  z-index: 9999;
+  /* box-shadow: 5px 4px 15px var(--color-shadow); */
+  box-shadow: 0 -0.5rem 1rem rgba(0, 0, 0, 0.1);
+  z-index: 100;
 
   ${breakpoints.large} {
     display: none;

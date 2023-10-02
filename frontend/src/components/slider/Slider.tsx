@@ -1,22 +1,22 @@
-import React from 'react'
-import Slider, { Settings } from 'react-slick'
+import React from 'react';
+import Slider, { Settings } from 'react-slick';
 import "slick-carousel/slick/slick.css";
-import 'slick-carousel/slick/slick-theme.css'
-import styled from 'styled-components'
-import SliderCard from './SliderCard'
-import { palette } from '../../constants/Styles'
+import 'slick-carousel/slick/slick-theme.css';
+import styled from 'styled-components';
+import SliderCard from './SliderCard';
+import { palette } from '../../constants/Styles';
 
 interface Slide {
-  recipeId: string | number
-  title: string
-  introduce: string
-  imagePath: string
-  likeCount: number
-  isLike: boolean
+  recipeId: string | number;
+  title: string;
+  introduce: string;
+  imagePath: string;
+  likeCount: number;
+  isLike: boolean;
 }
 
 interface SlickSliderProps {
-  slides: Slide[]
+  slides: Slide[];
 }
 
 const SlickSliderContainer = styled.div`
@@ -30,7 +30,7 @@ const SlickSliderContainer = styled.div`
     display: flex;
     margin-bottom: 10rem;
   }
-`
+`;
 
 const CustomSlider = styled(Slider)`
   .slick-slider {
@@ -65,9 +65,9 @@ const CustomSlider = styled(Slider)`
     color: ${palette.main};
     font-size: 1.3rem;
   }
-`
+`;
 
-const SlickSlider: React.FC<SlickSliderProps> = ({ slides }) => {
+function SlickSlider({ slides }: SlickSliderProps) {
   const settings: Settings = {
     dots: true,
     infinite: true,
@@ -77,7 +77,7 @@ const SlickSlider: React.FC<SlickSliderProps> = ({ slides }) => {
     centerPadding: '20%',
     autoplay: true,
     autoplaySpeed: 3000,
-  }
+  };
 
   return (
     <SlickSliderContainer>
@@ -100,13 +100,12 @@ const SlickSlider: React.FC<SlickSliderProps> = ({ slides }) => {
               likeCount={slide.likeCount}
               isLike={slide.isLike}
               imagePath={slide.imagePath}
-              
             />
           </div>
         ))}
       </CustomSlider>
     </SlickSliderContainer>
-  )
+  );
 }
 
-export default SlickSlider
+export default SlickSlider;
