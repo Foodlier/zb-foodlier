@@ -18,5 +18,8 @@ public class RequestFormDetailDto {
     private List<String> ingredientList;
     private Long expectedPrice;
     private LocalDateTime expectedAt;
-    private Recipe recipe;
+    private String mainImageUrl;
+    private String recipeTitle;
+    private String recipeContent;
+    private int heartCount;
 }

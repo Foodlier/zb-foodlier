@@ -103,7 +103,10 @@ public class RequestFormServiceImpl implements RequestFormService {
                         .collect(Collectors.toList()))
                 .expectedPrice(requestForm.getExpectedPrice())
                 .expectedAt(requestForm.getExpectedAt())
-                .recipe(requestForm.getRecipe())
+                .mainImageUrl(requestForm.getRecipe().getMainImageUrl())
+                .recipeTitle(requestForm.getRecipe().getSummary().getTitle())
+                .recipeContent(requestForm.getRecipe().getSummary().getContent())
+                .heartCount(requestForm.getRecipe().getHeartCount())
                 .build();
     }
 
