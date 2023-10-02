@@ -20,9 +20,12 @@ public interface RecipeRepository extends JpaRepository<Recipe, Long> {
             "SELECT " +
             "new com.zerobase.foodlier.module.recipe.dto.quotation.QuotationTopResponse" +
             "(q.id, q.summary.title, q.summary.content, q.difficulty, q.expectedTime) " +
-            "FROM Recipe q " +
-            "JOIN Request r ON r.chefMember.member.id = q.member.id AND r.isPaid = false AND r.dmRoom IS NULL " +
-            "WHERE q.member.id = :memberId AND q.isQuotation = true"
+            "FROM Member m " +
+            "JOIN Recipe q ON q.member = m " +
+            "WHERE m.id = :memberId AND q.isQuotation = true AND q.id NOT IN " +
+            "(SELECT q.id FROM Recipe q " +
+            "JOIN Request r ON r.recipe = q AND (r.isPaid = true OR r.dmRoom IS NOT NULL) " +
+            "WHERE q.member.id = :memberId)"
     )
     Page<QuotationTopResponse> findQuotationListForRefrigerator(
             @Param("memberId")Long memberId,
@@ -34,7 +37,7 @@ public interface RecipeRepository extends JpaRepository<Recipe, Long> {
             "new com.zerobase.foodlier.module.recipe.dto.quotation.QuotationTopResponse" +
             "(q.id, q.summary.title, q.summary.content, q.difficulty, q.expectedTime) " +
             "FROM Recipe q " +
-            "JOIN Request r ON r.chefMember.member.id = q.member.id AND r.isPaid = true " +
+            "JOIN Request r ON r.recipe = q AND r.isPaid = true " +
             "WHERE q.member.id = :memberId AND q.isQuotation = true"
     )
     Page<QuotationTopResponse> findQuotationListForRecipe(
@@ -45,8 +48,8 @@ public interface RecipeRepository extends JpaRepository<Recipe, Long> {
     @Query(
             "SELECT CASE WHEN COUNT(*) > 0 THEN true ELSE false END " +
             "FROM Recipe q " +
-            "JOIN Request r ON r.recipe = q " +
-            "WHERE q.id = :quotationId AND q.isQuotation = true AND (r.member.id = :memberId or r.chefMember.member.id = :memberId)"
+            "LEFT JOIN Request r ON r.recipe = q " +
+            "WHERE q.id = :quotationId AND q.isQuotation = true AND (q.member.id = :memberId OR r.member.id = :memberId)"
     )
     boolean existsByIdAndMemberForQuotation(
             @Param("memberId")Long memberId,
@@ -56,11 +59,22 @@ public interface RecipeRepository extends JpaRepository<Recipe, Long> {
     @Query(
             "SELECT CASE WHEN COUNT(*) > 0 THEN true ELSE false END " +
             "FROM Recipe q " +
-            "JOIN Request r ON r.recipe = q AND r.isPaid = false AND r.dmRoom IS NULL " +
-            "WHERE q.id = :quotationId AND q.isQuotation AND r.member.id = :memberId"
+            "JOIN Request r ON r.recipe = q AND r.isPaid = true OR r.dmRoom IS NOT NULL " +
+            "WHERE q.id = :quotationId AND q.isQuotation = true AND q.member.id = :memberId"
     )
     boolean existsDeletePermissionForQuotation(
             @Param("memberId")Long memberId,
             @Param("quotationId")Long quotationId
     );
+
+    @Query(
+            "SELECT CASE WHEN COUNT(*) > 0 THEN true ELSE false END " +
+            "FROM Recipe q " +
+            "JOIN Request r ON r.recipe = q AND r.isPaid = true " +
+            "WHERE q = :quotation"
+    )
+    boolean isAbleToConvert(
+            @Param("quotation") Recipe quotation
+    );
+
 }
