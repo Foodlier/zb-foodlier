@@ -4,11 +4,11 @@ import com.zerobase.foodlier.common.s3.service.S3Service;
 import com.zerobase.foodlier.module.member.member.domain.model.Member;
 import com.zerobase.foodlier.module.member.member.service.MemberService;
 import com.zerobase.foodlier.module.recipe.domain.model.Recipe;
-import com.zerobase.foodlier.module.recipe.dto.ImageUrlDto;
-import com.zerobase.foodlier.module.recipe.dto.RecipeDtoRequest;
-import com.zerobase.foodlier.module.recipe.dto.RecipeImageResponse;
-import com.zerobase.foodlier.module.recipe.exception.RecipeException;
-import com.zerobase.foodlier.module.recipe.service.RecipeService;
+import com.zerobase.foodlier.module.recipe.dto.recipe.ImageUrlDto;
+import com.zerobase.foodlier.module.recipe.dto.recipe.RecipeDtoRequest;
+import com.zerobase.foodlier.module.recipe.dto.recipe.RecipeImageResponse;
+import com.zerobase.foodlier.module.recipe.exception.recipe.RecipeException;
+import com.zerobase.foodlier.module.recipe.service.recipe.RecipeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,7 +16,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
-import static com.zerobase.foodlier.module.recipe.exception.RecipeErrorCode.NO_PERMISSION;
+import static com.zerobase.foodlier.module.recipe.exception.recipe.RecipeErrorCode.NO_PERMISSION;
 
 @Component
 @RequiredArgsConstructor

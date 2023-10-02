@@ -4,7 +4,7 @@ import com.zerobase.foodlier.module.member.member.domain.model.Member;
 import com.zerobase.foodlier.module.member.member.exception.MemberException;
 import com.zerobase.foodlier.module.member.member.repository.MemberRepository;
 import com.zerobase.foodlier.module.recipe.domain.model.Recipe;
-import com.zerobase.foodlier.module.recipe.exception.RecipeException;
+import com.zerobase.foodlier.module.recipe.exception.recipe.RecipeException;
 import com.zerobase.foodlier.module.recipe.repository.RecipeRepository;
 import com.zerobase.foodlier.module.request.domain.vo.Ingredient;
 import com.zerobase.foodlier.module.requestform.domain.model.RequestForm;
@@ -22,7 +22,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static com.zerobase.foodlier.module.member.member.exception.MemberErrorCode.MEMBER_NOT_FOUND;
-import static com.zerobase.foodlier.module.recipe.exception.RecipeErrorCode.*;
+import static com.zerobase.foodlier.module.recipe.exception.recipe.RecipeErrorCode.*;
 import static com.zerobase.foodlier.module.requestform.exception.RequestFormErrorCode.REQUEST_FORM_NOT_FOUND;
 import static com.zerobase.foodlier.module.requestform.exception.RequestFormErrorCode.REQUEST_FORM_PERMISSION_DENIED;
 
