@@ -5,6 +5,7 @@ import com.zerobase.foodlier.global.quotation.facade.QuotationFacade;
 import com.zerobase.foodlier.module.recipe.dto.quotation.QuotationDetailResponse;
 import com.zerobase.foodlier.module.recipe.dto.quotation.QuotationDtoRequest;
 import com.zerobase.foodlier.module.recipe.dto.quotation.QuotationTopResponse;
+import com.zerobase.foodlier.module.recipe.dto.recipe.RecipeDtoRequest;
 import com.zerobase.foodlier.module.recipe.service.quotation.QuotationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
@@ -37,7 +38,10 @@ public class QuotationController {
             @RequestParam Long quotationId,
             @RequestParam Long requestId
     ){
-        return null;
+        quotationFacade.sendQuotation(memberAuthDto.getId(), quotationId, requestId);
+        return ResponseEntity.ok(
+                "견적서를 보냈습니다."
+        );
     }
 
     @GetMapping("/{pageIdx}/{pageSize}")
@@ -92,9 +96,10 @@ public class QuotationController {
     @PutMapping("/recipify/{quotationId}")
     public ResponseEntity<String> recipifyQuotation(
             @AuthenticationPrincipal MemberAuthDto memberAuthDto,
-            @PathVariable Long quotationId
-    ){
-        quotationService.convertToRecipe(memberAuthDto.getId(), quotationId);
+            @PathVariable Long quotationId,
+            @RequestBody RecipeDtoRequest request
+            ){
+        quotationService.convertToRecipe(memberAuthDto.getId(), quotationId, request);
         return ResponseEntity.ok(
                 "견적서가 꿀조합으로 변환되었습니다."
         );
