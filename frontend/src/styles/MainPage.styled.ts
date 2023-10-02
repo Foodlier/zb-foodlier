@@ -5,7 +5,7 @@ export const SlickContainer = styled.section`
   margin-top: 3rem;
 `
 
-export const Tit = styled.h1`
+export const Tit = styled.p`
   font-size: 2.5rem;
   font-weight: 800;
   padding: 0 2%;

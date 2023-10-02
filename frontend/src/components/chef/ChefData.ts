@@ -1,24 +1,24 @@
 export interface Chef {
   chefId: string | number
   nickname: string
-  imagePath: string
+  profileUrl: string
 }
 
-const chefData: Chef[] = [
+export const chefData: Chef[] = [
   {
     chefId: 1,
     nickname: '닉네임1',
-    imagePath: '/src/assets/chef.svg',
+    profileUrl: '/src/assets/chef.svg',
   },
   {
     chefId: 2,
     nickname: '닉네임2',
-    imagePath: '/src/assets/chef.svg',
+    profileUrl: '/src/assets/chef.svg',
   },
   {
     chefId: 3,
     nickname: '닉네임3',
-    imagePath: '/src/assets/chef.svg',
+    profileUrl: '/src/assets/chef.svg',
   },
 ]
 

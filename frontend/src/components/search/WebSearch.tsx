@@ -5,9 +5,9 @@ interface WebSearchProps {
   onSearch: (query: string) => void
 }
 
-const WebSearch: React.FC<WebSearchProps> = () => {
+function WebSearch({ onSearch }: WebSearchProps) {
   const handleSearch = (query: string) => {
-    console.log(`WebSearch에서 검색: ${query}`)
+    onSearch(query)
   }
 
   return <SearchBar onSearch={handleSearch} />

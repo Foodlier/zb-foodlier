@@ -19,6 +19,9 @@ const RecipePage = () => {
     navigate('/recipe/write')
   }
 
+  // const navigateToRecipeDetail = () => {
+  //   navigate('/recipe/detail')
+  // }
   return (
     <>
       <Header />

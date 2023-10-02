@@ -61,7 +61,7 @@ const MainPage = () => {
               key={`chef-${data.chefId}`}
               chefId={data.chefId}
               nickname={data.nickname}
-              imagePath={data.imagePath}
+              profileUrl={data.profileUrl}
             />
           ))}
         </S.ChefList>
