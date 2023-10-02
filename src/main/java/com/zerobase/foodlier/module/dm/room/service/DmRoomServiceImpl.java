@@ -11,14 +11,15 @@ import org.springframework.stereotype.Service;
 public class DmRoomServiceImpl implements DmRoomService {
     private final DmRoomRepository dmRoomRepository;
 
+
     /**
      * 작성자 : 이승현
      * 작성일 : 2023-09-27
      * 요청을 수락 시 DM 방이 생성됩니다.
      */
     @Override
-    public void createDmRoom(Request request) {
-        dmRoomRepository.save(DmRoom.builder()
+    public DmRoom createDmRoom(Request request) {
+        return dmRoomRepository.save(DmRoom.builder()
                 .request(request)
                 .build());
     }

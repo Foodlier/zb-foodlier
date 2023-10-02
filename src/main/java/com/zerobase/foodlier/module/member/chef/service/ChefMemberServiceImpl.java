@@ -1,19 +1,26 @@
 package com.zerobase.foodlier.module.member.chef.service;
 
 import com.zerobase.foodlier.module.member.chef.domain.model.ChefMember;
+import com.zerobase.foodlier.module.member.chef.dto.AroundChefDto;
 import com.zerobase.foodlier.module.member.chef.dto.ChefIntroduceForm;
+import com.zerobase.foodlier.module.member.chef.dto.RequestedChefDto;
 import com.zerobase.foodlier.module.member.chef.exception.ChefMemberException;
 import com.zerobase.foodlier.module.member.chef.repository.ChefMemberRepository;
+import com.zerobase.foodlier.module.member.chef.type.ChefSearchType;
 import com.zerobase.foodlier.module.member.chef.type.GradeType;
 import com.zerobase.foodlier.module.member.member.domain.model.Member;
+import com.zerobase.foodlier.module.member.member.domain.vo.Address;
 import com.zerobase.foodlier.module.member.member.exception.MemberErrorCode;
 import com.zerobase.foodlier.module.member.member.exception.MemberException;
 import com.zerobase.foodlier.module.member.member.repository.MemberRepository;
+import com.zerobase.foodlier.module.member.member.type.RoleType;
 import com.zerobase.foodlier.module.recipe.repository.RecipeRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+
+import java.util.List;
 
 import static com.zerobase.foodlier.module.member.chef.exception.ChefMemberErrorCode.*;
 
@@ -21,6 +28,7 @@ import static com.zerobase.foodlier.module.member.chef.exception.ChefMemberError
 @RequiredArgsConstructor
 public class ChefMemberServiceImpl implements ChefMemberService{
 
+    private static final double AROUND_DISTANCE = 0.012;
     private static final int MIN_RECIPES_FOR_CHEF = 3;
     private final ChefMemberRepository chefMemberRepository;
     private final MemberRepository memberRepository;
@@ -45,6 +53,7 @@ public class ChefMemberServiceImpl implements ChefMemberService{
 
         ChefMember chefMemberEntity = chefMemberRepository.save(chefMember);
         member.setChefMember(chefMemberEntity);
+        member.getRoles().add(RoleType.ROLE_CHEF.name());
         memberRepository.save(member);
     }
 
@@ -63,6 +72,43 @@ public class ChefMemberServiceImpl implements ChefMemberService{
         ChefMember chefMember = member.getChefMember();
         chefMember.setIntroduce(chefIntroduceForm.getIntroduce());
         chefMemberRepository.save(chefMember);
+    }
+
+    /**
+     *  작성자 : 전현서
+     *  작성일 : 2023-09-29
+     *  요청된 요리사의 정보를 가져옴.
+     */
+    public List<RequestedChefDto> getRequestedChefList(Long memberId,
+                                                   int pageIdx, int pageSize){
+        return chefMemberRepository.findRequestedChef(memberId, pageIdx * pageSize, pageSize);
+    }
+
+    /**
+     *  작성자 : 전현서
+     *  작성일 : 2023-09-29
+     *  반경 1km내의 요리사 리스트를 페이징하여 반환
+     *  type이 지정되지 않은 경우는 기본적으로 가까운 거리순
+     */
+    public List<AroundChefDto> getAroundChefList(Long memberId,
+                                                 int pageIdx, int pageSize,
+                                                 ChefSearchType type){
+        Address address = getMember(memberId).getAddress();
+
+        switch (type){
+            case STAR:
+                return chefMemberRepository.findAroundChefOrderByStar(memberId, address.getLat(),
+                        address.getLnt(), AROUND_DISTANCE, pageIdx * pageSize, pageSize);
+            case REVIEW:
+                return chefMemberRepository.findAroundChefOrderByReview(memberId, address.getLat(),
+                        address.getLnt(), AROUND_DISTANCE, pageIdx * pageSize, pageSize);
+            case RECIPE:
+                return chefMemberRepository.findAroundChefOrderByRecipeCount(memberId, address.getLat(),
+                        address.getLnt(), AROUND_DISTANCE, pageIdx * pageSize, pageSize);
+        }
+
+        return chefMemberRepository.findAroundChefOrderByDistance(memberId, address.getLat(),
+                address.getLnt(), AROUND_DISTANCE, pageIdx * pageSize, pageSize);
     }
 
     private Member getMember(Long memberId){

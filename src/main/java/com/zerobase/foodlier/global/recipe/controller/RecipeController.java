@@ -1,12 +1,14 @@
-package com.zerobase.foodlier.module.recipe.controller;
+package com.zerobase.foodlier.global.recipe.controller;
 
 import com.zerobase.foodlier.common.security.provider.dto.MemberAuthDto;
-import com.zerobase.foodlier.global.recipe.dto.RecipeImageResponse;
+import com.zerobase.foodlier.module.recipe.dto.RecipeImageResponse;
 import com.zerobase.foodlier.global.recipe.facade.RecipeFacade;
+import com.zerobase.foodlier.module.recipe.domain.model.Recipe;
 import com.zerobase.foodlier.module.recipe.dto.RecipeDtoRequest;
 import com.zerobase.foodlier.module.recipe.dto.RecipeDtoResponse;
 import com.zerobase.foodlier.module.recipe.service.RecipeService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -71,5 +73,13 @@ public class RecipeController {
                                                   @PathVariable(name = "recipeId") Long id) {
         recipeFacade.checkPermission(memberAuthDto.getEmail(), id);
         return ResponseEntity.ok("레시피 접근 가능합니다.");
+    }
+
+    @GetMapping("/{pageIdx}/{pageSize}")
+    public ResponseEntity<List<Recipe>> getRecipeListByTitle(@AuthenticationPrincipal MemberAuthDto memberAuthDto,
+                                                             @PathVariable int pageIdx,
+                                                             @PathVariable int pageSize,
+                                                             @RequestParam String recipeTitle){
+        return ResponseEntity.ok(recipeService.getRecipeByTitle(recipeTitle, PageRequest.of(pageIdx, pageSize)));
     }
 }
