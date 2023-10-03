@@ -8,5 +8,5 @@ public interface HeartService {
     void createHeart(MemberAuthDto memberAuthDto, Long recipeId);
 
     @RedissonLock
-    void heartCancel(MemberAuthDto memberAuthDto, Long recipeId);
+    void deleteHeart(MemberAuthDto memberAuthDto, Long recipeId);
 }

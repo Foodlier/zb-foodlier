@@ -14,7 +14,7 @@ import com.zerobase.foodlier.module.recipe.repository.RecipeRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import static com.zerobase.foodlier.module.heart.exception.HeartErrorCode.*;
+import static com.zerobase.foodlier.module.heart.exception.HeartErrorCode.HEART_NOT_FOUND;
 import static com.zerobase.foodlier.module.member.member.exception.MemberErrorCode.MEMBER_NOT_FOUND;
 import static com.zerobase.foodlier.module.recipe.exception.RecipeErrorCode.NO_SUCH_RECIPE;
 
@@ -28,59 +28,37 @@ public class HeartServiceImpl implements HeartService {
     /**
      * 작성자 : 이승현
      * 작성일 : 2023-10-03
-     * 좋아요를 눌렀을 때 없으면 새로 생성 있다면 boolean값을 조건으로 false일 때 true로 변경
+     * 좋아요를 눌렀을 때 좋아요 생성
      */
     @RedissonLock(group = "heart", key = "#recipeId")
     @Override
     public void createHeart(MemberAuthDto memberAuthDto, Long recipeId) {
-        heartRepository.findByRecipeIdAndMemberId(recipeId,memberAuthDto.getId())
-                .ifPresentOrElse(
-                        h -> {
-                            if (!h.isHeartOrNot()) {
-                                h.setHeartOrNot(true);
-                                h.getRecipe().plusHeart();
-                                heartRepository.save(h);
-                            } else {
-                                throw new HeartException(ALREADY_HEART);
-                            }
-                        },
-                        () -> {
-                            Recipe recipe = recipeRepository.findById(recipeId)
-                                    .orElseThrow(()-> new RecipeException(NO_SUCH_RECIPE));
-                            recipe.plusHeart();
-                            Member member = memberRepository.findById(memberAuthDto.getId())
-                                    .orElseThrow(()->new MemberException(MEMBER_NOT_FOUND));
-                            heartRepository.save(Heart.builder()
-                                    .recipe(recipe)
-                                    .member(member)
-                                    .heartOrNot(true)
-                                    .build());
-                        }
-                );
+        Recipe recipe = recipeRepository.findById(recipeId)
+                .orElseThrow(() -> new RecipeException(NO_SUCH_RECIPE));
+        Member member = memberRepository.findById(memberAuthDto.getId())
+                .orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
+
+        if (!heartRepository.existsByRecipeAndMember(recipe, member)) {
+            recipe.plusHeart();
+            heartRepository.save(Heart.builder()
+                    .recipe(recipe)
+                    .member(member)
+                    .build());
+        }
     }
 
     /**
      * 작성자 : 이승현
      * 작성일 : 2023-10-03
-     * 좋아요 취소, 좋아요의 boolean값을 조건으로 true일 때 false로 변경
+     * 좋아요 취소했을 때 좋아요 삭제
      */
     @RedissonLock(group = "heart", key = "#recipeId")
     @Override
-    public void heartCancel(MemberAuthDto memberAuthDto, Long recipeId) {
-        heartRepository.findByRecipeIdAndMemberId(recipeId,memberAuthDto.getId())
-                .ifPresentOrElse(
-                        h -> {
-                            if (h.isHeartOrNot()) {
-                                h.setHeartOrNot(false);
-                                h.getRecipe().minusHeart();
-                                heartRepository.save(h);
-                            } else {
-                                throw new HeartException(ALREADY_HEART_CANCEL);
-                            }
-                        },
-                        () -> {
-                            throw new HeartException(HEART_NOT_FOUND);
-                        }
-                );
+    public void deleteHeart(MemberAuthDto memberAuthDto, Long recipeId) {
+        Heart heart = heartRepository.findByRecipeIdAndMemberId(recipeId, memberAuthDto.getId())
+                .orElseThrow(() -> new HeartException(HEART_NOT_FOUND));
+        heart.getRecipe().minusHeart();
+
+        heartRepository.delete(heart);
     }
 }

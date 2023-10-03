@@ -18,8 +18,6 @@ public class Heart {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private boolean heartOrNot;
-
     @ManyToOne(targetEntity = Recipe.class, fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
     private Recipe recipe;
 
