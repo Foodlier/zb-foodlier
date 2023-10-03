@@ -1,9 +1,10 @@
 package com.zerobase.foodlier.module.heart.exception;
 
+import com.zerobase.foodlier.common.exception.exception.BaseException;
 import lombok.Getter;
 
 @Getter
-public class HeartException {
+public class HeartException extends BaseException {
     private final HeartErrorCode errorCode;
     private final String description;
 

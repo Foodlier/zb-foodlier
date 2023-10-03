@@ -7,7 +7,7 @@ import lombok.*;
 
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.UUID;
 
 @Getter
@@ -28,8 +28,7 @@ public class PaymentRequest {
                 .payType(paymentRequest.getPayType())
                 .amount(paymentRequest.getAmount())
                 .orderName(paymentRequest.getOrderName())
-                .payDate(String.valueOf(LocalDateTime.now()))
+                .payDate(String.valueOf(LocalDate.now()))
                 .build();
     }
-
 }

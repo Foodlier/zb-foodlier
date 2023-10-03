@@ -78,4 +78,13 @@ public class Recipe extends Audit {
     @Builder.Default
     private List<RecipeIngredient> recipeIngredientList = new ArrayList<>();
 
+    public void plusHeart() {
+        this.heartCount++;
+    }
+
+    public void minusHeart() {
+        if (heartCount > 0) {
+            this.heartCount--;
+        }
+    }
 }

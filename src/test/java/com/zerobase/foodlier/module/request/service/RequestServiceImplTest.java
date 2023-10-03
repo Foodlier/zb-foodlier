@@ -31,6 +31,7 @@ import static com.zerobase.foodlier.module.member.chef.exception.ChefMemberError
 import static com.zerobase.foodlier.module.member.member.exception.MemberErrorCode.MEMBER_NOT_FOUND;
 import static com.zerobase.foodlier.module.request.exception.RequestErrorCode.*;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.times;
@@ -131,7 +132,7 @@ class RequestServiceImplTest {
             given(chefMemberRepository.findById(anyLong()))
                     .willReturn(Optional.of(chefMember));
 
-            given(requestFormRepository.findById(anyLong()))
+            given(requestFormRepository.findByIdAndMember(anyLong(), any()))
                     .willReturn(Optional.of(requestForm));
 
             //when
@@ -197,7 +198,7 @@ class RequestServiceImplTest {
             given(chefMemberRepository.findById(anyLong()))
                     .willReturn(Optional.of(chefMember));
 
-            given(requestFormRepository.findById(anyLong()))
+            given(requestFormRepository.findByIdAndMember(anyLong(), any()))
                     .willReturn(Optional.of(requestForm));
 
             //when
