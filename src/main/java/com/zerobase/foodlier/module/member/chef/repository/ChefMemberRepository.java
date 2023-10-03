@@ -17,7 +17,8 @@ public interface ChefMemberRepository extends JpaRepository<ChefMember, Long> {
             value = "SELECT c.id as chefId, c.introduce as introduce, c.star_avg as starAvg,\n" +
                     "c.review_count as reviewCount, m.profile_url as profileUrl, m.nickname as nickname,\n" +
                     "ROUND(st_distance_sphere(point(m.lnt, m.lat), point(rm.lnt, rm.lat))/1000, 2) as distance,\n" +
-                    "rq.id as requestId, IFNULL(rp.is_quotation, false) as isQuotation, rp.id as quotationId, rc.recipeCount as recipeCount\n" +
+                    "rq.id as requestId, IFNULL(rp.is_quotation, false) as isQuotation, rp.id as quotationId, rc.recipeCount as recipeCount,\n" +
+                    "m.lat as lat, m.lnt as lnt\n" +
                     "FROM member rm\n" +
                     "JOIN cook_request rq ON rq.member_id = rm.id AND rq.is_paid = false AND rq.dm_room_id is null\n" +
                     "JOIN chef_member c ON c.id = rq.chef_member_id\n" +
@@ -45,7 +46,7 @@ public interface ChefMemberRepository extends JpaRepository<ChefMember, Long> {
     String baseAroundSearchQuery = "SELECT c.id as chefId, c.introduce as introduce, c.star_avg as starAvg,\n" +
             "c.review_count as reviewCount, m.profile_url as profileUrl, m.nickname as nickname,\n" +
             "ROUND(st_distance_sphere(point(m.lnt, m.lat), point(:lnt, :lat))/1000, 2) as distance,\n" +
-            "rc.recipeCount as recipeCount\n" +
+            "rc.recipeCount as recipeCount, m.lat as lat, m.lnt as lnt\n" +
             "FROM chef_member c\n" +
             "JOIN member m ON m.chef_member_id = c.id\n" +
             "JOIN\n" +

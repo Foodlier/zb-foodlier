@@ -1,4 +1,4 @@
-package com.zerobase.foodlier.module.recipe.service;
+package com.zerobase.foodlier.module.recipe.service.recipe;
 
 import com.zerobase.foodlier.module.member.member.domain.model.Member;
 import com.zerobase.foodlier.module.recipe.domain.document.RecipeDocument;
@@ -7,9 +7,9 @@ import com.zerobase.foodlier.module.recipe.domain.vo.RecipeDetail;
 import com.zerobase.foodlier.module.recipe.domain.vo.RecipeIngredient;
 import com.zerobase.foodlier.module.recipe.domain.vo.RecipeStatistics;
 import com.zerobase.foodlier.module.recipe.domain.vo.Summary;
-import com.zerobase.foodlier.module.recipe.dto.*;
-import com.zerobase.foodlier.module.recipe.exception.RecipeErrorCode;
-import com.zerobase.foodlier.module.recipe.exception.RecipeException;
+import com.zerobase.foodlier.module.recipe.dto.recipe.*;
+import com.zerobase.foodlier.module.recipe.exception.recipe.RecipeErrorCode;
+import com.zerobase.foodlier.module.recipe.exception.recipe.RecipeException;
 import com.zerobase.foodlier.module.recipe.repository.RecipeRepository;
 import com.zerobase.foodlier.module.recipe.repository.RecipeSearchRepository;
 import lombok.RequiredArgsConstructor;
@@ -21,7 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.zerobase.foodlier.module.recipe.exception.RecipeErrorCode.NO_SUCH_RECIPE;
+import static com.zerobase.foodlier.module.recipe.exception.recipe.RecipeErrorCode.NO_SUCH_RECIPE;
 
 @Service
 @RequiredArgsConstructor
