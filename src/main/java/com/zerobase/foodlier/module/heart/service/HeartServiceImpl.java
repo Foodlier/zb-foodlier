@@ -28,7 +28,7 @@ public class HeartServiceImpl implements HeartService {
     @RedissonLock(group = "heart", key = "#recipeId")
     @Override
     public void createHeart(MemberAuthDto memberAuthDto, Long recipeId) {
-        heartRepository.findByRecipeId(recipeId)
+        heartRepository.findByRecipeIdAndMemberId(recipeId,memberAuthDto.getId())
                 .ifPresentOrElse(
                         h -> {
                             if (!h.isHeartOrNot()) {
@@ -57,7 +57,7 @@ public class HeartServiceImpl implements HeartService {
     @RedissonLock(group = "heart", key = "#recipeId")
     @Override
     public void heartCancel(MemberAuthDto memberAuthDto, Long recipeId) {
-        heartRepository.findByRecipeId(recipeId)
+        heartRepository.findByRecipeIdAndMemberId(recipeId,memberAuthDto.getId())
                 .ifPresentOrElse(
                         h -> {
                             if (h.isHeartOrNot()) {
