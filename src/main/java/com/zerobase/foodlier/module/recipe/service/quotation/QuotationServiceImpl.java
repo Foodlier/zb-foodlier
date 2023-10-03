@@ -51,7 +51,7 @@ public class QuotationServiceImpl implements QuotationService{
                 .expectedTime(request.getExpectedTime())
                 .recipeStatistics(new RecipeStatistics())
                 .difficulty(request.getDifficulty())
-                .isPublic(true)
+                .isPublic(false)
                 .member(member)
                 .recipeIngredientList(request.getRecipeIngredientDtoList()
                         .stream()
@@ -130,7 +130,7 @@ public class QuotationServiceImpl implements QuotationService{
                 .stream()
                 .map(RecipeIngredientDto::toEntity)
                 .collect(Collectors.toList()));
-
+        quotation.setIsPublic(true);
         quotation.setIsQuotation(false); //recipe 변환
 
         recipeRepository.save(quotation);
