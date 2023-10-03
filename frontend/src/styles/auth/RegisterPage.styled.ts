@@ -1,5 +1,7 @@
 import styled from 'styled-components'
-import { palette } from '../constants/Styles'
+// import React, { useState } from 'react'
+// import { Modal } from '../../components/auth/AddressModal'
+import { palette } from '../../constants/Styles'
 
 // 회원가입 페이지 스타일 컴포넌트
 const inputStyles = `
@@ -33,6 +35,7 @@ export const Container = styled.div`
 export const Profile = styled.div`
   width: 100px;
   height: 100px;
+  margin: 0 auto;
   padding: 10px 10px;
   border: 1px solid #ccc;
   border-radius: 20%;
@@ -73,6 +76,10 @@ export const Form = styled.form`
   flex-direction: column;
   width: 90%;
   max-width: 500px;
+`
+
+export const FileInput = styled.input`
+  display: none;
 `
 
 export const Input1 = styled.input`
