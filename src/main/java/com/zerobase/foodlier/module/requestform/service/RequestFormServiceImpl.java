@@ -33,6 +33,7 @@ public class RequestFormServiceImpl implements RequestFormService {
     private final RequestFormRepository requestFormRepository;
     private final RecipeRepository recipeRepository;
     private final MemberRepository memberRepository;
+    private static final Long ZERO_RECIPE_ID = 0L;
 
     /**
      * 작성일 : 2023-09-29
@@ -45,7 +46,8 @@ public class RequestFormServiceImpl implements RequestFormService {
                 .orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
         Recipe recipe = null;
 
-        if (requestFormDto.getRecipeId() != null && requestFormDto.getRecipeId() != 0) {
+        if (!Objects.isNull(requestFormDto.getRecipeId()) &&
+                !requestFormDto.getRecipeId().equals(ZERO_RECIPE_ID)) {
             recipe = recipeRepository.findById(requestFormDto.getRecipeId())
                     .orElseThrow(() -> new RecipeException(NO_SUCH_RECIPE));
 
@@ -118,7 +120,8 @@ public class RequestFormServiceImpl implements RequestFormService {
                 .orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
         Recipe recipe = null;
 
-        if (requestFormDto.getRecipeId() != null && requestFormDto.getRecipeId() != 0) {
+        if (!Objects.isNull(requestFormDto.getRecipeId()) &&
+                !requestFormDto.getRecipeId().equals(ZERO_RECIPE_ID)) {
             recipe = recipeRepository.findById(requestFormDto.getRecipeId())
                     .orElseThrow(() -> new RecipeException(NO_SUCH_RECIPE));
 
