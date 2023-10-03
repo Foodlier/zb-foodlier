@@ -98,7 +98,7 @@ public class RequestFormServiceImpl implements RequestFormService {
         RequestForm requestForm = requestFormRepository.findById(requestFormId)
                 .orElseThrow(() -> new RequestFormException(REQUEST_FORM_NOT_FOUND));
         checkPermission(id, requestForm.getMember().getId());
-        return RequestFormDetailDto.builder()
+        RequestFormDetailDto.RequestFormDetailDtoBuilder builder = RequestFormDetailDto.builder()
                 .requestFormId(requestForm.getId())
                 .requesterNickname(requestForm.getMember().getNickname())
                 .title(requestForm.getTitle())
@@ -109,12 +109,16 @@ public class RequestFormServiceImpl implements RequestFormService {
                 .expectedPrice(requestForm.getExpectedPrice())
                 .expectedAt(requestForm.getExpectedAt())
                 .address(requestForm.getMember().getAddress().getRoadAddress())
-                .addressDetail(requestForm.getMember().getAddress().getAddressDetail())
-                .mainImageUrl(requestForm.getRecipe().getMainImageUrl())
-                .recipeTitle(requestForm.getRecipe().getSummary().getTitle())
-                .recipeContent(requestForm.getRecipe().getSummary().getContent())
-                .heartCount(requestForm.getRecipe().getHeartCount())
-                .build();
+                .addressDetail(requestForm.getMember().getAddress().getAddressDetail());
+
+        if (!Objects.isNull(requestForm.getRecipe())) {
+            builder.mainImageUrl(requestForm.getRecipe().getMainImageUrl())
+                    .recipeTitle(requestForm.getRecipe().getSummary().getTitle())
+                    .recipeContent(requestForm.getRecipe().getSummary().getContent())
+                    .heartCount(requestForm.getRecipe().getHeartCount());
+        }
+
+        return builder.build();
     }
 
     /**
