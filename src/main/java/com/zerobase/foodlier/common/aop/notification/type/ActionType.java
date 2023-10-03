@@ -6,16 +6,14 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @Getter
 public enum ActionType {
-    SEND("send", "요청"),
-    APPROVE("approve", "수락"),
-    REJECT("reject", "거절"),
-    CANCEL("cancel", "취소"),
-    RE_COMMENT("recomment", "대댓글"),
-    COMMENT("comment", "댓글"),
-    HEART("heart", "좋아요"),
+    SEND("요청"),
+    APPROVE("수락"),
+    REJECT("거절"),
+    CANCEL("취소"),
+    RE_COMMENT("대댓글"),
+    COMMENT("댓글"),
+    HEART( "좋아요"),
     ;
-
-    private final String english;
     private final String korean;
 
 }
