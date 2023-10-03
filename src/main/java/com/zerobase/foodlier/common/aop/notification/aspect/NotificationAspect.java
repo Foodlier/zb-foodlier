@@ -2,11 +2,11 @@ package com.zerobase.foodlier.common.aop.notification.aspect;
 
 import com.zerobase.foodlier.common.aop.notification.annotation.Notification;
 import com.zerobase.foodlier.common.aop.notification.dto.Notify;
+import com.zerobase.foodlier.common.aop.notification.type.NotifyMessage;
+import com.zerobase.foodlier.common.aop.notification.type.NotifyUrl;
 import com.zerobase.foodlier.common.aop.notification.type.SendType;
 import com.zerobase.foodlier.global.notification.facade.NotificationFacade;
 import com.zerobase.foodlier.module.member.member.domain.model.Member;
-import com.zerobase.foodlier.common.aop.notification.type.NotifyMessage;
-import com.zerobase.foodlier.common.aop.notification.type.NotifyUrl;
 import lombok.RequiredArgsConstructor;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.AfterReturning;
@@ -47,10 +47,10 @@ public class NotificationAspect {
         );
     }
 
-    private Member decideReceiver(Notification notification, Notify notify){
+    private Member decideReceiver(Notification notification, Notify notify) {
 
-        if(notification.notificationType()==notify.getNotificationType()
-        && notification.sendTo()==SendType.REQUESTER){
+        if (notification.notificationType() == notify.getNotificationType()
+                && notification.sendTo() == SendType.REQUESTER) {
             return notify.getAssosiatedMember();
         }
         return notify.getAssosiatedOtherMember();
