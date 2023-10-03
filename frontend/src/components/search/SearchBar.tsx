@@ -1,5 +1,4 @@
 import React, { useState } from 'react'
-import styled from 'styled-components'
 import useIcon from '../../hooks/useIcon'
 import * as S from '../../styles/search/SearchBar.styled'
 import { palette } from '../../constants/Styles'
@@ -8,7 +7,7 @@ interface SearchBarProps {
   onSearch: (query: string) => void
 }
 
-const SearchBar: React.FC<SearchBarProps> = ({ onSearch }) => {
+function SearchBar({ onSearch }: SearchBarProps) {
   const { IcSearch } = useIcon()
   const [text, setText] = useState('')
 

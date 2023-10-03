@@ -67,7 +67,7 @@ const CustomSlider = styled(Slider)`
   }
 `
 
-const SlickSlider: React.FC<SlickSliderProps> = ({ slides }) => {
+function SlickSlider({ slides }: SlickSliderProps) {
   const settings: Settings = {
     dots: true,
     infinite: true,
@@ -94,11 +94,11 @@ const SlickSlider: React.FC<SlickSliderProps> = ({ slides }) => {
         {slides.map(slide => (
           <div key={`slide-${slide.recipeId}`}>
             <SliderCard
-              recipeId={slide.recipeId}
+              // recipeId={slide.recipeId}
               title={slide.title}
               introduce={slide.introduce}
-              likeCount={slide.likeCount}
-              isLike={slide.isLike}
+              // likeCount={slide.likeCount}
+              // isLike={slide.isLike}
               imagePath={slide.imagePath}
             />
           </div>

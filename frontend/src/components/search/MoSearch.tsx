@@ -8,7 +8,7 @@ interface MoSearchProps {
   setIsMoSearchOpen: (isOpen: boolean) => void
 }
 
-const MoSearch: React.FC<MoSearchProps> = ({ setIsMoSearchOpen }) => {
+function MoSearch({ setIsMoSearchOpen }: MoSearchProps) {
   const { IcPrevLight } = useIcon()
 
   const handleSearch = (query: string) => {

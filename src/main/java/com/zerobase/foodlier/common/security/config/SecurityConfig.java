@@ -67,7 +67,9 @@ public class SecurityConfig {
                         "/**/auth/login",
                         "/**/authKey/send",
                         "/**/auth/verify",
-                        "/**/auth/signin"
+                        "/**/auth/signin",
+                        "/**/success/**",
+                        "/**/fail/**"
                 );
     }
 

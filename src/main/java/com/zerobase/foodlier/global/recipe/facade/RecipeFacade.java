@@ -1,12 +1,12 @@
 package com.zerobase.foodlier.global.recipe.facade;
 
 import com.zerobase.foodlier.common.s3.service.S3Service;
-import com.zerobase.foodlier.global.recipe.dto.RecipeImageResponse;
 import com.zerobase.foodlier.module.member.member.domain.model.Member;
 import com.zerobase.foodlier.module.member.member.service.MemberService;
 import com.zerobase.foodlier.module.recipe.domain.model.Recipe;
 import com.zerobase.foodlier.module.recipe.dto.ImageUrlDto;
 import com.zerobase.foodlier.module.recipe.dto.RecipeDtoRequest;
+import com.zerobase.foodlier.module.recipe.dto.RecipeImageResponse;
 import com.zerobase.foodlier.module.recipe.exception.RecipeException;
 import com.zerobase.foodlier.module.recipe.service.RecipeService;
 import lombok.RequiredArgsConstructor;
@@ -76,12 +76,9 @@ public class RecipeFacade {
      */
     public void updateRecipe(String email, RecipeDtoRequest recipeDtoRequest, Long id) {
         checkPermission(email, id);
+        ImageUrlDto imageUrlDto = recipeService.getBeforeImageUrl(id);
         recipeService.updateRecipe(recipeDtoRequest, id);
-        Recipe recipe = recipeService.getRecipe(id);
-        deleteRecipeImage(ImageUrlDto.builder()
-                .mainImageUrl(recipe.getMainImageUrl())
-                .recipeDetailList(recipe.getRecipeDetailList())
-                .build());
+        deleteRecipeImage(imageUrlDto);
     }
 
     /**
@@ -92,8 +89,8 @@ public class RecipeFacade {
     @Transactional
     public void deleteRecipe(String email, Long id) {
         checkPermission(email, id);
-
-        ImageUrlDto imageUrlDto = recipeService.deleteRecipe(id);
+        ImageUrlDto imageUrlDto = recipeService.getBeforeImageUrl(id);
+        recipeService.deleteRecipe(id);
         deleteRecipeImage(imageUrlDto);
     }
 
@@ -104,9 +101,7 @@ public class RecipeFacade {
      */
     private void deleteRecipeImage(ImageUrlDto imageUrlDto) {
         s3Service.deleteImage(imageUrlDto.getMainImageUrl());
-        imageUrlDto.getRecipeDetailList()
-                .forEach(recipeDetail ->
-                        s3Service.deleteImage(recipeDetail.getCookingOrderImageUrl()));
+        imageUrlDto.getCookingOrderImageUrlList().forEach(s3Service::deleteImage);
     }
 
     /**
