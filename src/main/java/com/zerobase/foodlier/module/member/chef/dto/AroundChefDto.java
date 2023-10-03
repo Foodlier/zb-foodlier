@@ -11,6 +11,8 @@ public interface AroundChefDto {
     //member
     String getProfileUrl();
     String getNickname();
+    double getLat();
+    double getLnt();
 
     //etc
     double getDistance();
