@@ -86,7 +86,7 @@ public class RecipeController {
     }
 
     @PostMapping("/heart/{recipeId}")
-    public ResponseEntity<?> createHeart(
+    public ResponseEntity<String> createHeart(
             @AuthenticationPrincipal MemberAuthDto memberAuthDto,
             @PathVariable Long recipeId
     ){
@@ -94,12 +94,12 @@ public class RecipeController {
         return ResponseEntity.ok("좋아요를 눌렀습니다");
     }
 
-    @PatchMapping("/heart/{recipeId}")
-    public ResponseEntity<?> heartCancel(
+    @DeleteMapping("/heart/{recipeId}")
+    public ResponseEntity<String> deleteHeart(
             @AuthenticationPrincipal MemberAuthDto memberAuthDto,
             @PathVariable Long recipeId
     ){
-        heartService.heartCancel(memberAuthDto,recipeId);
+        heartService.deleteHeart(memberAuthDto,recipeId);
         return ResponseEntity.ok("좋아요를 취소하였습니다.");
     }
 }
