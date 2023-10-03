@@ -10,12 +10,15 @@ import com.zerobase.foodlier.module.recipe.domain.vo.RecipeDetail;
 import com.zerobase.foodlier.module.recipe.domain.vo.RecipeIngredient;
 import com.zerobase.foodlier.module.recipe.domain.vo.RecipeStatistics;
 import com.zerobase.foodlier.module.recipe.domain.vo.Summary;
+import com.zerobase.foodlier.module.recipe.exception.RecipeException;
 import com.zerobase.foodlier.module.review.recipe.domain.model.RecipeReview;
 import lombok.*;
 
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.zerobase.foodlier.module.recipe.exception.RecipeErrorCode.HEART_MUST_NOT_MINUS;
 
 @Entity
 @Getter
@@ -78,4 +81,14 @@ public class Recipe extends Audit {
     @Builder.Default
     private List<RecipeIngredient> recipeIngredientList = new ArrayList<>();
 
+    public void plusHeart() {
+        this.heartCount++;
+    }
+
+    public void minusHeart() {
+        if (heartCount <= 0) {
+            throw new RecipeException(HEART_MUST_NOT_MINUS);
+        }
+        this.heartCount--;
+    }
 }

@@ -33,7 +33,7 @@ public class HeartServiceImpl implements HeartService {
                         h -> {
                             if (!h.isHeartOrNot()) {
                                 h.setHeartOrNot(true);
-                                h.getRecipe().setHeartCount(h.getRecipe().getHeartCount() + 1);
+                                h.getRecipe().plusHeart();
                                 heartRepository.save(h);
                             } else {
                                 throw new HeartException(ALREADY_HEART);
@@ -42,7 +42,7 @@ public class HeartServiceImpl implements HeartService {
                         () -> {
                             Recipe recipe = recipeRepository.findById(recipeId)
                                     .orElseThrow(()-> new RecipeException(NO_SUCH_RECIPE));
-                            recipe.setHeartCount(recipe.getHeartCount() + 1);
+                            recipe.plusHeart();
                             Member member = memberRepository.findById(memberAuthDto.getId())
                                     .orElseThrow(()->new MemberException(MEMBER_NOT_FOUND));
                             heartRepository.save(Heart.builder()
@@ -62,7 +62,7 @@ public class HeartServiceImpl implements HeartService {
                         h -> {
                             if (h.isHeartOrNot()) {
                                 h.setHeartOrNot(false);
-                                h.getRecipe().setHeartCount(h.getRecipe().getHeartCount() - 1);
+                                h.getRecipe().minusHeart();
                                 heartRepository.save(h);
                             } else {
                                 throw new HeartException(ALREADY_HEART_CANCEL);
