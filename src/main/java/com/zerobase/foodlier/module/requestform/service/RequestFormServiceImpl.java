@@ -18,6 +18,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
@@ -41,6 +42,7 @@ public class RequestFormServiceImpl implements RequestFormService {
      * 요청서 작성, 삭제된 레시피, 공개되지 않은 레시피, 견적서를 체크
      */
     @Override
+    @Transactional
     public void createRequestForm(Long id, RequestFormDto requestFormDto) {
         Member member = memberRepository.findById(id)
                 .orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
@@ -121,6 +123,7 @@ public class RequestFormServiceImpl implements RequestFormService {
      * 요청서 업데이트, 태그된 레시피 또한 업데이트, 변경 시 권한 검증
      */
     @Override
+    @Transactional
     public void updateRequestForm(Long id, RequestFormDto requestFormDto, Long requestFormId) {
         memberRepository.findById(id)
                 .orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
@@ -158,6 +161,7 @@ public class RequestFormServiceImpl implements RequestFormService {
      * 요청서 삭제, 삭제 시 권한 검증
      */
     @Override
+    @Transactional
     public void deleteRequestForm(Long id, Long requestFormId) {
         memberRepository.findById(id)
                 .orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
