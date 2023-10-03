@@ -20,9 +20,9 @@ public interface RecipeRepository extends JpaRepository<Recipe, Long> {
             "SELECT " +
             "new com.zerobase.foodlier.module.recipe.dto.quotation.QuotationTopResponse" +
             "(q.id, q.summary.title, q.summary.content, q.difficulty, q.expectedTime) " +
-            "FROM Member m " +
-            "JOIN Recipe q ON q.member = m " +
-            "WHERE m.id = :memberId AND q.isQuotation = true AND q.id NOT IN " +
+            "FROM Recipe q " +
+            "JOIN Member m ON m = q.member AND m.id = :memberId " +
+            "WHERE q.isQuotation = true AND q.id NOT IN " +
             "(SELECT q.id FROM Recipe q " +
             "JOIN Request r ON r.recipe = q " +
             "WHERE q.member.id = :memberId)"
