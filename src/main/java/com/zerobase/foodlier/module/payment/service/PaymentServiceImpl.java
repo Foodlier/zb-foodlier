@@ -147,7 +147,7 @@ public class PaymentServiceImpl implements PaymentService {
      */
     @Transactional
     @Override
-    public void requestPaymentCancel(String paymentKey, String cancelReason) {
+    public String requestPaymentCancel(String paymentKey, String cancelReason) {
         URI uri = URI.create(tossOriginUrl + paymentKey + "/cancel");
 
         HttpHeaders httpHeaders = new HttpHeaders();
@@ -162,8 +162,8 @@ public class PaymentServiceImpl implements PaymentService {
         try {
             restTemplate.postForObject(uri,
                     new HttpEntity<>(param, httpHeaders), String.class);
-        }catch (HttpClientErrorException e){
-            throw  new PaymentException(PAYMENT_CANCEL_ERROR);
+        } catch (HttpClientErrorException e) {
+            throw new PaymentException(PAYMENT_CANCEL_ERROR);
         }
 
         Payment payment = paymentRepository.findByPaymentKey(paymentKey)
@@ -173,6 +173,8 @@ public class PaymentServiceImpl implements PaymentService {
         payment.getMember().setPoint(payment.getMember().getPoint() - amount);
         payment.setCanceled(true);
         paymentRepository.save(payment);
+
+        return cancelReason;
     }
 
     private void validRequest(String paymentKey, String orderId, Long amount) {
