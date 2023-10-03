@@ -27,7 +27,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 
-import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -152,7 +151,6 @@ class RequestFormServiceImplTest {
 
     @Test
     @DisplayName("요청서 작성 성공 - 레시피 태그하지 않음")
-    @Transactional
     void success_create_request_form_no_tag() {
         //given
         Long id = constRequesterId;
@@ -183,7 +181,6 @@ class RequestFormServiceImplTest {
 
     @Test
     @DisplayName("요청서 작성 성공 - 레시피 태그")
-    @Transactional
     void success_create_request_form_tag() {
         //given
         Long id = constRequesterId;
@@ -432,7 +429,6 @@ class RequestFormServiceImplTest {
 
     @Test
     @DisplayName("요청서 수정 성공")
-    @Transactional
     void success_update_request_form() {
         //given
         Long id = constRequesterId;
@@ -616,7 +612,6 @@ class RequestFormServiceImplTest {
 
     @Test
     @DisplayName("요청서 삭제 성공")
-    @Transactional
     void success_delete_request_form() {
         //given
         Long id = constRequesterId;
