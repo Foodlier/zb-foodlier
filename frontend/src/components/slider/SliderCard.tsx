@@ -13,15 +13,7 @@ interface SliderCardProps {
   // isLike: boolean
 }
 
-<<<<<<< HEAD
-const SliderCard: React.FC<SliderCardProps> = ({
-  title,
-  introduce,
-  imagePath,
-}) => {
-=======
 function SliderCard({ title, introduce, imagePath }: SliderCardProps) {
->>>>>>> 9ac4022f9c734b23f09ac0d129d1c92190ca7f7b
   const { IcFavorite, IcFavoriteFill } = useIcon()
 
   const [isLike, setIsLike] = useState(false)
