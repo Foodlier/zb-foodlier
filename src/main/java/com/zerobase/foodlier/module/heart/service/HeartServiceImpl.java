@@ -25,6 +25,11 @@ public class HeartServiceImpl implements HeartService {
     private final RecipeRepository recipeRepository;
     private final MemberRepository memberRepository;
 
+    /**
+     * 작성자 : 이승현
+     * 작성일 : 2023-10-03
+     * 좋아요를 눌렀을 때 없으면 새로 생성 있다면 boolean값을 조건으로 false일 때 true로 변경
+     */
     @RedissonLock(group = "heart", key = "#recipeId")
     @Override
     public void createHeart(MemberAuthDto memberAuthDto, Long recipeId) {
@@ -54,6 +59,11 @@ public class HeartServiceImpl implements HeartService {
                 );
     }
 
+    /**
+     * 작성자 : 이승현
+     * 작성일 : 2023-10-03
+     * 좋아요 취소, 좋아요의 boolean값을 조건으로 true일 때 false로 변경
+     */
     @RedissonLock(group = "heart", key = "#recipeId")
     @Override
     public void heartCancel(MemberAuthDto memberAuthDto, Long recipeId) {
