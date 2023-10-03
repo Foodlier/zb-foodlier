@@ -24,7 +24,7 @@ public interface RecipeRepository extends JpaRepository<Recipe, Long> {
             "JOIN Recipe q ON q.member = m " +
             "WHERE m.id = :memberId AND q.isQuotation = true AND q.id NOT IN " +
             "(SELECT q.id FROM Recipe q " +
-            "JOIN Request r ON r.recipe = q AND (r.isPaid = true OR r.dmRoom IS NOT NULL) " +
+            "JOIN Request r ON r.recipe = q " +
             "WHERE q.member.id = :memberId)"
     )
     Page<QuotationTopResponse> findQuotationListForRefrigerator(
@@ -59,10 +59,10 @@ public interface RecipeRepository extends JpaRepository<Recipe, Long> {
     @Query(
             "SELECT CASE WHEN COUNT(*) > 0 THEN true ELSE false END " +
             "FROM Recipe q " +
-            "JOIN Request r ON r.recipe = q AND r.isPaid = true OR r.dmRoom IS NOT NULL " +
+            "JOIN Request r ON r.recipe = q " +
             "WHERE q.id = :quotationId AND q.isQuotation = true AND q.member.id = :memberId"
     )
-    boolean existsDeletePermissionForQuotation(
+    boolean isNotAbleToDeleteForQuotation(
             @Param("memberId")Long memberId,
             @Param("quotationId")Long quotationId
     );
