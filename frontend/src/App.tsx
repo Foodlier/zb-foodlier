@@ -8,6 +8,7 @@ import RecipePage from './pages/recipe/RecipePage'
 import WriteRecipePage from './pages/recipe/WriteRecipePage'
 import RecipeDetailPage from './pages/recipe/RecipeDetailPage'
 import ChattingPage from './pages/chat/ChattingPage'
+import CookForYou from './pages/refrigerator/CookForYou'
 
 function App() {
   // const [count, setCount] = useState(0)
@@ -23,6 +24,7 @@ function App() {
       <Route path="/login" element={<LoginPage />} />
       <Route path="/register" element={<RegisterPage />} />
       <Route path="/cook-for-me" element={<CookForMe />} />
+      <Route path="/cook-for-you" element={<CookForYou />} />
       <Route path="/recipe" element={<RecipePage />} />
       <Route path="/recipe/write" element={<WriteRecipePage />} />
       <Route path="/recipe/detail" element={<RecipeDetailPage />} />

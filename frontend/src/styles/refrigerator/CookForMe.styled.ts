@@ -86,6 +86,7 @@ export const Card = styled.li`
   margin-bottom: 10px;
   border: 1px solid ${palette.divider};
   border-radius: 10px;
+  box-shadow: 0px 2px 6px 2px rgba(89, 97, 104, 0.1);
 `
 export const CardInfo = styled.div`
   display: flex;

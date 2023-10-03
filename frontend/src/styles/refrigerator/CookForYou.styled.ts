@@ -1,5 +1,5 @@
 import styled from 'styled-components'
-import { breakpoints, palette } from '../../constants/Styles'
+import { palette } from '../../constants/Styles'
 
 // 스타일드 컴포넌트
 export const Container = styled.div`
@@ -70,6 +70,10 @@ export const CardList = styled.ul`
   height: 500px;
   overflow: auto;
   padding-left: 0;
+  border-bottom: 1px solid ${palette.divider};
+  &::-webkit-scrollbar {
+    display: none;
+  }
 `
 
 export const Card = styled.li`
@@ -83,6 +87,7 @@ export const Card = styled.li`
   margin-bottom: 10px;
   border: 1px solid ${palette.divider};
   border-radius: 10px;
+  box-shadow: 0px 2px 6px 2px rgba(89, 97, 104, 0.1);
 `
 export const CardInfo = styled.div`
   display: flex;
@@ -136,7 +141,4 @@ export const RequestButton = styled.button`
 export const SpaceDiv = styled.div`
   width: 100%;
   height: 100px;
-  ${breakpoints.large} {
-    display: none;
-  }
 `
