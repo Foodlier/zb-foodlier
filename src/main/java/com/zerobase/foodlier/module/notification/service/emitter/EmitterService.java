@@ -1,12 +1,11 @@
 package com.zerobase.foodlier.module.notification.service.emitter;
 
 import com.zerobase.foodlier.module.notification.domain.model.Notification;
-import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.util.Map;
 
-@Service
+
 public interface EmitterService {
     String makeTimeIncludeId(String email);
     SseEmitter createEmitter(String userEmail);
