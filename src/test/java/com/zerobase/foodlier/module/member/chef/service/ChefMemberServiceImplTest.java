@@ -277,6 +277,16 @@ class ChefMemberServiceImplTest {
                     }
 
                     @Override
+                    public double getLat() {
+                        return 37.1;
+                    }
+
+                    @Override
+                    public double getLnt() {
+                        return 127.1;
+                    }
+
+                    @Override
                     public double getDistance() {
                         return 1.12;
                     }
@@ -320,6 +330,8 @@ class ChefMemberServiceImplTest {
                 () -> assertEquals(chefList.get(0).getProfileUrl(), responseChefList.get(0).getProfileUrl()),
                 () -> assertEquals(chefList.get(0).getNickname(), responseChefList.get(0).getNickname()),
                 () -> assertEquals(chefList.get(0).getDistance(), responseChefList.get(0).getDistance()),
+                () -> assertEquals(chefList.get(0).getLat(), responseChefList.get(0).getLat()),
+                () -> assertEquals(chefList.get(0).getLnt(), responseChefList.get(0).getLnt()),
                 () -> assertEquals(chefList.get(0).getRecipeCount(), responseChefList.get(0).getRecipeCount()),
                 () -> assertEquals(chefList.get(0).getRequestId(), responseChefList.get(0).getRequestId()),
                 () -> assertEquals(chefList.get(0).getIsQuotation(), responseChefList.get(0).getIsQuotation()),
@@ -368,6 +380,8 @@ class ChefMemberServiceImplTest {
                 () -> assertEquals(chef2.getReviewCount(), response.get(0).getReviewCount()),
                 () -> assertEquals(chef2.getProfileUrl(), response.get(0).getProfileUrl()),
                 () -> assertEquals(chef2.getDistance(), response.get(0).getDistance()),
+                () -> assertEquals(chef2.getLat(), response.get(0).getLat()),
+                () -> assertEquals(chef2.getLnt(), response.get(0).getLnt()),
                 () -> assertEquals(chef2.getNickname(), response.get(0).getNickname()),
                 () -> assertEquals(chef2.getRecipeCount(), response.get(0).getRecipeCount()),
 
@@ -377,6 +391,8 @@ class ChefMemberServiceImplTest {
                 () -> assertEquals(chef1.getReviewCount(), response.get(1).getReviewCount()),
                 () -> assertEquals(chef1.getProfileUrl(), response.get(1).getProfileUrl()),
                 () -> assertEquals(chef1.getDistance(), response.get(1).getDistance()),
+                () -> assertEquals(chef1.getLat(), response.get(1).getLat()),
+                () -> assertEquals(chef1.getLnt(), response.get(1).getLnt()),
                 () -> assertEquals(chef1.getNickname(), response.get(1).getNickname()),
                 () -> assertEquals(chef1.getRecipeCount(), response.get(1).getRecipeCount())
         );
@@ -422,6 +438,8 @@ class ChefMemberServiceImplTest {
                 () -> assertEquals(chef1.getReviewCount(), response.get(0).getReviewCount()),
                 () -> assertEquals(chef1.getProfileUrl(), response.get(0).getProfileUrl()),
                 () -> assertEquals(chef1.getDistance(), response.get(0).getDistance()),
+                () -> assertEquals(chef1.getLat(), response.get(0).getLat()),
+                () -> assertEquals(chef1.getLnt(), response.get(0).getLnt()),
                 () -> assertEquals(chef1.getNickname(), response.get(0).getNickname()),
                 () -> assertEquals(chef1.getRecipeCount(), response.get(0).getRecipeCount()),
 
@@ -431,6 +449,8 @@ class ChefMemberServiceImplTest {
                 () -> assertEquals(chef2.getReviewCount(), response.get(1).getReviewCount()),
                 () -> assertEquals(chef2.getProfileUrl(), response.get(1).getProfileUrl()),
                 () -> assertEquals(chef2.getDistance(), response.get(1).getDistance()),
+                () -> assertEquals(chef2.getLat(), response.get(1).getLat()),
+                () -> assertEquals(chef2.getLnt(), response.get(1).getLnt()),
                 () -> assertEquals(chef2.getNickname(), response.get(1).getNickname()),
                 () -> assertEquals(chef2.getRecipeCount(), response.get(1).getRecipeCount())
         );
@@ -476,6 +496,8 @@ class ChefMemberServiceImplTest {
                 () -> assertEquals(chef1.getReviewCount(), response.get(0).getReviewCount()),
                 () -> assertEquals(chef1.getProfileUrl(), response.get(0).getProfileUrl()),
                 () -> assertEquals(chef1.getDistance(), response.get(0).getDistance()),
+                () -> assertEquals(chef1.getLat(), response.get(0).getLat()),
+                () -> assertEquals(chef1.getLnt(), response.get(0).getLnt()),
                 () -> assertEquals(chef1.getNickname(), response.get(0).getNickname()),
                 () -> assertEquals(chef1.getRecipeCount(), response.get(0).getRecipeCount()),
 
@@ -485,6 +507,8 @@ class ChefMemberServiceImplTest {
                 () -> assertEquals(chef2.getReviewCount(), response.get(1).getReviewCount()),
                 () -> assertEquals(chef2.getProfileUrl(), response.get(1).getProfileUrl()),
                 () -> assertEquals(chef2.getDistance(), response.get(1).getDistance()),
+                () -> assertEquals(chef2.getLat(), response.get(1).getLat()),
+                () -> assertEquals(chef2.getLnt(), response.get(1).getLnt()),
                 () -> assertEquals(chef2.getNickname(), response.get(1).getNickname()),
                 () -> assertEquals(chef2.getRecipeCount(), response.get(1).getRecipeCount())
         );
@@ -530,6 +554,8 @@ class ChefMemberServiceImplTest {
                 () -> assertEquals(chef2.getReviewCount(), response.get(0).getReviewCount()),
                 () -> assertEquals(chef2.getProfileUrl(), response.get(0).getProfileUrl()),
                 () -> assertEquals(chef2.getDistance(), response.get(0).getDistance()),
+                () -> assertEquals(chef2.getLat(), response.get(0).getLat()),
+                () -> assertEquals(chef2.getLnt(), response.get(0).getLnt()),
                 () -> assertEquals(chef2.getNickname(), response.get(0).getNickname()),
                 () -> assertEquals(chef2.getRecipeCount(), response.get(0).getRecipeCount()),
 
@@ -539,6 +565,8 @@ class ChefMemberServiceImplTest {
                 () -> assertEquals(chef1.getReviewCount(), response.get(1).getReviewCount()),
                 () -> assertEquals(chef1.getProfileUrl(), response.get(1).getProfileUrl()),
                 () -> assertEquals(chef1.getDistance(), response.get(1).getDistance()),
+                () -> assertEquals(chef1.getLat(), response.get(1).getLat()),
+                () -> assertEquals(chef1.getLnt(), response.get(1).getLnt()),
                 () -> assertEquals(chef1.getNickname(), response.get(1).getNickname()),
                 () -> assertEquals(chef1.getRecipeCount(), response.get(1).getRecipeCount())
         );
@@ -592,6 +620,16 @@ class ChefMemberServiceImplTest {
             }
 
             @Override
+            public double getLat() {
+                return 37.1;
+            }
+
+            @Override
+            public double getLnt() {
+                return 127.1;
+            }
+
+            @Override
             public double getDistance() {
                 return 1.1;
             }
@@ -633,6 +671,16 @@ class ChefMemberServiceImplTest {
             @Override
             public String getNickname() {
                 return "chef2";
+            }
+
+            @Override
+            public double getLat() {
+                return 37.2;
+            }
+
+            @Override
+            public double getLnt() {
+                return 127.2;
             }
 
             @Override
