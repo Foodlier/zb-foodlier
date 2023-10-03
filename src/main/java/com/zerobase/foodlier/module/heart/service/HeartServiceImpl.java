@@ -9,14 +9,14 @@ import com.zerobase.foodlier.module.member.member.domain.model.Member;
 import com.zerobase.foodlier.module.member.member.exception.MemberException;
 import com.zerobase.foodlier.module.member.member.repository.MemberRepository;
 import com.zerobase.foodlier.module.recipe.domain.model.Recipe;
-import com.zerobase.foodlier.module.recipe.exception.RecipeException;
+import com.zerobase.foodlier.module.recipe.exception.recipe.RecipeException;
 import com.zerobase.foodlier.module.recipe.repository.RecipeRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import static com.zerobase.foodlier.module.heart.exception.HeartErrorCode.*;
 import static com.zerobase.foodlier.module.member.member.exception.MemberErrorCode.MEMBER_NOT_FOUND;
-import static com.zerobase.foodlier.module.recipe.exception.RecipeErrorCode.NO_SUCH_RECIPE;
+import static com.zerobase.foodlier.module.recipe.exception.recipe.RecipeErrorCode.NO_SUCH_RECIPE;
 
 @Service
 @RequiredArgsConstructor
