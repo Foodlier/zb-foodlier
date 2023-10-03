@@ -113,9 +113,7 @@ public class QuotationServiceImpl implements QuotationService{
         Recipe quotation = recipeRepository.findByIdAndMemberAndIsQuotationTrue(quotationId, member)
                 .orElseThrow(() -> new QuotationException(QUOTATION_NOT_FOUND));
 
-        if(!recipeRepository.isAbleToConvert(quotation)){
-            throw new QuotationException(CANNOT_CONVERT_TO_RECIPE);
-        }
+        validateConvertToRecipe(quotation);
 
         quotation.setSummary(Summary.builder()
                 .title(request.getTitle())
@@ -133,7 +131,7 @@ public class QuotationServiceImpl implements QuotationService{
                 .map(RecipeIngredientDto::toEntity)
                 .collect(Collectors.toList()));
 
-        quotation.setIsQuotation(false);
+        quotation.setIsQuotation(false); //recipe 변환
 
         recipeRepository.save(quotation);
     }
@@ -211,8 +209,14 @@ public class QuotationServiceImpl implements QuotationService{
     }
 
     private void validateDeleteQuotation(Long memberId, Long quotationId){
-        if(recipeRepository.existsDeletePermissionForQuotation(memberId, quotationId)){
+        if(recipeRepository.isNotAbleToDeleteForQuotation(memberId, quotationId)){
             throw new QuotationException(CANNOT_DELETE_IS_LOCKED);
+        }
+    }
+
+    private void validateConvertToRecipe(Recipe quotation){
+        if(!recipeRepository.isAbleToConvert(quotation)){
+            throw new QuotationException(CANNOT_CONVERT_TO_RECIPE);
         }
     }
 }
