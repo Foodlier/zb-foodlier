@@ -96,6 +96,7 @@ public class RequestFormServiceImpl implements RequestFormService {
         checkPermission(id, requestForm.getMember().getId());
         return RequestFormDetailDto.builder()
                 .requestFormId(requestForm.getId())
+                .requesterNickname(requestForm.getMember().getNickname())
                 .title(requestForm.getTitle())
                 .content(requestForm.getContent())
                 .ingredientList(requestForm.getIngredientList().stream()
@@ -103,6 +104,8 @@ public class RequestFormServiceImpl implements RequestFormService {
                         .collect(Collectors.toList()))
                 .expectedPrice(requestForm.getExpectedPrice())
                 .expectedAt(requestForm.getExpectedAt())
+                .address(requestForm.getMember().getAddress().getRoadAddress())
+                .addressDetail(requestForm.getMember().getAddress().getAddressDetail())
                 .mainImageUrl(requestForm.getRecipe().getMainImageUrl())
                 .recipeTitle(requestForm.getRecipe().getSummary().getTitle())
                 .recipeContent(requestForm.getRecipe().getSummary().getContent())
