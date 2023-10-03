@@ -29,6 +29,7 @@ public class EmitterServiceImpl implements EmitterService {
         emitterRepository.deleteById(emitterId);
     }
 
+    @Override
     public void send(SseEmitter emitter, String eventId, String emitterId, Object data) {
         try {
             emitter.send(SseEmitter.event()
