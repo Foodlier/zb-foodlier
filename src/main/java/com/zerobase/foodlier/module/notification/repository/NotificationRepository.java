@@ -13,6 +13,7 @@ public interface NotificationRepository extends JpaRepository<Notification, Long
     @Query("select new com.zerobase.foodlier.module.notification.dto.NotificationDto(" +
            "n.id, n.content, n.notificationType, n.sendAt, n.isRead) " +
             "from  Notification n join n.member m " +
-            "where m.id = :memberId ")
+            "where m.id = :memberId " +
+            "order by n.sendAt desc ")
     Page<NotificationDto> findNotificationBy(@Param("memberId") Long id, Pageable pageable);
 }
