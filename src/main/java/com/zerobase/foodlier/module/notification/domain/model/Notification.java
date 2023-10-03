@@ -1,6 +1,7 @@
 package com.zerobase.foodlier.module.notification.domain.model;
 
 import com.zerobase.foodlier.module.member.member.domain.model.Member;
+import com.zerobase.foodlier.module.notification.domain.type.NotificationType;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -23,11 +24,11 @@ public class Notification {
     @ManyToOne
     private Member member;
     @Column(nullable = false)
-    private String title;
-    @Column(nullable = false)
     private String content;
-    private String type;
-    private Long accessId;
+    @Enumerated(EnumType.STRING)
+    private NotificationType notificationType;
+    private String url;
+    private boolean isRead;
     @CreatedDate
     private LocalDateTime sendAt;
 }
