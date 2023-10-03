@@ -12,7 +12,6 @@ public enum RecipeErrorCode {
     NOT_PUBLIC_RECIPE("공개되지 않은 레시피입니다."),
     DELETED_RECIPE("삭제된 레시피입니다."),
     QUOTATION_CANNOT_BE_TAGGED("견적서는 태그할 수 없습니다."),
-    HEART_MUST_NOT_MINUS("좋아요 수는 음수가 될 수 없습니다."),
     ;
 
     private final String description;
