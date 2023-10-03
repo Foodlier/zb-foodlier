@@ -77,7 +77,7 @@ public class RequestServiceImpl implements RequestService {
 
         validateSendRequest(member, chefMember);
 
-        RequestForm requestForm = requestFormRepository.findById(requestFormId)
+        RequestForm requestForm = requestFormRepository.findByIdAndMember(requestFormId, member)
                 .orElseThrow(() -> new RequestFormException(REQUEST_FORM_NOT_FOUND));
 
         Request request = Request.builder()

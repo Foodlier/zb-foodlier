@@ -1,6 +1,7 @@
 package com.zerobase.foodlier.global.recipe.controller;
 
 import com.zerobase.foodlier.common.security.provider.dto.MemberAuthDto;
+import com.zerobase.foodlier.module.heart.service.HeartService;
 import com.zerobase.foodlier.module.recipe.dto.recipe.RecipeImageResponse;
 import com.zerobase.foodlier.global.recipe.facade.RecipeFacade;
 import com.zerobase.foodlier.module.recipe.domain.model.Recipe;
@@ -23,6 +24,7 @@ public class RecipeController {
 
     private final RecipeFacade recipeFacade;
     private final RecipeService recipeService;
+    private final HeartService heartService;
 
     @PostMapping("/image")
     public ResponseEntity<RecipeImageResponse> uploadRecipeImage(
@@ -81,5 +83,23 @@ public class RecipeController {
                                                              @PathVariable int pageSize,
                                                              @RequestParam String recipeTitle){
         return ResponseEntity.ok(recipeService.getRecipeByTitle(recipeTitle, PageRequest.of(pageIdx, pageSize)));
+    }
+
+    @PostMapping("/heart/{recipeId}")
+    public ResponseEntity<?> createHeart(
+            @AuthenticationPrincipal MemberAuthDto memberAuthDto,
+            @PathVariable Long recipeId
+    ){
+        heartService.createHeart(memberAuthDto,recipeId);
+        return ResponseEntity.ok("좋아요를 눌렀습니다");
+    }
+
+    @PatchMapping("/heart/{recipeId}")
+    public ResponseEntity<?> heartCancel(
+            @AuthenticationPrincipal MemberAuthDto memberAuthDto,
+            @PathVariable Long recipeId
+    ){
+        heartService.heartCancel(memberAuthDto,recipeId);
+        return ResponseEntity.ok("좋아요를 취소하였습니다.");
     }
 }
