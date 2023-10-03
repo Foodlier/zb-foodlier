@@ -18,6 +18,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
@@ -41,6 +42,7 @@ public class RequestFormServiceImpl implements RequestFormService {
      * 요청서 작성, 삭제된 레시피, 공개되지 않은 레시피, 견적서를 체크
      */
     @Override
+    @Transactional
     public void createRequestForm(Long id, RequestFormDto requestFormDto) {
         Member member = memberRepository.findById(id)
                 .orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
@@ -96,8 +98,9 @@ public class RequestFormServiceImpl implements RequestFormService {
         RequestForm requestForm = requestFormRepository.findById(requestFormId)
                 .orElseThrow(() -> new RequestFormException(REQUEST_FORM_NOT_FOUND));
         checkPermission(id, requestForm.getMember().getId());
-        return RequestFormDetailDto.builder()
+        RequestFormDetailDto.RequestFormDetailDtoBuilder builder = RequestFormDetailDto.builder()
                 .requestFormId(requestForm.getId())
+                .requesterNickname(requestForm.getMember().getNickname())
                 .title(requestForm.getTitle())
                 .content(requestForm.getContent())
                 .ingredientList(requestForm.getIngredientList().stream()
@@ -105,11 +108,17 @@ public class RequestFormServiceImpl implements RequestFormService {
                         .collect(Collectors.toList()))
                 .expectedPrice(requestForm.getExpectedPrice())
                 .expectedAt(requestForm.getExpectedAt())
-                .mainImageUrl(requestForm.getRecipe().getMainImageUrl())
-                .recipeTitle(requestForm.getRecipe().getSummary().getTitle())
-                .recipeContent(requestForm.getRecipe().getSummary().getContent())
-                .heartCount(requestForm.getRecipe().getHeartCount())
-                .build();
+                .address(requestForm.getMember().getAddress().getRoadAddress())
+                .addressDetail(requestForm.getMember().getAddress().getAddressDetail());
+
+        if (!Objects.isNull(requestForm.getRecipe())) {
+            builder.mainImageUrl(requestForm.getRecipe().getMainImageUrl())
+                    .recipeTitle(requestForm.getRecipe().getSummary().getTitle())
+                    .recipeContent(requestForm.getRecipe().getSummary().getContent())
+                    .heartCount(requestForm.getRecipe().getHeartCount());
+        }
+
+        return builder.build();
     }
 
     /**
@@ -118,6 +127,7 @@ public class RequestFormServiceImpl implements RequestFormService {
      * 요청서 업데이트, 태그된 레시피 또한 업데이트, 변경 시 권한 검증
      */
     @Override
+    @Transactional
     public void updateRequestForm(Long id, RequestFormDto requestFormDto, Long requestFormId) {
         memberRepository.findById(id)
                 .orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
@@ -155,6 +165,7 @@ public class RequestFormServiceImpl implements RequestFormService {
      * 요청서 삭제, 삭제 시 권한 검증
      */
     @Override
+    @Transactional
     public void deleteRequestForm(Long id, Long requestFormId) {
         memberRepository.findById(id)
                 .orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
