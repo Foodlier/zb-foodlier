@@ -20,7 +20,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Optional;
 
-import static com.zerobase.foodlier.module.heart.exception.HeartErrorCode.*;
+import static com.zerobase.foodlier.module.heart.exception.HeartErrorCode.HEART_NOT_FOUND;
 import static com.zerobase.foodlier.module.member.member.exception.MemberErrorCode.MEMBER_NOT_FOUND;
 import static com.zerobase.foodlier.module.recipe.exception.RecipeErrorCode.NO_SUCH_RECIPE;
 import static org.junit.jupiter.api.Assertions.*;
@@ -45,8 +45,7 @@ class HeartServiceImplTest {
     private HeartServiceImpl heartService;
 
     @Test
-    @DisplayName("좋아요 누르기 성공 -" +
-            " 해당 레시피에 좋아요를 한번도 안눌렀을 경우 새로 생성")
+    @DisplayName("좋아요 생성 성공")
     void success_createHeart_createNewHeart() {
         //given
         Recipe recipe = Recipe.builder()
@@ -59,15 +58,14 @@ class HeartServiceImplTest {
         Heart heart = Heart.builder()
                 .recipe(recipe)
                 .member(member)
-                .heartOrNot(true)
                 .build();
 
-        given(heartRepository.findByRecipeIdAndMemberId(anyLong(), anyLong()))
-                .willReturn(Optional.empty());
         given(recipeRepository.findById(anyLong()))
                 .willReturn(Optional.of(recipe));
         given(memberRepository.findById(anyLong()))
                 .willReturn(Optional.ofNullable(member));
+        given(heartRepository.existsByRecipeAndMember(any(), any()))
+                .willReturn(false);
         given(heartRepository.save(any()))
                 .willReturn(heart);
 
@@ -77,8 +75,6 @@ class HeartServiceImplTest {
 
         //then
         ArgumentCaptor<Heart> captor = ArgumentCaptor.forClass(Heart.class);
-        verify(heartRepository, times(1))
-                .findByRecipeIdAndMemberId(1L, 1L);
         verify(recipeRepository, times(1))
                 .findById(1L);
         verify(memberRepository, times(1))
@@ -88,7 +84,6 @@ class HeartServiceImplTest {
 
         Heart value = captor.getValue();
         assertAll(
-                () -> assertTrue(value.isHeartOrNot()),
                 () -> assertEquals(1, value.getRecipe().getHeartCount()),
                 () -> assertEquals(1L, value.getRecipe().getId()),
                 () -> assertEquals(1L, value.getMember().getId())
@@ -96,49 +91,9 @@ class HeartServiceImplTest {
     }
 
     @Test
-    @DisplayName("좋아요 누르기 성공 - 좋아요를 취소했다가 다시 좋아요를 한 경우")
-    void success_createHeart_heartOrNotTrue() {
-        //given
-        Recipe recipe = Recipe.builder()
-                .id(1L)
-                .heartCount(0)
-                .build();
-        Member member = Member.builder()
-                .id(1L)
-                .build();
-        Heart heart = Heart.builder()
-                .recipe(recipe)
-                .member(member)
-                .heartOrNot(false)
-                .build();
-
-        given(heartRepository.findByRecipeIdAndMemberId(anyLong(), anyLong()))
-                .willReturn(Optional.ofNullable(heart));
-
-        //when
-        heartService.createHeart(MemberAuthDto.builder()
-                .id(1L).build(), 1L);
-
-        //then
-        ArgumentCaptor<Heart> captor = ArgumentCaptor.forClass(Heart.class);
-        verify(heartRepository, times(1))
-                .save(captor.capture());
-
-        Heart value = captor.getValue();
-        assertAll(
-                () -> assertTrue(value.isHeartOrNot()),
-                () -> assertEquals(1, value.getRecipe().getHeartCount()),
-                () -> assertEquals(1L, value.getRecipe().getId()),
-                () -> assertEquals(1L, value.getMember().getId())
-        );
-    }
-
-    @Test
-    @DisplayName("좋아요 누르기 실패 - 레시피를 찾을 수 없음")
+    @DisplayName("좋아요 생성 실패 - 레시피를 찾을 수 없음")
     void fail_createHeart_noSuchRecipe() {
         //given
-        given(heartRepository.findByRecipeIdAndMemberId(anyLong(), anyLong()))
-                .willReturn(Optional.empty());
         given(recipeRepository.findById(anyLong()))
                 .willReturn(Optional.empty());
 
@@ -153,7 +108,7 @@ class HeartServiceImplTest {
     }
 
     @Test
-    @DisplayName("좋아요 누르기 실패 - 멤버를 찾을 수 없음")
+    @DisplayName("좋아요 생성 실패 - 멤버를 찾을 수 없음")
     void fail_createHeart_memberNotFound() {
         //given
         Recipe recipe = Recipe.builder()
@@ -161,8 +116,6 @@ class HeartServiceImplTest {
                 .heartCount(0)
                 .build();
 
-        given(heartRepository.findByRecipeIdAndMemberId(anyLong(), anyLong()))
-                .willReturn(Optional.empty());
         given(recipeRepository.findById(anyLong()))
                 .willReturn(Optional.ofNullable(recipe));
         given(memberRepository.findById(anyLong()))
@@ -179,38 +132,8 @@ class HeartServiceImplTest {
     }
 
     @Test
-    @DisplayName("좋아요 누르기 실패 - 이미 눌러진 좋아요")
-    void fail_createHeart_alreadyHeart() {
-        //given
-        Recipe recipe = Recipe.builder()
-                .id(1L)
-                .heartCount(0)
-                .build();
-        Member member = Member.builder()
-                .id(1L)
-                .build();
-        Heart heart = Heart.builder()
-                .recipe(recipe)
-                .member(member)
-                .heartOrNot(true)
-                .build();
-
-        given(heartRepository.findByRecipeIdAndMemberId(anyLong(), anyLong()))
-                .willReturn(Optional.ofNullable(heart));
-
-        //when
-        HeartException heartException = assertThrows(HeartException.class,
-                () -> heartService.createHeart(MemberAuthDto.builder()
-                        .id(1L).build(), 1L));
-
-
-        //then
-        assertEquals(ALREADY_HEART, heartException.getErrorCode());
-    }
-
-    @Test
-    @DisplayName("좋아요 취소 성공")
-    void success_heartCancel() {
+    @DisplayName("좋아요 삭제 성공")
+    void success_deleteHeart() {
         //given
         Recipe recipe = Recipe.builder()
                 .id(1L)
@@ -222,72 +145,33 @@ class HeartServiceImplTest {
         Heart heart = Heart.builder()
                 .recipe(recipe)
                 .member(member)
-                .heartOrNot(true)
                 .build();
 
         given(heartRepository.findByRecipeIdAndMemberId(anyLong(), anyLong()))
                 .willReturn(Optional.ofNullable(heart));
 
         //when
-        heartService.heartCancel(MemberAuthDto.builder()
+        heartService.deleteHeart(MemberAuthDto.builder()
                 .id(1L).build(), 1L);
 
         //then
-        ArgumentCaptor<Heart> captor = ArgumentCaptor.forClass(Heart.class);
         verify(heartRepository, times(1))
-                .save(captor.capture());
-
-        Heart value = captor.getValue();
-        assertAll(
-                () -> assertFalse(value.isHeartOrNot()),
-                () -> assertEquals(0, value.getRecipe().getHeartCount()),
-                () -> assertEquals(1L, value.getRecipe().getId()),
-                () -> assertEquals(1L, value.getMember().getId())
-        );
+                .delete(any());
     }
 
     @Test
-    @DisplayName("좋아요 취소 실패 - 좋아요를 찾을 수 없음")
-    void fail_heartCancel_heartNotFound() {
+    @DisplayName("좋아요 삭제 실패 - 좋아요를 찾을 수 없음")
+    void fail_deleteHeart_heartNotFound() {
         //given
         given(heartRepository.findByRecipeIdAndMemberId(anyLong(), anyLong()))
                 .willReturn(Optional.empty());
 
         //when
         HeartException heartException = assertThrows(HeartException.class,
-                () -> heartService.heartCancel(MemberAuthDto.builder()
+                () -> heartService.deleteHeart(MemberAuthDto.builder()
                         .id(1L).build(), 1L));
 
         //then
         assertEquals(HEART_NOT_FOUND, heartException.getErrorCode());
-    }
-
-    @Test
-    @DisplayName("좋아요 취소 실패 - 이미 취소된 좋아요")
-    void fail_heartCancel_alreadyHeartCancel() {
-        //given
-        Recipe recipe = Recipe.builder()
-                .id(1L)
-                .heartCount(1)
-                .build();
-        Member member = Member.builder()
-                .id(1L)
-                .build();
-        Heart heart = Heart.builder()
-                .recipe(recipe)
-                .member(member)
-                .heartOrNot(false)
-                .build();
-
-        given(heartRepository.findByRecipeIdAndMemberId(anyLong(), anyLong()))
-                .willReturn(Optional.ofNullable(heart));
-
-        //when
-        HeartException heartException = assertThrows(HeartException.class,
-                () -> heartService.heartCancel(MemberAuthDto.builder()
-                        .id(1L).build(), 1L));
-
-        //then
-        assertEquals(ALREADY_HEART_CANCEL, heartException.getErrorCode());
     }
 }
