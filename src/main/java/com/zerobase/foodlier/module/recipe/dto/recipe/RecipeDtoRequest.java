@@ -1,4 +1,4 @@
-package com.zerobase.foodlier.module.recipe.dto;
+package com.zerobase.foodlier.module.recipe.dto.recipe;
 
 import com.zerobase.foodlier.module.member.member.domain.model.Member;
 import com.zerobase.foodlier.module.recipe.domain.model.Recipe;
