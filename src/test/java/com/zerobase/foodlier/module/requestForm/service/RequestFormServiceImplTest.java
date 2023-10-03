@@ -1,9 +1,11 @@
 package com.zerobase.foodlier.module.requestForm.service;
 
 import com.zerobase.foodlier.module.member.member.domain.model.Member;
+import com.zerobase.foodlier.module.member.member.domain.vo.Address;
 import com.zerobase.foodlier.module.member.member.exception.MemberException;
 import com.zerobase.foodlier.module.member.member.repository.MemberRepository;
 import com.zerobase.foodlier.module.recipe.domain.model.Recipe;
+import com.zerobase.foodlier.module.recipe.domain.vo.Summary;
 import com.zerobase.foodlier.module.recipe.exception.RecipeException;
 import com.zerobase.foodlier.module.recipe.repository.RecipeRepository;
 import com.zerobase.foodlier.module.request.domain.vo.Ingredient;
@@ -25,6 +27,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 
+import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -60,12 +63,23 @@ class RequestFormServiceImplTest {
         static Long constRequestFormId = 10L;
         static Member constMember = Member.builder()
                 .id(constMemberId)
+                .address(Address.builder()
+                        .roadAddress("road")
+                        .addressDetail("detail")
+                        .build())
+                .nickname("nickname")
                 .build();
         static Recipe constRecipe = Recipe.builder()
                 .id(constRecipeId)
                 .isPublic(true)
                 .isDeleted(false)
                 .isQuotation(false)
+                .mainImageUrl("url")
+                .summary(Summary.builder()
+                        .title("title")
+                        .content("content")
+                        .build())
+                .heartCount(0)
                 .build();
         static Recipe constRecipeNotPublic = Recipe.builder()
                 .id(constRecipeId)
@@ -138,6 +152,7 @@ class RequestFormServiceImplTest {
 
     @Test
     @DisplayName("요청서 작성 성공 - 레시피 태그하지 않음")
+    @Transactional
     void success_create_request_form_no_tag() {
         //given
         Long id = constRequesterId;
@@ -162,12 +177,13 @@ class RequestFormServiceImplTest {
                 () -> assertEquals(requestFormDto.getIngredientList().get(0),
                         requestForm.getIngredientList().get(0).getIngredientName()),
                 () -> assertEquals(member, requestForm.getMember()),
-                () -> assertEquals(null, requestForm.getRecipe())
+                () -> assertNull(requestForm.getRecipe())
         );
     }
 
     @Test
     @DisplayName("요청서 작성 성공 - 레시피 태그")
+    @Transactional
     void success_create_request_form_tag() {
         //given
         Long id = constRequesterId;
@@ -366,7 +382,14 @@ class RequestFormServiceImplTest {
                         requestFormDetailDto.getIngredientList().get(0)),
                 () -> assertEquals(requestForm.getExpectedPrice(), requestFormDetailDto.getExpectedPrice()),
                 () -> assertEquals(requestForm.getExpectedAt(), requestFormDetailDto.getExpectedAt()),
-                () -> assertEquals(requestForm.getRecipe(), requestFormDetailDto.getRecipe())
+                () -> assertEquals(requestForm.getMember().getAddress().getRoadAddress(), requestFormDetailDto.getAddress()),
+                () -> assertEquals(requestForm.getMember().getAddress().getAddressDetail(), requestFormDetailDto.getAddressDetail()),
+                () -> assertEquals(requestForm.getMember().getAddress().getAddressDetail(), requestFormDetailDto.getAddressDetail()),
+                () -> assertEquals(requestForm.getRecipe().getMainImageUrl(), requestFormDetailDto.getMainImageUrl()),
+                () -> assertEquals(requestForm.getRecipe().getSummary().getTitle(), requestFormDetailDto.getRecipeTitle()),
+                () -> assertEquals(requestForm.getRecipe().getSummary().getContent(), requestFormDetailDto.getRecipeContent()),
+                () -> assertEquals(requestForm.getRecipe().getHeartCount(), requestFormDetailDto.getHeartCount()),
+                () -> assertEquals(requestForm.getMember().getNickname(), requestFormDetailDto.getRequesterNickname())
         );
     }
 
@@ -409,6 +432,7 @@ class RequestFormServiceImplTest {
 
     @Test
     @DisplayName("요청서 수정 성공")
+    @Transactional
     void success_update_request_form() {
         //given
         Long id = constRequesterId;
@@ -592,6 +616,7 @@ class RequestFormServiceImplTest {
 
     @Test
     @DisplayName("요청서 삭제 성공")
+    @Transactional
     void success_delete_request_form() {
         //given
         Long id = constRequesterId;
