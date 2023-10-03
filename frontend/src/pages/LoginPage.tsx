@@ -47,7 +47,7 @@ const Login = () => {
         <S.Button
           type="submit"
           onClick={() => {
-            navigate('/cook-for-me')
+            navigate('/main')
           }}
         >
           로그인
