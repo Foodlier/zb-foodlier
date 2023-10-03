@@ -1,4 +1,4 @@
-package com.zerobase.foodlier.module.recipe.exception;
+package com.zerobase.foodlier.module.recipe.exception.recipe;
 
 import com.zerobase.foodlier.common.exception.exception.BaseException;
 import lombok.Getter;
