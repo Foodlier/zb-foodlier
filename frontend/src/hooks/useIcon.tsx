@@ -453,6 +453,29 @@ const useIcon = () => {
     )
   }
 
+  const IcArrowDropRight = ({
+    size,
+    color,
+  }: {
+    size: number
+    color: string
+  }) => {
+    return (
+      <svg
+        width={`${size}rem`}
+        height={`${size}rem`}
+        viewBox="0 0 30 30"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M18.5195 14.8079L12.5621 9.84346C12.0411 9.40924 11.25 9.77976 11.25 10.458V19.542C11.25 20.2202 12.0411 20.5908 12.5621 20.1565L18.5195 15.1921C18.6395 15.0921 18.6395 14.9079 18.5195 14.8079Z"
+          fill={color}
+        />
+      </svg>
+    )
+  }
+
   return {
     IcMenu,
     IcSearch,
@@ -475,6 +498,7 @@ const useIcon = () => {
     IcExpandRight,
     IcExportLight,
     IcTimeLight,
+    IcArrowDropRight,
   }
 }
 
