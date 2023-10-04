@@ -21,8 +21,7 @@ import java.util.stream.Collectors;
 
 import static com.zerobase.foodlier.module.member.member.exception.MemberErrorCode.MEMBER_NOT_FOUND;
 import static com.zerobase.foodlier.module.recipe.exception.recipe.RecipeErrorCode.NO_SUCH_RECIPE;
-import static com.zerobase.foodlier.module.review.recipe.exception.RecipeReviewErrorCode.ALREADY_WRITTEN_RECIPE_REVIEW;
-import static com.zerobase.foodlier.module.review.recipe.exception.RecipeReviewErrorCode.RECIPE_REVIEW_NOT_FOUND;
+import static com.zerobase.foodlier.module.review.recipe.exception.RecipeReviewErrorCode.*;
 
 @Service
 @RequiredArgsConstructor
@@ -107,9 +106,9 @@ public class RecipeReviewServiceImpl implements RecipeReviewService{
         int originStar = recipeReview.getStar();
         String originCookUrl = recipeReview.getCookUrl();
 
-        recipeReview.setTitle(recipeReview.getTitle());
-        recipeReview.setContent(recipeReview.getContent());
-        recipeReview.setStar(recipeReview.getStar());
+        recipeReview.setTitle(request.getTitle());
+        recipeReview.setContent(request.getContent());
+        recipeReview.setStar(request.getStar());
 
         if(request.getCookImageUrl() != null){
             recipeReview.setCookUrl(request.getCookImageUrl());
@@ -163,6 +162,9 @@ public class RecipeReviewServiceImpl implements RecipeReviewService{
     //====================== Validates ========================
 
     private void validateCreateRecipeReview(Member member, Recipe recipe){
+        if(recipe.getIsQuotation() || !recipe.getIsPublic()){
+            throw new RecipeReviewException(QUOTATION_OR_IS_NOT_PUBLIC);
+        }
         if(recipeReviewRepository.existsByMemberAndRecipe(member, recipe)){
             throw new RecipeReviewException(ALREADY_WRITTEN_RECIPE_REVIEW);
         }
