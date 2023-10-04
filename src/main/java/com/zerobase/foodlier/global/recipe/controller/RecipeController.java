@@ -1,12 +1,13 @@
 package com.zerobase.foodlier.global.recipe.controller;
 
 import com.zerobase.foodlier.common.security.provider.dto.MemberAuthDto;
-import com.zerobase.foodlier.module.recipe.dto.RecipeImageResponse;
+import com.zerobase.foodlier.module.heart.service.HeartService;
+import com.zerobase.foodlier.module.recipe.dto.recipe.RecipeImageResponse;
 import com.zerobase.foodlier.global.recipe.facade.RecipeFacade;
 import com.zerobase.foodlier.module.recipe.domain.model.Recipe;
-import com.zerobase.foodlier.module.recipe.dto.RecipeDtoRequest;
-import com.zerobase.foodlier.module.recipe.dto.RecipeDtoResponse;
-import com.zerobase.foodlier.module.recipe.service.RecipeService;
+import com.zerobase.foodlier.module.recipe.dto.recipe.RecipeDtoRequest;
+import com.zerobase.foodlier.module.recipe.dto.recipe.RecipeDtoResponse;
+import com.zerobase.foodlier.module.recipe.service.recipe.RecipeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
@@ -23,6 +24,7 @@ public class RecipeController {
 
     private final RecipeFacade recipeFacade;
     private final RecipeService recipeService;
+    private final HeartService heartService;
 
     @PostMapping("/image")
     public ResponseEntity<RecipeImageResponse> uploadRecipeImage(
@@ -81,5 +83,23 @@ public class RecipeController {
                                                              @PathVariable int pageSize,
                                                              @RequestParam String recipeTitle){
         return ResponseEntity.ok(recipeService.getRecipeByTitle(recipeTitle, PageRequest.of(pageIdx, pageSize)));
+    }
+
+    @PostMapping("/heart/{recipeId}")
+    public ResponseEntity<String> createHeart(
+            @AuthenticationPrincipal MemberAuthDto memberAuthDto,
+            @PathVariable Long recipeId
+    ){
+        heartService.createHeart(memberAuthDto,recipeId);
+        return ResponseEntity.ok("좋아요를 눌렀습니다");
+    }
+
+    @DeleteMapping("/heart/{recipeId}")
+    public ResponseEntity<String> deleteHeart(
+            @AuthenticationPrincipal MemberAuthDto memberAuthDto,
+            @PathVariable Long recipeId
+    ){
+        heartService.deleteHeart(memberAuthDto,recipeId);
+        return ResponseEntity.ok("좋아요를 취소하였습니다.");
     }
 }

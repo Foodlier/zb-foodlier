@@ -7,6 +7,7 @@ import com.zerobase.foodlier.module.member.chef.repository.ChefMemberRepository;
 import com.zerobase.foodlier.module.member.member.domain.model.Member;
 import com.zerobase.foodlier.module.member.member.exception.MemberException;
 import com.zerobase.foodlier.module.member.member.repository.MemberRepository;
+import com.zerobase.foodlier.module.recipe.domain.model.Recipe;
 import com.zerobase.foodlier.module.request.domain.model.Request;
 import com.zerobase.foodlier.module.request.domain.vo.Ingredient;
 import com.zerobase.foodlier.module.request.exception.RequestException;
@@ -45,6 +46,23 @@ public class RequestServiceImpl implements RequestService {
     }
 
     /**
+     *  작성자 : 전현서
+     *  작성일 : 2023-10-02
+     *  Request에 Quotation을 할당함.
+     */
+    @Override
+    public void setQuotation(Long requestId, Recipe quotation) {
+        Request request = getRequest(requestId);
+
+        if(request.getRecipe() != null){
+            throw new RequestException(ALREADY_SETTED_QUOTATION);
+        }
+
+        request.setRecipe(quotation);
+        requestRepository.save(request);
+    }
+
+    /**
      *  작성자 : 이승현 (전현서)
      *  작성일 : 2023-09-27 (2023-09-28)
      *
@@ -59,7 +77,7 @@ public class RequestServiceImpl implements RequestService {
 
         validateSendRequest(member, chefMember);
 
-        RequestForm requestForm = requestFormRepository.findById(requestFormId)
+        RequestForm requestForm = requestFormRepository.findByIdAndMember(requestFormId, member)
                 .orElseThrow(() -> new RequestFormException(REQUEST_FORM_NOT_FOUND));
 
         Request request = Request.builder()

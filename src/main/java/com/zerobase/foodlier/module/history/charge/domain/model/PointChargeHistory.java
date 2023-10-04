@@ -21,7 +21,7 @@ public class PointChargeHistory extends Audit {
     @JoinColumn(name = "member_id")
     private Member member;
     @Column(nullable = false)
-    private String apiPaymentId;
+    private String paymentKey;
     @Column(nullable = false)
     private Long chargePoint;
 }

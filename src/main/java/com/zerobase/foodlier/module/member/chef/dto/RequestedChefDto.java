@@ -11,6 +11,8 @@ public interface RequestedChefDto {
     //member
     String getProfileUrl();
     String getNickname();
+    double getLat();
+    double getLnt();
 
     //etc
     double getDistance();
