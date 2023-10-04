@@ -2,6 +2,7 @@ package com.zerobase.foodlier.module.transaction.service;
 
 import com.zerobase.foodlier.common.security.provider.dto.MemberAuthDto;
 import com.zerobase.foodlier.module.transaction.dto.SuggestionForm;
+import com.zerobase.foodlier.module.transaction.dto.TransactionDto;
 
 public interface TransactionService {
 
@@ -9,7 +10,7 @@ public interface TransactionService {
                             SuggestionForm form,
                             Long requestMemberId);
 
-    String approveSuggestion(MemberAuthDto memberAuthDto, Long chefMemberId);
+    TransactionDto approveSuggestion(MemberAuthDto memberAuthDto, Long chefMemberId);
 
     String rejectSuggestion(MemberAuthDto memberAuthDto, Long chefMemberId);
 }

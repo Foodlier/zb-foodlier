@@ -15,16 +15,17 @@ import com.zerobase.foodlier.module.request.domain.model.Request;
 import com.zerobase.foodlier.module.request.exception.RequestException;
 import com.zerobase.foodlier.module.request.repository.RequestRepository;
 import com.zerobase.foodlier.module.transaction.dto.SuggestionForm;
+import com.zerobase.foodlier.module.transaction.dto.TransactionDto;
 import com.zerobase.foodlier.module.transaction.exception.TransactionException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import static com.zerobase.foodlier.module.dm.room.exception.DmRoomErrorCode.DM_ROOM_NOT_FOUND;
+import static com.zerobase.foodlier.module.dm.room.exception.DmRoomErrorCode.NEW_ENUM;
 import static com.zerobase.foodlier.module.member.chef.exception.ChefMemberErrorCode.CHEF_MEMBER_NOT_FOUND;
 import static com.zerobase.foodlier.module.member.member.exception.MemberErrorCode.MEMBER_NOT_FOUND;
 import static com.zerobase.foodlier.module.request.exception.RequestErrorCode.REQUEST_NOT_FOUND;
-import static com.zerobase.foodlier.module.transaction.exception.TransactionErrorCode.NOT_ENOUGH_POINT;
-import static com.zerobase.foodlier.module.transaction.exception.TransactionErrorCode.SUGGESTION_NOT_FOUND;
+import static com.zerobase.foodlier.module.transaction.exception.TransactionErrorCode.*;
 
 @Service
 @RequiredArgsConstructor
@@ -34,6 +35,11 @@ public class TransactionServiceImpl implements TransactionService {
     private final ChefMemberRepository chefMemberRepository;
     private final RequestRepository requestRepository;
 
+    /**
+     * 작성자 : 이승현
+     * 작성일 : 2023-10-04
+     * 요리사가 요청자에게 제안을 보냅니다.
+     */
     @Override
     public String sendSuggestion(MemberAuthDto memberAuthDto,
                                  SuggestionForm form,
@@ -41,6 +47,9 @@ public class TransactionServiceImpl implements TransactionService {
         ChefMember chefMember = chefMemberRepository.findByMemberId(memberAuthDto.getId())
                 .orElseThrow(() -> new ChefMemberException(CHEF_MEMBER_NOT_FOUND));
         DmRoom dmRoom = getDmRoom(requestMemberId, chefMember.getId());
+
+        validSendSuggestion(dmRoom);
+
         dmRoom.setSuggestion(Suggestion.builder()
                 .suggestedPrice(form.getSuggestedPrice())
                 .isAccept(false)
@@ -52,8 +61,13 @@ public class TransactionServiceImpl implements TransactionService {
         return "가격을 제안했습니다.";
     }
 
+    /**
+     * 작성자 : 이승현
+     * 작성일 : 2023-10-04
+     * 요청자가 제안을 수락합니다.
+     */
     @Override
-    public String approveSuggestion(MemberAuthDto memberAuthDto, Long chefMemberId) {
+    public TransactionDto approveSuggestion(MemberAuthDto memberAuthDto, Long chefMemberId) {
         Member requestMember = memberRepository.findById(memberAuthDto.getId())
                 .orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
         ChefMember chefMember = chefMemberRepository.findById(chefMemberId)
@@ -72,9 +86,18 @@ public class TransactionServiceImpl implements TransactionService {
         dmRoom.getSuggestion().setIsAccept(true);
         dmRoomRepository.save(dmRoom);
 
-        return "제안을 수락하였습니다.";
+        return TransactionDto.builder()
+                .requestMember(requestMember)
+                .chefMember(chefMember.getMember())
+                .changePoint(suggestedPrice)
+                .build();
     }
 
+    /**
+     * 작성자 : 이승현
+     * 작성일 : 2023-10-04
+     * 요청자가 제안을 거절합니다.
+     */
     @Override
     public String rejectSuggestion(MemberAuthDto memberAuthDto, Long chefMemberId) {
         DmRoom dmRoom = getDmRoom(memberAuthDto.getId(), chefMemberId);
@@ -101,6 +124,12 @@ public class TransactionServiceImpl implements TransactionService {
                 .orElseThrow(() -> new RequestException(REQUEST_NOT_FOUND));
         return dmRoomRepository.findByRequest(request)
                 .orElseThrow(() -> new DmRoomException(DM_ROOM_NOT_FOUND));
+    }
+
+    private static void validSendSuggestion(DmRoom dmRoom) {
+        if (dmRoom.getSuggestion().getIsSuggested()){
+            throw new TransactionException(ALREADY_SUGGESTED);
+        }
     }
 
     private static void validApproveSuggestion(long requestMemberPoint, int suggestedPrice, DmRoom dmRoom) {
