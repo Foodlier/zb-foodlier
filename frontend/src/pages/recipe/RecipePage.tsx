@@ -19,15 +19,15 @@ const RecipePage = () => {
     navigate('/recipe/write')
   }
 
-  // const navigateToRecipeDetail = () => {
-  //   navigate('/recipe/detail')
-  // }
+  const navigateToRecipeDetail = () => {
+    navigate('/recipe/detail')
+  }
   return (
     <>
       <Header />
       <S.Container>
         <S.WrapFilter>
-          <S.FilterSelect onChange={handleSelect}>
+          <S.FilterSelect onChange={handleSelect} value={filterSelect}>
             {selectList.map(select => (
               <S.FilterOption key={select} value={select}>
                 {select}
@@ -36,9 +36,9 @@ const RecipePage = () => {
           </S.FilterSelect>
         </S.WrapFilter>
         <S.WrapRecipeItem>
-          <RecipeItem />
-          <RecipeItem />
-          <RecipeItem />
+          <RecipeItem onClick={navigateToRecipeDetail} />
+          <RecipeItem onClick={navigateToRecipeDetail} />
+          <RecipeItem onClick={navigateToRecipeDetail} />
         </S.WrapRecipeItem>
         <S.WritePage onClick={navigateToWriteRecipe}>
           + 꿀조합 레시피 작성하기

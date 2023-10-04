@@ -3,17 +3,11 @@ import * as S from '../../styles/recipe/RecipeItem.styled'
 import { palette } from '../../constants/Styles'
 import useIcon from '../../hooks/useIcon'
 
-// interface RecipeItemProps {
-//   recipeId: string | number
-//   title: string
-//   nickname : string
-//   introduce: string
-//   imagePath: string
-//   likeCount: number
-//   isLike: boolean
-// }
+interface RecipeItemProps {
+  onClick: () => void
+}
 
-const RecipeItem = () => {
+function RecipeItem({ onClick }: RecipeItemProps) {
   const { IcFavorite, IcFavoriteFill } = useIcon()
 
   const dummyData = {
@@ -36,7 +30,7 @@ const RecipeItem = () => {
   }
 
   return (
-    <S.Container>
+    <S.Container onClick={onClick}>
       <S.Image />
       <S.WrapContent>
         <S.FlexRowJustiBet>

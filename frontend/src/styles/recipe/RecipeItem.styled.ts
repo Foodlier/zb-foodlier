@@ -4,15 +4,15 @@ import { breakpoints, palette } from '../../constants/Styles'
 export const Container = styled.div`
   display: flex;
   align-items: center;
-  width: 90%;
-  margin: 0 auto 1rem;
+  width: 100%;
+  margin: 0 0 1rem 0;
   padding: 1rem;
   border: 1px solid ${palette.divider};
   border-radius: 1rem;
 
   ${breakpoints.large} {
     flex-direction: column;
-    max-width: 30rem;
+    /* max-width: 30rem; */
     width: 30%;
     padding: 0;
     margin: 0 2rem;
