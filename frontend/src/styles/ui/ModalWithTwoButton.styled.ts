@@ -33,6 +33,15 @@ export const Container = styled.div`
 export const Content = styled.span`
   font-size: 1.8rem;
 `
+
+export const SubContent = styled.span`
+  width: 75%;
+  font-size: 1.4rem;
+  margin-top: 1rem;
+  text-align: center;
+  color: ${palette.textSecondary};
+`
+
 export const WrapButton = styled.div`
   width: 100%;
   display: flex;
