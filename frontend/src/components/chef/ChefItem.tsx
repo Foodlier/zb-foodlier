@@ -7,11 +7,7 @@ interface ChefItemProps {
   profileUrl: string
 }
 
-const ChefItem = ({
-  chefId,
-  nickname,
-  profileUrl,
-}: ChefItemProps) => {
+const ChefItem = ({ chefId, nickname, profileUrl }: ChefItemProps) => {
   return (
     <S.Container>
       <S.Image src={profileUrl} />

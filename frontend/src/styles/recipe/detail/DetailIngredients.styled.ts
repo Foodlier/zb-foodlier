@@ -54,4 +54,3 @@ export const Name = styled.p`
 
 export const Count = styled.p``
 export const Unit = styled.p``
-

@@ -14,7 +14,7 @@ export const MainTit = styled.h1`
   font-size: 2.5rem;
   font-weight: 800;
   padding: 0.5rem 2rem;
-  margin: 2rem 0 1rem;
+  margin: 2rem 0 2rem;
   border-bottom: 0.2rem solid ${palette.divider};
 
   ${breakpoints.large} {
