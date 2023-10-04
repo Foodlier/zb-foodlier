@@ -1,5 +1,6 @@
 import React from 'react'
-import * as S from '../../styles/chef/ChefCard.styled'
+import * as S from '../../styles/refrigerator/ChefCard.styled'
+import useIcon from '../../hooks/useIcon'
 
 interface RequestedInterface {
   chefId: number
@@ -18,6 +19,7 @@ interface ChefType {
 }
 
 const ChefCard: React.FC<ChefType> = ({ el, isRequest }) => {
+  const { IcStar } = useIcon()
   return (
     <S.Card>
       <S.CardInfo className="card-info">
@@ -25,7 +27,7 @@ const ChefCard: React.FC<ChefType> = ({ el, isRequest }) => {
         <S.ChefInfo className="chef-info">
           <S.ChefTopInfo className="top-info">
             <span className="nickName">{el.nickName}</span>
-            <img src="" alt="평점" className="star" />
+            <IcStar size={1.8} />
             <span className="rating">{`${el.starAvg}(${el.reviewCount})`}</span>
           </S.ChefTopInfo>
           <S.ChefBottomInfo className="bottom-info">

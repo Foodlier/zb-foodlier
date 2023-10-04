@@ -34,11 +34,13 @@ export const ChefInfo = styled.div`
 
 export const ChefTopInfo = styled.div`
   display: flex;
+  gap: 5px;
   align-items: center;
   height: 20px;
   .nickName {
     font-size: 20px;
     font-weight: bold;
+    margin-right: 5px;
   }
 `
 

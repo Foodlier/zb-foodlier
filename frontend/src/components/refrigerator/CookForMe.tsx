@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import Modal from '../Modal'
 import * as S from '../../styles/refrigerator/CookForMe.styled'
-import ChefCard from '../chef/ChefCard'
+import ChefCard from './ChefCard'
 
 interface RequestedInterface {
   chefId: number
