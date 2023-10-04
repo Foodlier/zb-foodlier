@@ -12,7 +12,8 @@ public interface RecipeReviewService {
     void createRecipeReview(Long memberId, Long recipeId,
                                    RecipeReviewRequestDto request);
     RecipeReviewResponseDto getMyRecipeReview(Long memberId, Long recipeId);
-    List<RecipeReviewResponseDto> getRecipeReviewList(Long recipeId, Pageable pageable);
+    List<RecipeReviewResponseDto> getRecipeReviewList(Long memberId, Long recipeId,
+                                                      Pageable pageable);
     RecipeReviewResponseDto getReviewDetail(Long recipeReviewId);
     ChangedRecipeReviewResponse updateRecipeReview(Long memberId, Long recipeReviewId,
                               RecipeReviewRequestDto request);

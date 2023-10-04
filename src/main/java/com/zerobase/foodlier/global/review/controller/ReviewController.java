@@ -51,7 +51,7 @@ public class ReviewController {
             @PathVariable Long recipeId
     ){
         return ResponseEntity.ok(
-                recipeReviewService.getRecipeReviewList(recipeId, PageRequest.of(pageIdx, pageSize))
+                recipeReviewService.getRecipeReviewList(memberAuthDto.getId(), recipeId, PageRequest.of(pageIdx, pageSize))
         );
     }
 

@@ -51,7 +51,7 @@ public class RecipeReviewServiceImpl implements RecipeReviewService{
                 .title(request.getTitle())
                 .content(request.getContent())
                 .cookUrl(request.getCookImageUrl())
-                .star(request.getStar()) //TODO 해당 부분 star로 변경할지 여부
+                .star(request.getStar())
                 .build();
 
         recipeReviewRepository.save(recipeReview);
@@ -75,8 +75,10 @@ public class RecipeReviewServiceImpl implements RecipeReviewService{
      *  꿀조합의 후기를 페이징 하여 가져옵니다.
      */
     @Override
-    public List<RecipeReviewResponseDto> getRecipeReviewList(Long recipeId, Pageable pageable){
-        return recipeReviewRepository.findByRecipeOrderByCreatedAtDesc(getRecipe(recipeId), pageable)
+    public List<RecipeReviewResponseDto> getRecipeReviewList(Long memberId,
+                                                             Long recipeId,
+                                                             Pageable pageable){
+        return recipeReviewRepository.findByRecipe(recipeId, memberId, pageable)
                 .getContent()
                 .stream()
                 .map(RecipeReviewResponseDto::from)
