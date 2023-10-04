@@ -1,17 +1,18 @@
-// SlickSlider.tsx
 import React from 'react'
 import Slider, { Settings } from 'react-slick'
 import 'slick-carousel/slick/slick.css'
 import 'slick-carousel/slick/slick-theme.css'
 import styled from 'styled-components'
 import SliderCard from './SliderCard'
+import { palette } from '../../constants/Styles'
 
 interface Slide {
-  id: number
+  recipeId: string | number
   title: string
-  content: string
-  like: boolean
-  image: string
+  introduce: string
+  imagePath: string
+  likeCount: number
+  isLike: boolean
 }
 
 interface SlickSliderProps {
@@ -19,8 +20,15 @@ interface SlickSliderProps {
 }
 
 const SlickSliderContainer = styled.div`
+  width: 100vw;
+  overflow: hidden;
+  position: relative;
+  left: 50%;
+  transform: translate(-50%);
+
   & > div {
     display: flex;
+    margin-bottom: 10rem;
   }
 `
 
@@ -54,12 +62,12 @@ const CustomSlider = styled(Slider)`
   }
 
   .slick-dots li button:before {
-    color: var(--color-main);
+    color: ${palette.main};
     font-size: 1.3rem;
   }
 `
 
-const SlickSlider: React.FC<SlickSliderProps> = ({ slides }) => {
+function SlickSlider({ slides }: SlickSliderProps) {
   const settings: Settings = {
     dots: true,
     infinite: true,
@@ -84,12 +92,14 @@ const SlickSlider: React.FC<SlickSliderProps> = ({ slides }) => {
         autoplaySpeed={settings.autoplaySpeed}
       >
         {slides.map(slide => (
-          <div key={`slide-${slide.id}`}>
+          <div key={`slide-${slide.recipeId}`}>
             <SliderCard
+              // recipeId={slide.recipeId}
               title={slide.title}
-              content={slide.content}
-              like={slide.like}
-              image={slide.image}
+              introduce={slide.introduce}
+              // likeCount={slide.likeCount}
+              // isLike={slide.isLike}
+              imagePath={slide.imagePath}
             />
           </div>
         ))}

@@ -1,133 +1,90 @@
-import React, { useState } from 'react'
-import styled from 'styled-components'
+import { useEffect, useRef, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import logo from '../assets/foodlier_logo.png'
-import useIcon from '../hooks/UseIcon'
-import { breakpoints, palette } from '../constants/Styles'
+import useIcon from '../hooks/useIcon'
+import { palette } from '../constants/Styles'
 import NotificationItem from './notification/NotificationItem'
-
-const Container = styled.header`
-  width: 100vw;
-  padding: 5%;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-
-  ${breakpoints.large} {
-    padding: 2%;
-  }
-`
-
-const Logo = styled.img`
-  width: 30%;
-  height: auto;
-
-  ${breakpoints.large} {
-    width: 15%;
-  }
-`
-
-const WrapMenu = styled.ul`
-  display: none;
-  align-items: center;
-
-  ${breakpoints.large} {
-    display: flex;
-  }
-`
-
-const Menu = styled.button`
-  padding: 0px 1.8rem;
-  font-size: 1.8rem;
-  font-weight: 600;
-  color: ${palette.textPrimary};
-`
-
-const Notification = styled.div<{ $isToggle: boolean }>`
-  position: absolute;
-  display: ${props => (props.$isToggle ? 'flex' : 'none')};
-  flex-direction: column;
-  min-width: 25rem;
-  top: 5rem;
-  padding: 1rem;
-  border: 1px solid ${palette.divider};
-  border-radius: 1rem;
-  font-size: 1.4rem;
-`
-
-const WrapIcon = styled.ul`
-  display: flex;
-
-  ${breakpoints.large} {
-    display: none;
-  }
-`
-
-const Icon = styled.button`
-  margin-left: 1rem;
-`
-
-const LoginButton = styled.button`
-  padding: 0.8rem 1.2rem;
-  background-color: ${palette.main};
-  color: white;
-  border-radius: 1rem;
-  margin-left: 1rem;
-  font-size: 1.6rem;
-  font-weight: 600;
-`
-
-const Button = styled.button``
-
-const WrapNotification = styled.div`
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  padding: 0px 1.8rem;
-  font-size: 1.8rem;
-  font-weight: 600;
-  color: ${palette.textPrimary};
-`
+import * as S from '../styles/Header.styled'
+import MoSearch from './search/MoSearch'
 
 const Header = () => {
+  const navigate = useNavigate()
   const { IcSearch, IcBell } = useIcon()
 
+  const notiRef = useRef<HTMLDivElement | null>(null)
   const [isToggle, setIsToggle] = useState(false)
 
-  const HEADER_MENU_LIST = ['꿀조합', '냉마카세']
+  useEffect(() => {
+    // 토글이 열려있을 경우 화면 클릭 시 토글 닫히게 설정
+    const handleOutsideClose = () => {
+      if (isToggle) {
+        setIsToggle(false)
+      }
+    }
+
+    document.addEventListener('click', handleOutsideClose, { capture: true })
+
+    return () => document.removeEventListener('click', handleOutsideClose)
+  }, [isToggle])
+
+  // 모바일 검색 - 토글
+  const [isMoSearchOpen, setIsMoSearchOpen] = useState(false)
+
+  const toggleMoSearch = () => {
+    setIsMoSearchOpen(!isMoSearchOpen)
+  }
+
+  const HEADER_MENU_LIST = [
+    {
+      title: '꿀조합',
+      navigate: 'recipe',
+    },
+    { title: '냉마카세', navigate: '' },
+    { title: '채팅', navigate: 'chat' },
+  ]
+
+  const navigateTo = (pageName: string) => {
+    navigate(`/${pageName}`)
+  }
 
   return (
-    <Container>
-      <Logo src={logo} alt="로고 이미지" />
-      <WrapIcon>
-        <WrapNotification>
-          <Icon onClick={() => setIsToggle(!isToggle)}>
+    <S.Container>
+      <S.LogoButton onClick={() => navigateTo('')}>
+        <S.Logo src={logo} alt="로고 이미지" />
+      </S.LogoButton>
+      <S.WrapIcon>
+        <S.WrapNotification>
+          <S.Icon onClick={() => setIsToggle(!isToggle)}>
             <IcBell size={3} color={palette.textPrimary} />
-          </Icon>
-          <Notification $isToggle={isToggle}>
+          </S.Icon>
+          <S.Notification $isToggle={isToggle}>
             <NotificationItem />
-          </Notification>
-        </WrapNotification>
-
-        <Icon>
+          </S.Notification>
+        </S.WrapNotification>
+        {/* 모바일 검색 - onClick 추가 */}
+        <S.Icon onClick={toggleMoSearch}>
           <IcSearch size={3} color={palette.textPrimary} />
-        </Icon>
-      </WrapIcon>
-      <WrapMenu>
+        </S.Icon>
+      </S.WrapIcon>
+      <S.WrapMenu>
         {HEADER_MENU_LIST.map(item => (
-          <Menu key={item}>{item}</Menu>
+          <S.Menu key={item.title} onClick={() => navigateTo(item.navigate)}>
+            {item.title}
+          </S.Menu>
         ))}
-        <WrapNotification>
-          <Button onClick={() => setIsToggle(!isToggle)}>
+        <S.WrapNotification ref={notiRef}>
+          <S.Button onClick={() => setIsToggle(!isToggle)}>
             <IcBell size={3} color={palette.textPrimary} />
-          </Button>
-          <Notification $isToggle={isToggle}>
+          </S.Button>
+          <S.Notification $isToggle={isToggle}>
             <NotificationItem />
-          </Notification>
-        </WrapNotification>
-        <LoginButton>LOGIN</LoginButton>
-      </WrapMenu>
-    </Container>
+          </S.Notification>
+        </S.WrapNotification>
+        <S.LoginButton onClick={() => navigateTo('login')}>LOGIN</S.LoginButton>
+      </S.WrapMenu>
+      {/* 모바일 검색 - MoSearch 컴포넌트 추가  */}
+      {isMoSearchOpen && <MoSearch setIsMoSearchOpen={setIsMoSearchOpen} />}
+    </S.Container>
   )
 }
 
