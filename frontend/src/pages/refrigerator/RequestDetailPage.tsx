@@ -1,8 +1,8 @@
 import Header from '../../components/Header'
 import BottomNavigation from '../../components/BottomNavigation'
-import * as S from '../../styles/refrigerator/RequestDetail.styled'
+import * as S from '../../styles/refrigerator/RequestDetailPage.styled'
 
-const RequestDetail = () => {
+const RequestDetailPage = () => {
   const REQUEST_EXAM = {
     title: '치킨마요밥 먹고 싶어요',
     content: '치킨마요밥 만들어 주세요',
@@ -90,4 +90,4 @@ const RequestDetail = () => {
   )
 }
 
-export default RequestDetail
+export default RequestDetailPage

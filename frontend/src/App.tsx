@@ -8,6 +8,10 @@ import WriteRecipePage from './pages/recipe/WriteRecipePage'
 import RecipeDetailPage from './pages/recipe/RecipeDetailPage'
 import ChattingPage from './pages/chat/ChattingPage'
 import RefrigeratorPage from './pages/refrigerator/RefrigeratorPage'
+import RequestPage from './pages/refrigerator/RequestPage'
+import RequestDetailPage from './pages/refrigerator/RequestDetailPage'
+import WriteQuotationPage from './pages/refrigerator/WriteQuotationPage'
+import QuotationDetail from './pages/refrigerator/QuotationDetailPage'
 
 function App() {
   // const [count, setCount] = useState(0)
@@ -23,6 +27,19 @@ function App() {
       <Route path="/login" element={<LoginPage />} />
       <Route path="/register" element={<RegisterPage />} />
       <Route path="/refrigerator" element={<RefrigeratorPage />} />
+      <Route path="/refrigerator/request/write" element={<RequestPage />} />
+      <Route
+        path="/refrigerator/request/detail"
+        element={<RequestDetailPage />}
+      />
+      <Route
+        path="/refrigerator/quotation/write"
+        element={<WriteQuotationPage />}
+      />
+      <Route
+        path="/refrigerator/quotation/detail"
+        element={<QuotationDetail />}
+      />
       <Route path="/recipe" element={<RecipePage />} />
       <Route path="/recipe/write" element={<WriteRecipePage />} />
       <Route path="/recipe/detail" element={<RecipeDetailPage />} />

@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
 import Modal from '../Modal'
 import * as S from '../../styles/refrigerator/CookForMe.styled'
 import ChefCard from '../chef/ChefCard'
@@ -166,6 +167,8 @@ const CookForMe = () => {
     sortingChefList()
   }, [option])
 
+  const navigate = useNavigate()
+
   return (
     <>
       {modalOpen && <Modal setModalOpen={setModalOpen} modalType="request" />}
@@ -203,7 +206,12 @@ const CookForMe = () => {
           ))}
         </S.CardList>
         <S.ButtonList>
-          <S.WritingButton type="button">+ 요청서 작성하기</S.WritingButton>
+          <S.WritingButton
+            type="button"
+            onClick={() => navigate('/refrigerator/request/write')}
+          >
+            + 요청서 작성하기
+          </S.WritingButton>
           <S.WritingButton type="button" onClick={showRequest}>
             요청서 목록
           </S.WritingButton>

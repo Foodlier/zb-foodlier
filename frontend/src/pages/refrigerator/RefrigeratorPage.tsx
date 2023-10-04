@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import Header from '../../components/Header'
 import BottomNavigation from '../../components/BottomNavigation'
-import * as S from '../../styles/refrigerator/Refrigerator.styled'
+import * as S from '../../styles/refrigerator/RefrigeratorPage.styled'
 import CookForMe from '../../components/refrigerator/CookForMe'
 import CookForYou from '../../components/refrigerator/CookForYou'
 

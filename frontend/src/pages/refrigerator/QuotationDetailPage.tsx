@@ -1,8 +1,8 @@
 import Header from '../../components/Header'
 import BottomNavigation from '../../components/BottomNavigation'
-import * as S from '../../styles/refrigerator/QuotationDetail.styled'
+import * as S from '../../styles/refrigerator/QuotationDetailPage.styled'
 
-const QuotationDetail = () => {
+const QuotationDetailPage = () => {
   const ESTIMATE_EXAMPLE = {
     recipeId: '1',
     title: '안녕하세요 요리사2입니다',
@@ -102,4 +102,4 @@ const QuotationDetail = () => {
   )
 }
 
-export default QuotationDetail
+export default QuotationDetailPage

@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import Header from '../../components/Header'
 import BottomNavigation from '../../components/BottomNavigation'
-import * as S from '../../styles/refrigerator/Request.styled'
+import * as S from '../../styles/refrigerator/RequestPage.styled'
 
 interface RequestValue {
   title: string
@@ -11,7 +11,7 @@ interface RequestValue {
   expectedAt: string
 }
 
-const Request = () => {
+const RequestPage = () => {
   const [ingredientCount, setIngredientCount] = useState(1)
   const [requestValue, setRequestValue] = useState<RequestValue>({
     title: '',
@@ -139,4 +139,4 @@ const Request = () => {
   )
 }
 
-export default Request
+export default RequestPage

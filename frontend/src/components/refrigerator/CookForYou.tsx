@@ -1,7 +1,9 @@
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import * as S from '../../styles/refrigerator/CookForYou.styled'
 
 const CookForYou = () => {
+  const navigate = useNavigate()
   const [optionToggle, setOptionToggle] = useState(false)
   const [option, setOption] = useState<string | null>('거리 순')
   const optionHandler = (e: React.MouseEvent) => {
@@ -82,7 +84,12 @@ const CookForYou = () => {
               </S.CardInfo>
               <S.ElseInfo>
                 <span>{el.distance}m</span>
-                <S.RequestButton type="button">요청서 보기</S.RequestButton>
+                <S.RequestButton
+                  type="button"
+                  onClick={() => navigate('/refrigerator/request/detail')}
+                >
+                  요청서 보기
+                </S.RequestButton>
               </S.ElseInfo>
             </S.Card>
           ))}
