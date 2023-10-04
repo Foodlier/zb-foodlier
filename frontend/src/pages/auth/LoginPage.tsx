@@ -47,7 +47,7 @@ const Login = () => {
         <S.Button
           type="submit"
           onClick={() => {
-            navigate('/main')
+            navigate('/')
           }}
         >
           로그인
