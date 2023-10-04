@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import * as S from '../../styles/recipe/RecipeItem.styled'
 import { palette } from '../../constants/Styles'
 import useIcon from '../../hooks/useIcon'
