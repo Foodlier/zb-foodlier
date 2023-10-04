@@ -1,5 +1,5 @@
 import styled from 'styled-components'
-import { palette } from '../../constants/Styles'
+import { breakpoints, palette } from '../../constants/Styles'
 
 // 스타일드 컴포넌트
 export const Container = styled.div`
@@ -19,6 +19,7 @@ export const Info = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
+  margin-bottom: 20px;
 `
 export const SubTitle = styled.span`
   font-weight: bold;
@@ -141,4 +142,7 @@ export const RequestButton = styled.button`
 export const SpaceDiv = styled.div`
   width: 100%;
   height: 100px;
+  ${breakpoints.large} {
+    height: 50px;
+  }
 `

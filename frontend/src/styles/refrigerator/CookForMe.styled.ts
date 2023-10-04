@@ -12,6 +12,22 @@ export const Map = styled.div`
   background-color: teal;
 `
 
+export const SelectUserList = styled.div`
+  width: 100%;
+  padding: 20px 20px 0;
+`
+
+export const SelectTypeButton = styled.button`
+  width: 50%;
+  height: 50px;
+  border-bottom: 1px solid ${palette.divider};
+  font-size: 2rem;
+  &:focus {
+    font-weight: bold;
+    border-bottom: 1px solid #000;
+  }
+`
+
 export const ChefListContainer = styled.div`
   padding: 20px 20px 0 20px;
 `
@@ -19,6 +35,7 @@ export const Info = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
+  margin-bottom: 20px;
 `
 export const SubTitle = styled.span`
   font-weight: bold;
@@ -65,6 +82,7 @@ export const OptionButton = styled.button`
   text-align: right;
   padding: 0 4px;
 `
+
 export const CardList = styled.ul`
   width: 100%;
   height: 500px;
@@ -73,66 +91,6 @@ export const CardList = styled.ul`
   &::-webkit-scrollbar {
     display: none;
   }
-`
-
-export const Card = styled.li`
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  width: 100%;
-  height: 220px;
-  padding: 20px;
-  box-sizing: border-box;
-  margin-bottom: 10px;
-  border: 1px solid ${palette.divider};
-  border-radius: 10px;
-  box-shadow: 0px 2px 6px 2px rgba(89, 97, 104, 0.1);
-`
-export const CardInfo = styled.div`
-  display: flex;
-  gap: 20px;
-  .mainImg {
-    width: 90px;
-    height: 90px;
-    background-color: ${palette.divider};
-    border-radius: 10px;
-  }
-`
-
-export const ChefInfo = styled.div`
-  display: flex;
-  flex-direction: column;
-  padding-top: 10px;
-  gap: 16px;
-`
-
-export const ChefTopInfo = styled.div`
-  display: flex;
-  align-items: center;
-  height: 20px;
-  .nickName {
-    font-size: 20px;
-    font-weight: bold;
-  }
-`
-
-export const ChefBottomInfo = styled.p`
-  max-width: 188px;
-`
-export const ElseInfo = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: end;
-`
-
-export const RequestButton = styled.button`
-  width: 146px;
-  height: 44px;
-  line-height: 44px;
-  text-align: center;
-  background-color: #e45141;
-  color: ${palette.white};
-  border-radius: 5px;
 `
 
 export const WritingButton = styled.button`

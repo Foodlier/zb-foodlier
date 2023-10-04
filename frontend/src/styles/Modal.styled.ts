@@ -15,7 +15,7 @@ export const GreyBackground = styled.div`
 `
 
 export const ModalScreen = styled.div`
-  position: absolute;
+  position: fixed;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
