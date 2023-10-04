@@ -11,7 +11,7 @@ import java.util.Optional;
 
 public interface HeartRepository extends JpaRepository<Heart, Long> {
     @Query(
-            "SELECT h from Heart h WHERE h.recipe.id = :recipeId AND h.member.id = :memberId"
+            "SELECT h FROM Heart h WHERE h.recipe.id = :recipeId AND h.member.id = :memberId"
     )
     Optional<Heart> findByRecipeIdAndMemberId(
             @Param("recipeId") Long recipeId, @Param("memberId") Long memberId);

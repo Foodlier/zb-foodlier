@@ -1,6 +1,7 @@
 package com.zerobase.foodlier.module.dm.room.domain.model;
 
 import com.zerobase.foodlier.common.jpa.audit.Audit;
+import com.zerobase.foodlier.module.dm.room.domain.vo.Suggestion;
 import com.zerobase.foodlier.module.request.domain.model.Request;
 import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
@@ -25,4 +26,7 @@ public class DmRoom extends Audit {
     @Column(nullable = false)
     @ColumnDefault("false")
     private boolean isExist = false;
+
+    @Embedded
+    private Suggestion suggestion;
 }
