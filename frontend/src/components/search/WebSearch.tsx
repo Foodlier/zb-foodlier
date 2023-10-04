@@ -1,16 +1,11 @@
-import React from 'react'
-import SearchBar from './SearchBar'
+import SearchBar, { SearchResult } from './SearchBar' // SearchBar 컴포넌트와 SearchResult 타입을 가져옵니다.
 
 interface WebSearchProps {
-  onSearch: (query: string) => void
+  onSearch: (results: SearchResult[]) => void
 }
 
 function WebSearch({ onSearch }: WebSearchProps) {
-  const handleSearch = (query: string) => {
-    onSearch(query)
-  }
-
-  return <SearchBar onSearch={handleSearch} />
+  return <SearchBar onSearch={onSearch} />
 }
 
 export default WebSearch

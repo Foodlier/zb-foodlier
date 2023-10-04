@@ -1,4 +1,4 @@
-import React from 'react'
+import { useNavigate } from 'react-router-dom'
 import * as S from '../styles/MainPage.styled'
 import SlickSlider from '../components/slider/Slider'
 import { slides } from '../components/slider/Slide'
@@ -10,15 +10,18 @@ import WebSearch from '../components/search/WebSearch'
 import RecipeItem from '../components/recipe/RecipeItem'
 import ChefItem from '../components/chef/ChefItem'
 import ChefData from '../components/chef/ChefData'
-
+import { SearchResult } from '../components/search/SearchBar'
 
 const MainPage = () => {
   const { IcAddLight } = useIcon()
+  const navigate = useNavigate()
 
-  const handleSearch = (query: string) => {
-    console.log(`WebSearch에서 검색: ${query}`)
+  const handleSearch = (results: SearchResult[]) => {
+    console.log(`WebSearch에서 검색 결과:`, results)
   }
-
+  const navigateToRecipeDetail = () => {
+    navigate('/recipe/detail')
+  }
   return (
     <>
       {/* Header */}
@@ -44,9 +47,9 @@ const MainPage = () => {
           <IcAddLight size={4} color={palette.textPrimary} />
         </S.RecipeTit>
         <S.RecipeList>
-          <RecipeItem />
-          <RecipeItem />
-          <RecipeItem />
+          <RecipeItem onClick={navigateToRecipeDetail} />
+          <RecipeItem onClick={navigateToRecipeDetail} />
+          <RecipeItem onClick={navigateToRecipeDetail} />
         </S.RecipeList>
       </S.RecipeContainer>
 
@@ -56,7 +59,7 @@ const MainPage = () => {
           <S.Tit>TOP 요리사</S.Tit>
         </S.ChefTit>
         <S.ChefList>
-        {ChefData.map(data => (
+          {ChefData.map(data => (
             <ChefItem
               key={`chef-${data.chefId}`}
               chefId={data.chefId}
@@ -66,7 +69,7 @@ const MainPage = () => {
           ))}
         </S.ChefList>
       </S.ChefContainer>
-    
+
       {/* BottomNavigation */}
       <BottomNavigation />
     </>

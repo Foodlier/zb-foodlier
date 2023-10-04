@@ -14,7 +14,7 @@ interface ResType {
 }
 
 const Login = () => {
-  const [peopleData, setPeopleData] = useState<ResType[]>([])
+  const [, setPeopleData] = useState<ResType[]>([])
   const navigate = useNavigate()
 
   useEffect(() => {
@@ -47,7 +47,7 @@ const Login = () => {
         <S.Button
           type="submit"
           onClick={() => {
-            navigate('/main')
+            navigate('/')
           }}
         >
           로그인

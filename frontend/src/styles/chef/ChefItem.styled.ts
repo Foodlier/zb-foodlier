@@ -5,7 +5,7 @@ export const Container = styled.section`
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin-right: 2rem;
+  margin-right: 3rem;
 `
 export const Image = styled.img`
   width: 10rem;
@@ -15,7 +15,6 @@ export const Image = styled.img`
   border-radius: 50%;
   border: 0.3rem solid ${palette.main};
   padding: 15%;
-
 `
 export const Nickname = styled.p`
   margin-top: 1rem;

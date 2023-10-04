@@ -14,6 +14,7 @@ export const MoSearchContainer = styled.div`
   background-color: ${palette.white};
   z-index: 10000;
   overflow-y: scroll;
+  overflow-x: hidden;
 
   ${breakpoints.large} {
     display: none;

@@ -1,5 +1,4 @@
-import { ChangeEvent, FormEvent, useState, useRef, useCallback } from 'react'
-// eslint-disable-next-line import/no-extraneous-dependencies
+import { ChangeEvent, FormEvent, useState, useRef } from 'react'
 import DaumPostcode from 'react-daum-postcode'
 import * as S from '../../styles/auth/RegisterPage.styled'
 import upload from '../../assets/profile_upload.svg'
