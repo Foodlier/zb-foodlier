@@ -1,6 +1,7 @@
 package com.zerobase.foodlier.global.point.controller;
 
 import com.zerobase.foodlier.common.security.provider.dto.MemberAuthDto;
+import com.zerobase.foodlier.global.point.facade.TransactionFacade;
 import com.zerobase.foodlier.module.payment.dto.PaymentRequest;
 import com.zerobase.foodlier.module.payment.dto.PaymentResponse;
 import com.zerobase.foodlier.module.payment.dto.PaymentResponseHandleFailDto;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 public class PointController {
     private final PaymentService paymentService;
     private final TransactionService transactionService;
+    private final TransactionFacade transactionFacade;
 
     @PostMapping("/charge")
     public ResponseEntity<PaymentResponse> requestPayments(
@@ -58,31 +60,41 @@ public class PointController {
         return ResponseEntity.ok("결제 취소 완료, 이유 : " + reason);
     }
 
-    @PostMapping("/suggest/{requestMemberId}")
+    @PostMapping("/suggest/{dmRoomId}")
     public ResponseEntity<String> suggestPrice(
             @AuthenticationPrincipal MemberAuthDto memberAuthDto,
             @RequestBody SuggestionForm form,
-            @PathVariable Long requestMemberId
+            @PathVariable(name = "dmRoomId") Long dmRoomId
     ) {
         return ResponseEntity.ok(transactionService
-                .sendSuggestion(memberAuthDto, form, requestMemberId));
+                .sendSuggestion(memberAuthDto, form, dmRoomId));
     }
 
-    @PatchMapping("/suggest/approve/{chefMemberId}")
+    @PostMapping("/suggest/cancel/{dmRoomId}")
+    public ResponseEntity<String> cancelSuggestion(
+            @AuthenticationPrincipal MemberAuthDto memberAuthDto,
+            @PathVariable(name = "dmRoomId") Long dmRoomId
+    ) {
+        return ResponseEntity.ok(transactionService
+                .cancelSuggestion(memberAuthDto, dmRoomId));
+    }
+
+    @PatchMapping("/suggest/approve/{dmRoomId}")
     public ResponseEntity<String> approveSuggestion(
             @AuthenticationPrincipal MemberAuthDto memberAuthDto,
-            @PathVariable(name = "chefMemberId") Long chefMemberId
+            @PathVariable(name = "dmRoomId") Long dmRoomId
     ) {
-        return ResponseEntity.ok(transactionService
-                .approveSuggestion(memberAuthDto, chefMemberId));
+        transactionFacade
+                .pointTransactionAndSaveHistory(memberAuthDto, dmRoomId);
+        return ResponseEntity.ok("제안을 수락했습니다.");
     }
 
-    @PatchMapping("/suggest/reject/{chefMemberId}")
+    @PatchMapping("/suggest/reject/{dmRoomId}")
     public ResponseEntity<String> rejectSuggestion(
             @AuthenticationPrincipal MemberAuthDto memberAuthDto,
-            @PathVariable(name = "chefMemberId") Long chefMemberId
+            @PathVariable(name = "dmRoomId") Long dmRoomId
     ) {
         return ResponseEntity.ok(transactionService
-                .rejectSuggestion(memberAuthDto, chefMemberId));
+                .rejectSuggestion(memberAuthDto, dmRoomId));
     }
 }
