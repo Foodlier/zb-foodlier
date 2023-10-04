@@ -525,6 +525,7 @@ const useIcon = () => {
     IcTimeLight,
     IcArrowDropRight,
     IcStar,
+    IcArrowDropRight,
   }
 }
 
