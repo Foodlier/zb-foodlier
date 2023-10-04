@@ -23,7 +23,7 @@ public class RecipeReview extends Audit {
     @Column(nullable = false)
     private String content;
     @Column(nullable = false)
-    private Integer grade;
+    private int star; //값 변경 됨.
     private String cookUrl;
 
     @ManyToOne
