@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import styled from 'styled-components'
 
 // 스타일드 컴포넌트를 사용하여 알림 스타일을 정의
@@ -15,7 +15,11 @@ const NotificationWrapper = styled.div<{ $show: boolean }>`
   opacity: ${props => (props.$show ? 1 : 0)};
 `
 
-const Notification = ({ message }: { message: string }) => {
+interface NotificationProps {
+  message: string
+}
+
+const Notification: React.FC<NotificationProps> = ({ message }) => {
   const [show, setShow] = useState(true)
 
   useEffect(() => {
