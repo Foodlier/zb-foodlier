@@ -4,6 +4,7 @@ import com.zerobase.foodlier.common.jpa.audit.Audit;
 import com.zerobase.foodlier.module.member.member.domain.model.Member;
 import com.zerobase.foodlier.module.recipe.domain.model.Recipe;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 
 import javax.persistence.*;
 
@@ -12,7 +13,7 @@ import javax.persistence.*;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
+@SuperBuilder
 @Table(name = "recipe_review")
 public class RecipeReview extends Audit {
     @Id
