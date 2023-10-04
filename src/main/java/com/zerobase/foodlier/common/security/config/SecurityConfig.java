@@ -69,7 +69,8 @@ public class SecurityConfig {
                         "/**/auth/verify",
                         "/**/auth/signin",
                         "/**/success/**",
-                        "/**/fail/**"
+                        "/**/fail/**",
+                        "/ws/**"
                 );
     }
 

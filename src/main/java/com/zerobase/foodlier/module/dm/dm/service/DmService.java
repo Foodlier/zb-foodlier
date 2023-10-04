@@ -1,7 +1,7 @@
 package com.zerobase.foodlier.module.dm.dm.service;
 
-import org.springframework.stereotype.Service;
+import com.zerobase.foodlier.module.dm.dm.dto.MessageDto;
 
-@Service
 public interface DmService {
+    void createDm(MessageDto message);
 }
