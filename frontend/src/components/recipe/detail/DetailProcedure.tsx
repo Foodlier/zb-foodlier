@@ -1,4 +1,3 @@
-import React from 'react'
 import * as S from '../../../styles/recipe/detail/DetailProcedure.styled'
 
 interface ProcedureStep {
