@@ -1,4 +1,3 @@
-import React from 'react'
 import * as S from '../../../styles/recipe/detail/DetailMain.styled'
 import { palette } from '../../../constants/Styles'
 import useIcon from '../../../hooks/useIcon'

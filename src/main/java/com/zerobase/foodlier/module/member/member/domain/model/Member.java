@@ -44,4 +44,8 @@ public class Member extends Audit {
     @ElementCollection
     @Builder.Default
     private List<String> roles = new ArrayList<>();
+
+    public void transaction(int point) {
+        this.point += point;
+    }
 }

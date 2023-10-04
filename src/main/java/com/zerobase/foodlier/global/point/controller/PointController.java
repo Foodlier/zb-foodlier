@@ -2,7 +2,11 @@ package com.zerobase.foodlier.global.point.controller;
 
 import com.zerobase.foodlier.common.security.provider.dto.MemberAuthDto;
 import com.zerobase.foodlier.module.payment.dto.PaymentRequest;
+import com.zerobase.foodlier.module.payment.dto.PaymentResponse;
+import com.zerobase.foodlier.module.payment.dto.PaymentResponseHandleFailDto;
 import com.zerobase.foodlier.module.payment.service.PaymentService;
+import com.zerobase.foodlier.module.transaction.dto.SuggestionForm;
+import com.zerobase.foodlier.module.transaction.service.TransactionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -13,9 +17,10 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/point")
 public class PointController {
     private final PaymentService paymentService;
+    private final TransactionService transactionService;
 
     @PostMapping("/charge")
-    public ResponseEntity<?> requestPayments(
+    public ResponseEntity<PaymentResponse> requestPayments(
             @AuthenticationPrincipal MemberAuthDto memberAuthDto,
             @RequestBody PaymentRequest paymentRequest
     ) {
@@ -26,7 +31,7 @@ public class PointController {
      * redirect 되는 부분 협의 필요
      */
     @GetMapping("/success")
-    public ResponseEntity<?> requestFinalPayments(
+    public ResponseEntity<String> requestFinalPayments(
             @RequestParam String paymentKey,
             @RequestParam String orderId,
             @RequestParam Long amount
@@ -36,7 +41,7 @@ public class PointController {
     }
 
     @GetMapping("/fail")
-    public ResponseEntity<?> requestFail(
+    public ResponseEntity<PaymentResponseHandleFailDto> requestFail(
             @RequestParam(name = "code") String errorCode,
             @RequestParam(name = "message") String errorMsg,
             @RequestParam(name = "orderId") String orderId
@@ -45,11 +50,39 @@ public class PointController {
     }
 
     @PostMapping("/cancel")
-    public ResponseEntity<?> requestPaymentCancel(
+    public ResponseEntity<String> requestPaymentCancel(
             @RequestParam String paymentKey,
             @RequestParam String cancelReason
     ) {
         String reason = paymentService.requestPaymentCancel(paymentKey, cancelReason);
         return ResponseEntity.ok("결제 취소 완료, 이유 : " + reason);
+    }
+
+    @PostMapping("/suggest/{requestMemberId}")
+    public ResponseEntity<String> suggestPrice(
+            @AuthenticationPrincipal MemberAuthDto memberAuthDto,
+            @RequestBody SuggestionForm form,
+            @PathVariable Long requestMemberId
+    ) {
+        return ResponseEntity.ok(transactionService
+                .sendSuggestion(memberAuthDto, form, requestMemberId));
+    }
+
+    @PatchMapping("/suggest/approve/{chefMemberId}")
+    public ResponseEntity<String> approveSuggestion(
+            @AuthenticationPrincipal MemberAuthDto memberAuthDto,
+            @PathVariable(name = "chefMemberId") Long chefMemberId
+    ) {
+        return ResponseEntity.ok(transactionService
+                .approveSuggestion(memberAuthDto, chefMemberId));
+    }
+
+    @PatchMapping("/suggest/reject/{chefMemberId}")
+    public ResponseEntity<String> rejectSuggestion(
+            @AuthenticationPrincipal MemberAuthDto memberAuthDto,
+            @PathVariable(name = "chefMemberId") Long chefMemberId
+    ) {
+        return ResponseEntity.ok(transactionService
+                .rejectSuggestion(memberAuthDto, chefMemberId));
     }
 }
