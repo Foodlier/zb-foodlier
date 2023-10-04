@@ -1,4 +1,3 @@
-import React from 'react'
 import { useNavigate } from 'react-router-dom'
 import * as S from '../styles/MainPage.styled'
 import SlickSlider from '../components/slider/Slider'

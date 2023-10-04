@@ -1,4 +1,3 @@
-import React from 'react'
 import * as S from '../../styles/recipe/RecipeImage.styled'
 import useIcon from '../../hooks/useIcon'
 

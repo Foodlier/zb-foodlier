@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import * as S from '../../styles/slider/SliderCard.styled'
 import '../../reset.css'
 import useIcon from '../../hooks/useIcon'
