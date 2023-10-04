@@ -4,12 +4,12 @@ import com.zerobase.foodlier.common.exception.dto.ErrorResponse;
 import com.zerobase.foodlier.common.exception.exception.BaseException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindException;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import java.net.BindException;
 import java.util.List;
 import java.util.stream.Collectors;
 
