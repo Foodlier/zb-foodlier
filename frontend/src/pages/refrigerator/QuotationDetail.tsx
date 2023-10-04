@@ -1,9 +1,8 @@
-import React from 'react'
 import Header from '../../components/Header'
 import BottomNavigation from '../../components/BottomNavigation'
-import * as S from '../../styles/refrigerator/EstimateDetail.styled'
+import * as S from '../../styles/refrigerator/QuotationDetail.styled'
 
-const EstimateDetail = () => {
+const QuotationDetail = () => {
   const ESTIMATE_EXAMPLE = {
     recipeId: '1',
     title: '안녕하세요 요리사2입니다',
@@ -103,4 +102,4 @@ const EstimateDetail = () => {
   )
 }
 
-export default EstimateDetail
+export default QuotationDetail

@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import Header from '../../components/Header'
 import BottomNavigation from '../../components/BottomNavigation'
-import * as S from '../../styles/refrigerator/WriteEstimatePage.styled'
+import * as S from '../../styles/refrigerator/WriteQuotationPage.styled'
 import useIcon from '../../hooks/useIcon'
 import Modal from '../../components/Modal'
 import { palette } from '../../constants/Styles'
@@ -35,7 +35,7 @@ interface Recipe {
   expectedTime: string
 }
 
-const WriteEstimatePage = () => {
+const WriteQuotationPage = () => {
   const [modalOpen, setModalOpen] = useState(false)
   const showRequest = () => {
     setModalOpen(true)
@@ -112,7 +112,7 @@ const WriteEstimatePage = () => {
     }))
   }
 
-  console.log(recipeValue)
+  // console.log(recipeValue)
 
   return (
     <>
@@ -229,4 +229,4 @@ const WriteEstimatePage = () => {
   )
 }
 
-export default WriteEstimatePage
+export default WriteQuotationPage

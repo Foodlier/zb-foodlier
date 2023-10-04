@@ -10,12 +10,7 @@ const CookForYou = () => {
     setOptionToggle(!optionToggle)
   }
 
-  const OPTION_MENU_LIST = [
-    '거리 순',
-    '평점 순',
-    '리뷰 많은 순',
-    '레시피 많은 순',
-  ]
+  const OPTION_MENU_LIST = ['거리 순']
 
   const CHEF_LIST_EXAMPLE = [
     {
