@@ -44,7 +44,8 @@ public class RecipeReviewFacade {
                 .updateRecipeReview(memberId, recipeReviewId,
                 RecipeReviewRequestDto.from(request, cookImageUrl));
 
-        if(updatedResponse.getCookImageUrl() != null){
+        if(updatedResponse.getCookImageUrl() != null &&
+                request.getCookImage() != null){
             s3Service.deleteImage(updatedResponse.getCookImageUrl());
         }
 
@@ -59,7 +60,9 @@ public class RecipeReviewFacade {
         ChangedRecipeReviewResponse deletedResponse = recipeReviewService
                 .deleteRecipeReview(memberId, recipeReviewId);
 
-        s3Service.deleteImage(deletedResponse.getCookImageUrl());
+        if(deletedResponse.getCookImageUrl() != null){
+            s3Service.deleteImage(deletedResponse.getCookImageUrl());
+        }
 
         recipeService.minusReviewStar(deletedResponse.getRecipeId(),
                 deletedResponse.getStar());

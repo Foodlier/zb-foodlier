@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -26,7 +27,7 @@ public class ReviewController {
     public ResponseEntity<String> createRecipeReview(
             @AuthenticationPrincipal MemberAuthDto memberAuthDto,
             @PathVariable Long recipeId,
-            @ModelAttribute @Valid RecipeReviewForm request
+            @ModelAttribute @Validated RecipeReviewForm request
             ){
         recipeReviewFacade.createRecipeReview(memberAuthDto.getId(), recipeId, request);
         return ResponseEntity.ok("꿀조합 후기를 작성하였습니다.");
