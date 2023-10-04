@@ -11,6 +11,7 @@ import WriteRecipePage from './pages/recipe/WriteRecipePage'
 import RecipeDetailPage from './pages/recipe/RecipeDetailPage'
 import ChattingPage from './pages/chat/ChattingPage'
 import Notification from './components/Notification'
+import MyPage from './pages/user/MyPage'
 
 const Flex = styled.div`
   position: fixed;
@@ -52,6 +53,7 @@ function App() {
         <Route path="/recipe/write" element={<WriteRecipePage />} />
         <Route path="/recipe/detail" element={<RecipeDetailPage />} />
         <Route path="/chat" element={<ChattingPage />} />
+        <Route path="/my" element={<MyPage />} />
       </Routes>
       <Flex>
         <Notification message={message} />
