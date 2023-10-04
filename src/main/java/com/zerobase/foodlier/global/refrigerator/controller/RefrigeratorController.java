@@ -6,6 +6,9 @@ import com.zerobase.foodlier.module.member.chef.dto.AroundChefDto;
 import com.zerobase.foodlier.module.member.chef.dto.RequestedChefDto;
 import com.zerobase.foodlier.module.member.chef.service.ChefMemberService;
 import com.zerobase.foodlier.module.member.chef.type.ChefSearchType;
+import com.zerobase.foodlier.module.member.member.dto.RequestedMemberDto;
+import com.zerobase.foodlier.module.member.member.service.MemberService;
+import com.zerobase.foodlier.module.member.member.type.RequestedOrderingType;
 import com.zerobase.foodlier.module.request.service.RequestService;
 import com.zerobase.foodlier.module.requestform.dto.RequestFormDetailDto;
 import com.zerobase.foodlier.module.requestform.dto.RequestFormDto;
@@ -13,6 +16,7 @@ import com.zerobase.foodlier.module.requestform.dto.RequestFormResponseDto;
 import com.zerobase.foodlier.module.requestform.service.RequestFormService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -28,6 +32,7 @@ public class RefrigeratorController {
     private final RefrigeratorFacade refrigeratorFacade;
     private final ChefMemberService chefMemberService;
     private final RequestFormService requestFormService;
+    private final MemberService memberService;
 
     @PatchMapping("/send")
     public ResponseEntity<String> sendRequest(
@@ -149,6 +154,19 @@ public class RefrigeratorController {
         return ResponseEntity.ok(
                 chefMemberService.getAroundChefList(memberAuthDto.getId(),
                         pageIdx, pageSize, type)
+        );
+    }
+
+    @GetMapping("/requester/{pageIdx}/{pageSize}")
+    public ResponseEntity<List<RequestedMemberDto>> getRequestedMemberList(
+            @AuthenticationPrincipal MemberAuthDto memberAuthDto,
+            @PathVariable int pageIdx,
+            @PathVariable int pageSize,
+            @RequestParam("type") RequestedOrderingType type
+    ){
+        return ResponseEntity.ok(
+                memberService.getRequestedMemberList(memberAuthDto.getId(),
+                        type, PageRequest.of(pageIdx, pageSize))
         );
     }
 }
