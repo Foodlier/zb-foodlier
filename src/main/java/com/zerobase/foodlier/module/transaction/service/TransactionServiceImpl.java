@@ -6,9 +6,7 @@ import com.zerobase.foodlier.module.dm.room.domain.vo.Suggestion;
 import com.zerobase.foodlier.module.dm.room.exception.DmRoomException;
 import com.zerobase.foodlier.module.dm.room.repository.DmRoomRepository;
 import com.zerobase.foodlier.module.member.chef.domain.model.ChefMember;
-import com.zerobase.foodlier.module.member.chef.repository.ChefMemberRepository;
 import com.zerobase.foodlier.module.member.member.domain.model.Member;
-import com.zerobase.foodlier.module.member.member.repository.MemberRepository;
 import com.zerobase.foodlier.module.transaction.dto.SuggestionForm;
 import com.zerobase.foodlier.module.transaction.dto.TransactionDto;
 import com.zerobase.foodlier.module.transaction.exception.TransactionException;
@@ -24,8 +22,6 @@ import static com.zerobase.foodlier.module.transaction.exception.TransactionErro
 @RequiredArgsConstructor
 public class TransactionServiceImpl implements TransactionService {
     private final DmRoomRepository dmRoomRepository;
-    private final MemberRepository memberRepository;
-    private final ChefMemberRepository chefMemberRepository;
 
     /**
      * 작성자 : 이승현
@@ -92,10 +88,8 @@ public class TransactionServiceImpl implements TransactionService {
 
         validApproveSuggestion(memberAuthDto, requestMember, dmRoom, requestMemberPoint, suggestedPrice);
 
-        requestMember.transaction(-suggestedPrice);
-        memberRepository.save(requestMember);
-        chefMember.getMember().transaction(+suggestedPrice);
-        chefMemberRepository.save(chefMember);
+        dmRoom.getRequest().getMember().transaction(-suggestedPrice);
+        dmRoom.getRequest().getChefMember().getMember().transaction(suggestedPrice);
         dmRoom.getSuggestion().setIsAccept(true);
         dmRoom.getRequest().setPaid(true);
         dmRoomRepository.save(dmRoom);
