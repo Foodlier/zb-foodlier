@@ -14,9 +14,9 @@ public class TransactionFacade {
     private final MemberBalanceHistoryService memberBalanceHistoryService;
 
     public void pointTransactionAndSaveHistory(MemberAuthDto memberAuthDto,
-                                               Long chefMemberId) {
+                                               Long dmRoomId) {
         TransactionDto transactionDto =
-                transactionService.approveSuggestion(memberAuthDto, chefMemberId);
+                transactionService.approveSuggestion(memberAuthDto, dmRoomId);
         memberBalanceHistoryService.createRequestMemberBalanceHistory(transactionDto);
         memberBalanceHistoryService.createChefMemberBalanceHistory(transactionDto);
     }
