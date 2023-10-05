@@ -8,6 +8,7 @@ import com.zerobase.foodlier.module.review.recipe.dto.RecipeReviewRequestDto;
 import com.zerobase.foodlier.module.review.recipe.service.RecipeReviewService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 import javax.transaction.Transactional;
 
@@ -44,7 +45,7 @@ public class RecipeReviewFacade {
                 .updateRecipeReview(memberId, recipeReviewId,
                 RecipeReviewRequestDto.from(request, cookImageUrl));
 
-        if(updatedResponse.getCookImageUrl() != null &&
+        if(StringUtils.hasText(updatedResponse.getCookImageUrl()) &&
                 request.getCookImage() != null){
             s3Service.deleteImage(updatedResponse.getCookImageUrl());
         }
@@ -60,7 +61,7 @@ public class RecipeReviewFacade {
         ChangedRecipeReviewResponse deletedResponse = recipeReviewService
                 .deleteRecipeReview(memberId, recipeReviewId);
 
-        if(deletedResponse.getCookImageUrl() != null){
+        if(StringUtils.hasText(deletedResponse.getCookImageUrl())){
             s3Service.deleteImage(deletedResponse.getCookImageUrl());
         }
 
