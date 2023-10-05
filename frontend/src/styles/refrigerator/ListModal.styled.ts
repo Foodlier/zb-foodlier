@@ -1,5 +1,5 @@
 import styled from 'styled-components'
-import { breakpoints, palette } from '../constants/Styles'
+import { breakpoints, palette } from '../../constants/Styles'
 
 export const GreyBackground = styled.div`
   position: fixed;

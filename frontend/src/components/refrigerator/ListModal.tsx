@@ -1,12 +1,12 @@
 import React from 'react'
-import * as S from '../styles/Modal.styled'
+import * as S from '../../styles/refrigerator/ListModal.styled'
 
 interface ModalProps {
   setModalOpen: React.Dispatch<React.SetStateAction<boolean>>
   modalType: string
 }
 
-const Modal: React.FC<ModalProps> = ({ setModalOpen, modalType }) => {
+const ListModal: React.FC<ModalProps> = ({ setModalOpen, modalType }) => {
   const closeModal = () => {
     setModalOpen(false)
   }
@@ -73,4 +73,4 @@ const Modal: React.FC<ModalProps> = ({ setModalOpen, modalType }) => {
   )
 }
 
-export default Modal
+export default ListModal

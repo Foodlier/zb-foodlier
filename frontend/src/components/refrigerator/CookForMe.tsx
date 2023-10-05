@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import Modal from '../Modal'
+import ListModal from './ListModal'
 import * as S from '../../styles/refrigerator/CookForMe.styled'
 import ChefCard from './ChefCard'
 
@@ -171,7 +171,9 @@ const CookForMe = () => {
 
   return (
     <>
-      {modalOpen && <Modal setModalOpen={setModalOpen} modalType="request" />}
+      {modalOpen && (
+        <ListModal setModalOpen={setModalOpen} modalType="request" />
+      )}
       <S.ChefListContainer>
         <S.Info>
           <S.SubTitle>내 주변 요리사</S.SubTitle>

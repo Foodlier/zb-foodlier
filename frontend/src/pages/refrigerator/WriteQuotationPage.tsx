@@ -3,7 +3,7 @@ import Header from '../../components/Header'
 import BottomNavigation from '../../components/BottomNavigation'
 import * as S from '../../styles/refrigerator/WriteQuotationPage.styled'
 import useIcon from '../../hooks/useIcon'
-import Modal from '../../components/Modal'
+import ListModal from '../../components/refrigerator/ListModal'
 import { palette } from '../../constants/Styles'
 import {
   DIFFICULTY_LIST,
@@ -116,7 +116,9 @@ const WriteQuotationPage = () => {
 
   return (
     <>
-      {modalOpen && <Modal setModalOpen={setModalOpen} modalType="estimate" />}
+      {modalOpen && (
+        <ListModal setModalOpen={setModalOpen} modalType="estimate" />
+      )}
       <Header />
       <S.Container>
         <S.WrapQuitation>
