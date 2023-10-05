@@ -48,7 +48,6 @@ public class RecipeReviewServiceImpl implements RecipeReviewService{
         RecipeReview recipeReview = RecipeReview.builder()
                 .recipe(recipe)
                 .member(member)
-                .title(request.getTitle())
                 .content(request.getContent())
                 .cookUrl(request.getCookImageUrl())
                 .star(request.getStar())
@@ -108,7 +107,6 @@ public class RecipeReviewServiceImpl implements RecipeReviewService{
         int originStar = recipeReview.getStar();
         String originCookUrl = recipeReview.getCookUrl();
 
-        recipeReview.setTitle(request.getTitle());
         recipeReview.setContent(request.getContent());
         recipeReview.setStar(request.getStar());
 
