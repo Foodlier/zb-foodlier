@@ -2,6 +2,7 @@ package com.zerobase.foodlier.common.redisson.service;
 
 import com.zerobase.foodlier.common.redisson.exception.RedissonException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
 import org.springframework.stereotype.Service;
@@ -12,6 +13,7 @@ import static com.zerobase.foodlier.common.redisson.exception.RedissonErrorCode.
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class RedissonLockServiceImpl implements RedissonLockService {
     private final RedissonClient redissonClient;
 
@@ -28,8 +30,10 @@ public class RedissonLockServiceImpl implements RedissonLockService {
             if (!isLock) {
                 throw new RedissonException(LOCK_ERROR);
             }
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
+        } catch (RedissonException e) {
+            throw e;
+        } catch (Exception e) {
+            log.error("Redisson lock failed");
         }
     }
 
