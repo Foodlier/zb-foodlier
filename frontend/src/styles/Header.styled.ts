@@ -2,13 +2,16 @@ import styled from 'styled-components'
 import { breakpoints, palette } from '../constants/Styles'
 
 export const Container = styled.header`
-  width: 100%;
+  position: sticky;
+  top: 0;
   max-height: 9rem;
   height: 9rem;
   padding: 5%;
   display: flex;
   align-items: center;
   justify-content: space-between;
+  background-color: ${palette.white};
+  z-index: 1000;
 
   ${breakpoints.large} {
     padding: 2%;

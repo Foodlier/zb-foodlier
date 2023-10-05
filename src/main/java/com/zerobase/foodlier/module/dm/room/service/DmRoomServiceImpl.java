@@ -1,16 +1,9 @@
 package com.zerobase.foodlier.module.dm.room.service;
 
-import com.zerobase.foodlier.common.security.provider.dto.MemberAuthDto;
 import com.zerobase.foodlier.module.dm.room.domain.model.DmRoom;
-import com.zerobase.foodlier.module.dm.room.dto.DmRoomDto;
 import com.zerobase.foodlier.module.dm.room.repository.DmRoomRepository;
 import com.zerobase.foodlier.module.request.domain.model.Request;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -30,6 +23,11 @@ public class DmRoomServiceImpl implements DmRoomService {
     public DmRoom createDmRoom(Request request) {
         return dmRoomRepository.save(DmRoom.builder()
                 .request(request)
+                .suggestion(Suggestion.builder()
+                        .suggestedPrice(0)
+                        .isAccept(false)
+                        .isSuggested(false)
+                        .build())
                 .build());
     }
 

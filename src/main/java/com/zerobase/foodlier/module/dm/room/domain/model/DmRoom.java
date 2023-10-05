@@ -18,13 +18,18 @@ public class DmRoom extends Audit {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     @OneToOne
     @JoinColumn(name = "request_id")
     private Request request;
+
     @Builder.Default
     @Column(nullable = false)
     @ColumnDefault("false")
     private boolean isChefExit = false;
+
+    @Embedded
+    private Suggestion suggestion;
 
     @Builder.Default
     @Column(nullable = false)

@@ -1,17 +1,21 @@
 package com.zerobase.foodlier.module.dm.room.repository;
 
 import com.zerobase.foodlier.module.dm.room.domain.model.DmRoom;
+import com.zerobase.foodlier.module.request.domain.model.Request;
 import com.zerobase.foodlier.module.dm.room.dto.DmRoomDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+
+import java.util.Optional;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 public interface DmRoomRepository extends JpaRepository<DmRoom, Long> {
+    Optional<DmRoom> findByRequest(Request request);
 
     /**
      * DmRoomDto는 다음과 같은 값을 가져옵니다.

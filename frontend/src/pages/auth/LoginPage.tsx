@@ -1,10 +1,10 @@
 import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
 import { useState, useEffect } from 'react'
-import logo from '../assets/foodlier_logo.png'
-import naver from '../assets/btn_naver.png'
-import kakao from '../assets/btn_kakao.png'
-import * as S from '../styles/LoginPage.styled'
+import logo from '../../assets/foodlier_logo.png'
+import naver from '../../assets/btn_naver.png'
+import kakao from '../../assets/btn_kakao.png'
+import * as S from '../../styles/auth/LoginPage.styled'
 
 interface ResType {
   id: string
@@ -14,7 +14,7 @@ interface ResType {
 }
 
 const Login = () => {
-  const [peopleData, setPeopleData] = useState<ResType[]>([])
+  const [, setPeopleData] = useState<ResType[]>([])
   const navigate = useNavigate()
 
   useEffect(() => {
@@ -47,7 +47,7 @@ const Login = () => {
         <S.Button
           type="submit"
           onClick={() => {
-            navigate('/cook-for-me')
+            navigate('/')
           }}
         >
           로그인
