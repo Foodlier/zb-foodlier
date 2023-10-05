@@ -60,32 +60,41 @@ public class PointController {
         return ResponseEntity.ok("결제 취소 완료, 이유 : " + reason);
     }
 
-    @PostMapping("/suggest/{requestMemberId}")
+    @PostMapping("/suggest/{dmRoomId}")
     public ResponseEntity<String> suggestPrice(
             @AuthenticationPrincipal MemberAuthDto memberAuthDto,
             @RequestBody SuggestionForm form,
-            @PathVariable Long requestMemberId
+            @PathVariable(name = "dmRoomId") Long dmRoomId
     ) {
         return ResponseEntity.ok(transactionService
-                .sendSuggestion(memberAuthDto, form, requestMemberId));
+                .sendSuggestion(memberAuthDto, form, dmRoomId));
     }
 
-    @PatchMapping("/suggest/approve/{chefMemberId}")
+    @PostMapping("/suggest/cancel/{dmRoomId}")
+    public ResponseEntity<?> cancelSuggestion(
+            @AuthenticationPrincipal MemberAuthDto memberAuthDto,
+            @PathVariable(name = "dmRoomId") Long dmRoomId
+    ) {
+        return ResponseEntity.ok(transactionService
+                .cancelSuggestion(memberAuthDto, dmRoomId));
+    }
+
+    @PatchMapping("/suggest/approve/{dmRoomId}")
     public ResponseEntity<String> approveSuggestion(
             @AuthenticationPrincipal MemberAuthDto memberAuthDto,
-            @PathVariable(name = "chefMemberId") Long chefMemberId
+            @PathVariable(name = "dmRoomId") Long dmRoomId
     ) {
         transactionFacade
-                .pointTransactionAndSaveHistory(memberAuthDto, chefMemberId);
+                .pointTransactionAndSaveHistory(memberAuthDto, dmRoomId);
         return ResponseEntity.ok("제안을 수락했습니다.");
     }
 
-    @PatchMapping("/suggest/reject/{chefMemberId}")
+    @PatchMapping("/suggest/reject/{dmRoomId}")
     public ResponseEntity<String> rejectSuggestion(
             @AuthenticationPrincipal MemberAuthDto memberAuthDto,
-            @PathVariable(name = "chefMemberId") Long chefMemberId
+            @PathVariable(name = "dmRoomId") Long dmRoomId
     ) {
         return ResponseEntity.ok(transactionService
-                .rejectSuggestion(memberAuthDto, chefMemberId));
+                .rejectSuggestion(memberAuthDto, dmRoomId));
     }
 }

@@ -8,9 +8,11 @@ public interface TransactionService {
 
     String sendSuggestion(MemberAuthDto memberAuthDto,
                             SuggestionForm form,
-                            Long requestMemberId);
+                            Long dmRoomId);
 
-    TransactionDto approveSuggestion(MemberAuthDto memberAuthDto, Long chefMemberId);
+    String cancelSuggestion(MemberAuthDto memberAuthDto, Long dmRoomId);
 
-    String rejectSuggestion(MemberAuthDto memberAuthDto, Long chefMemberId);
+    TransactionDto approveSuggestion(MemberAuthDto memberAuthDto, Long dmRoomId);
+
+    String rejectSuggestion(MemberAuthDto memberAuthDto, Long dmRoomId);
 }
