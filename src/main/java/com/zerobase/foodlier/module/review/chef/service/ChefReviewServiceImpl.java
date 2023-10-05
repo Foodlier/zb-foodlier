@@ -29,14 +29,15 @@ import static com.zerobase.foodlier.module.review.chef.exception.ChefReviewError
 
 @Service
 @RequiredArgsConstructor
-public class ChefReviewServiceImpl {
+public class ChefReviewServiceImpl implements ChefReviewService{
 
     private final ChefReviewRepository chefReviewRepository;
     private final RequestRepository requestRepository;
     private final MemberRepository memberRepository;
     private final ChefMemberRepository chefMemberRepository;
 
-    public void createChefReview(Long memberId, Long requestId,
+    @Override
+    public Long createChefReview(Long memberId, Long requestId,
                                  ChefReviewForm form){
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
@@ -52,8 +53,11 @@ public class ChefReviewServiceImpl {
                 .build();
 
         chefReviewRepository.save(chefReview);
+
+        return request.getChefMember().getMember().getId();
     }
 
+    @Override
     public List<ChefReviewResponseDto> getChefReviewList(Long chefMemberId,
                                                          Pageable pageable){
 
