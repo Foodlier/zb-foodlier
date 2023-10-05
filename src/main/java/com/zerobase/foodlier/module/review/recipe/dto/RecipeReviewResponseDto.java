@@ -13,7 +13,8 @@ import java.time.LocalDateTime;
 public class RecipeReviewResponseDto {
 
     private Long recipeReviewId;
-    private String title;
+    private String nickname;
+    private String profileUrl;
     private String content;
     private int star;
     private String cookUrl;
@@ -22,7 +23,8 @@ public class RecipeReviewResponseDto {
     public static RecipeReviewResponseDto from(RecipeReview recipeReview){
         return RecipeReviewResponseDto.builder()
                 .recipeReviewId(recipeReview.getId())
-                .title(recipeReview.getTitle())
+                .nickname(recipeReview.getMember().getNickname())
+                .profileUrl(recipeReview.getMember().getProfileUrl())
                 .content(recipeReview.getContent())
                 .star(recipeReview.getStar())
                 .cookUrl(recipeReview.getCookUrl())
