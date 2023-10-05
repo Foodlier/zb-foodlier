@@ -48,7 +48,7 @@ public class DmRoomServiceImpl implements DmRoomService {
     /**
      * 작성자 : 황태원
      * 작성일 : 2023-10-02
-     * 해당 채팅방에서 나갑니다. 마지막 사용자가 나가면 채팅방을 삭제합니다.
+     * 해당 채팅방에서 나갑니다.
      */
     @Override
     @Transactional
@@ -59,10 +59,6 @@ public class DmRoomServiceImpl implements DmRoomService {
             dmRoomRepository.updateDmRoomByMember(roomId);
         } else {
             dmRoomRepository.updateDmRoomByChef(roomId);
-        }
-
-        if (dmRoom.isMemberExit() && dmRoom.isChefExit()) {
-            dmRoomRepository.deleteDmRoomById(roomId);
         }
     }
 }
