@@ -1,18 +1,27 @@
 package com.zerobase.foodlier.module.dm.room.service;
 
 import com.zerobase.foodlier.module.dm.room.domain.model.DmRoom;
+import com.zerobase.foodlier.module.dm.room.domain.vo.Suggestion;
+import com.zerobase.foodlier.module.dm.room.dto.DmRoomDto;
+import com.zerobase.foodlier.module.dm.room.exception.DmRoomException;
 import com.zerobase.foodlier.module.dm.room.repository.DmRoomRepository;
 import com.zerobase.foodlier.module.request.domain.model.Request;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.util.List;
+
+import static com.zerobase.foodlier.module.dm.room.exception.DmRoomErrorCode.DM_ROOM_NOT_FOUND;
 
 @Service
 @RequiredArgsConstructor
 public class DmRoomServiceImpl implements DmRoomService {
-    private final DmRoomRepository dmRoomRepository;
 
+    private final DmRoomRepository dmRoomRepository;
 
     /**
      * 작성자 : 이승현
@@ -37,10 +46,15 @@ public class DmRoomServiceImpl implements DmRoomService {
      * 채팅방 목록을 가져옵니다.
      */
     @Override
-    public Page<DmRoomDto> getDmRoomPage(Long id, int pageIdx, int pageSize) {
+    public List<DmRoomDto> getDmRoomPage(Long id, int pageIdx, int pageSize) {
         Pageable pageable = PageRequest.of(pageIdx, pageSize,
                 Sort.by("createdAt").descending());
-        return dmRoomRepository.getDmRoomPage(id, pageable);
+        List<DmRoomDto> DmRoomDtoList = dmRoomRepository.getDmRoomPage(id, pageable);
+
+        if (DmRoomDtoList.isEmpty()) {
+            throw new DmRoomException(DM_ROOM_NOT_FOUND);
+        }
+        return DmRoomDtoList;
     }
 
     /**
@@ -52,7 +66,7 @@ public class DmRoomServiceImpl implements DmRoomService {
     @Transactional
     public void exitDmRoom(Long id, Long roomId) {
         DmRoom dmRoom = dmRoomRepository.findById(roomId)
-                .orElseThrow();
+                .orElseThrow(() -> new DmRoomException(DM_ROOM_NOT_FOUND));
         if (id.equals(dmRoom.getRequest().getMember().getId())) {
             dmRoomRepository.updateDmRoomByMember(roomId);
         } else {

@@ -7,7 +7,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public enum DmErrorCode {
 
-    NEW_ENUM("enum 추가");
+    NO_SUCH_DM("채팅기록 없음");
 
     private final String description;
 }

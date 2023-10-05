@@ -1,18 +1,16 @@
 package com.zerobase.foodlier.module.dm.room.repository;
 
 import com.zerobase.foodlier.module.dm.room.domain.model.DmRoom;
-import com.zerobase.foodlier.module.request.domain.model.Request;
 import com.zerobase.foodlier.module.dm.room.dto.DmRoomDto;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
+import com.zerobase.foodlier.module.request.domain.model.Request;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
-
-import java.util.Optional;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
-import org.springframework.stereotype.Repository;
+
+import java.util.List;
+import java.util.Optional;
 
 public interface DmRoomRepository extends JpaRepository<DmRoom, Long> {
     Optional<DmRoom> findByRequest(Request request);
@@ -42,7 +40,7 @@ public interface DmRoomRepository extends JpaRepository<DmRoom, Long> {
             "((d.request.chefMember.member.id = :requester AND d.isChefExit = false) " +
             "OR " +
             "(d.request.member.id = :requester AND d.isMemberExit = false))")
-    Page<DmRoomDto> getDmRoomPage(@Param("requester") Long id, Pageable pageable);
+    List<DmRoomDto> getDmRoomPage(@Param("requester") Long id, Pageable pageable);
 
     @Modifying
     @Query("UPDATE DmRoom d SET d.isMemberExit = true WHERE d.id = :roomId")
@@ -52,5 +50,4 @@ public interface DmRoomRepository extends JpaRepository<DmRoom, Long> {
     @Query("UPDATE DmRoom d SET d.isChefExit = true WHERE d.id = :roomId")
     void updateDmRoomByChef(@Param("roomId") Long roomId);
 
-    void deleteDmRoomById(Long id);
 }
