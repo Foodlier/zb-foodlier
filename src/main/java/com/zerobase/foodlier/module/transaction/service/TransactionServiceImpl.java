@@ -72,7 +72,7 @@ public class TransactionServiceImpl implements TransactionService {
 
         dmRoomRepository.save(dmRoom);
 
-        return "요청이 취소되었습니다.";
+        return "제안이 취소되었습니다.";
     }
 
     /**
