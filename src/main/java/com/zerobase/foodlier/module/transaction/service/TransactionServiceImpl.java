@@ -97,6 +97,7 @@ public class TransactionServiceImpl implements TransactionService {
         chefMember.getMember().transaction(+suggestedPrice);
         chefMemberRepository.save(chefMember);
         dmRoom.getSuggestion().setIsAccept(true);
+        dmRoom.getRequest().setPaid(true);
         dmRoomRepository.save(dmRoom);
 
         return TransactionDto.builder()
