@@ -33,7 +33,7 @@ class RedissonLockAopTest {
     private RedissonLockAop redissonLockAop;
 
     static class TestService {
-        @RedissonLock(key = "'#key'", group = "group")
+        @RedissonLock(key = "#key", group = "group")
         public String testMethod() {
             return "Result";
         }
@@ -48,7 +48,9 @@ class RedissonLockAopTest {
         given(signature.getMethod())
                 .willReturn(TestService.class.getMethod("testMethod"));
         given(signature.getParameterNames())
-                .willReturn(new String[]{});
+                .willReturn(new String[]{"key"});
+        given(joinPoint.getArgs())
+                .willReturn(new Object[]{"key"});
         given(joinPoint.proceed())
                 .willReturn("Result");
 
@@ -72,9 +74,9 @@ class RedissonLockAopTest {
 
         assertAll(
                 () -> assertEquals("group", lockCaptorGroup.getValue()),
-                () -> assertEquals("#key", lockCaptorKey.getValue()),
+                () -> assertEquals("key", lockCaptorKey.getValue()),
                 () -> assertEquals("group", unlockCaptorGroup.getValue()),
-                () -> assertEquals("#key", unlockCaptorKey.getValue()),
+                () -> assertEquals("key", unlockCaptorKey.getValue()),
                 () -> assertEquals("Result", result)
         );
     }
