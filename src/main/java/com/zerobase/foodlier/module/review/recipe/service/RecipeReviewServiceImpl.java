@@ -15,6 +15,7 @@ import com.zerobase.foodlier.module.review.recipe.repository.RecipeReviewReposit
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -110,7 +111,7 @@ public class RecipeReviewServiceImpl implements RecipeReviewService{
         recipeReview.setContent(request.getContent());
         recipeReview.setStar(request.getStar());
 
-        if(request.getCookImageUrl() != null){
+        if(StringUtils.hasText(request.getCookImageUrl())){
             recipeReview.setCookUrl(request.getCookImageUrl());
         }
 
