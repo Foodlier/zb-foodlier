@@ -4,6 +4,7 @@ import com.zerobase.foodlier.module.member.member.domain.model.Member;
 import com.zerobase.foodlier.module.notification.domain.model.Notification;
 import com.zerobase.foodlier.module.notification.domain.type.NotificationType;
 import com.zerobase.foodlier.module.notification.dto.NotificationDto;
+import com.zerobase.foodlier.module.notification.exception.NotificationException;
 import com.zerobase.foodlier.module.notification.service.notification.NotificationService;
 import com.zerobase.foodlier.module.notification.service.emitter.EmitterService;
 import lombok.RequiredArgsConstructor;
@@ -12,6 +13,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.util.Map;
+
+import static com.zerobase.foodlier.module.notification.exception.NotificationErrorCode.NO_SUCH_EMITTER;
 
 @Service
 @RequiredArgsConstructor
@@ -35,8 +38,8 @@ public class NotificationFacade {
         emitterService.send(emitter, eventId, emitterId, userEmail);
 
         // 클라이언트가 미수신한 Event 목록이 존재할 경우 전송하여 Event 유실을 예방
-        if (this.hasLostData(lastEventId)) {
-            Map<String, Object> eventCaches = emitterService.findMissingNotification(userEmail);
+        if (emitterService.hasLostData(lastEventId)) {
+            Map<String, Object> eventCaches = emitterService.findEventCaches(userEmail);
 
             long lastEventMilliSeconds = Long.parseLong(lastEventId.split(DELIMITER)[MILLISECOND]);
 
@@ -59,15 +62,17 @@ public class NotificationFacade {
 
         Map<String, SseEmitter> emitters = emitterService.findAllEmitter(receiver.getEmail());
 
+        if(!emitterService.isEmitterExists(emitters)){
+            throw new NotificationException(NO_SUCH_EMITTER);
+        }
+
         for (Map.Entry<String, SseEmitter> emitter : emitters.entrySet()) {
             emitterService.createEventCache(emitter.getKey(), notification);
             emitterService.send(emitter.getValue(), eventId, emitter.getKey(), NotificationDto.from(notification));
         }
     }
 
-    private boolean hasLostData(String lastEventId) {
-        return !lastEventId.isEmpty();
-    }
+
 
 }
 
