@@ -25,23 +25,14 @@ public class RecipeStatistics {
     }
 
     public void updateStar(int originStar, int newStar){
-        this.reviewStarSum -= originStar;
-
-        if(this.reviewStarSum < 0){
-            this.reviewStarSum = 0;
-        }
-
+        this.reviewStarSum = Math.max(0, this.reviewStarSum - originStar);
         this.reviewStarSum += newStar;
         this.calcStarAvg();
     }
 
     public void minusStar(int star){
-        this.reviewCount--;
-        this.reviewStarSum -= star;
-
-        if(this.reviewStarSum < 0){
-            this.reviewStarSum = 0;
-        }
+        this.reviewCount = Math.max(0, --this.reviewCount);
+        this.reviewStarSum = Math.max(0, this.reviewStarSum - star);
         this.calcStarAvg();
     }
 
