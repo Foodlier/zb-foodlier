@@ -82,7 +82,7 @@ public class PaymentServiceImpl implements PaymentService {
      */
     @Transactional
     @Override
-    public void requestFinalPayment(String paymentKey, String orderId, Long amount) {
+    public Payment requestFinalPayment(String paymentKey, String orderId, Long amount) {
         validRequest(paymentKey, orderId, amount);
 
         HttpHeaders httpHeaders = new HttpHeaders();
@@ -110,13 +110,8 @@ public class PaymentServiceImpl implements PaymentService {
                 .orElseThrow(() -> new PaymentException(PAYMENT_REQUEST_NOT_FOUND));
         payment.setPaySuccessYn(SUCCESS_Y);
         payment.getMember().setPoint(payment.getMember().getPoint() + amount);
-        paymentRepository.save(payment);
 
-        pointChargeHistoryRepository.save(PointChargeHistory.builder()
-                .paymentKey(payment.getPaymentKey())
-                .member(payment.getMember())
-                .chargePoint(amount)
-                .build());
+        return paymentRepository.save(payment);
     }
 
     /**
@@ -147,7 +142,7 @@ public class PaymentServiceImpl implements PaymentService {
      */
     @Transactional
     @Override
-    public String requestPaymentCancel(String paymentKey, String cancelReason) {
+    public Payment requestPaymentCancel(String paymentKey, String cancelReason) {
         URI uri = URI.create(tossOriginUrl + paymentKey + "/cancel");
 
         HttpHeaders httpHeaders = new HttpHeaders();
@@ -172,9 +167,8 @@ public class PaymentServiceImpl implements PaymentService {
         Long amount = payment.getAmount();
         payment.getMember().setPoint(payment.getMember().getPoint() - amount);
         payment.setCanceled(true);
-        paymentRepository.save(payment);
 
-        return cancelReason;
+        return paymentRepository.save(payment);
     }
 
     private void validRequest(String paymentKey, String orderId, Long amount) {

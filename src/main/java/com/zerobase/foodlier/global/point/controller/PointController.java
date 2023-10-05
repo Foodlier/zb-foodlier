@@ -1,6 +1,7 @@
 package com.zerobase.foodlier.global.point.controller;
 
 import com.zerobase.foodlier.common.security.provider.dto.MemberAuthDto;
+import com.zerobase.foodlier.global.point.facade.PaymentFacade;
 import com.zerobase.foodlier.module.payment.dto.PaymentRequest;
 import com.zerobase.foodlier.module.payment.dto.PaymentResponse;
 import com.zerobase.foodlier.module.payment.dto.PaymentResponseHandleFailDto;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 public class PointController {
     private final PaymentService paymentService;
     private final TransactionService transactionService;
+    private final PaymentFacade paymentFacade;
 
     @PostMapping("/charge")
     public ResponseEntity<PaymentResponse> requestPayments(
@@ -36,7 +38,7 @@ public class PointController {
             @RequestParam String orderId,
             @RequestParam Long amount
     ) {
-        paymentService.requestFinalPayment(paymentKey, orderId, amount);
+        paymentFacade.pointChargeAndCreateHistory(paymentKey, orderId, amount);
         return ResponseEntity.ok("결제 완료, 금액 : " + amount);
     }
 
@@ -54,8 +56,8 @@ public class PointController {
             @RequestParam String paymentKey,
             @RequestParam String cancelReason
     ) {
-        String reason = paymentService.requestPaymentCancel(paymentKey, cancelReason);
-        return ResponseEntity.ok("결제 취소 완료, 이유 : " + reason);
+        paymentFacade.pointChargeCancelAndCreateHistory(paymentKey, cancelReason);
+        return ResponseEntity.ok("결제 취소 완료, 이유 : " + cancelReason);
     }
 
     @PostMapping("/suggest/{requestMemberId}")
