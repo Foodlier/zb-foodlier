@@ -6,6 +6,8 @@ import com.zerobase.foodlier.module.recipe.domain.model.Recipe;
 import com.zerobase.foodlier.module.request.domain.model.Request;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.util.Optional;
+
 public interface RequestRepository extends JpaRepository<Request, Long> {
 
 
@@ -17,4 +19,6 @@ public interface RequestRepository extends JpaRepository<Request, Long> {
     );
 
     boolean existsByRecipe(Recipe recipe);
+
+    Optional<Request> findByMemberAndChefMember(Member member,ChefMember chefMember);
 }

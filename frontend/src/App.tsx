@@ -1,14 +1,15 @@
 import './reset.css'
 import { useEffect, useState } from 'react'
 import { Routes, Route } from 'react-router-dom'
+import { EventSourcePolyfill } from 'event-source-polyfill'
 import styled from 'styled-components'
-import LoginPage from './pages/auth/LoginPage'
-import RegisterPage from './pages/auth/RegisterPage'
 import RefrigeratorPage from './pages/refrigerator/RefrigeratorPage'
 import WriteRequestPage from './pages/refrigerator/WriteRequestPage'
 import RequestDetailPage from './pages/refrigerator/RequestDetailPage'
 import WriteQuotationPage from './pages/refrigerator/WriteQuotationPage'
 import QuotationDetailPage from './pages/refrigerator/QuotationDetailPage'
+import LoginPage from './pages/auth/LoginPage'
+import RegisterPage from './pages/auth/RegisterPage'
 import MainPage from './pages/MainPage'
 import RecipePage from './pages/recipe/RecipePage'
 import WriteRecipePage from './pages/recipe/WriteRecipePage'
@@ -18,21 +19,27 @@ import Notification from './components/Notification'
 
 const Flex = styled.div`
   position: fixed;
-  top: 20px;
+  top: 10rem;
   left: 20px;
   display: flex;
   flex-direction: column;
 `
 
 function App() {
-  const [message, setMessage] = useState('')
+  const [message, setMessage] = useState<string[]>([])
 
   useEffect(() => {
-    const eventSource = new EventSource('http://localhost:8080/sse')
+    const URL = 'http://localhost:3000/sse'
+    const TOKEN = ''
+    const eventSource = new EventSourcePolyfill(URL, {
+      headers: {
+        token: TOKEN,
+      },
+    })
     eventSource.onmessage = e => {
-      setMessage(JSON.parse(e.data))
+      console.log(e)
+      setMessage(prevMessages => [...prevMessages, JSON.stringify(e.data)])
     }
-
     eventSource.onerror = error => {
       // 에러 핸들링
       console.error('SSE 연결 중 오류 발생:', error)
@@ -75,7 +82,9 @@ function App() {
         <Route path="/chat" element={<ChattingPage />} />
       </Routes>
       <Flex>
-        <Notification message={message} />
+        {message.map(item => (
+          <Notification key={item} message={item} />
+        ))}
       </Flex>
     </div>
   )

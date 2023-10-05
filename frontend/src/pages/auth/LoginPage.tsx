@@ -14,7 +14,7 @@ interface ResType {
 }
 
 const Login = () => {
-  const [peopleData, setPeopleData] = useState<ResType[]>([])
+  const [, setPeopleData] = useState<ResType[]>([])
   const navigate = useNavigate()
 
   useEffect(() => {
