@@ -79,7 +79,7 @@ public class TransactionServiceImpl implements TransactionService {
     @Override
     public TransactionDto approveSuggestion(MemberAuthDto memberAuthDto, Long dmRoomId) {
         DmRoom dmRoom = dmRoomRepository.findById(dmRoomId)
-                .orElseThrow();
+                .orElseThrow(() -> new DmRoomException(DM_ROOM_NOT_FOUND));
         Member requestMember = dmRoom.getRequest().getMember();
         ChefMember chefMember = dmRoom.getRequest().getChefMember();
 

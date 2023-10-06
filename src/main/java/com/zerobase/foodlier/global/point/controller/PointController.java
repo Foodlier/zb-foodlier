@@ -71,7 +71,7 @@ public class PointController {
     }
 
     @PostMapping("/suggest/cancel/{dmRoomId}")
-    public ResponseEntity<?> cancelSuggestion(
+    public ResponseEntity<String> cancelSuggestion(
             @AuthenticationPrincipal MemberAuthDto memberAuthDto,
             @PathVariable(name = "dmRoomId") Long dmRoomId
     ) {
