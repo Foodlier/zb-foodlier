@@ -16,4 +16,6 @@ public class DmRoomDto {
     private String profileUrl;
     private Long requestId;
     private Long expectedPrice;
+    private boolean isExit;
+    private boolean isSuggested;
 }

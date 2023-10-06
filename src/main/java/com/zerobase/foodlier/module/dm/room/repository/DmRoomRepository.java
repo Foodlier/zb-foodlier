@@ -35,7 +35,13 @@ public interface DmRoomRepository extends JpaRepository<DmRoom, Long> {
             "  ELSE d.request.member.profileUrl " +
             "END, " +
             "d.request.id, " +
-            "d.request.expectedPrice) " +
+            "d.request.expectedPrice, " +
+            "CASE " +
+            "  WHEN d.request.chefMember.member.id <> :requester " +
+            "THEN d.isChefExit " +
+            "  ELSE d.isMemberExit " +
+            "END, " +
+            "d.suggestion.isSuggested) " +
             "FROM DmRoom d WHERE " +
             "((d.request.chefMember.member.id = :requester AND d.isChefExit = false) " +
             "OR " +

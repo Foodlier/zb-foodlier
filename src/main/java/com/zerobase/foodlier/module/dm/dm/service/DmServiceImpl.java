@@ -7,9 +7,11 @@ import com.zerobase.foodlier.module.dm.dm.dto.MessageSubDto;
 import com.zerobase.foodlier.module.dm.dm.exception.DmException;
 import com.zerobase.foodlier.module.dm.dm.repository.DmRepository;
 import com.zerobase.foodlier.module.dm.room.domain.model.DmRoom;
+import com.zerobase.foodlier.module.dm.room.domain.vo.Suggestion;
 import com.zerobase.foodlier.module.dm.room.exception.DmRoomException;
 import com.zerobase.foodlier.module.dm.room.repository.DmRoomRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -23,6 +25,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 import static com.zerobase.foodlier.module.dm.dm.exception.DmErrorCode.NO_SUCH_DM;
+import static com.zerobase.foodlier.module.dm.dm.type.MessageType.SUGGESTION;
 import static com.zerobase.foodlier.module.dm.room.exception.DmRoomErrorCode.DM_ROOM_NOT_FOUND;
 
 @Service
@@ -39,7 +42,7 @@ public class DmServiceImpl implements DmService {
     /**
      * 작성자 : 황태원
      * 작성일 : 2023-10-06
-     * 채팅을 작성합니다.
+     * 채팅을 작성합니다. 채팅의 타입이 제안일 경우 dm방 상태를 바꿉니다.
      */
     @Async("dmExecutor")
     @Override
@@ -47,10 +50,21 @@ public class DmServiceImpl implements DmService {
         DmRoom dmRoom = dmRoomRepository.findById(message.getRoomId())
                 .orElseThrow(() -> new DmRoomException(DM_ROOM_NOT_FOUND));
 
+        if (message.getMessageType() == SUGGESTION) {
+            dmRoom.setSuggestion(
+                    Suggestion.builder()
+                    .isSuggested(true)
+                    .isAccept(false)
+                    .suggestedPrice(Integer.parseInt(message.getMessage()))
+                    .build());
+            dmRoomRepository.save(dmRoom);
+        }
+
         Dm dm = dmRepository.save(Dm.builder()
                 .text(message.getMessage())
                 .flag(message.getWriter())
                 .dmroom(dmRoom)
+                .messageType(message.getMessageType())
                 .build());
 
         return CompletableFuture.completedFuture(MessageSubDto.builder()
@@ -58,6 +72,7 @@ public class DmServiceImpl implements DmService {
                 .dmId(dm.getId())
                 .message(dm.getText())
                 .writer(dm.getFlag())
+                .messageType(dm.getMessageType())
                 .createdAt(LocalDateTime.now())
                 .build());
     }
@@ -105,6 +120,7 @@ public class DmServiceImpl implements DmService {
                         .dmId(dm.getId())
                         .writer(dm.getFlag())
                         .message(dm.getText())
+                        .messageType(dm.getMessageType())
                         .createdAt(dm.getCreatedAt())
                         .build())
                 .collect(Collectors.toList());
