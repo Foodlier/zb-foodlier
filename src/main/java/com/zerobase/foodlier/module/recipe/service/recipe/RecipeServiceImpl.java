@@ -2,6 +2,9 @@ package com.zerobase.foodlier.module.recipe.service.recipe;
 
 import com.zerobase.foodlier.common.aop.RedissonLock;
 import com.zerobase.foodlier.module.member.member.domain.model.Member;
+import com.zerobase.foodlier.module.member.member.exception.MemberErrorCode;
+import com.zerobase.foodlier.module.member.member.exception.MemberException;
+import com.zerobase.foodlier.module.member.member.repository.MemberRepository;
 import com.zerobase.foodlier.module.recipe.domain.document.RecipeDocument;
 import com.zerobase.foodlier.module.recipe.domain.model.Recipe;
 import com.zerobase.foodlier.module.recipe.domain.vo.RecipeDetail;
@@ -13,7 +16,6 @@ import com.zerobase.foodlier.module.recipe.exception.recipe.RecipeErrorCode;
 import com.zerobase.foodlier.module.recipe.exception.recipe.RecipeException;
 import com.zerobase.foodlier.module.recipe.repository.RecipeRepository;
 import com.zerobase.foodlier.module.recipe.repository.RecipeSearchRepository;
-import com.zerobase.foodlier.module.review.recipe.exception.RecipeReviewException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -31,6 +33,7 @@ public class RecipeServiceImpl implements RecipeService {
 
     private final RecipeRepository recipeRepository;
     private final RecipeSearchRepository recipeSearchRepository;
+    private final MemberRepository memberRepository;
 
     /**
      * 작성자: 황태원(이종욱)
@@ -183,6 +186,23 @@ public class RecipeServiceImpl implements RecipeService {
                         .stream().map(RecipeDetail::getCookingOrderImageUrl)
                         .collect(Collectors.toList()))
                 .build();
+    }
+
+    /**
+     *  작성자 : 전현서
+     *  작성일 : 2023-10-06
+     *  해당 회원이 작성한 꿀조합 목록을 반환함.
+     */
+    public List<RecipeDtoTopResponse> getRecipeListByMemberId(Long memberId, Pageable pageable){
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_NOT_FOUND));
+
+        return recipeRepository.findByMember(member, pageable)
+                .getContent()
+                .stream()
+                .map(RecipeDtoTopResponse::from)
+                .collect(Collectors.toList());
+
     }
 
     @RedissonLock(group = "recipeReview", key = "#recipeId")

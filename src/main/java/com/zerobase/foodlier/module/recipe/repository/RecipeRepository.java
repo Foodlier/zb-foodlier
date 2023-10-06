@@ -13,6 +13,7 @@ import java.util.Optional;
 
 public interface RecipeRepository extends JpaRepository<Recipe, Long> {
 
+    Page<Recipe> findByMember(Member member, Pageable pageable);
     int countByMember(Member member);
     Optional<Recipe> findByIdAndMemberAndIsQuotationTrue(Long recipeId, Member member);
 
