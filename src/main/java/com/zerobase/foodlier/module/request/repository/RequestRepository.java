@@ -21,4 +21,6 @@ public interface RequestRepository extends JpaRepository<Request, Long> {
     boolean existsByRecipe(Recipe recipe);
 
     Optional<Request> findByMemberAndChefMember(Member member,ChefMember chefMember);
+
+    Optional<Request> findByIdAndMember(Long requestId, Member member);
 }
