@@ -36,6 +36,12 @@ public class ChefReviewServiceImpl implements ChefReviewService{
     private final MemberRepository memberRepository;
     private final ChefMemberRepository chefMemberRepository;
 
+    /**
+     *  작성자 : 전현서
+     *  작성일 : 2023-10-06
+     *  요청에 대해서 요리사에 대한 후기를 생성함.
+     *  결제가 성사된 요청에만 리뷰를 남길 수 있고, Update, Delete는 허용 하지 않음.
+     */
     @Override
     public Long createChefReview(Long memberId, Long requestId,
                                  ChefReviewForm form){
@@ -57,6 +63,11 @@ public class ChefReviewServiceImpl implements ChefReviewService{
         return request.getChefMember().getMember().getId();
     }
 
+    /**
+     *  작성자 : 전현서
+     *  작성일 : 2023-10-06
+     *  요리사에 대한 후기 목록을 조회함.
+     */
     @Override
     public List<ChefReviewResponseDto> getChefReviewList(Long chefMemberId,
                                                          Pageable pageable){
