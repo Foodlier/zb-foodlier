@@ -39,7 +39,7 @@ const Header = () => {
       title: '꿀조합',
       navigate: 'recipe',
     },
-    { title: '냉마카세', navigate: '' },
+    { title: '냉마카세', navigate: 'refrigerator' },
     { title: '채팅', navigate: 'chat' },
   ]
 

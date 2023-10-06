@@ -3,6 +3,7 @@ package com.zerobase.foodlier.module.member.member.service;
 import com.zerobase.foodlier.common.security.provider.JwtTokenProvider;
 import com.zerobase.foodlier.common.security.provider.dto.MemberAuthDto;
 import com.zerobase.foodlier.common.security.provider.dto.TokenDto;
+import com.zerobase.foodlier.module.member.member.dto.RequestedMemberDto;
 import com.zerobase.foodlier.module.member.member.dto.SignInForm;
 import com.zerobase.foodlier.module.member.member.profile.dto.MemberPrivateProfileResponse;
 import com.zerobase.foodlier.module.member.member.domain.model.Member;
@@ -11,8 +12,10 @@ import com.zerobase.foodlier.module.member.member.dto.MemberRegisterDto;
 import com.zerobase.foodlier.module.member.member.exception.MemberException;
 import com.zerobase.foodlier.module.member.member.profile.dto.MemberUpdateDto;
 import com.zerobase.foodlier.module.member.member.repository.MemberRepository;
+import com.zerobase.foodlier.module.member.member.type.RequestedOrderingType;
 import com.zerobase.foodlier.module.member.member.type.RoleType;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -28,6 +31,7 @@ import static com.zerobase.foodlier.module.member.member.exception.MemberErrorCo
 @RequiredArgsConstructor
 public class MemberServiceImpl implements MemberService {
 
+    private static final Object NOT_CHEF_MEMBER = null;
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider tokenProvider;
@@ -137,6 +141,40 @@ public class MemberServiceImpl implements MemberService {
         memberRepository.save(member);
     }
 
+    /**
+     *  작성자 : 전현서
+     *  작성일 : 2023-10-04
+     *  냉장고를 부탁해 페이지에서, 요리사 입장에서 요청한 주변 요리사를 페이징하여 조회함.
+     *  정렬 조건 확장 가능성을 위해서, switch문으로 구현함.
+     *  값이 없으면 기본적으로 가까운 거리순으로 반환함.
+     */
+    @Override
+    public List<RequestedMemberDto> getRequestedMemberList(Long memberId,
+                                                           RequestedOrderingType type,
+                                                           Pageable pageable){
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
+
+        validateGetRequestedMemberList(member);
+
+        switch (type){
+            case PRICE:
+                return memberRepository.getRequestedMemberListOrderByPrice(
+                        member.getChefMember().getId(), member.getAddress().getLat(),
+                        member.getAddress().getLnt(),
+                        pageable
+                ).getContent();
+            case DISTANCE:
+                return memberRepository.getRequestedMemberListOrderByDistance(
+                    member.getChefMember().getId(), member.getAddress().getLat(),
+                    member.getAddress().getLnt(),
+                    pageable
+            ).getContent();
+
+        }
+        throw new MemberException(ORDER_TYPE_IS_NULL);
+    }
+
     @Override
     public Member findByEmail(String email) {
         return memberRepository.findByEmail(email)
@@ -165,6 +203,12 @@ public class MemberServiceImpl implements MemberService {
         if (StringUtils.hasText(memberUpdateDto.getPhoneNumber())
                 && memberRepository.existsByPhoneNumber(memberUpdateDto.getPhoneNumber())) {
             throw new MemberException(PHONE_NUMBER_IS_ALREADY_EXIST);
+        }
+    }
+
+    private void validateGetRequestedMemberList(Member member){
+        if(member.getChefMember() == NOT_CHEF_MEMBER){
+            throw new MemberException(MEMBER_IS_NOT_CHEF);
         }
     }
 }

@@ -4,6 +4,7 @@ import com.zerobase.foodlier.module.member.member.domain.model.Member;
 import com.zerobase.foodlier.module.recipe.domain.document.RecipeDocument;
 import com.zerobase.foodlier.module.recipe.domain.model.Recipe;
 import com.zerobase.foodlier.module.recipe.domain.vo.RecipeDetail;
+import com.zerobase.foodlier.module.recipe.domain.vo.RecipeStatistics;
 import com.zerobase.foodlier.module.recipe.domain.vo.Summary;
 import com.zerobase.foodlier.module.recipe.dto.recipe.*;
 import com.zerobase.foodlier.module.recipe.exception.recipe.RecipeException;
@@ -444,7 +445,159 @@ class RecipeServiceImplTest {
 
     }
 
+    @Test
+    @DisplayName("별점 추가 성공")
+    void success_plusReviewStar(){
+        //given
+        given(recipeRepository.findById(anyLong()))
+                .willReturn(Optional.of(
+                        Recipe.builder()
+                                .id(1L)
+                                .recipeStatistics(
+                                        RecipeStatistics.builder()
+                                                .reviewStarSum(0)
+                                                .reviewStarAverage(0)
+                                                .reviewCount(0)
+                                                .build()
+                                )
+                                .build()
+                ));
+
+        //when
+        recipeService.plusReviewStar(1L, 5);
+
+        //then
+        ArgumentCaptor<Recipe> captor = ArgumentCaptor.forClass(Recipe.class);
+        verify(recipeRepository, times(1))
+                .save(captor.capture());
+
+        Recipe recipe = captor.getValue();
+
+        assertAll(
+                () -> assertEquals(5, recipe.getRecipeStatistics().getReviewStarSum()),
+                () -> assertEquals(5, recipe.getRecipeStatistics().getReviewStarAverage()),
+                () -> assertEquals(1, recipe.getRecipeStatistics().getReviewCount())
+        );
+    }
+
+    @Test
+    @DisplayName("별점 추가 실패 - 꿀조합 X")
+    void fail_plusReviewStar_no_such_recipe(){
+        //given
+        given(recipeRepository.findById(anyLong()))
+                .willReturn(Optional.empty());
+
+        //when
+        RecipeException exception = assertThrows(RecipeException.class,
+                () -> recipeService.plusReviewStar(1L, 5));
+
+        //then
+        assertEquals(NO_SUCH_RECIPE, exception.getErrorCode());
+    }
+
+    @Test
+    @DisplayName("별점 수정 성공")
+    void success_updateReviewStar(){
+        //given
+        given(recipeRepository.findById(anyLong()))
+                .willReturn(Optional.of(
+                        Recipe.builder()
+                                .id(1L)
+                                .recipeStatistics(
+                                        RecipeStatistics.builder()
+                                                .reviewStarSum(10)
+                                                .reviewStarAverage(5)
+                                                .reviewCount(2)
+                                                .build()
+                                )
+                                .build()
+                ));
+
+        //when
+        recipeService.updateReviewStar(1L, 5, 3);
+
+        //then
+        ArgumentCaptor<Recipe> captor = ArgumentCaptor.forClass(Recipe.class);
+        verify(recipeRepository, times(1))
+                .save(captor.capture());
+
+        Recipe recipe = captor.getValue();
+
+        assertAll(
+                () -> assertEquals(8, recipe.getRecipeStatistics().getReviewStarSum()),
+                () -> assertEquals(4, recipe.getRecipeStatistics().getReviewStarAverage()),
+                () -> assertEquals(2, recipe.getRecipeStatistics().getReviewCount())
+        );
+    }
+
+    @Test
+    @DisplayName("별점 수정 실패 - 꿀조합 X")
+    void fail_updateReviewStar(){
+        //given
+        given(recipeRepository.findById(anyLong()))
+                .willReturn(Optional.empty());
+
+        //when
+        RecipeException exception = assertThrows(RecipeException.class,
+                () -> recipeService.plusReviewStar(1L, 5));
+
+        //then
+        assertEquals(NO_SUCH_RECIPE, exception.getErrorCode());
+    }
+
+    @Test
+    @DisplayName("별점 차감 성공")
+    void success_minusReviewStar(){
+        //given
+        given(recipeRepository.findById(anyLong()))
+                .willReturn(Optional.of(
+                        Recipe.builder()
+                                .id(1L)
+                                .recipeStatistics(
+                                        RecipeStatistics.builder()
+                                                .reviewStarSum(10)
+                                                .reviewStarAverage(5)
+                                                .reviewCount(2)
+                                                .build()
+                                )
+                                .build()
+                ));
+
+        //when
+        recipeService.minusReviewStar(1L, 5);
+
+        //then
+        ArgumentCaptor<Recipe> captor = ArgumentCaptor.forClass(Recipe.class);
+        verify(recipeRepository, times(1))
+                .save(captor.capture());
+
+        Recipe recipe = captor.getValue();
+
+        assertAll(
+                () -> assertEquals(5, recipe.getRecipeStatistics().getReviewStarSum()),
+                () -> assertEquals(5, recipe.getRecipeStatistics().getReviewStarAverage()),
+                () -> assertEquals(1, recipe.getRecipeStatistics().getReviewCount())
+        );
+    }
+
+    @Test
+    @DisplayName("별점 차감 실패 - 꿀조합 X")
+    void fail_minusReviewStar_(){
+        //given
+        given(recipeRepository.findById(anyLong()))
+                .willReturn(Optional.empty());
+
+        //when
+        RecipeException exception = assertThrows(RecipeException.class,
+                () -> recipeService.minusReviewStar(1L, 5));
+
+        //then
+        assertEquals(NO_SUCH_RECIPE, exception.getErrorCode());
+    }
+
+
     // ===============테스트 객체 정의 메소드 ===================
+
     private static Member getMember() {
         return Member.builder()
                 .id(1L)
