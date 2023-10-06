@@ -10,7 +10,8 @@ public enum MemberErrorCode {
     EMAIL_IS_ALREADY_EXIST("이미 사용 중인 이메일 입니다."),
     NICKNAME_IS_ALREADY_EXIST("이미 사용 중인 닉네임 입니다."),
     PHONE_NUMBER_IS_ALREADY_EXIST("이미 사용 중인 핸드폰 번호 입니다."),
-    MEMBER_IS_NOT_CHEF("요리사가 아닌 회원입니다.");
+    MEMBER_IS_NOT_CHEF("요리사가 아닌 회원입니다."),
+    ORDER_TYPE_IS_NULL("정렬타입이 지정되지 않았습니다.");
 
     private final String description;
 }

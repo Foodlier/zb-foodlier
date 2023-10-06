@@ -164,12 +164,15 @@ public class MemberServiceImpl implements MemberService {
                         member.getAddress().getLnt(),
                         pageable
                 ).getContent();
+            case DISTANCE:
+                return memberRepository.getRequestedMemberListOrderByDistance(
+                    member.getChefMember().getId(), member.getAddress().getLat(),
+                    member.getAddress().getLnt(),
+                    pageable
+            ).getContent();
+
         }
-        return memberRepository.getRequestedMemberListOrderByDistance(
-                member.getChefMember().getId(), member.getAddress().getLat(),
-                member.getAddress().getLnt(),
-                pageable
-        ).getContent();
+        throw new MemberException(ORDER_TYPE_IS_NULL);
     }
 
     @Override
