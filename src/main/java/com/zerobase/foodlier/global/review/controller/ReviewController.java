@@ -4,8 +4,6 @@ import com.zerobase.foodlier.common.security.provider.dto.MemberAuthDto;
 import com.zerobase.foodlier.global.review.facade.ChefReviewFacade;
 import com.zerobase.foodlier.global.review.facade.RecipeReviewFacade;
 import com.zerobase.foodlier.module.review.chef.dto.ChefReviewForm;
-import com.zerobase.foodlier.module.review.chef.dto.ChefReviewResponseDto;
-import com.zerobase.foodlier.module.review.chef.service.ChefReviewService;
 import com.zerobase.foodlier.module.review.recipe.dto.RecipeReviewForm;
 import com.zerobase.foodlier.module.review.recipe.dto.RecipeReviewResponseDto;
 import com.zerobase.foodlier.module.review.recipe.service.RecipeReviewService;
@@ -26,7 +24,6 @@ public class ReviewController {
     private final RecipeReviewFacade recipeReviewFacade;
     private final RecipeReviewService recipeReviewService;
     private final ChefReviewFacade chefReviewFacade;
-    private final ChefReviewService chefReviewService;
 
     @PostMapping("/chef/{requestId}")
     public ResponseEntity<String> createChefReview(
@@ -36,18 +33,6 @@ public class ReviewController {
             ){
         chefReviewFacade.createChefReview(memberAuthDto.getId(), requestId, form);
         return ResponseEntity.ok("요리사 후기를 작성하였습니다.");
-    }
-
-    @GetMapping("/chef/{chefMemberId}/{pageIdx}/{pageSize}")
-    public ResponseEntity<List<ChefReviewResponseDto>> getChefReviewList(
-            @PathVariable Long chefMemberId,
-            @PathVariable int pageIdx,
-            @PathVariable int pageSize
-    ){
-        return ResponseEntity.ok(
-                chefReviewService.getChefReviewList(chefMemberId,
-                        PageRequest.of(pageIdx, pageSize))
-        );
     }
 
     @PostMapping("/recipe/{recipeId}")
