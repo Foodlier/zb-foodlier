@@ -10,6 +10,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface ChefReviewRepository extends JpaRepository<ChefReview, Long> {
 
     boolean existsByRequest(Request request);
-    Page<ChefReview> findByChefMember(ChefMember chefMember, Pageable pageable);
+    Page<ChefReview> findByChefMemberOrderByCreatedAtDesc(ChefMember chefMember, Pageable pageable);
 
 }

@@ -76,7 +76,7 @@ public class ChefReviewServiceImpl implements ChefReviewService{
         ChefMember chefMember = chefMemberRepository.findById(chefMemberId)
                 .orElseThrow(() -> new ChefMemberException(CHEF_MEMBER_NOT_FOUND));
 
-        return chefReviewRepository.findByChefMember(chefMember, pageable)
+        return chefReviewRepository.findByChefMemberOrderByCreatedAtDesc(chefMember, pageable)
                 .getContent()
                 .stream()
                 .map(ChefReviewResponseDto::from)
