@@ -29,7 +29,7 @@ public class ReviewController {
     public ResponseEntity<String> createChefReview(
             @AuthenticationPrincipal MemberAuthDto memberAuthDto,
             @PathVariable Long requestId,
-            @RequestBody ChefReviewForm form
+            @RequestBody @Valid ChefReviewForm form
             ){
         chefReviewFacade.createChefReview(memberAuthDto.getId(), requestId, form);
         return ResponseEntity.ok("요리사 후기를 작성하였습니다.");
