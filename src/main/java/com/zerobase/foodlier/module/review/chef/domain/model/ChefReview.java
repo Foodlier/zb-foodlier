@@ -1,6 +1,7 @@
 package com.zerobase.foodlier.module.review.chef.domain.model;
 
 import com.zerobase.foodlier.common.jpa.audit.Audit;
+import com.zerobase.foodlier.module.member.chef.domain.model.ChefMember;
 import com.zerobase.foodlier.module.request.domain.model.Request;
 import lombok.*;
 
@@ -21,6 +22,10 @@ public class ChefReview extends Audit {
     private String content;
     @Column(nullable = false)
     private int star;
+
+    @ManyToOne
+    @JoinColumn(name = "chef_member_id")
+    private ChefMember chefMember;
 
     @OneToOne
     private Request request;

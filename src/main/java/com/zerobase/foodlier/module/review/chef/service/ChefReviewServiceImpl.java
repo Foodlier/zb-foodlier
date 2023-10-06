@@ -54,13 +54,14 @@ public class ChefReviewServiceImpl implements ChefReviewService{
 
         ChefReview chefReview = ChefReview.builder()
                 .request(request)
+                .chefMember(request.getChefMember())
                 .content(form.getContent())
                 .star(form.getStar())
                 .build();
 
         chefReviewRepository.save(chefReview);
 
-        return request.getChefMember().getMember().getId();
+        return request.getChefMember().getId();
     }
 
     /**
