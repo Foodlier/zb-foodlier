@@ -172,7 +172,7 @@ public class MemberServiceImpl implements MemberService {
             ).getContent();
 
         }
-        throw new MemberException(ORDER_TYPE_IS_NULL);
+        return new ArrayList<>();
     }
 
     @Override
