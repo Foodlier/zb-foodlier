@@ -31,6 +31,7 @@ import static com.zerobase.foodlier.module.member.member.exception.MemberErrorCo
 @RequiredArgsConstructor
 public class MemberServiceImpl implements MemberService {
 
+    private static final Object NOT_CHEF_MEMBER = null;
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider tokenProvider;
@@ -203,7 +204,7 @@ public class MemberServiceImpl implements MemberService {
     }
 
     private void validateGetRequestedMemberList(Member member){
-        if(member.getChefMember() == null){
+        if(member.getChefMember() == NOT_CHEF_MEMBER){
             throw new MemberException(MEMBER_IS_NOT_CHEF);
         }
     }
