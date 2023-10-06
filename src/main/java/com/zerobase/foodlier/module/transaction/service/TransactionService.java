@@ -2,14 +2,17 @@ package com.zerobase.foodlier.module.transaction.service;
 
 import com.zerobase.foodlier.common.security.provider.dto.MemberAuthDto;
 import com.zerobase.foodlier.module.transaction.dto.SuggestionForm;
+import com.zerobase.foodlier.module.transaction.dto.TransactionDto;
 
 public interface TransactionService {
 
     String sendSuggestion(MemberAuthDto memberAuthDto,
                             SuggestionForm form,
-                            Long requestMemberId);
+                            Long dmRoomId);
 
-    String approveSuggestion(MemberAuthDto memberAuthDto, Long chefMemberId);
+    String cancelSuggestion(MemberAuthDto memberAuthDto, Long dmRoomId);
 
-    String rejectSuggestion(MemberAuthDto memberAuthDto, Long chefMemberId);
+    TransactionDto approveSuggestion(MemberAuthDto memberAuthDto, Long dmRoomId);
+
+    String rejectSuggestion(MemberAuthDto memberAuthDto, Long dmRoomId);
 }
