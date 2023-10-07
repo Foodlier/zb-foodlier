@@ -14,6 +14,7 @@ import RecipeDetailPage from './pages/recipe/RecipeDetailPage'
 import ChattingPage from './pages/chat/ChattingPage'
 import MyPage from './pages/user/MyPage'
 
+
 function App() {
   return (
     <div>
