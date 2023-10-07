@@ -198,7 +198,7 @@ public class RecipeServiceImpl implements RecipeService {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_NOT_FOUND));
 
-        return recipeRepository.findByMember(member, pageable)
+        return recipeRepository.findByMemberAndIsPublicTrueAndIsQuotationFalse(member, pageable)
                 .getContent()
                 .stream()
                 .map(RecipeDtoTopResponse::from)
