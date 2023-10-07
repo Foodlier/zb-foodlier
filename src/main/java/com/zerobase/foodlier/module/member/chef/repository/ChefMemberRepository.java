@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface ChefMemberRepository extends JpaRepository<ChefMember, Long> {
     boolean existsByMember(Member member);
@@ -35,12 +36,12 @@ public interface ChefMemberRepository extends JpaRepository<ChefMember, Long> {
                     ") as rc ON rc.chef_member_id = c.id\n" +
                     "WHERE rm.id = :requester\n" +
                     "limit :start, :end"
-            ,nativeQuery = true
+            , nativeQuery = true
     )
     List<RequestedChefDto> findRequestedChef(
-        @Param("requester") Long memberId,
-        @Param("start") int start,
-        @Param("end") int end
+            @Param("requester") Long memberId,
+            @Param("start") int start,
+            @Param("end") int end
     );
 
     String baseAroundSearchQuery = "SELECT c.id as chefId, c.introduce as introduce, c.star_avg as starAvg,\n" +
@@ -70,6 +71,7 @@ public interface ChefMemberRepository extends JpaRepository<ChefMember, Long> {
             "\tJOIN chef_member c ON c.id = rq.chef_member_id\n" +
             "\twhere rm.id = :requester\n" +
             ")";
+
     @Query(
             value = baseAroundSearchQuery +
                     "ORDER BY distance ASC\n" +
@@ -129,7 +131,5 @@ public interface ChefMemberRepository extends JpaRepository<ChefMember, Long> {
             @Param("start") int start,
             @Param("end") int end
     );
-
-
 
 }

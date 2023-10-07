@@ -26,7 +26,7 @@ module.exports = {
   parserOptions: {
     ecmaVersion: 'latest',
     sourceType: 'module',
-    project: './tsconfig.json',
+    project: 'frontend/tsconfig.json',
   },
   plugins: ['@typescript-eslint', 'react', 'prettier'],
   rules: {
@@ -38,6 +38,7 @@ module.exports = {
       2,
       { namedComponents: ['arrow-function', 'function-declaration'] },
     ],
+    "import/no-extraneous-dependencies": ["error", {"devDependencies": true}]
   },
   ignorePatterns: ['.eslintrc.cjs', 'vite.config.ts'],
 }

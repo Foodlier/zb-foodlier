@@ -39,3 +39,9 @@ export const spacing = {
   // large: '16px',
   // xLarge: '32px',
 }
+
+export const zindex = {
+  base: 1,
+  header: 10,
+  modal: 20,
+}

@@ -23,21 +23,21 @@ public enum NotifyMessage {
     ;
     private final SendType sendTo;
     private final NotificationType notificationType;
-    private final RequestNotifyDisplay expression;
+    private final RequestNotifyConverter requestNotifyConverter;
 
-    NotifyMessage(SendType sendTo, NotificationType notificationType, RequestNotifyDisplay expression) {
-        this.expression = expression;
+    NotifyMessage(SendType sendTo, NotificationType notificationType, RequestNotifyConverter requestNotifyConverter) {
+        this.requestNotifyConverter = requestNotifyConverter;
         this.notificationType = notificationType;
         this.sendTo = sendTo;
     }
 
-    public String createMessage(String notifyObjectName, String performer, String receiver) {
-        return this.expression.getDisplayName(notifyObjectName, performer, receiver);
+    public String createMessage(String notifyObjectName, String performer, String action) {
+        return this.requestNotifyConverter.getDisplayName(notifyObjectName, performer, action);
     }
 
     @FunctionalInterface
-    public interface RequestNotifyDisplay {
-        String getDisplayName(String notifyObjectName, String performer, String receiver);
+    public interface RequestNotifyConverter {
+        String getDisplayName(String notifyObjectName, String performer, String action);
     }
 
     private static NotifyMessage findMessage(SendType sendTo, NotificationType notificationType){

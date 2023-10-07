@@ -1,4 +1,5 @@
 import styled from 'styled-components'
+import { palette } from '../../constants/Styles'
 
 // 스타일드 컴포넌트로 모달 스타일 정의
 const ModalWrapper = styled.div`
@@ -14,7 +15,7 @@ const ModalWrapper = styled.div`
 `
 
 const ModalContent = styled.div`
-  width: 60%;
+  width: 50rem;
   background-color: white;
   padding: 20px;
   border-radius: 8px;
@@ -32,7 +33,7 @@ const ModalBody = styled.div`
 `
 
 const CloseButton = styled.button`
-  background-color: #f44336;
+  background-color: ${palette.main};
   color: white;
   border: none;
   padding: 10px 20px;

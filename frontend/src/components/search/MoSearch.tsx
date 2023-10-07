@@ -1,4 +1,3 @@
-import React from 'react'
 import * as S from '../../styles/search/MoSearch.styled'
 import SearchBar, { SearchResult } from './SearchBar'
 import useIcon from '../../hooks/useIcon'

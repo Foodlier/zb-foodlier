@@ -43,6 +43,18 @@
   font-display: swap;
 }
 
+:root {
+  font-family: 'Pretendard-Regular', sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-text-size-adjust: 100%;
+}
+
 *,
 :after,
 :before {
@@ -54,6 +66,10 @@
 }
 body,
 html {
+  width: 124rem;
+  max-width: 100%;
+  margin-left: auto;
+  margin-right: auto;
   height: 100%;
   width: 124rem;
   max-width: 100%;
