@@ -1,5 +1,4 @@
 import styled from 'styled-components'
-import { palette, breakpoints } from '../../../../constants/Styles'
 
 export const ReviewContainer = styled.section`
   padding-bottom: 15rem;

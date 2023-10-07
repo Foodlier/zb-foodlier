@@ -1,4 +1,4 @@
-import styled, { css } from 'styled-components'
+import styled from 'styled-components'
 import { palette } from '../../../../constants/Styles'
 
 export const CommentItemWrapper = styled.div<{ isReply?: boolean }>`
