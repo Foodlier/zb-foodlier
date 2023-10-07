@@ -11,6 +11,7 @@ import MainPage from './pages/MainPage'
 import RecipePage from './pages/recipe/RecipePage'
 import WriteRecipePage from './pages/recipe/WriteRecipePage'
 import RecipeDetailPage from './pages/recipe/RecipeDetailPage'
+import WriteReviewPage from './pages/recipe/WriteReviewPage'
 import ChattingPage from './pages/chat/ChattingPage'
 
 function App() {
@@ -41,6 +42,10 @@ function App() {
         <Route path="/recipe" element={<RecipePage />} />
         <Route path="/recipe/write" element={<WriteRecipePage />} />
         <Route path="/recipe/detail" element={<RecipeDetailPage />} />
+        <Route
+          path="/recipe/detail/write-review"
+          element={<WriteReviewPage />}
+        />
         <Route path="/chat" element={<ChattingPage />} />
       </Routes>
     </div>
