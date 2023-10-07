@@ -1,4 +1,3 @@
-import React from 'react'
 import SearchBar, { SearchResult } from './SearchBar'
 
 interface WebSearchProps {

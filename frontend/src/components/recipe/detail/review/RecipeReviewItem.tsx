@@ -1,4 +1,3 @@
-import React from 'react'
 import CommonButton from '../../../ui/Button'
 import * as S from '../../../../styles/recipe/detail/review/RecipeReviewItem.styled'
 import { palette } from '../../../../constants/Styles'
