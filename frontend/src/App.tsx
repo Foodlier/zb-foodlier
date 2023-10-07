@@ -17,6 +17,7 @@ import RecipeDetailPage from './pages/recipe/RecipeDetailPage'
 import ChattingPage from './pages/chat/ChattingPage'
 import Notification from './components/Notification'
 import MyProfilePage from './pages/user/MyProfilePage'
+import StarRating from './components/StarRating'
 
 const Flex = styled.div`
   position: fixed;
@@ -82,6 +83,7 @@ function App() {
         <Route path="/recipe/detail" element={<RecipeDetailPage />} />
         <Route path="/chat" element={<ChattingPage />} />
         <Route path="/myprofile" element={<MyProfilePage />} />
+        <Route path="/test" element={<StarRating />} />
       </Routes>
       <Flex>
         {message.map(item => (

@@ -4,6 +4,7 @@ import BottomNavigation from '../../components/BottomNavigation'
 import * as S from '../../styles/user/MyProfilePage.styled'
 import useIcon from '../../hooks/useIcon'
 import { palette } from '../../constants/Styles'
+import StarRating from '../../components/StarRating'
 
 interface Review {
   nickName: string
@@ -131,7 +132,7 @@ const MyProfilePage = () => {
                         <img src={el.imgUrl} alt="프로필 이미지" />
                         <span>{el.nickName}</span>
                       </S.ReviewAuthor>
-                      <div>{el.rating}점</div>
+                      <StarRating rating={el.rating} size={1.6} />
                     </S.ReviewTopInfo>
                     <S.ReviewContent>{el.content}</S.ReviewContent>
                   </S.ReviewCard>

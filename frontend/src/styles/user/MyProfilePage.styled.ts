@@ -57,6 +57,11 @@ export const UserIsCooker = styled.div`
 export const UserNickname = styled.span`
   font-weight: bold;
   font-size: 2rem;
+  display: -webkit-box;
+  overflow: hidden;
+  word-break: break-all;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 1;
 `
 
 export const LikeDiv = styled.div`
@@ -71,6 +76,11 @@ export const MyGradeP = styled.p`
   font-size: 1.8rem;
   font-weight: bold;
   margin-bottom: 1rem;
+  display: -webkit-box;
+  overflow: hidden;
+  word-break: break-all;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 1;
 `
 
 export const Bar = styled.div`
@@ -104,6 +114,12 @@ export const ReviewIntro = styled.div`
 export const ReviewTitle = styled.p`
   font-weight: bold;
   font-size: 1.8rem;
+  margin-bottom: 1rem;
+  display: -webkit-box;
+  overflow: hidden;
+  word-break: break-all;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 1;
 `
 
 export const ReviewMoreBtn = styled.button`
@@ -134,12 +150,13 @@ export const ReviewTopInfo = styled.div`
   display: flex;
   align-content: center;
   gap: 10px;
+  margin-bottom: 10px;
 `
 
 export const ReviewAuthor = styled.div`
   display: flex;
   align-content: center;
-  margin-bottom: 10px;
+
   img {
     width: 40px;
     height: 40px;
