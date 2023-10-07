@@ -15,8 +15,8 @@ const RecipeDetailPage = () => {
     recipeId: '',
     memberId: '',
     nickname: '닉네임',
-    profileUrl: '/src/assets/chef.svg',
-    mainImageUrl: '/src/assets/contents/food_img_05.jpg',
+    profileUrl: '../../../public/images/chef.svg',
+    mainImageUrl: '../../../public/images/contents/food_img_05.jpg',
     title: '레시피 제목',
     content:
       'Lorem Ipsum is simply dummy text of the printing  and typesetting industry. Lorem Ipsum has been the industrys standard dummy text ever since the  1500s, when an unknown printer took a galley',
@@ -43,17 +43,17 @@ const RecipeDetailPage = () => {
 
   const detail = [
     {
-      cookingOrderImageUrl: '/src/assets/contents/food_img_03.jpg',
+      cookingOrderImageUrl: '../../../public/images/contents/food_img_03.jpg',
       cookingOrder:
         'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industrys standard dummy text ever since the 1500s, when an unknown printer took a galley',
     },
     {
-      cookingOrderImageUrl: '/src/assets/contents/food_img_04.jpg',
+      cookingOrderImageUrl: '../../../public/images/contents/food_img_04.jpg',
       cookingOrder:
         'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has',
     },
     {
-      cookingOrderImageUrl: '/src/assets/contents/food_img_05.jpg',
+      cookingOrderImageUrl: '../../../public/images/contents/food_img_05.jpg',
       cookingOrder: 'Lorem Ipsum is simply dummy',
     },
   ]
