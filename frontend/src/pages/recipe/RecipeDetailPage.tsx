@@ -5,6 +5,8 @@ import BottomNavigation from '../../components/BottomNavigation'
 import DetailMainItem from '../../components/recipe/detail/DetailMain'
 import DetailIngredients from '../../components/recipe/detail/DetailIngredients'
 import DetailProcedure from '../../components/recipe/detail/DetailProcedure'
+import RecipeCommentList from '../../components/recipe/detail/comment/RecipeCommentList'
+import RecipeReviewList from '../../components/recipe/detail/review/RecipeReviewList'
 
 export const DetailContainer = styled.div`
   width: 100%;
@@ -67,6 +69,8 @@ const RecipeDetailPage = () => {
         <DetailMainItem recipe={recipe} />
         <DetailIngredients ingredients={ingredients} />
         <DetailProcedure detail={detail} />
+        <RecipeCommentList recipeId={recipe.recipeId} />
+        <RecipeReviewList />
       </DetailContainer>
 
       <BottomNavigation />

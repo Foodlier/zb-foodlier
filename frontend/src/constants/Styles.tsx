@@ -12,6 +12,7 @@ export const palette = {
   shadow: 'rgba(0,0,0,10%)',
   dim: 'rgba(0,0,0,70%)',
   white: '#fff',
+  yellow: '#FFE921',
 }
 
 export const typography = {

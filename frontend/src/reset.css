@@ -108,6 +108,15 @@ body {
   font-size: 1.6rem;
 }
 
+button, input, select, textarea {
+  vertical-align: middle;
+  border: none;
+  border-radius: 0;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+}
+
 button {
   background: inherit;
   border: none;
@@ -121,7 +130,9 @@ button {
 button:visited {
   color: inherit;
 }
-
+a {
+  text-decoration: none;
+}
 a:visited {
   color: inherit;
 }

@@ -1,36 +1,47 @@
 import React from 'react'
 import styled, { css } from 'styled-components'
 import '../../reset.css'
-
-const colorVariables = {
-  main: 'var(--color-main)',
-  textPrimary: 'var(--color-text-primary)',
-  disable: 'var(--color-text-disable)',
-}
+import { palette } from '../../constants/Styles'
 
 interface CommonButtonProps {
   children: React.ReactNode
-  color?: keyof typeof colorVariables
+  color?: keyof typeof palette
   size?: 'small' | 'medium' | 'large'
+  border?: 'border' | 'borderNone'
   onClick?: () => void
 }
 
 const colorStyles = css<CommonButtonProps>`
-  /* 색상 */
-  ${({ color }) => {
-    const bgColor = colorVariables[color || 'main']
-    return css`
-      background-color: ${bgColor};
-      color: var(--color-white);
-      &:hover {
-        opacity: 0.9;
-      }
-    `
-  }}
+  ${({ color }) =>
+    color === 'main' &&
+    css`
+      background-color: ${palette.main};
+      color: ${palette.white};
+    `}
+  ${({ color }) =>
+    color === 'divider' &&
+    css`
+      background-color: ${palette.divider};
+      color: ${palette.textPrimary};
+    `}
+`
+
+const borderStyles = css<CommonButtonProps>`
+  ${({ border }) =>
+    border === 'border' &&
+    css`
+      border: 0.1rem solid ${palette.main};
+      background-color: ${palette.white};
+      color: ${palette.main};
+    `}
+  ${({ border }) =>
+    border === 'borderNone' &&
+    css`
+      border: none;
+    `}
 `
 
 const sizeStyles = css<CommonButtonProps>`
-  /* 크기 */
   ${({ size }) =>
     size === 'large' &&
     css`
@@ -60,7 +71,7 @@ const StyledButton = styled.button<CommonButtonProps>`
   outline: none;
   border: none;
   border-radius: 0.4rem;
-  color: var(--color-white);
+  color: ${palette.white};
   font-weight: bold;
   cursor: pointer;
   padding: 0 1.2rem;
@@ -76,16 +87,18 @@ const StyledButton = styled.button<CommonButtonProps>`
 
   ${sizeStyles}
   ${colorStyles}
+  ${borderStyles}
 `
 
 const CommonButton: React.FC<CommonButtonProps> = ({
   children,
   color,
   size,
+  border,
   onClick,
 }) => {
   return (
-    <StyledButton color={color} size={size} onClick={onClick}>
+    <StyledButton color={color} size={size} border={border} onClick={onClick}>
       {children}
     </StyledButton>
   )
@@ -94,6 +107,7 @@ const CommonButton: React.FC<CommonButtonProps> = ({
 CommonButton.defaultProps = {
   color: 'main',
   size: 'medium',
+  border: 'borderNone',
   onClick: () => {},
 }
 
