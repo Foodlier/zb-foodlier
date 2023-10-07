@@ -9,6 +9,9 @@ const RequestDetailPage = () => {
     ingredients: ['치킨', '마요네즈', '밥'],
     expectedPrice: '5000',
     expectedAt: '18시 30분',
+    recipeTitle: '마크정식',
+    recipeContent: '편의점 떡볶이, 소세지와 스트링치즈만 있으면 마크정식 완성!',
+    heartCount: '100',
   }
 
   const TAGGED_EXAM = {

@@ -83,7 +83,6 @@ function App() {
         <Route path="/recipe/detail" element={<RecipeDetailPage />} />
         <Route path="/chat" element={<ChattingPage />} />
         <Route path="/myprofile" element={<MyProfilePage />} />
-        <Route path="/test" element={<StarRating />} />
       </Routes>
       <Flex>
         {message.map(item => (
