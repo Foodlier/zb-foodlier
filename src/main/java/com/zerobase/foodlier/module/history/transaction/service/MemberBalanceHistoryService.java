@@ -1,7 +1,9 @@
 package com.zerobase.foodlier.module.history.transaction.service;
 
-import org.springframework.stereotype.Service;
+import com.zerobase.foodlier.module.transaction.dto.TransactionDto;
 
-@Service
 public interface MemberBalanceHistoryService {
+    void createRequestMemberBalanceHistory(TransactionDto transactionDto);
+
+    void createChefMemberBalanceHistory(TransactionDto transactionDto);
 }

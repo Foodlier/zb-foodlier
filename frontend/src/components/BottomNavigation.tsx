@@ -23,7 +23,7 @@ const BottomNavigation = () => {
     {
       title: '냉마카세',
       icon: <IcPinLight size={ICON_SIZE} color={palette.textPrimary} />,
-      navigate: '',
+      navigate: 'refrigerator',
     },
     {
       title: '채팅',
@@ -33,7 +33,7 @@ const BottomNavigation = () => {
     {
       title: '내 정보',
       icon: <IcUserLight size={ICON_SIZE} color={palette.textPrimary} />,
-      navigate: '',
+      navigate: 'login',
     },
   ]
 

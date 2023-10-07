@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import logo from '../assets/foodlier_logo.png'
+import logo from '../../public/images/foodlier_logo.png'
 import useIcon from '../hooks/useIcon'
 import { palette } from '../constants/Styles'
 import NotificationItem from './notification/NotificationItem'

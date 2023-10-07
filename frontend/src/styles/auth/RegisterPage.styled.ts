@@ -39,15 +39,23 @@ export const Profile = styled.div`
   padding: 10px 10px;
   border: 1px solid #ccc;
   border-radius: 20%;
-  margin-bottom: 15px;
+  margin-bottom: 5px;
   text-align: center;
 `
 
 export const ProfileImage = styled.img`
   width: 100%;
-  height: 50%;
-  margin: 5px auto;
+  height: 100%;
+  margin: 0 auto;
   text-align: center;
+`
+export const ProfileButton = styled.button`
+  ${buttonStyles}
+  height: 40px;
+  background-color: ${palette.main};
+  color: #fff;
+  font-size: 14px;
+  margin: 0 auto 10px auto;
 `
 
 export const InputContainer = styled.div`

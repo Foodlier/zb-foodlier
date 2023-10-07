@@ -1,8 +1,6 @@
 package com.zerobase.foodlier.module.history.transaction.domain.model;
 
 import com.zerobase.foodlier.common.jpa.audit.Audit;
-import com.zerobase.foodlier.module.history.transaction.type.PaymentType;
-import com.zerobase.foodlier.module.member.chef.domain.model.ChefMember;
 import com.zerobase.foodlier.module.member.member.domain.model.Member;
 import lombok.*;
 
@@ -22,9 +20,6 @@ public class MemberBalanceHistory extends Audit {
     @ManyToOne
     @JoinColumn(name = "member_id")
     private Member member;
-    @ManyToOne
-    @JoinColumn(name = "chef_member_id")
-    private ChefMember chefMember;
     @Column(nullable = false)
     private Integer changePoint;
     @Column(nullable = false)
@@ -33,7 +28,4 @@ public class MemberBalanceHistory extends Audit {
     private String sender;
     @Column(nullable = false)
     private String description;
-    @Column(nullable = false)
-    @Enumerated(EnumType.STRING)
-    private PaymentType paymentType;
 }
