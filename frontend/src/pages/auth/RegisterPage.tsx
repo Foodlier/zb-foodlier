@@ -2,7 +2,7 @@ import { ChangeEvent, useState, useRef } from 'react'
 import DaumPostcode from 'react-daum-postcode'
 import { rest } from 'msw'
 import * as S from '../../styles/auth/RegisterPage.styled'
-import upload from '../../assets/profile_upload.svg'
+import upload from '../../../public/images/profile_upload.svg'
 import Modal from '../../components/auth/AddressModal'
 import { worker } from '../../mocks/browsers'
 
