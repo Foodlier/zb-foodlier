@@ -1,8 +1,8 @@
 import styled from 'styled-components'
-import { breakpoints, palette } from '../../constants/Styles'
+import { breakpoints, palette, zindex } from '../../constants/Styles'
 
 export const ModalBackdrop = styled.div`
-  z-index: 10000;
+  z-index: ${zindex.modal};
   position: fixed;
   display: flex;
   justify-content: center;
