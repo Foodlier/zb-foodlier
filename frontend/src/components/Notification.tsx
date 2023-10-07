@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import styled from 'styled-components'
+import { zindex } from '../constants/Styles'
 
 // 스타일드 컴포넌트를 사용하여 알림 스타일을 정의
 const NotificationWrapper = styled.div<{ $show: boolean }>`
@@ -7,7 +8,7 @@ const NotificationWrapper = styled.div<{ $show: boolean }>`
   color: white;
   padding: 10px;
   border-radius: 5px;
-  z-index: 9999; /* 알림이 화면 위에 나타나도록 함 */
+  z-index: ${zindex.header + 1}; /* 알림이 화면 위에 나타나도록 함 */
   transition: opacity 0.3s ease-in-out;
   margin-bottom: 1rem;
 

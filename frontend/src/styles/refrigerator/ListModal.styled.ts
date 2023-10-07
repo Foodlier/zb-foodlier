@@ -1,5 +1,5 @@
 import styled from 'styled-components'
-import { breakpoints, palette } from '../../constants/Styles'
+import { breakpoints, palette, zindex } from '../../constants/Styles'
 
 export const GreyBackground = styled.div`
   position: fixed;
@@ -11,7 +11,7 @@ export const GreyBackground = styled.div`
   height: 100%;
   background-color: #000000;
   opacity: 0.4;
-  z-index: 99;
+  z-index: ${zindex.modal};
 `
 
 export const ModalScreen = styled.div`
@@ -25,7 +25,7 @@ export const ModalScreen = styled.div`
   background-color: ${palette.white};
   padding: 5%;
   border-radius: 10px;
-  z-index: 100;
+  z-index: ${zindex.modal};
   ${breakpoints.large} {
     padding: 3%;
     width: 70%;

@@ -1,5 +1,5 @@
 import styled from 'styled-components'
-import { breakpoints, palette } from '../constants/Styles'
+import { breakpoints, palette, zindex } from '../constants/Styles'
 
 export const Container = styled.header`
   position: sticky;
@@ -11,7 +11,7 @@ export const Container = styled.header`
   align-items: center;
   justify-content: space-between;
   background-color: ${palette.white};
-  z-index: 1000;
+  z-index: ${zindex.header};
 
   ${breakpoints.large} {
     padding: 2%;
@@ -91,5 +91,5 @@ export const WrapNotification = styled.div`
   font-size: 1.8rem;
   font-weight: 600;
   color: ${palette.textPrimary};
-  z-index: 9999;
+  z-index: ${zindex.header + 1};
 `
