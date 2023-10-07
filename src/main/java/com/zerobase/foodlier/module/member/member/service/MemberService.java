@@ -1,5 +1,6 @@
 package com.zerobase.foodlier.module.member.member.service;
 
+import com.zerobase.foodlier.module.member.member.dto.DefaultProfileDtoResponse;
 import com.zerobase.foodlier.module.member.member.dto.MemberRegisterDto;
 
 import com.zerobase.foodlier.common.security.provider.dto.TokenDto;
@@ -25,6 +26,6 @@ public interface MemberService {
     List<RequestedMemberDto> getRequestedMemberList(Long memberId,
                                                     RequestedOrderingType type,
                                                     Pageable pageable);
-
+    DefaultProfileDtoResponse getDefaultProfile(Long memberId);
     Member findByEmail(String email);
 }

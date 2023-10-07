@@ -3,6 +3,7 @@ package com.zerobase.foodlier.module.member.member.service;
 import com.zerobase.foodlier.common.security.provider.JwtTokenProvider;
 import com.zerobase.foodlier.common.security.provider.dto.MemberAuthDto;
 import com.zerobase.foodlier.common.security.provider.dto.TokenDto;
+import com.zerobase.foodlier.module.member.member.dto.DefaultProfileDtoResponse;
 import com.zerobase.foodlier.module.member.member.dto.RequestedMemberDto;
 import com.zerobase.foodlier.module.member.member.dto.SignInForm;
 import com.zerobase.foodlier.module.member.member.profile.dto.MemberPrivateProfileResponse;
@@ -173,6 +174,11 @@ public class MemberServiceImpl implements MemberService {
 
         }
         throw new MemberException(ORDER_TYPE_IS_NULL);
+    }
+
+    @Override
+    public DefaultProfileDtoResponse getDefaultProfile(Long memberId){
+        return memberRepository.getDefaultProfile(memberId);
     }
 
     @Override

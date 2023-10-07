@@ -4,9 +4,12 @@ import com.zerobase.foodlier.common.security.provider.dto.MemberAuthDto;
 import com.zerobase.foodlier.global.profile.facade.ProfileFacade;
 import com.zerobase.foodlier.module.member.chef.dto.ChefIntroduceForm;
 import com.zerobase.foodlier.module.member.chef.service.ChefMemberService;
+import com.zerobase.foodlier.module.member.member.dto.DefaultProfileDtoResponse;
 import com.zerobase.foodlier.module.member.member.profile.dto.MemberPrivateProfileForm;
 import com.zerobase.foodlier.module.member.member.profile.dto.MemberPrivateProfileResponse;
 import com.zerobase.foodlier.module.member.member.service.MemberService;
+import com.zerobase.foodlier.module.recipe.dto.recipe.RecipeDtoTopResponse;
+import com.zerobase.foodlier.module.recipe.service.recipe.RecipeService;
 import com.zerobase.foodlier.module.review.chef.dto.ChefReviewResponseDto;
 import com.zerobase.foodlier.module.review.chef.service.ChefReviewService;
 import lombok.RequiredArgsConstructor;
@@ -27,6 +30,7 @@ public class profileController {
     private final ProfileFacade profileFacade;
     private final ChefMemberService chefMemberService;
     private final ChefReviewService chefReviewService;
+    private final RecipeService recipeService;
 
     @GetMapping("/private")
     public ResponseEntity<MemberPrivateProfileResponse> getPrivateProfile(
@@ -63,6 +67,15 @@ public class profileController {
         return ResponseEntity.ok("요리사 소개가 수정되었습니다.");
     }
 
+    @GetMapping("public/{memberId}")
+    public ResponseEntity<DefaultProfileDtoResponse> getPublicDefaultProfile(
+            @PathVariable Long memberId
+    ){
+        return ResponseEntity.ok(
+                memberService.getDefaultProfile(memberId)
+        );
+    }
+
     @GetMapping("/public/chefreview/{pageIdx}/{pageSize}/{chefMemberId}")
     public ResponseEntity<List<ChefReviewResponseDto>> getChefReviewList(
             @PathVariable int pageIdx,
@@ -72,6 +85,17 @@ public class profileController {
         return ResponseEntity.ok(
                 chefReviewService.getChefReviewList(chefMemberId,
                         PageRequest.of(pageIdx, pageSize))
+        );
+    }
+
+    @GetMapping("/public/recipe/{pageIdx}/{pageSize}/{memberId}")
+    public ResponseEntity<List<RecipeDtoTopResponse>> getRecipeListByMemberId(
+            @PathVariable int pageIdx,
+            @PathVariable int pageSize,
+            @PathVariable Long memberId
+    ){
+        return ResponseEntity.ok(
+                recipeService.getRecipeListByMemberId(memberId, PageRequest.of(pageIdx, pageSize))
         );
     }
 

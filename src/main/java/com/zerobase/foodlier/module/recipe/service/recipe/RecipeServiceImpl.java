@@ -193,6 +193,7 @@ public class RecipeServiceImpl implements RecipeService {
      *  작성일 : 2023-10-06
      *  해당 회원이 작성한 꿀조합 목록을 반환함.
      */
+    @Override
     public List<RecipeDtoTopResponse> getRecipeListByMemberId(Long memberId, Pageable pageable){
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_NOT_FOUND));
