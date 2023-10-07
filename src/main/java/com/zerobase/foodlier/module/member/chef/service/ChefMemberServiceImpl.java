@@ -1,5 +1,6 @@
 package com.zerobase.foodlier.module.member.chef.service;
 
+import com.zerobase.foodlier.common.aop.RedissonLock;
 import com.zerobase.foodlier.module.member.chef.domain.model.ChefMember;
 import com.zerobase.foodlier.module.member.chef.dto.AroundChefDto;
 import com.zerobase.foodlier.module.member.chef.dto.ChefIntroduceForm;
@@ -27,6 +28,8 @@ import static com.zerobase.foodlier.module.member.chef.exception.ChefMemberError
 @Service
 @RequiredArgsConstructor
 public class ChefMemberServiceImpl implements ChefMemberService{
+
+    private static final int EXPERIENCE_MULTIPLIER = 100; //경험치 배수
 
     private static final double AROUND_DISTANCE = 0.012;
     private static final int MIN_RECIPES_FOR_CHEF = 3;
@@ -86,6 +89,28 @@ public class ChefMemberServiceImpl implements ChefMemberService{
 
     /**
      *  작성자 : 전현서
+     *  작성일 : 2023-10-05
+     *  요리사의 경험치를 올려줍니다.
+     */
+    @RedissonLock(group = "chefexp", key = "#chefMemberId")
+    public void plusExp(Long chefMemberId, int star){
+        ChefMember chefMember = getChefMember(chefMemberId);
+        chefMember.plusExp(star * EXPERIENCE_MULTIPLIER);
+    }
+
+    /**
+     *  작성자 : 전현서
+     *  작성일 : 2023-10-05
+     *  요리사의 별점을 올리고, 평균 별점을 계산합니다.
+     */
+    @RedissonLock(group = "chefstar", key = "#chefMemberId")
+    public void plusStar(Long chefMemberId, int star){
+        ChefMember chefMember = getChefMember(chefMemberId);
+        chefMember.plusStar(star);
+    }
+
+    /**
+     *  작성자 : 전현서
      *  작성일 : 2023-09-29
      *  반경 1km내의 요리사 리스트를 페이징하여 반환
      *  type이 지정되지 않은 경우는 기본적으로 가까운 거리순
@@ -114,6 +139,11 @@ public class ChefMemberServiceImpl implements ChefMemberService{
     private Member getMember(Long memberId){
         return memberRepository.findById(memberId)
                 .orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_NOT_FOUND));
+    }
+
+    private ChefMember getChefMember(Long chefMemberId){
+        return chefMemberRepository.findById(chefMemberId)
+                .orElseThrow(() -> new ChefMemberException(CHEF_MEMBER_NOT_FOUND));
     }
 
     //================= Validates ====================

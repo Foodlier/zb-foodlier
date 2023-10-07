@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import logo from '../assets/foodlier_logo.png'
+import logo from '../../public/images/foodlier_logo.png'
 import useIcon from '../hooks/useIcon'
 import { palette } from '../constants/Styles'
 import NotificationItem from './notification/NotificationItem'
@@ -39,7 +39,7 @@ const Header = () => {
       title: '꿀조합',
       navigate: 'recipe',
     },
-    { title: '냉마카세', navigate: '' },
+    { title: '냉마카세', navigate: 'refrigerator' },
     { title: '채팅', navigate: 'chat' },
   ]
 

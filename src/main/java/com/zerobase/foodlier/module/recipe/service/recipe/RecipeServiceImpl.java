@@ -1,5 +1,6 @@
 package com.zerobase.foodlier.module.recipe.service.recipe;
 
+import com.zerobase.foodlier.common.aop.RedissonLock;
 import com.zerobase.foodlier.module.member.member.domain.model.Member;
 import com.zerobase.foodlier.module.recipe.domain.document.RecipeDocument;
 import com.zerobase.foodlier.module.recipe.domain.model.Recipe;
@@ -12,6 +13,7 @@ import com.zerobase.foodlier.module.recipe.exception.recipe.RecipeErrorCode;
 import com.zerobase.foodlier.module.recipe.exception.recipe.RecipeException;
 import com.zerobase.foodlier.module.recipe.repository.RecipeRepository;
 import com.zerobase.foodlier.module.recipe.repository.RecipeSearchRepository;
+import com.zerobase.foodlier.module.review.recipe.exception.RecipeReviewException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -182,4 +184,32 @@ public class RecipeServiceImpl implements RecipeService {
                         .collect(Collectors.toList()))
                 .build();
     }
+
+    @RedissonLock(group = "recipeReview", key = "#recipeId")
+    public void plusReviewStar(Long recipeId, int star){
+        Recipe recipe = recipeRepository.findById(recipeId)
+                .orElseThrow(() -> new RecipeException(NO_SUCH_RECIPE));
+
+        recipe.getRecipeStatistics().plusStar(star);
+        recipeRepository.save(recipe);
+    }
+
+    @RedissonLock(group = "recipeReview", key = "#recipeId")
+    public void updateReviewStar(Long recipeId, int originStar, int newStar){
+        Recipe recipe = recipeRepository.findById(recipeId)
+                .orElseThrow(() -> new RecipeException(NO_SUCH_RECIPE));
+
+        recipe.getRecipeStatistics().updateStar(originStar, newStar);
+        recipeRepository.save(recipe);
+    }
+
+    @RedissonLock(group = "recipeReview", key = "#recipeId")
+    public void minusReviewStar(Long recipeId, int star){
+        Recipe recipe = recipeRepository.findById(recipeId)
+                .orElseThrow(() -> new RecipeException(NO_SUCH_RECIPE));
+
+        recipe.getRecipeStatistics().minusStar(star);
+        recipeRepository.save(recipe);
+    }
+
 }

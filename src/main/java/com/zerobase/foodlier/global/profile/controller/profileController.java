@@ -7,11 +7,16 @@ import com.zerobase.foodlier.module.member.chef.service.ChefMemberService;
 import com.zerobase.foodlier.module.member.member.profile.dto.MemberPrivateProfileForm;
 import com.zerobase.foodlier.module.member.member.profile.dto.MemberPrivateProfileResponse;
 import com.zerobase.foodlier.module.member.member.service.MemberService;
+import com.zerobase.foodlier.module.review.chef.dto.ChefReviewResponseDto;
+import com.zerobase.foodlier.module.review.chef.service.ChefReviewService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -21,6 +26,7 @@ public class profileController {
     private final MemberService memberService;
     private final ProfileFacade profileFacade;
     private final ChefMemberService chefMemberService;
+    private final ChefReviewService chefReviewService;
 
     @GetMapping("/private")
     public ResponseEntity<MemberPrivateProfileResponse> getPrivateProfile(
@@ -55,6 +61,18 @@ public class profileController {
             ){
         chefMemberService.updateChefIntroduce(memberAuthDto.getId(), chefIntroduceForm);
         return ResponseEntity.ok("요리사 소개가 수정되었습니다.");
+    }
+
+    @GetMapping("/public/chefreview/{pageIdx}/{pageSize}/{chefMemberId}")
+    public ResponseEntity<List<ChefReviewResponseDto>> getChefReviewList(
+            @PathVariable int pageIdx,
+            @PathVariable int pageSize,
+            @PathVariable Long chefMemberId
+    ){
+        return ResponseEntity.ok(
+                chefReviewService.getChefReviewList(chefMemberId,
+                        PageRequest.of(pageIdx, pageSize))
+        );
     }
 
 }
