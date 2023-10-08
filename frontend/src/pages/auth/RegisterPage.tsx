@@ -189,9 +189,7 @@ const Register = () => {
     }
   }, [formData])
 
-  /*
-    회원가입 폼 제출 이벤트
-  */
+  //  회원가입 폼 제출 이벤트
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     console.log(formErrors)
