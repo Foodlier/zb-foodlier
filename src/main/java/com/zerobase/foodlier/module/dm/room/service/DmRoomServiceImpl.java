@@ -1,11 +1,15 @@
 package com.zerobase.foodlier.module.dm.room.service;
 
+import com.zerobase.foodlier.module.dm.dm.domain.model.Dm;
+import com.zerobase.foodlier.module.dm.dm.repository.DmRepository;
 import com.zerobase.foodlier.module.dm.room.domain.model.DmRoom;
 import com.zerobase.foodlier.module.dm.room.domain.vo.Suggestion;
 import com.zerobase.foodlier.module.dm.room.dto.DmRoomDto;
 import com.zerobase.foodlier.module.dm.room.exception.DmRoomException;
 import com.zerobase.foodlier.module.dm.room.repository.DmRoomRepository;
 import com.zerobase.foodlier.module.request.domain.model.Request;
+import com.zerobase.foodlier.module.request.exception.RequestException;
+import com.zerobase.foodlier.module.request.repository.RequestRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -16,12 +20,15 @@ import javax.transaction.Transactional;
 import java.util.List;
 
 import static com.zerobase.foodlier.module.dm.room.exception.DmRoomErrorCode.DM_ROOM_NOT_FOUND;
+import static com.zerobase.foodlier.module.request.exception.RequestErrorCode.REQUEST_NOT_FOUND;
 
 @Service
 @RequiredArgsConstructor
 public class DmRoomServiceImpl implements DmRoomService {
 
     private final DmRoomRepository dmRoomRepository;
+    private final DmRepository dmRepository;
+    private final RequestRepository requestRepository;
     private static final String SORT_BY_CREATED_AT = "createdAt";
 
 
@@ -70,9 +77,23 @@ public class DmRoomServiceImpl implements DmRoomService {
         DmRoom dmRoom = dmRoomRepository.findById(roomId)
                 .orElseThrow(() -> new DmRoomException(DM_ROOM_NOT_FOUND));
         if (id.equals(dmRoom.getRequest().getMember().getId())) {
-            dmRoomRepository.updateDmRoomByMember(roomId);
+            dmRoom.setMemberExit(true);
         } else {
-            dmRoomRepository.updateDmRoomByChef(roomId);
+            dmRoom.setChefExit(true);
+        }
+
+        if (dmRoom.isMemberExit() && dmRoom.isChefExit()) {
+            List<Dm> dmList = dmRepository.findByDmroom(dmRoom);
+            dmRepository.deleteAll(dmList);
+
+            Request request = requestRepository.findById(dmRoom.getRequest().getId())
+                    .orElseThrow(() -> new RequestException(REQUEST_NOT_FOUND));
+            request.setDmRoom(null);
+            requestRepository.save(request);
+
+            dmRoomRepository.delete(dmRoom);
+        } else {
+            dmRoomRepository.save(dmRoom);
         }
     }
 }
