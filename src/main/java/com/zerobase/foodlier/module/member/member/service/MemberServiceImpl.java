@@ -3,6 +3,7 @@ package com.zerobase.foodlier.module.member.member.service;
 import com.zerobase.foodlier.common.security.provider.JwtTokenProvider;
 import com.zerobase.foodlier.common.security.provider.dto.MemberAuthDto;
 import com.zerobase.foodlier.common.security.provider.dto.TokenDto;
+import com.zerobase.foodlier.module.member.member.dto.PasswordFindForm;
 import com.zerobase.foodlier.module.member.member.dto.RequestedMemberDto;
 import com.zerobase.foodlier.module.member.member.dto.SignInForm;
 import com.zerobase.foodlier.module.member.member.profile.dto.MemberPrivateProfileResponse;
@@ -189,13 +190,25 @@ public class MemberServiceImpl implements MemberService {
                 .filter(m -> passwordEncoder
                         .matches(form.getCurrentPassword(), m.getPassword()))
                 .findFirst()
-                .orElseThrow(()->new MemberException(MEMBER_NOT_FOUND));
+                .orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
 
         member.setPassword(passwordEncoder.encode(form.getNewPassword()));
 
         tokenProvider.deleteRefreshToken(member.getEmail());
 
         return "비밀번호 변경 완료";
+    }
+
+    @Override
+    public String updateRandomPassword(PasswordFindForm form, String newPassword) {
+        Member member = memberRepository.findByEmail(form.getEmail()).stream()
+                .filter(m -> m.getPhoneNumber().equals(form.getPhoneNumber()))
+                .findFirst()
+                .orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
+
+        member.setPassword(passwordEncoder.encode(newPassword));
+
+        return "비밀번호 재설정 완료.";
     }
 
     @Override

@@ -2,7 +2,8 @@ package com.zerobase.foodlier.global.member.mail.facade;
 
 import com.zerobase.foodlier.common.redis.service.EmailVerificationService;
 import com.zerobase.foodlier.module.member.member.mail.service.MailService;
-import com.zerobase.foodlier.module.member.member.mail.service.VerificationCodeService;
+import com.zerobase.foodlier.module.member.member.mail.service.RandomCodeService;
+import com.zerobase.foodlier.module.member.member.type.MailSendType;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -12,6 +13,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDateTime;
 
+import static com.zerobase.foodlier.module.member.member.type.MailSendType.REGISTER;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -23,7 +25,7 @@ class EmailVerificationFacadeTest {
     private EmailVerificationService emailVerificationService;
 
     @Mock
-    private VerificationCodeService verificationCodeService;
+    private RandomCodeService randomCodeService;
 
     @Mock
     private MailService mailService;
@@ -33,7 +35,7 @@ class EmailVerificationFacadeTest {
 
     @Test
     @DisplayName("이메일 검증 파서드 성공 케이스")
-    void success_sendMailAndCreateVerification(){
+    void success_sendMailAndCreateVerification() {
 
         //given
         String email = "test178295031875@test.com";
@@ -41,7 +43,7 @@ class EmailVerificationFacadeTest {
         LocalDateTime nowTime = LocalDateTime.of(2023, 9, 25, 9, 0, 0);
 
 
-        given(verificationCodeService.createAuthenticationCode())
+        given(randomCodeService.createRandomCode())
                 .willReturn(verificationCode);
 
         //when
@@ -53,7 +55,7 @@ class EmailVerificationFacadeTest {
         );
 
         verify(mailService, times(1)).sendMail(
-                email, verificationCode
+                email, verificationCode, REGISTER
         );
     }
 

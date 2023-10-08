@@ -1,6 +1,7 @@
 package com.zerobase.foodlier.module.member.member.mail.service;
 
 import com.zerobase.foodlier.module.member.member.mail.constants.MailConstants;
+import com.zerobase.foodlier.module.member.member.type.MailSendType;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -13,7 +14,8 @@ import org.springframework.mail.javamail.JavaMailSender;
 
 import java.util.Objects;
 
-import static com.zerobase.foodlier.module.member.member.mail.constants.MailConstants.CONTENT;
+import static com.zerobase.foodlier.module.member.member.mail.constants.MailConstants.CONTENT_REGISTER;
+import static com.zerobase.foodlier.module.member.member.type.MailSendType.REGISTER;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.times;
@@ -30,11 +32,11 @@ class MailServiceImplTest {
 
     @Test
     @DisplayName("메일 전송 테스트")
-    void success_send_mail(){
+    void success_send_mail() {
         //when
         String email = "test178295031875@test.com";
         String verificationCode = "LzOXCMpEUo";
-        mailService.sendMail(email, verificationCode);
+        mailService.sendMail(email, verificationCode, REGISTER);
 
         //then
         ArgumentCaptor<SimpleMailMessage> captor = ArgumentCaptor
@@ -45,8 +47,8 @@ class MailServiceImplTest {
 
         assertAll(
                 () -> assertEquals(email, Objects.requireNonNull(message.getTo())[0]),
-                () -> assertEquals(MailConstants.SUBJECT, message.getSubject()),
-                () -> assertEquals(CONTENT + "\n" + verificationCode, message.getText())
+                () -> assertEquals(MailConstants.SUBJECT_REGISTER, message.getSubject()),
+                () -> assertEquals(CONTENT_REGISTER + "\n" + verificationCode, message.getText())
         );
     }
 
