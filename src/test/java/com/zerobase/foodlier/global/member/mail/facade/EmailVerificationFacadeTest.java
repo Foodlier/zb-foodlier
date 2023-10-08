@@ -3,7 +3,6 @@ package com.zerobase.foodlier.global.member.mail.facade;
 import com.zerobase.foodlier.common.redis.service.EmailVerificationService;
 import com.zerobase.foodlier.module.member.member.mail.service.MailService;
 import com.zerobase.foodlier.module.member.member.mail.service.RandomCodeService;
-import com.zerobase.foodlier.module.member.member.type.MailSendType;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

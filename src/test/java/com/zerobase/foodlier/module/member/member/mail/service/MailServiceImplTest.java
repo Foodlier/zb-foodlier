@@ -1,7 +1,6 @@
 package com.zerobase.foodlier.module.member.member.mail.service;
 
 import com.zerobase.foodlier.module.member.member.mail.constants.MailConstants;
-import com.zerobase.foodlier.module.member.member.type.MailSendType;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
