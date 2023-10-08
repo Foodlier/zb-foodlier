@@ -89,7 +89,8 @@ public class DmServiceImpl implements DmService {
     public MessageResponseDto getDmList(Long id, Long roomId, Long dmId) {
         DmRoom dmRoom = dmRoomRepository.findById(roomId)
                 .orElseThrow(() -> new DmRoomException(DM_ROOM_NOT_FOUND));
-        Pageable pageable = PageRequest.of(ZERO, PAGE_SIZE, Sort.by(SORT_BY_CREATED_AT).descending());
+        Pageable pageable = PageRequest.of(ZERO, PAGE_SIZE,
+                Sort.by(SORT_BY_CREATED_AT).descending());
 
         dmId = getDmId(dmId, dmRoom);
 

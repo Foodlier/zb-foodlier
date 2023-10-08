@@ -22,6 +22,8 @@ import static com.zerobase.foodlier.module.dm.room.exception.DmRoomErrorCode.DM_
 public class DmRoomServiceImpl implements DmRoomService {
 
     private final DmRoomRepository dmRoomRepository;
+    private static final String SORT_BY_CREATED_AT = "createdAt";
+
 
     /**
      * 작성자 : 이승현
@@ -46,9 +48,9 @@ public class DmRoomServiceImpl implements DmRoomService {
      * 채팅방 목록을 가져옵니다.
      */
     @Override
-    public List<DmRoomDto> getDmRoomPage(Long id, int pageIdx, int pageSize) {
+    public List<DmRoomDto> getDmRoomList(Long id, int pageIdx, int pageSize) {
         Pageable pageable = PageRequest.of(pageIdx, pageSize,
-                Sort.by("createdAt").descending());
+                Sort.by(SORT_BY_CREATED_AT).descending());
         List<DmRoomDto> DmRoomDtoList = dmRoomRepository.getDmRoomPage(id, pageable);
 
         if (DmRoomDtoList.isEmpty()) {

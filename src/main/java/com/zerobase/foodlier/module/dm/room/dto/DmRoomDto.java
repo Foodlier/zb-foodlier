@@ -18,4 +18,5 @@ public class DmRoomDto {
     private Long expectedPrice;
     private boolean isExit;
     private boolean isSuggested;
+    private String role;
 }
