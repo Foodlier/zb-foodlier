@@ -58,17 +58,17 @@ public class DmRoomServiceImpl implements DmRoomService {
     public List<DmRoomDto> getDmRoomList(Long id, int pageIdx, int pageSize) {
         Pageable pageable = PageRequest.of(pageIdx, pageSize,
                 Sort.by(SORT_BY_CREATED_AT).descending());
-        List<DmRoomDto> DmRoomDtoList = dmRoomRepository.getDmRoomPage(id, pageable);
+        List<DmRoomDto> dmRoomDtoList = dmRoomRepository.getDmRoomPage(id, pageable);
 
-        if (DmRoomDtoList.isEmpty()) {
+        if (dmRoomDtoList.isEmpty()) {
             throw new DmRoomException(DM_ROOM_NOT_FOUND);
         }
-        return DmRoomDtoList;
+        return dmRoomDtoList;
     }
 
     /**
      * 작성자 : 황태원
-     * 작성일 : 2023-10-02
+     * 작성일 : 2023-10-02(2023-10-09)
      * 해당 채팅방에서 나갑니다.
      */
     @Override
