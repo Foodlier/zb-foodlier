@@ -24,15 +24,17 @@ public class DmController {
     public ResponseEntity<List<DmRoomDto>> getDmRoomPage(
             @AuthenticationPrincipal MemberAuthDto memberAuthDto,
             @PathVariable int pageIdx,
-            @PathVariable int pageSize) {
-        return ResponseEntity.ok(dmRoomService.getDmRoomPage(
+            @PathVariable int pageSize
+    ) {
+        return ResponseEntity.ok(dmRoomService.getDmRoomList(
                 memberAuthDto.getId(), pageIdx, pageSize));
     }
 
     @PutMapping("/room/exit/{roomId}")
     public ResponseEntity<String> exitDmRoom(
             @AuthenticationPrincipal MemberAuthDto memberAuthDto,
-            @PathVariable Long roomId) {
+            @PathVariable Long roomId
+    ) {
         dmRoomService.exitDmRoom(memberAuthDto.getId(), roomId);
         return ResponseEntity.ok("성공적으로 채팅방을 나갔습니다.");
     }

@@ -9,7 +9,7 @@ import java.util.List;
 public interface DmRoomService {
     DmRoom createDmRoom(Request request);
 
-    List<DmRoomDto> getDmRoomPage(Long id, int pageIdx, int pageSize);
+    List<DmRoomDto> getDmRoomList(Long id, int pageIdx, int pageSize);
 
     void exitDmRoom(Long id, Long roomId);
 }
