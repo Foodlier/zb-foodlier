@@ -1,8 +1,8 @@
 package com.zerobase.foodlier.module.recipe.service.recipe;
 
 import com.zerobase.foodlier.common.aop.RedissonLock;
+import com.zerobase.foodlier.module.heart.reposiotry.HeartRepository;
 import com.zerobase.foodlier.module.member.member.domain.model.Member;
-import com.zerobase.foodlier.module.member.member.exception.MemberErrorCode;
 import com.zerobase.foodlier.module.member.member.exception.MemberException;
 import com.zerobase.foodlier.module.member.member.repository.MemberRepository;
 import com.zerobase.foodlier.module.recipe.domain.document.RecipeDocument;
@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.zerobase.foodlier.module.member.member.exception.MemberErrorCode.MEMBER_NOT_FOUND;
 import static com.zerobase.foodlier.module.recipe.exception.recipe.RecipeErrorCode.NO_SUCH_RECIPE;
 
 @Service
@@ -34,6 +35,7 @@ public class RecipeServiceImpl implements RecipeService {
     private final RecipeRepository recipeRepository;
     private final RecipeSearchRepository recipeSearchRepository;
     private final MemberRepository memberRepository;
+    private final HeartRepository heartRepository;
 
     /**
      * 작성자: 황태원(이종욱)
@@ -188,22 +190,39 @@ public class RecipeServiceImpl implements RecipeService {
                 .build();
     }
 
+    @Override
+    public List<RecipeDtoTopResponse> getRecipeForHeart(Long memberId){
+        return recipeRepository.findByHeart(memberId)
+                .stream()
+                .map(recipe -> RecipeDtoTopResponse.from(recipe, true))
+                .collect(Collectors.toList());
+    }
+
     /**
      *  작성자 : 전현서
      *  작성일 : 2023-10-06
      *  해당 회원이 작성한 꿀조합 목록을 반환함.
      */
     @Override
-    public List<RecipeDtoTopResponse> getRecipeListByMemberId(Long memberId, Pageable pageable){
+    public List<RecipeDtoTopResponse> getRecipeListByMemberId(Long memberId,
+                                                              Long targetMemberId,
+                                                              Pageable pageable){
         Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_NOT_FOUND));
+                .orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
 
-        return recipeRepository.findByMemberAndIsPublicTrueAndIsQuotationFalse(member, pageable)
+        Member targetMember = memberRepository.findById(targetMemberId)
+                .orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
+
+        return recipeRepository.findByMemberAndIsPublicTrueAndIsQuotationFalse(targetMember, pageable)
                 .getContent()
                 .stream()
-                .map(RecipeDtoTopResponse::from)
+                .map(recipe -> RecipeDtoTopResponse.from(recipe, getIsHeart(member, recipe)))
                 .collect(Collectors.toList());
 
+    }
+
+    private boolean getIsHeart(Member member, Recipe recipe){
+        return heartRepository.existsByRecipeAndMember(recipe, member);
     }
 
     @RedissonLock(group = "recipeReview", key = "#recipeId")

@@ -24,7 +24,10 @@ public interface RecipeService {
     List<Recipe> getRecipeByTitle(String recipeTitle, Pageable pageable);
 
     ImageUrlDto getBeforeImageUrl(Long id);
-    List<RecipeDtoTopResponse> getRecipeListByMemberId(Long memberId, Pageable pageable);
+    List<RecipeDtoTopResponse> getRecipeForHeart(Long memberId);
+    List<RecipeDtoTopResponse> getRecipeListByMemberId(Long memberId,
+                                                       Long targetMemberId,
+                                                       Pageable pageable);
 
     void plusReviewStar(Long recipeId, int star);
     void updateReviewStar(Long recipeId, int originStar, int newStar);

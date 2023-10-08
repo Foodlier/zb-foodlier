@@ -39,6 +39,15 @@ public class profileController {
         return ResponseEntity.ok(memberService.getPrivateProfile(memberAuthDto.getEmail()));
     }
 
+    @GetMapping("/private/heart")
+    public ResponseEntity<List<RecipeDtoTopResponse>> getRecipeForHeart(
+        @AuthenticationPrincipal MemberAuthDto memberAuthDto
+    ){
+        return ResponseEntity.ok(
+                recipeService.getRecipeForHeart(memberAuthDto.getId())
+        );
+    }
+
     @PutMapping(value = "/private")
     public ResponseEntity<String> updatePrivateProfile(
             @AuthenticationPrincipal MemberAuthDto memberAuthDto,
@@ -90,12 +99,14 @@ public class profileController {
 
     @GetMapping("/public/recipe/{pageIdx}/{pageSize}/{memberId}")
     public ResponseEntity<List<RecipeDtoTopResponse>> getRecipeListByMemberId(
+            @AuthenticationPrincipal MemberAuthDto memberAuthDto,
             @PathVariable int pageIdx,
             @PathVariable int pageSize,
-            @PathVariable Long memberId
+            @PathVariable("memberId") Long targetMemberId
     ){
         return ResponseEntity.ok(
-                recipeService.getRecipeListByMemberId(memberId, PageRequest.of(pageIdx, pageSize))
+                recipeService.getRecipeListByMemberId(memberAuthDto.getId(),
+                        targetMemberId, PageRequest.of(pageIdx, pageSize))
         );
     }
 
