@@ -2,10 +2,7 @@ package com.zerobase.foodlier.module.member.chef.service;
 
 import com.zerobase.foodlier.common.aop.RedissonLock;
 import com.zerobase.foodlier.module.member.chef.domain.model.ChefMember;
-import com.zerobase.foodlier.module.member.chef.dto.AroundChefDto;
-import com.zerobase.foodlier.module.member.chef.dto.ChefIntroduceForm;
-import com.zerobase.foodlier.module.member.chef.dto.ChefProfileDto;
-import com.zerobase.foodlier.module.member.chef.dto.RequestedChefDto;
+import com.zerobase.foodlier.module.member.chef.dto.*;
 import com.zerobase.foodlier.module.member.chef.exception.ChefMemberException;
 import com.zerobase.foodlier.module.member.chef.repository.ChefMemberRepository;
 import com.zerobase.foodlier.module.member.chef.type.ChefSearchType;
@@ -23,6 +20,7 @@ import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static com.zerobase.foodlier.module.member.chef.exception.ChefMemberErrorCode.*;
 
@@ -87,6 +85,14 @@ public class ChefMemberServiceImpl implements ChefMemberService{
     public List<RequestedChefDto> getRequestedChefList(Long memberId,
                                                    int pageIdx, int pageSize){
         return chefMemberRepository.findRequestedChef(memberId, pageIdx * pageSize, pageSize);
+    }
+
+    @Override
+    public List<TopChefDto> getTopChefList(){
+        return chefMemberRepository.findTop5ByOrderByExpDesc()
+                .stream()
+                .map(TopChefDto::from)
+                .collect(Collectors.toList());
     }
 
     /**

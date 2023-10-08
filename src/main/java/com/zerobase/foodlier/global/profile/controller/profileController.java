@@ -136,4 +136,11 @@ public class profileController {
         );
     }
 
+    @GetMapping("/public/topchef")
+    public ResponseEntity<?> getTopChefList(){
+        return ResponseEntity.ok(
+            chefMemberService.getTopChefList()
+        );
+    }
+
 }
