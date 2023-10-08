@@ -303,6 +303,7 @@ class MemberServiceImplTest {
                 .willReturn(Optional.ofNullable(Member.builder()
                         .nickname("test")
                         .email("test@test.com")
+                        .point(1000)
                         .password(password)
                         .phoneNumber("010-1234-5678")
                         .profileUrl("/image/default.png")
@@ -326,6 +327,8 @@ class MemberServiceImplTest {
         assertAll(
                 () -> assertEquals("test",
                         privateProfile.getNickName()),
+                () -> assertEquals(1000,
+                        privateProfile.getPoint()),
                 () -> assertEquals("test@test.com",
                         privateProfile.getEmail()),
                 () -> assertEquals("010-1234-5678",

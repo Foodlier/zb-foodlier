@@ -104,6 +104,7 @@ public class MemberServiceImpl implements MemberService {
 
         return MemberPrivateProfileResponse.builder()
                 .nickName(member.getNickname())
+                .point(member.getPoint())
                 .email(member.getEmail())
                 .address(member.getAddress())
                 .phoneNumber(member.getPhoneNumber())
