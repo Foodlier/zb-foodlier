@@ -12,6 +12,7 @@ public class RecipeDtoTopResponse {
 
     private Long recipeId;
     private String mainImageUrl;
+    private String title;
     private String content;
     private int heartCount;
 
@@ -20,6 +21,7 @@ public class RecipeDtoTopResponse {
                 .builder()
                 .recipeId(recipe.getId())
                 .mainImageUrl(recipe.getMainImageUrl())
+                .title(recipe.getSummary().getTitle())
                 .content(recipe.getSummary().getContent())
                 .heartCount(recipe.getHeartCount())
                 .build();
