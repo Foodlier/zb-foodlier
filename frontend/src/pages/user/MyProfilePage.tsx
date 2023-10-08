@@ -6,6 +6,7 @@ import useIcon from '../../hooks/useIcon'
 import { palette } from '../../constants/Styles'
 import StarRating from '../../components/StarRating'
 import MyRecipeItem from '../../components/user/MyRecipeItem'
+import MyReviewedItem from '../../components/user/MyReviewedItem'
 
 interface Review {
   nickName: string
@@ -157,7 +158,8 @@ const MyProfilePage = () => {
             </S.ReviewContainer>
           </>
         )}
-        <div>
+
+        <S.MyUploadContainer>
           <S.MyUploadIntro>
             <S.MyUploadTitle>{user.nickname}님의 올린 게시물</S.MyUploadTitle>
             <S.UploadMoreBtn type="button">+</S.UploadMoreBtn>
@@ -165,9 +167,23 @@ const MyProfilePage = () => {
           <S.MyRecipeList>
             <MyRecipeItem EA={4} />
           </S.MyRecipeList>
-        </div>
+        </S.MyUploadContainer>
+
+        <S.MyReviewedContainer>
+          <S.MyReviewedInto>
+            <S.MyReviewedTitle>
+              {user.nickname}님의 레시피 후기
+            </S.MyReviewedTitle>
+            <S.ReviewedMoreBtn type="button">+</S.ReviewedMoreBtn>
+          </S.MyReviewedInto>
+          <S.ReviewedList>
+            <MyReviewedItem EA={2} />
+          </S.ReviewedList>
+        </S.MyReviewedContainer>
       </S.MyProfileContainer>
+
       <S.SpacingDiv />
+
       <BottomNavigation />
     </>
   )

@@ -181,6 +181,10 @@ export const ReviewContent = styled.p`
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 1;
 `
+export const MyUploadContainer = styled.div`
+  margin-bottom: 30px;
+`
+
 export const MyUploadIntro = styled.div`
   display: flex;
   justify-content: space-between;
@@ -211,6 +215,38 @@ export const MyRecipeList = styled.div`
     grid-template-columns: 1fr 1fr 1fr 1fr;
   }
 `
+
+export const MyReviewedContainer = styled.div`
+  margin-bottom: 30px;
+`
+
+export const MyReviewedInto = styled.div`
+  display: flex;
+  justify-content: space-between;
+`
+
+export const MyReviewedTitle = styled.span`
+  font-weight: bold;
+  font-size: 1.8rem;
+  margin-bottom: 1rem;
+  display: -webkit-box;
+  overflow: hidden;
+  word-break: break-all;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 1;
+`
+
+export const ReviewedMoreBtn = styled.button`
+  font-size: 2rem;
+  padding: 0 10px;
+`
+
+export const ReviewedList = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+`
+
 export const SpacingDiv = styled.div`
   height: 93px;
   ${breakpoints.large} {

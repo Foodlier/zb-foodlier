@@ -61,12 +61,8 @@ const MyRecipeItem: React.FC<MyRecipeItemProps> = ({ EA }) => {
 
   const showedCardList = myRecipes.slice(0, EA)
 
-  const test = a => {
-    console.log(a)
-  }
-
   return showedCardList.map(el => (
-    <S.RecipeCard key={el.recipeid} onClick={() => test(el.heartCount)}>
+    <S.RecipeCard key={el.recipeid}>
       <S.RecipeImg src="" alt="" />
       <S.RecipeInfo>
         <S.RecipeTopInfo>
