@@ -1,8 +1,10 @@
-import { ChangeEvent, FormEvent, useState, useRef } from 'react'
+import { ChangeEvent, useState, useRef, useEffect } from 'react'
 import DaumPostcode from 'react-daum-postcode'
+import { rest } from 'msw'
 import * as S from '../../styles/auth/RegisterPage.styled'
-import upload from '../../assets/profile_upload.svg'
+import upload from '../../../public/images/profile_upload.svg'
 import Modal from '../../components/auth/AddressModal'
+import { worker } from '../../mocks/browsers'
 
 interface FormData {
   profileImage: string
@@ -10,6 +12,8 @@ interface FormData {
   email: string
   password: string
   passwordCheck: string
+  address: string
+  detailAddress: string
 }
 
 interface FormErrors {
@@ -17,6 +21,8 @@ interface FormErrors {
   email: string
   password: string
   passwordCheck: string
+  address: string
+  detailAddress: string
 }
 
 const Register = () => {
@@ -29,6 +35,8 @@ const Register = () => {
     email: '',
     password: '',
     passwordCheck: '',
+    address: '',
+    detailAddress: '',
   })
 
   /*
@@ -39,15 +47,18 @@ const Register = () => {
     email: '',
     password: '',
     passwordCheck: '',
+    address: '',
+    detailAddress: '',
   })
 
   /*
     폼 유효성 검사 결과에 따른 버튼 활성화 상태
+    정규식은 개발 단계이므로 간단하게 작성하였습니다.
   */
-  const [isFormValid] = useState(false)
+  const [isFormValid, setIsFormValid] = useState(false)
 
   const validateNickname = (nickname: string) => {
-    const nicknameRegex = /^[가-힣a-zA-Z0-9]{4,10}$/
+    const nicknameRegex = /^[a-zA-Z0-9]{4,}$/
     return nicknameRegex.test(nickname)
   }
 
@@ -57,8 +68,52 @@ const Register = () => {
   }
 
   const validatePassword = (password: string) => {
-    const passwordRegex = /^[A-Za-z0-9!@#$%^&*()_+{}[\]:;<>,.?~\\-]{8,16}$/
+    const passwordRegex = /^[a-zA-Z0-9]{4,}$/
     return passwordRegex.test(password)
+  }
+
+  const [isModalOpen, setIsModalOpen] = useState(false)
+  const [openPostcode, setOpenPostcode] = useState<boolean>(false)
+  const [, setAddress] = useState<string>('')
+
+  /*
+    주소검색 모달창 관련 상태, 이벤트
+  */
+  const handleOpenPostcode = {
+    clickButton: () => {
+      setOpenPostcode(current => !current)
+    },
+    selectAddress: (data: any) => {
+      setAddress(data.address)
+      setOpenPostcode(false)
+      setIsModalOpen(false)
+      setFormData({ ...formData, address: data.address })
+    },
+  }
+  const openModal = () => {
+    setIsModalOpen(true)
+    handleOpenPostcode.clickButton()
+  }
+  const closeModal = () => {
+    setIsModalOpen(false)
+  }
+
+  /*
+   이미지 업로드 관련 상태, 이벤트
+  */
+  const [imgFile, setImgFile] = useState<string | ArrayBuffer | null>(null)
+  const imgRef = useRef<HTMLInputElement | null>(null)
+
+  const saveImgFile = () => {
+    const file = imgRef.current?.files?.[0]
+    if (file) {
+      const reader = new FileReader()
+      reader.readAsDataURL(file)
+      reader.onloadend = () => {
+        setImgFile(reader.result as string)
+        formData.profileImage = reader.result as string
+      }
+    }
   }
 
   /*
@@ -77,7 +132,7 @@ const Register = () => {
       if (!validateNickname(value)) {
         setFormErrors({
           ...formErrors,
-          [name]: '4~10자의 한글, 영문, 숫자만 사용 가능합니다.',
+          [name]: '4~16자의 영문, 숫자를 사용하세요.',
         })
       }
     } else if (name === 'email') {
@@ -91,7 +146,7 @@ const Register = () => {
       if (!validatePassword(value)) {
         setFormErrors({
           ...formErrors,
-          [name]: '8~16자의 영문, 숫자, 특수문자를 사용하세요.',
+          [name]: '4~16자의 영문, 숫자를 사용하세요.',
         })
       }
     } else if (name === 'passwordCheck') {
@@ -101,54 +156,75 @@ const Register = () => {
           [name]: '비밀번호가 일치하지 않습니다.',
         })
       }
+    } else if (name === 'address') {
+      if (value === '') {
+        setFormErrors({
+          ...formErrors,
+          [name]: '주소를 검색해주세요.',
+        })
+      }
+    } else if (name === 'detailAddress') {
+      if (value === '') {
+        setFormErrors({
+          ...formErrors,
+          [name]: '상세 주소를 입력해주세요.',
+        })
+      }
     }
   }
 
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+  // 입력값 여부에 따라 버튼 활성화 상태 변경
+  useEffect(() => {
+    if (
+      formData.nickname !== '' &&
+      formData.email !== '' &&
+      formData.password !== '' &&
+      formData.passwordCheck !== '' &&
+      formData.address !== '' &&
+      formData.detailAddress !== ''
+    ) {
+      setIsFormValid(true)
+    } else {
+      setIsFormValid(false)
+    }
+  }, [formData])
+
+  //  회원가입 폼 제출 이벤트
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-  }
+    console.log(formErrors)
+    try {
+      // 회원가입 API 엔드포인트
+      const endpoint = '/auth/signup'
+      // MSW를 사용하여 모의 서버로 요청을 보냅니다.
+      worker.use(
+        rest.post(endpoint, (_req, res, ctx) => {
+          // 원하는 가짜 응답 데이터를 설정할 수 있습니다.
+          return res(
+            ctx.status(200),
+            ctx.json({ message: '회원가입 성공', data: formData })
+          )
+        })
+      )
 
-  const [isModalOpen, setIsModalOpen] = useState(false)
-  const [openPostcode, setOpenPostcode] = useState<boolean>(false)
-  const [address, setAddress] = useState<string>('')
+      // Axios 대신 fetch 또는 다른 HTTP 클라이언트를 사용하여 요청을 보낼 수 있습니다.
+      const response = await fetch(endpoint, {
+        method: 'POST',
+        body: JSON.stringify(formData),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      })
 
-  /*
-    주소검색 모달창 관련 상태, 이벤트
-  */
-  const handleOpenPostcode = {
-    clickButton: () => {
-      setOpenPostcode(current => !current)
-    },
-    selectAddress: (data: any) => {
-      setAddress(data.address)
-      setOpenPostcode(false)
-      setIsModalOpen(false)
-    },
-  }
-  const openModal = () => {
-    setIsModalOpen(true)
-    handleOpenPostcode.clickButton()
-  }
-  const closeModal = () => {
-    setIsModalOpen(false)
-  }
-
-  /*
-   이미지 업로드 관련 상태, 이벤트
-  */
-
-  const [imgFile, setImgFile] = useState<string | ArrayBuffer | null>(null)
-  const imgRef = useRef<HTMLInputElement | null>(null)
-
-  // 이미지 업로드 input의 onChange
-  const saveImgFile = () => {
-    const file = imgRef.current?.files?.[0]
-    if (file) {
-      const reader = new FileReader()
-      reader.readAsDataURL(file)
-      reader.onloadend = () => {
-        setImgFile(reader.result as string)
+      // HTTP 응답 코드 및 데이터를 확인합니다.
+      if (response.status === 200) {
+        console.log('회원가입 성공:', await response.json())
+        // 여기에서 필요한 리다이렉션 또는 다른 동작을 수행할 수 있습니다.
+      } else {
+        console.error('회원가입 실패:', await response.json())
       }
+    } catch (error) {
+      console.error('회원가입 실패:', error)
     }
   }
 
@@ -172,20 +248,24 @@ const Register = () => {
       <S.Container>
         <S.Title>회원가입</S.Title>
         <S.Form onSubmit={handleSubmit}>
-          <S.Profile>
-            <S.ProfileImage
-              src={typeof imgFile === 'string' ? imgFile : upload}
-              alt=""
-            />
+          <S.InputContainer>
+            <S.Profile>
+              <S.ProfileImage
+                src={typeof imgFile === 'string' ? imgFile : upload}
+                alt=""
+              />
+              <S.FileInput
+                type="file"
+                accept="image/*"
+                id="profileImg"
+                onChange={saveImgFile}
+                ref={imgRef}
+              />
+            </S.Profile>
+          </S.InputContainer>
+          <S.ProfileButton type="button">
             <label htmlFor="profileImg">사진 추가</label>
-            <S.FileInput
-              type="file"
-              accept="image/*"
-              id="profileImg"
-              onChange={saveImgFile}
-              ref={imgRef}
-            />
-          </S.Profile>
+          </S.ProfileButton>
           <S.InputContainer>
             <S.Input2
               type="text"
@@ -194,7 +274,7 @@ const Register = () => {
               value={formData.nickname}
               onChange={handleChange}
             />
-            <S.DetailButton>중복확인</S.DetailButton>
+            <S.DetailButton type="button">중복확인</S.DetailButton>
             <S.ErrorMessage>{formErrors.nickname}</S.ErrorMessage>
           </S.InputContainer>
           <S.InputContainer>
@@ -205,7 +285,7 @@ const Register = () => {
               value={formData.email}
               onChange={handleChange}
             />
-            <S.DetailButton>인증요청</S.DetailButton>
+            <S.DetailButton type="button">인증요청</S.DetailButton>
             <S.ErrorMessage>{formErrors.email}</S.ErrorMessage>
           </S.InputContainer>
           <S.InputContainer>
@@ -229,13 +309,33 @@ const Register = () => {
             <S.ErrorMessage>{formErrors.passwordCheck}</S.ErrorMessage>
           </S.InputContainer>
           <S.InputContainer>
-            <S.Input2 type="string" disabled value={address} />
-            <S.DetailButton onClick={openModal}>주소검색</S.DetailButton>
+            <S.Input2
+              type="string"
+              disabled
+              value={formData.address}
+              name="address"
+              onChange={handleChange}
+            />
+            <S.DetailButton type="button" onClick={openModal}>
+              주소검색
+            </S.DetailButton>
+            <S.ErrorMessage>{formErrors.address}</S.ErrorMessage>
           </S.InputContainer>
-          <S.Input1 type="email" placeholder="상세 주소" />
-          <S.ConfirmButton type="submit" disabled={!isFormValid}>
-            가입하기
-          </S.ConfirmButton>
+          <S.Input1
+            type="string"
+            name="detailAddress"
+            placeholder="상세 주소"
+            value={formData.detailAddress}
+            onChange={handleChange}
+          />
+          <S.ErrorMessage>{formErrors.detailAddress}</S.ErrorMessage>
+          {isFormValid ? (
+            <S.ConfirmButton type="submit" disabled>
+              가입하기
+            </S.ConfirmButton>
+          ) : (
+            <S.DisabledButton type="button">가입하기</S.DisabledButton>
+          )}
         </S.Form>
       </S.Container>
     </>

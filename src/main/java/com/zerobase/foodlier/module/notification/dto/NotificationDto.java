@@ -16,13 +16,20 @@ public class NotificationDto {
     private NotificationType notificationType;
     private LocalDateTime sentAt;
     private boolean isRead;
+    private String url;
 
-    public NotificationDto(Long id, String content, NotificationType notificationType, LocalDateTime sentAt, boolean isRead) {
+    public NotificationDto(Long id,
+                           String content,
+                           NotificationType notificationType,
+                           LocalDateTime sentAt,
+                           boolean isRead,
+                           String url) {
         this.id = id;
         this.content = content;
         this.notificationType = notificationType;
         this.sentAt = sentAt;
         this.isRead = isRead;
+        this.url = url;
     }
 
     public NotificationDto() {
@@ -36,6 +43,7 @@ public class NotificationDto {
                 .notificationType(notification.getNotificationType())
                 .sentAt(notification.getSendAt())
                 .isRead(notification.isRead())
+                .url(notification.getUrl())
                 .build();
 
 

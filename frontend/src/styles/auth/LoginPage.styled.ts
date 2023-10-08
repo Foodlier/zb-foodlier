@@ -76,7 +76,7 @@ export const Divider = styled.div`
   background-color: #ccc;
   margin: 25px 0;
   text-align: center;
-  z-index: 1;
+
   &:before {
     content: '';
     position: absolute;
@@ -98,7 +98,6 @@ export const Text = styled.span`
   padding: 0 10px;
   font-size: 18px;
   color: #ccc;
-  z-index: 2;
 `
 
 export const RegisterButton = styled(Button)`

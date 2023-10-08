@@ -42,7 +42,7 @@ public class EmitterServiceImpl implements EmitterService {
     }
 
     @Override
-    public Map<String, Object> findMissingNotification(String userEmail) {
+    public Map<String, Object> findEventCaches(String userEmail) {
         return emitterRepository.findAllEventCacheStartWithByMemberId(String.valueOf(userEmail));
     }
 
@@ -61,4 +61,12 @@ public class EmitterServiceImpl implements EmitterService {
         return emitterRepository.findAllEmitterStartWithByMemberId(receiverEmail);
     }
 
+    @Override
+    public boolean isEmitterExists(Map<String, SseEmitter> emitterMap){
+        return !emitterMap.isEmpty();
+    }
+    @Override
+    public boolean hasLostData(String lastEventId) {
+        return !lastEventId.isEmpty();
+    }
 }

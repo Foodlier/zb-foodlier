@@ -16,4 +16,8 @@ public interface ChefMemberService {
 
     List<AroundChefDto> getAroundChefList(Long memberId,
                                           int pageIdx, int pageSize, ChefSearchType type);
+    void plusExp(Long chefMemberId, int star);
+
+    void plusStar(Long chefMemberId, int star);
+
 }

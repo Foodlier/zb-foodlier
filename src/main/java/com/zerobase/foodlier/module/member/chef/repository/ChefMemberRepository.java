@@ -132,9 +132,4 @@ public interface ChefMemberRepository extends JpaRepository<ChefMember, Long> {
             @Param("end") int end
     );
 
-    @Query(
-            "SELECT cm FROM ChefMember cm WHERE cm.member.id = :memberId"
-    )
-    Optional<ChefMember> findByMemberId(@Param("memberId") Long memberId);
-
 }

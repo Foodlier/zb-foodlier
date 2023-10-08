@@ -1,5 +1,5 @@
 import styled from 'styled-components'
-import { breakpoints, palette } from '../../constants/Styles'
+import { breakpoints, palette, zindex } from '../../constants/Styles'
 
 export const SearchForm = styled.form`
   padding: 10% 5%;
@@ -36,7 +36,7 @@ export const DropdownContent = styled.ul`
   left: 50%;
   transform: translateX(-50%);
   top: 17rem; */
-  z-index: 1000;
+  z-index: ${zindex.header + 1};
   display: flex;
   flex-direction: column;
   width: 100%;

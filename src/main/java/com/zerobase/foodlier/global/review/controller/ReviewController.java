@@ -1,7 +1,9 @@
 package com.zerobase.foodlier.global.review.controller;
 
 import com.zerobase.foodlier.common.security.provider.dto.MemberAuthDto;
+import com.zerobase.foodlier.global.review.facade.ChefReviewFacade;
 import com.zerobase.foodlier.global.review.facade.RecipeReviewFacade;
+import com.zerobase.foodlier.module.review.chef.dto.ChefReviewForm;
 import com.zerobase.foodlier.module.review.recipe.dto.RecipeReviewForm;
 import com.zerobase.foodlier.module.review.recipe.dto.RecipeReviewResponseDto;
 import com.zerobase.foodlier.module.review.recipe.service.RecipeReviewService;
@@ -21,6 +23,17 @@ public class ReviewController {
 
     private final RecipeReviewFacade recipeReviewFacade;
     private final RecipeReviewService recipeReviewService;
+    private final ChefReviewFacade chefReviewFacade;
+
+    @PostMapping("/chef/{requestId}")
+    public ResponseEntity<String> createChefReview(
+            @AuthenticationPrincipal MemberAuthDto memberAuthDto,
+            @PathVariable Long requestId,
+            @RequestBody @Valid ChefReviewForm form
+            ){
+        chefReviewFacade.createChefReview(memberAuthDto.getId(), requestId, form);
+        return ResponseEntity.ok("요리사 후기를 작성하였습니다.");
+    }
 
     @PostMapping("/recipe/{recipeId}")
     public ResponseEntity<String> createRecipeReview(

@@ -1,5 +1,5 @@
 import styled from 'styled-components'
-import { breakpoints, palette } from '../../constants/Styles'
+import { breakpoints, palette, zindex } from '../../constants/Styles'
 
 export const MoSearchContainer = styled.div`
   position: fixed;
@@ -12,7 +12,7 @@ export const MoSearchContainer = styled.div`
   width: 100%;
   height: 100%;
   background-color: ${palette.white};
-  z-index: 10000;
+  z-index: ${zindex.header + 1};
   overflow-y: scroll;
   overflow-x: hidden;
 
