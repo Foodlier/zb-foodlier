@@ -15,8 +15,9 @@ public class RecipeDtoTopResponse {
     private String title;
     private String content;
     private int heartCount;
+    private boolean isHeart;
 
-    public static RecipeDtoTopResponse from(Recipe recipe){
+    public static RecipeDtoTopResponse from(Recipe recipe, boolean isHeart){
         return RecipeDtoTopResponse
                 .builder()
                 .recipeId(recipe.getId())
@@ -24,6 +25,7 @@ public class RecipeDtoTopResponse {
                 .title(recipe.getSummary().getTitle())
                 .content(recipe.getSummary().getContent())
                 .heartCount(recipe.getHeartCount())
+                .isHeart(isHeart)
                 .build();
     }
 }
