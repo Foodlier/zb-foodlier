@@ -4,6 +4,7 @@ import com.zerobase.foodlier.common.aop.RedissonLock;
 import com.zerobase.foodlier.module.member.chef.domain.model.ChefMember;
 import com.zerobase.foodlier.module.member.chef.dto.AroundChefDto;
 import com.zerobase.foodlier.module.member.chef.dto.ChefIntroduceForm;
+import com.zerobase.foodlier.module.member.chef.dto.ChefProfileDto;
 import com.zerobase.foodlier.module.member.chef.dto.RequestedChefDto;
 import com.zerobase.foodlier.module.member.chef.exception.ChefMemberException;
 import com.zerobase.foodlier.module.member.chef.repository.ChefMemberRepository;
@@ -82,9 +83,21 @@ public class ChefMemberServiceImpl implements ChefMemberService{
      *  작성일 : 2023-09-29
      *  요청된 요리사의 정보를 가져옴.
      */
+    @Override
     public List<RequestedChefDto> getRequestedChefList(Long memberId,
                                                    int pageIdx, int pageSize){
         return chefMemberRepository.findRequestedChef(memberId, pageIdx * pageSize, pageSize);
+    }
+
+    /**
+     *  작성자 : 전현서
+     *  작성일 : 2023-10-08
+     *  요리사의 등급 정보를 가져옴.
+     */
+    @Override
+    public ChefProfileDto getChefProfile(Long chefMemberId){
+        return ChefProfileDto.from(chefMemberRepository.findById(chefMemberId)
+                .orElseThrow(() -> new ChefMemberException(CHEF_MEMBER_NOT_FOUND)));
     }
 
     /**
