@@ -13,11 +13,11 @@ const StarRating: React.FC<StarRatingProps> = ({ rating, size }) => {
   const emptyStarCount = 5 - rating
   return (
     <S.StarContainer>
-      {Array.from({ length: yelloStarCount }, () => (
-        <IcStar key={1} size={size} />
+      {Array.from({ length: yelloStarCount }, (_, index) => (
+        <IcStar key={index} size={size} />
       ))}
-      {Array.from({ length: emptyStarCount }, () => (
-        <IcEmptyStar key={1} size={size} />
+      {Array.from({ length: emptyStarCount }, (_, index) => (
+        <IcEmptyStar key={index} size={size} />
       ))}
     </S.StarContainer>
   )

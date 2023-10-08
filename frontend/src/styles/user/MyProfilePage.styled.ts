@@ -66,6 +66,7 @@ export const UserNickname = styled.span`
 
 export const LikeDiv = styled.div`
   display: flex;
+  align-items: center;
   gap: 10px;
 `
 export const MyGradeDiv = styled.div`
@@ -104,6 +105,10 @@ export const ExpBar = styled.div<{ $cookerExp: number }>`
 export const GradeList = styled.div`
   display: flex;
   justify-content: space-between;
+`
+
+export const ReviewContainer = styled.div`
+  margin-bottom: 30px;
 `
 
 export const ReviewIntro = styled.div`
@@ -175,4 +180,40 @@ export const ReviewContent = styled.p`
   word-break: break-all;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 1;
+`
+export const MyUploadIntro = styled.div`
+  display: flex;
+  justify-content: space-between;
+`
+export const MyUploadTitle = styled.span`
+  font-weight: bold;
+  font-size: 1.8rem;
+  margin-bottom: 1rem;
+  display: -webkit-box;
+  overflow: hidden;
+  word-break: break-all;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 1;
+`
+
+export const UploadMoreBtn = styled.button`
+  font-size: 2rem;
+  padding: 0 10px;
+`
+
+export const MyRecipeList = styled.div`
+  display: grid;
+  justify-items: center;
+  row-gap: 1rem;
+  grid-template-columns: 1fr 1fr;
+  ${breakpoints.large} {
+    row-gap: 0;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+  }
+`
+export const SpacingDiv = styled.div`
+  height: 93px;
+  ${breakpoints.large} {
+    display: none;
+  }
 `
