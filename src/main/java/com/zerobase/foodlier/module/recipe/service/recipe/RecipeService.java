@@ -27,4 +27,6 @@ public interface RecipeService {
     void plusReviewStar(Long recipeId, int star);
     void updateReviewStar(Long recipeId, int originStar, int newStar);
     void minusReviewStar(Long recipeId, int star);
+    Recipe plusCommentCount(Long recipeId);
+    void minusCommentCount(Long recipeId);
 }

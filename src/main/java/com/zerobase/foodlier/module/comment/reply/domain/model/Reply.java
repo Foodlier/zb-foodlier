@@ -27,4 +27,9 @@ public class Reply extends Audit {
     private Comment comment;
     @Column(nullable = false)
     private String message;
+
+    public void update(String modifiedMessage){
+        this.message = modifiedMessage;
+    }
+
 }

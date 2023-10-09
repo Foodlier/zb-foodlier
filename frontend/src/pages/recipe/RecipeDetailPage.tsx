@@ -4,6 +4,8 @@ import BottomNavigation from '../../components/BottomNavigation'
 import DetailMainItem from '../../components/recipe/detail/DetailMain'
 import DetailIngredients from '../../components/recipe/detail/DetailIngredients'
 import DetailProcedure from '../../components/recipe/detail/DetailProcedure'
+import RecipeCommentList from '../../components/recipe/detail/comment/RecipeCommentList'
+import RecipeReviewList from '../../components/recipe/detail/review/RecipeReviewList'
 
 export const DetailContainer = styled.div`
   width: 100%;
@@ -15,8 +17,8 @@ const RecipeDetailPage = () => {
     recipeId: '',
     memberId: '',
     nickname: '닉네임',
-    profileUrl: '../../../public/images/chef.svg',
-    mainImageUrl: '../../../public/images/contents/food_img_05.jpg',
+    profileUrl: '/images/chef.svg',
+    mainImageUrl: '/images/contents/food_img_05.jpg',
     title: '레시피 제목',
     content:
       'Lorem Ipsum is simply dummy text of the printing  and typesetting industry. Lorem Ipsum has been the industrys standard dummy text ever since the  1500s, when an unknown printer took a galley',
@@ -43,17 +45,17 @@ const RecipeDetailPage = () => {
 
   const detail = [
     {
-      cookingOrderImageUrl: '../../../public/images/contents/food_img_03.jpg',
+      cookingOrderImageUrl: '/images/contents/food_img_03.jpg',
       cookingOrder:
         'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industrys standard dummy text ever since the 1500s, when an unknown printer took a galley',
     },
     {
-      cookingOrderImageUrl: '../../../public/images/contents/food_img_04.jpg',
+      cookingOrderImageUrl: '/images/contents/food_img_04.jpg',
       cookingOrder:
         'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has',
     },
     {
-      cookingOrderImageUrl: '../../../public/images/contents/food_img_05.jpg',
+      cookingOrderImageUrl: '/images/contents/food_img_05.jpg',
       cookingOrder: 'Lorem Ipsum is simply dummy',
     },
   ]
@@ -66,6 +68,8 @@ const RecipeDetailPage = () => {
         <DetailMainItem recipe={recipe} />
         <DetailIngredients ingredients={ingredients} />
         <DetailProcedure detail={detail} />
+        <RecipeCommentList recipeId={recipe.recipeId} />
+        <RecipeReviewList />
       </DetailContainer>
 
       <BottomNavigation />

@@ -1,5 +1,5 @@
 import styled from 'styled-components'
-import { breakpoints, palette } from '../constants/Styles'
+import { breakpoints, palette, zindex } from '../constants/Styles'
 
 export const Container = styled.div`
   position: fixed;
@@ -11,7 +11,7 @@ export const Container = styled.div`
   border-radius: 2rem 2rem 0 0;
   background-color: white;
   box-shadow: 0 -0.5rem 1rem rgba(0, 0, 0, 0.1);
-  z-index: 100;
+  z-index: ${zindex.base + 1};
 
   ${breakpoints.large} {
     display: none;
