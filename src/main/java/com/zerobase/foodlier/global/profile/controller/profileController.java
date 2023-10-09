@@ -2,6 +2,8 @@ package com.zerobase.foodlier.global.profile.controller;
 
 import com.zerobase.foodlier.common.security.provider.dto.MemberAuthDto;
 import com.zerobase.foodlier.global.profile.facade.ProfileFacade;
+import com.zerobase.foodlier.module.comment.comment.dto.MyPageCommentDto;
+import com.zerobase.foodlier.module.comment.comment.service.CommentService;
 import com.zerobase.foodlier.module.member.chef.dto.ChefIntroduceForm;
 import com.zerobase.foodlier.module.member.chef.dto.ChefProfileDto;
 import com.zerobase.foodlier.module.member.chef.service.ChefMemberService;
@@ -35,6 +37,7 @@ public class profileController {
     private final ChefReviewService chefReviewService;
     private final RecipeReviewService recipeReviewService;
     private final RecipeService recipeService;
+    private final CommentService commentService;
 
     @GetMapping("/private")
     public ResponseEntity<MemberPrivateProfileResponse> getPrivateProfile(
@@ -45,11 +48,24 @@ public class profileController {
 
     @GetMapping("/private/heart")
     public ResponseEntity<List<RecipeDtoTopResponse>> getRecipeForHeart(
-        @AuthenticationPrincipal MemberAuthDto memberAuthDto
+            @AuthenticationPrincipal MemberAuthDto memberAuthDto
     ){
         return ResponseEntity.ok(
                 recipeService.getRecipeForHeart(memberAuthDto.getId())
         );
+    }
+
+    @GetMapping("/private/comment/{pageIdx}/{pageSize}")
+    public ResponseEntity<List<MyPageCommentDto>> getMyCommentList(
+            @AuthenticationPrincipal MemberAuthDto memberAuthDto,
+            @PathVariable int pageIdx,
+            @PathVariable int pageSize
+    ){
+        return ResponseEntity.ok(
+                commentService.getMyCommentList(
+                memberAuthDto.getId(),
+                PageRequest.of(pageIdx, pageSize)
+        ));
     }
 
     @PutMapping(value = "/private")
