@@ -1,7 +1,11 @@
 package com.zerobase.foodlier.module.history.charge.service;
 
-import org.springframework.stereotype.Service;
 
-@Service
+import com.zerobase.foodlier.module.payment.domain.model.Payment;
+
 public interface PointChargeHistoryService {
+
+    void createPointChargeHistory(Payment payment);
+
+    void createPointCancelHistory(Payment payment);
 }

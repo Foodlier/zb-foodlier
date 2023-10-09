@@ -53,12 +53,4 @@ public interface DmRoomRepository extends JpaRepository<DmRoom, Long> {
             "(d.request.member.id = :requester AND d.isMemberExit = false))")
     List<DmRoomDto> getDmRoomPage(@Param("requester") Long id, Pageable pageable);
 
-    @Modifying
-    @Query("UPDATE DmRoom d SET d.isMemberExit = true WHERE d.id = :roomId")
-    void updateDmRoomByMember(@Param("roomId") Long roomId);
-
-    @Modifying
-    @Query("UPDATE DmRoom d SET d.isChefExit = true WHERE d.id = :roomId")
-    void updateDmRoomByChef(@Param("roomId") Long roomId);
-
 }
