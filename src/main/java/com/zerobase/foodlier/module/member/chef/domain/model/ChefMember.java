@@ -31,7 +31,7 @@ public class ChefMember extends Audit {
 
     public void plusExp(int exp){
         this.exp += exp;
-        this.gradeType = GradeType.getGrade(this.exp);
+        setGrade();
     }
 
     public void plusStar(int star){
@@ -46,6 +46,10 @@ public class ChefMember extends Audit {
             return;
         }
         this.starAvg = (double) this.starSum / this.reviewCount;
+    }
+
+    private void setGrade(){
+        this.gradeType = GradeType.getGrade(this.exp);
     }
 
 }
