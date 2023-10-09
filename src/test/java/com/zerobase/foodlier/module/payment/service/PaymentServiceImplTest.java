@@ -304,6 +304,17 @@ class PaymentServiceImplTest {
     @DisplayName("결제 취소 실패 - restTemplate 오류")
     void fail_requestPaymentCancel_paymentCancelError() {
         //given
+        Payment payment = Payment.builder()
+                .paySuccessYn("Y")
+                .amount(1000L)
+                .member(Member.builder()
+                        .point(1000L)
+                        .build())
+                .isCanceled(true)
+                .build();
+
+        given(paymentRepository.findByPaymentKey(anyString()))
+                .willReturn(Optional.ofNullable(payment));
         given(restTemplate.postForObject(any(), any(HttpEntity.class), any()))
                 .willThrow(HttpClientErrorException.class);
 
@@ -330,5 +341,30 @@ class PaymentServiceImplTest {
 
         //then
         assertEquals(PAYMENT_REQUEST_NOT_FOUND, paymentException.getErrorCode());
+    }
+
+    @Test
+    @DisplayName("결제 취소 실패 - 회원의 포인트가 부족함")
+    void fail_requestPaymentCancel_validException() {
+        //given
+        Payment payment = Payment.builder()
+                .paySuccessYn("Y")
+                .amount(1000L)
+                .member(Member.builder()
+                        .point(100L)
+                        .build())
+                .isCanceled(true)
+                .build();
+
+        given(paymentRepository.findByPaymentKey(anyString()))
+                .willReturn(Optional.ofNullable(payment));
+
+        //when
+        PaymentException paymentException = assertThrows(PaymentException.class,
+                () -> paymentService.requestPaymentCancel("paymentKey",
+                        "단순 변심"));
+
+        //then
+        assertEquals(PAYMENT_CANCEL_ERROR, paymentException.getErrorCode());
     }
 }
