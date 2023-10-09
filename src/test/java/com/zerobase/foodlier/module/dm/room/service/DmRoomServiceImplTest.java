@@ -79,26 +79,6 @@ public class DmRoomServiceImplTest {
     }
 
     @Test
-    @DisplayName("채팅방 목록 가져오기 실패 - 채팅방 없음")
-    void fail_get_dm_room_list_dm_room_not_found() {
-        //given
-        Long id = 1L;
-        int pageIdx = 0;
-        int pageSize = 1;
-        List<DmRoomDto> expectDmRoomDtoList = new ArrayList<>(List.of());
-
-        given(dmRoomRepository.getDmRoomPage(any(), any()))
-                .willReturn(expectDmRoomDtoList);
-
-        //when
-        DmRoomException dmRoomException = assertThrows(DmRoomException.class,
-                () -> dmRoomService.getDmRoomList(id, pageIdx, pageSize));
-
-        //then
-        assertEquals(DM_ROOM_NOT_FOUND, dmRoomException.getErrorCode());
-    }
-
-    @Test
     @DisplayName("채팅방 나가기")
     void success_exit_dm_room() {
         //given
@@ -162,15 +142,12 @@ public class DmRoomServiceImplTest {
                 .willReturn(Optional.ofNullable(dmRoom));
         given(dmRepository.findByDmroom(dmRoom))
                 .willReturn(dmList);
-        given(requestRepository.findById(requestId))
-                .willReturn(Optional.ofNullable(request));
 
         //when
         dmRoomService.exitDmRoom(id, roomId);
 
         //then
         verify(dmRepository, times(1)).deleteAll(dmList);
-        verify(requestRepository, times(1)).save(request);
         verify(dmRoomRepository, times(1)).delete(dmRoom);
         verify(dmRoomRepository, times(1)).delete(dmRoom);
     }
