@@ -1,8 +1,13 @@
 package com.zerobase.foodlier.module.history.transaction.domain.model;
 
 import com.zerobase.foodlier.common.jpa.audit.Audit;
+import com.zerobase.foodlier.module.history.type.TransactionType;
 import com.zerobase.foodlier.module.member.member.domain.model.Member;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.experimental.SuperBuilder;
 
 import javax.persistence.*;
 
@@ -10,7 +15,7 @@ import javax.persistence.*;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
+@SuperBuilder
 @Entity
 @Table(name = "member_balance_history")
 public class MemberBalanceHistory extends Audit {
@@ -27,5 +32,7 @@ public class MemberBalanceHistory extends Audit {
     @Column(nullable = false)
     private String sender;
     @Column(nullable = false)
-    private String description;
+    @Enumerated(EnumType.STRING)
+    private TransactionType transactionType;
+
 }
