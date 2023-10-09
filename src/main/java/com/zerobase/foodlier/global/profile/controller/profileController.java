@@ -6,6 +6,7 @@ import com.zerobase.foodlier.module.member.chef.dto.ChefIntroduceForm;
 import com.zerobase.foodlier.module.member.chef.service.ChefMemberService;
 import com.zerobase.foodlier.module.member.member.profile.dto.MemberPrivateProfileForm;
 import com.zerobase.foodlier.module.member.member.profile.dto.MemberPrivateProfileResponse;
+import com.zerobase.foodlier.module.member.member.profile.dto.PasswordChangeForm;
 import com.zerobase.foodlier.module.member.member.service.MemberService;
 import com.zerobase.foodlier.module.review.chef.dto.ChefReviewResponseDto;
 import com.zerobase.foodlier.module.review.chef.service.ChefReviewService;
@@ -49,7 +50,7 @@ public class profileController {
     public ResponseEntity<String> registerChef(
             @AuthenticationPrincipal MemberAuthDto memberAuthDto,
             @RequestBody ChefIntroduceForm chefIntroduceForm
-    ){
+    ) {
         chefMemberService.registerChef(memberAuthDto.getId(), chefIntroduceForm);
         return ResponseEntity.ok("요리사가 되었습니다.");
     }
@@ -58,7 +59,7 @@ public class profileController {
     public ResponseEntity<String> updateChefIntroduce(
             @AuthenticationPrincipal MemberAuthDto memberAuthDto,
             @RequestBody ChefIntroduceForm chefIntroduceForm
-            ){
+    ) {
         chefMemberService.updateChefIntroduce(memberAuthDto.getId(), chefIntroduceForm);
         return ResponseEntity.ok("요리사 소개가 수정되었습니다.");
     }
@@ -68,11 +69,18 @@ public class profileController {
             @PathVariable int pageIdx,
             @PathVariable int pageSize,
             @PathVariable Long chefMemberId
-    ){
+    ) {
         return ResponseEntity.ok(
                 chefReviewService.getChefReviewList(chefMemberId,
                         PageRequest.of(pageIdx, pageSize))
         );
     }
 
+    @PutMapping("/private/password")
+    public ResponseEntity<String> updatePassword(
+            @AuthenticationPrincipal MemberAuthDto memberAuthDto,
+            @RequestBody PasswordChangeForm form
+    ) {
+        return ResponseEntity.ok(memberService.updatePassword(memberAuthDto, form));
+    }
 }

@@ -1,16 +1,33 @@
 package com.zerobase.foodlier.module.dm.room.service;
 
+import com.zerobase.foodlier.module.dm.dm.domain.model.Dm;
+import com.zerobase.foodlier.module.dm.dm.repository.DmRepository;
 import com.zerobase.foodlier.module.dm.room.domain.model.DmRoom;
 import com.zerobase.foodlier.module.dm.room.domain.vo.Suggestion;
+import com.zerobase.foodlier.module.dm.room.dto.DmRoomDto;
+import com.zerobase.foodlier.module.dm.room.exception.DmRoomException;
 import com.zerobase.foodlier.module.dm.room.repository.DmRoomRepository;
 import com.zerobase.foodlier.module.request.domain.model.Request;
+import com.zerobase.foodlier.module.request.repository.RequestRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+
+import javax.transaction.Transactional;
+import java.util.List;
+
+import static com.zerobase.foodlier.module.dm.room.exception.DmRoomErrorCode.DM_ROOM_NOT_FOUND;
 
 @Service
 @RequiredArgsConstructor
 public class DmRoomServiceImpl implements DmRoomService {
+
     private final DmRoomRepository dmRoomRepository;
+    private final DmRepository dmRepository;
+    private final RequestRepository requestRepository;
+    private static final String SORT_BY_CREATED_AT = "createdAt";
 
 
     /**
@@ -28,5 +45,49 @@ public class DmRoomServiceImpl implements DmRoomService {
                         .isSuggested(false)
                         .build())
                 .build());
+    }
+
+    /**
+     * 작성자 : 황태원
+     * 작성일 : 2023-10-02
+     * 채팅방 목록을 가져옵니다.
+     */
+    @Override
+    public List<DmRoomDto> getDmRoomList(Long id, int pageIdx, int pageSize) {
+        Pageable pageable = PageRequest.of(pageIdx, pageSize,
+                Sort.by(SORT_BY_CREATED_AT).descending());
+        List<DmRoomDto> dmRoomDtoList = dmRoomRepository.getDmRoomPage(id, pageable);
+
+        return dmRoomDtoList;
+    }
+
+    /**
+     * 작성자 : 황태원
+     * 작성일 : 2023-10-02(2023-10-09)
+     * 해당 채팅방에서 나갑니다.
+     */
+    @Override
+    @Transactional
+    public void exitDmRoom(Long id, Long roomId) {
+        DmRoom dmRoom = dmRoomRepository.findById(roomId)
+                .orElseThrow(() -> new DmRoomException(DM_ROOM_NOT_FOUND));
+        if (id.equals(dmRoom.getRequest().getMember().getId())) {
+            dmRoom.setMemberExit(true);
+        } else {
+            dmRoom.setChefExit(true);
+        }
+
+        if (dmRoom.isMemberExit() && dmRoom.isChefExit()) {
+            List<Dm> dmList = dmRepository.findByDmroom(dmRoom);
+            dmRepository.deleteAll(dmList);
+
+            Request request = dmRoom.getRequest();
+            request.setDmRoom(null);
+            requestRepository.save(request);
+
+            dmRoomRepository.delete(dmRoom);
+        } else {
+            dmRoomRepository.save(dmRoom);
+        }
     }
 }
