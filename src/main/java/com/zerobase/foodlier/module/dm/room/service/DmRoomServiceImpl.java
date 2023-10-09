@@ -8,7 +8,6 @@ import com.zerobase.foodlier.module.dm.room.dto.DmRoomDto;
 import com.zerobase.foodlier.module.dm.room.exception.DmRoomException;
 import com.zerobase.foodlier.module.dm.room.repository.DmRoomRepository;
 import com.zerobase.foodlier.module.request.domain.model.Request;
-import com.zerobase.foodlier.module.request.exception.RequestException;
 import com.zerobase.foodlier.module.request.repository.RequestRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
@@ -20,7 +19,6 @@ import javax.transaction.Transactional;
 import java.util.List;
 
 import static com.zerobase.foodlier.module.dm.room.exception.DmRoomErrorCode.DM_ROOM_NOT_FOUND;
-import static com.zerobase.foodlier.module.request.exception.RequestErrorCode.REQUEST_NOT_FOUND;
 
 @Service
 @RequiredArgsConstructor
@@ -86,8 +84,7 @@ public class DmRoomServiceImpl implements DmRoomService {
             List<Dm> dmList = dmRepository.findByDmroom(dmRoom);
             dmRepository.deleteAll(dmList);
 
-            Request request = requestRepository.findById(dmRoom.getRequest().getId())
-                    .orElseThrow(() -> new RequestException(REQUEST_NOT_FOUND));
+            Request request = dmRoom.getRequest();
             request.setDmRoom(null);
             requestRepository.save(request);
 
