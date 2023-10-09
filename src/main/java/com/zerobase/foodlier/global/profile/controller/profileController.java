@@ -77,7 +77,7 @@ public class profileController {
     }
 
     @PutMapping("/private/password")
-    public ResponseEntity<?> updatePassword(
+    public ResponseEntity<String> updatePassword(
             @AuthenticationPrincipal MemberAuthDto memberAuthDto,
             @RequestBody PasswordChangeForm form
     ) {
