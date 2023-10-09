@@ -17,14 +17,14 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
             "from Comment c " +
             "join c.recipe r " +
             "where r.id=:recipeId " +
-            "order by c.createdAt desc")
+            "order by c.createdAt asc ")
     Page<CommentDto> findCommentList(@Param("recipeId") Long recipeId,
                                      Pageable pageable);
 
     @Query("select c " +
             "from Comment c " +
             "join c.member m " +
-            "where m.id = :memberId and c.id=:commentId")
+            "where m.id = :memberId and c.id=:commentId ")
     Optional<Comment> findComment(@Param("memberId") Long memberId,
                                   @Param("commentId") Long commentId);
 

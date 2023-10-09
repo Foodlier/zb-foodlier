@@ -20,10 +20,11 @@ public interface ReplyRepository extends JpaRepository<Reply, Long> {
     Optional<Reply> findReply(@Param("replyId") Long replyId,
                               @Param("memberId") Long memberId);
 
-    @Query("select r " +
+    @Query("select new com.zerobase.foodlier.module.comment.reply.dto.ReplyDto(r.message, r.createdAt, r.modifiedAt) " +
             "from Reply r " +
             "join r.comment c " +
-            "where c.id = :commentId")
+            "where c.id = :commentId " +
+            "order by r.createdAt asc ")
     Page<ReplyDto> findReplyList(@Param("commentId") Long commentId,
                                  Pageable pageable);
 }
