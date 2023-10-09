@@ -35,8 +35,6 @@ public class DmRoomServiceImplTest {
     private DmRoomRepository dmRoomRepository;
     @Mock
     private DmRepository dmRepository;
-    @Mock
-    private RequestRepository requestRepository;
     @InjectMocks
     private DmRoomServiceImpl dmRoomService;
 
@@ -134,9 +132,6 @@ public class DmRoomServiceImplTest {
         List<Dm> dmList = new ArrayList<>(List.of(Dm.builder()
                 .text("채팅")
                 .build()));
-        Request request = Request.builder()
-                .id(requestId)
-                .build();
 
         given(dmRoomRepository.findById(roomId))
                 .willReturn(Optional.ofNullable(dmRoom));
