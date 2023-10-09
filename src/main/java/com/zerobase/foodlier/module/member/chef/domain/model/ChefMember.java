@@ -31,6 +31,7 @@ public class ChefMember extends Audit {
 
     public void plusExp(int exp){
         this.exp += exp;
+        this.gradeType = GradeType.getGrade(this.exp);
     }
 
     public void plusStar(int star){
