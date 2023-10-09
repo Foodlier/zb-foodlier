@@ -499,17 +499,17 @@ class MemberServiceImplTest {
 
     @Test
     @DisplayName("주변 요청자 조회 성공 - 가까운 거리순 정렬")
-    void success_getRequestedMemberList_order_by_distance(){
+    void success_getRequestedMemberList_order_by_distance() {
         //given
         ChefMember chefMember = ChefMember.builder().build();
         given(memberRepository.findById(anyLong()))
                 .willReturn(Optional.of(Member.builder()
                         .id(3L)
                         .chefMember(chefMember)
-                                .address(Address.builder()
-                                        .lat(37.5)
-                                        .lnt(127.5)
-                                        .build())
+                        .address(Address.builder()
+                                .lat(37.5)
+                                .lnt(127.5)
+                                .build())
                         .build()));
 
         RequestedMemberDto memberOne = getMemberDtoOne();
@@ -531,7 +531,7 @@ class MemberServiceImplTest {
         //when
         List<RequestedMemberDto> responseList = memberService
                 .getRequestedMemberList(3L,
-                RequestedOrderingType.DISTANCE, PageRequest.of(0, 10));
+                        RequestedOrderingType.DISTANCE, PageRequest.of(0, 10));
 
         //then
         assertAll(
@@ -559,7 +559,7 @@ class MemberServiceImplTest {
 
     @Test
     @DisplayName("주변 요청자 조회 성공 - 적은 희망가격순 정렬")
-    void success_getRequestedMemberList_order_by_expected_price(){
+    void success_getRequestedMemberList_order_by_expected_price() {
         //given
         ChefMember chefMember = ChefMember.builder().build();
         given(memberRepository.findById(anyLong()))
@@ -619,7 +619,7 @@ class MemberServiceImplTest {
 
     @Test
     @DisplayName("주변 요청자 조회 실패 - 회원 X")
-    void fail_getRequestedMemberList_member_not_found(){
+    void fail_getRequestedMemberList_member_not_found() {
         //given
         given(memberRepository.findById(anyLong()))
                 .willReturn(Optional.empty());
@@ -636,7 +636,7 @@ class MemberServiceImplTest {
 
     @Test
     @DisplayName("주변 요청자 조회 실패 - 요리사가 아님")
-    void fail_getRequestedMemberList_member_is_not_chef(){
+    void fail_getRequestedMemberList_member_is_not_chef() {
         //given
         given(memberRepository.findById(anyLong()))
                 .willReturn(Optional.of(Member.builder()
@@ -658,7 +658,7 @@ class MemberServiceImplTest {
     }
 
     // 테스트에 사용될 객체 정의
-    private RequestedMemberDto getMemberDtoOne(){
+    private RequestedMemberDto getMemberDtoOne() {
         return new RequestedMemberDto() {
             @Override
             public Long getMemberId() {
@@ -712,7 +712,7 @@ class MemberServiceImplTest {
         };
     }
 
-    private RequestedMemberDto getMemberDtoTwo(){
+    private RequestedMemberDto getMemberDtoTwo() {
         return new RequestedMemberDto() {
             @Override
             public Long getMemberId() {
