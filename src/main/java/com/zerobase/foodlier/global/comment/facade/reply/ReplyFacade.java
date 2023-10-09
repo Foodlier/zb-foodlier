@@ -23,7 +23,7 @@ public class ReplyFacade {
     private final RecipeService recipeService;
 
     @Transactional
-    @RedissonLock(group = "reply", key = "#recipeId")
+    @RedissonLock(group = "comment", key = "#recipeId")
     public void createReply(Long commentId, Long recipeId, String userEmail, String message) {
 
         Member member = memberService.findByEmail(userEmail);
@@ -38,7 +38,7 @@ public class ReplyFacade {
     }
 
     @Transactional
-    @RedissonLock(group = "reply", key = "#recipeId")
+    @RedissonLock(group = "comment", key = "#recipeId")
     public void deleteReply(Long replyId, Long recipeId, Long memberId) {
         recipeService.minusCommentCount(recipeId);
         replyService.deleteReply(memberId,replyId);
