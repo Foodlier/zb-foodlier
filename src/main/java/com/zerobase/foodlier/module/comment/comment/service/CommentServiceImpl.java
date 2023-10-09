@@ -3,13 +3,17 @@ package com.zerobase.foodlier.module.comment.comment.service;
 import com.zerobase.foodlier.module.comment.comment.domain.model.Comment;
 import com.zerobase.foodlier.module.comment.comment.dto.CommentDto;
 import com.zerobase.foodlier.module.comment.comment.dto.CommentPagingDto;
+import com.zerobase.foodlier.module.comment.comment.dto.MyPageCommentDto;
 import com.zerobase.foodlier.module.comment.comment.exception.CommentException;
 import com.zerobase.foodlier.module.comment.comment.repository.CommentRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 import static com.zerobase.foodlier.module.comment.comment.exception.CommentErrorCode.ALREADY_DELETED;
 import static com.zerobase.foodlier.module.comment.comment.exception.CommentErrorCode.NO_SUCH_COMMENT;
@@ -65,6 +69,11 @@ public class CommentServiceImpl implements CommentService {
                 .totalPages(commentDtoList.getTotalPages())
                 .commentDtoList(commentDtoList.getContent())
                 .build();
+    }
+
+    public List<MyPageCommentDto> getMyCommentList(Long memberId, Pageable pageable){
+        return commentRepository.findMyCommentList(memberId, pageable)
+                .getContent();
     }
 
 }
