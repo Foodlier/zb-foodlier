@@ -1,8 +1,6 @@
 package com.zerobase.foodlier.module.payment.service;
 
 import com.zerobase.foodlier.common.security.provider.dto.MemberAuthDto;
-import com.zerobase.foodlier.module.history.charge.domain.model.PointChargeHistory;
-import com.zerobase.foodlier.module.history.charge.repository.PointChargeHistoryRepository;
 import com.zerobase.foodlier.module.member.member.domain.model.Member;
 import com.zerobase.foodlier.module.member.member.exception.MemberException;
 import com.zerobase.foodlier.module.member.member.repository.MemberRepository;
@@ -45,9 +43,6 @@ class PaymentServiceImplTest {
 
     @Mock
     private MemberRepository memberRepository;
-
-    @Mock
-    private PointChargeHistoryRepository pointChargeHistoryRepository;
 
     @Mock
     private RestTemplate restTemplate;
@@ -148,8 +143,6 @@ class PaymentServiceImplTest {
         //then
         ArgumentCaptor<Payment> paymentCaptor =
                 ArgumentCaptor.forClass(Payment.class);
-        ArgumentCaptor<PointChargeHistory> pointChargeHistoryCaptor =
-                ArgumentCaptor.forClass(PointChargeHistory.class);
 
         verify(restTemplate, times(1))
                 .postForEntity(anyString(), any(HttpEntity.class), any());
@@ -157,21 +150,13 @@ class PaymentServiceImplTest {
                 .findByOrderId("orderId");
         verify(paymentRepository, times(1))
                 .save(paymentCaptor.capture());
-        verify(pointChargeHistoryRepository, times(1))
-                .save(pointChargeHistoryCaptor.capture());
 
         Payment payment = paymentCaptor.getValue();
-        PointChargeHistory pointChargeHistory = pointChargeHistoryCaptor.getValue();
 
         assertAll(
                 () -> assertEquals("Y", payment.getPaySuccessYn()),
-                () -> assertEquals("paymentKey", payment.getPaymentKey())
-        );
-
-        assertAll(
-                () -> assertEquals("paymentKey",
-                        pointChargeHistory.getPaymentKey()),
-                () -> assertEquals(1000L, pointChargeHistory.getChargePoint())
+                () -> assertEquals("paymentKey", payment.getPaymentKey()),
+                () -> assertEquals(1000L, payment.getAmount())
         );
     }
 
@@ -305,19 +290,13 @@ class PaymentServiceImplTest {
                 .willReturn(payment);
 
         //when
-        String reason = paymentService.requestPaymentCancel("paymentKey",
+        Payment paymentCancel = paymentService.requestPaymentCancel("paymentKey",
                 "단순 변심");
 
         //then
-        ArgumentCaptor<Payment> captor = ArgumentCaptor.forClass(Payment.class);
-        verify(paymentRepository, times(1))
-                .save(captor.capture());
-        Payment value = captor.getValue();
-
         assertAll(
-                () -> assertTrue(value.isCanceled()),
-                () -> assertEquals(0L, value.getMember().getPoint()),
-                () -> assertEquals("단순 변심", reason)
+                () -> assertTrue(paymentCancel.isCanceled()),
+                () -> assertEquals(0L, paymentCancel.getMember().getPoint())
         );
     }
 
