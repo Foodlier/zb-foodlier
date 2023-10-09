@@ -55,6 +55,8 @@ export const ProcedureImg = styled.img`
   width: 100%;
   height: 100%;
   object-fit: cover;
+  border: 1px solid ${palette.divider};
+  border-radius: inherit;
 `
 
 export const stepTxt = styled.p``
