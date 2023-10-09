@@ -35,6 +35,8 @@ public class DmRoomServiceImplTest {
     private DmRoomRepository dmRoomRepository;
     @Mock
     private DmRepository dmRepository;
+    @Mock
+    private RequestRepository requestRepository;
     @InjectMocks
     private DmRoomServiceImpl dmRoomService;
 
@@ -143,6 +145,7 @@ public class DmRoomServiceImplTest {
 
         //then
         verify(dmRepository, times(1)).deleteAll(dmList);
+        verify(requestRepository, times(1)).save(dmRoom.getRequest());
         verify(dmRoomRepository, times(1)).delete(dmRoom);
         verify(dmRoomRepository, times(1)).delete(dmRoom);
     }
