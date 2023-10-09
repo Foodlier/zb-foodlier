@@ -1,6 +1,7 @@
 package com.zerobase.foodlier.module.member.member.service;
 
 import com.zerobase.foodlier.common.security.provider.JwtTokenProvider;
+import com.zerobase.foodlier.common.security.provider.dto.MemberAuthDto;
 import com.zerobase.foodlier.common.security.provider.dto.TokenDto;
 import com.zerobase.foodlier.module.member.member.domain.model.Member;
 import com.zerobase.foodlier.module.member.member.domain.vo.Address;
@@ -9,6 +10,7 @@ import com.zerobase.foodlier.module.member.member.dto.SignInForm;
 import com.zerobase.foodlier.module.member.member.exception.MemberException;
 import com.zerobase.foodlier.module.member.member.profile.dto.MemberPrivateProfileResponse;
 import com.zerobase.foodlier.module.member.member.profile.dto.MemberUpdateDto;
+import com.zerobase.foodlier.module.member.member.profile.dto.PasswordChangeForm;
 import com.zerobase.foodlier.module.member.member.repository.MemberRepository;
 import com.zerobase.foodlier.module.member.member.type.RegistrationType;
 import com.zerobase.foodlier.module.member.member.type.RoleType;
@@ -29,8 +31,7 @@ import java.util.Optional;
 
 import static com.zerobase.foodlier.module.member.member.exception.MemberErrorCode.*;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -487,5 +488,58 @@ class MemberServiceImplTest {
         //then
         assertEquals(PHONE_NUMBER_IS_ALREADY_EXIST,
                 memberException.getErrorCode());
+    }
+
+    @Test
+    @DisplayName("비밀번호 변경 성공")
+    void success_updatePassword() {
+        //given
+        given(memberRepository.findById(anyLong()))
+                .willReturn(Optional.ofNullable(Member.builder()
+                        .id(1L)
+                        .email("test@test.com")
+                        .password(passwordEncoder.encode("1"))
+                        .build()));
+
+        ArgumentCaptor<Member> captor = ArgumentCaptor.forClass(Member.class);
+
+        //when
+        memberService.updatePassword(MemberAuthDto.builder()
+                .id(1L)
+                .email("test@test.com")
+                .build(), PasswordChangeForm.builder()
+                .currentPassword("1")
+                .newPassword("123")
+                .build());
+
+        //then
+        verify(tokenProvider, times(1))
+                .deleteRefreshToken("test@test.com");
+        verify(memberRepository, times(1))
+                .save(captor.capture());
+
+        assertTrue(passwordEncoder
+                .matches("123", captor.getValue().getPassword()));
+    }
+
+    @Test
+    @DisplayName("비밀번호 변경 실패 - 회원을 찾을 수 없음")
+    void fail_updatePassword_memberNotFound() {
+        //given
+        given(memberRepository.findById(anyLong()))
+                .willReturn(Optional.empty());
+
+        //when
+        MemberException memberException = assertThrows(MemberException.class,
+                () -> memberService.updatePassword(MemberAuthDto.builder()
+                        .id(1L)
+                        .email("test@test.com")
+                        .build(), PasswordChangeForm.builder()
+                        .currentPassword("1")
+                        .newPassword("123")
+                        .build()));
+
+        //then
+        assertEquals(MEMBER_NOT_FOUND, memberException.getErrorCode());
     }
 }
