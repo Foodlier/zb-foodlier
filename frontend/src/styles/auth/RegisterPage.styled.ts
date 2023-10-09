@@ -76,7 +76,7 @@ export const InputInfo = styled.span`
 
 export const Title = styled.h1`
   font-size: 24px;
-  margin-bottom: 30px;
+  margin-bottom: 10px;
 `
 
 export const Form = styled.form`
@@ -128,6 +128,16 @@ export const ConfirmButton = styled.button`
   width: 80%;
   height: 65px;
   background-color: ${palette.main};
+  color: #fff;
+  font-size: 18px;
+  margin: 0 auto;
+`
+
+export const DisabledButton = styled.button`
+  ${buttonStyles}
+  width: 80%;
+  height: 65px;
+  background-color: #ccc;
   color: #fff;
   font-size: 18px;
   margin: 0 auto;

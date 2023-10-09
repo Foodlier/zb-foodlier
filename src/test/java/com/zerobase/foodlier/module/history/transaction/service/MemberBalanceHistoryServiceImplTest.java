@@ -1,0 +1,187 @@
+package com.zerobase.foodlier.module.history.transaction.service;
+
+import com.zerobase.foodlier.common.security.provider.dto.MemberAuthDto;
+import com.zerobase.foodlier.module.history.transaction.domain.model.MemberBalanceHistory;
+import com.zerobase.foodlier.module.history.transaction.dto.MemberBalanceHistoryDto;
+import com.zerobase.foodlier.module.history.transaction.repository.MemberBalanceHistoryRepository;
+import com.zerobase.foodlier.module.member.member.domain.model.Member;
+import com.zerobase.foodlier.module.member.member.exception.MemberException;
+import com.zerobase.foodlier.module.member.member.repository.MemberRepository;
+import com.zerobase.foodlier.module.transaction.dto.TransactionDto;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
+import static com.zerobase.foodlier.module.member.member.exception.MemberErrorCode.MEMBER_NOT_FOUND;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+
+@ExtendWith(MockitoExtension.class)
+class MemberBalanceHistoryServiceImplTest {
+    @Mock
+    private MemberBalanceHistoryRepository memberBalanceHistoryRepository;
+
+    @Mock
+    private MemberRepository memberRepository;
+
+    @InjectMocks
+    private MemberBalanceHistoryServiceImpl memberBalanceHistoryService;
+
+    @Test
+    @DisplayName("요청자 포인트 거래내역 생성 성공")
+    void success_createRequestMemberBalanceHistory() {
+        //given
+        TransactionDto transactionDto = getTransactionDto();
+        transactionDto.getRequestMember().setPoint(0);
+
+        ArgumentCaptor<MemberBalanceHistory> captor =
+                ArgumentCaptor.forClass(MemberBalanceHistory.class);
+
+        //when
+        memberBalanceHistoryService.createRequestMemberBalanceHistory(transactionDto);
+
+        //then
+        verify(memberBalanceHistoryRepository, times(1))
+                .save(captor.capture());
+
+        MemberBalanceHistory value = captor.getValue();
+        assertAll(
+                () -> assertEquals(transactionDto.getRequestMember(),
+                        value.getMember()),
+                () -> assertEquals(-1000, value.getChangePoint()),
+                () -> assertEquals(0, value.getMember().getPoint()),
+                () -> assertEquals(transactionDto.getChefMember().getNickname(),
+                        value.getSender()),
+                () -> assertEquals("포인트 거래", value.getDescription())
+        );
+    }
+
+    @Test
+    @DisplayName("요리사 포인트 거래내역 생성 성공")
+    void success_createChefMemberBalanceHistory() {
+        //given
+        TransactionDto transactionDto = getTransactionDto();
+        transactionDto.getChefMember().setPoint(1000L);
+
+        ArgumentCaptor<MemberBalanceHistory> captor =
+                ArgumentCaptor.forClass(MemberBalanceHistory.class);
+
+        //when
+        memberBalanceHistoryService
+                .createChefMemberBalanceHistory(transactionDto);
+
+        //then
+        verify(memberBalanceHistoryRepository, times(1))
+                .save(captor.capture());
+
+        MemberBalanceHistory value = captor.getValue();
+        assertAll(
+                () -> assertEquals(transactionDto.getChefMember(),
+                        value.getMember()),
+                () -> assertEquals(1000, value.getChangePoint()),
+                () -> assertEquals(1000, value.getMember().getPoint()),
+                () -> assertEquals(transactionDto.getRequestMember().getNickname(),
+                        value.getSender()),
+                () -> assertEquals("포인트 거래", value.getDescription())
+        );
+    }
+
+    @Test
+    @DisplayName("거래 내역 조회 성공")
+    void success_getTransactionHistory() {
+        //given
+        given(memberRepository.findById(anyLong()))
+                .willReturn(Optional.ofNullable(Member.builder()
+                        .id(1L)
+                        .point(1000L)
+                        .build()));
+        given(memberBalanceHistoryRepository
+                .findByMemberOrderByCreatedAtDesc(any(), any()))
+                .willReturn(new PageImpl<>(new ArrayList<>(List.of(
+                        MemberBalanceHistory.builder()
+                                .changePoint(-1000)
+                                .currentPoint(0)
+                                .sender("chef member")
+                                .description("포인트 거래")
+                                .build(),
+                        MemberBalanceHistory.builder()
+                                .changePoint(1000)
+                                .currentPoint(1000)
+                                .sender("member")
+                                .description("포인트 거래")
+                                .build()
+                ))));
+
+        //when
+        List<MemberBalanceHistoryDto> transactionHistoryList =
+                memberBalanceHistoryService.getTransactionHistory(MemberAuthDto.builder()
+                        .id(1L)
+                        .build(), PageRequest.of(0, 10));
+
+        //then
+        assertAll(
+                () -> assertEquals(-1000,
+                        transactionHistoryList.get(0).getChangePoint()),
+                () -> assertEquals(0,
+                        transactionHistoryList.get(0).getCurrentPoint()),
+                () -> assertEquals("chef member",
+                        transactionHistoryList.get(0).getSender()),
+                () -> assertEquals("포인트 거래",
+                        transactionHistoryList.get(0).getDescription()),
+
+                () -> assertEquals(1000,
+                        transactionHistoryList.get(1).getChangePoint()),
+                () -> assertEquals(1000,
+                        transactionHistoryList.get(1).getCurrentPoint()),
+                () -> assertEquals("member",
+                        transactionHistoryList.get(1).getSender()),
+                () -> assertEquals("포인트 거래",
+                        transactionHistoryList.get(1).getDescription())
+        );
+    }
+
+    @Test
+    @DisplayName("거래 내역 조회 실패 - 회원을 찾을 수 없음")
+    void fail_getPointHistory_memberNotFound() {
+        //given
+        given(memberRepository.findById(anyLong()))
+                .willReturn(Optional.empty());
+
+        //when
+        MemberException memberException = assertThrows(MemberException.class,
+                () -> memberBalanceHistoryService.getTransactionHistory(MemberAuthDto.builder()
+                        .id(1L)
+                        .build(), PageRequest.of(0, 10)));
+
+        //then
+        assertEquals(MEMBER_NOT_FOUND, memberException.getErrorCode());
+    }
+
+    private static TransactionDto getTransactionDto() {
+        return TransactionDto.builder()
+                .requestMember(Member.builder()
+                        .id(1L)
+                        .point(1000L)
+                        .build())
+                .chefMember(Member.builder()
+                        .id(2L)
+                        .build())
+                .changePoint(1000)
+                .build();
+    }
+
+}
