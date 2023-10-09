@@ -1,6 +1,7 @@
 package com.zerobase.foodlier.module.history.transaction.domain.model;
 
 import com.zerobase.foodlier.common.jpa.audit.Audit;
+import com.zerobase.foodlier.module.history.transaction.dto.MemberBalanceHistoryDto;
 import com.zerobase.foodlier.module.member.member.domain.model.Member;
 import lombok.*;
 
@@ -28,4 +29,13 @@ public class MemberBalanceHistory extends Audit {
     private String sender;
     @Column(nullable = false)
     private String description;
+
+    public static MemberBalanceHistoryDto from(MemberBalanceHistory memberBalanceHistory) {
+        return MemberBalanceHistoryDto.builder()
+                .changePoint(memberBalanceHistory.getChangePoint())
+                .currentPoint(memberBalanceHistory.getCurrentPoint())
+                .sender(memberBalanceHistory.getSender())
+                .description(memberBalanceHistory.getDescription())
+                .build();
+    }
 }
