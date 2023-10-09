@@ -10,6 +10,7 @@ import com.zerobase.foodlier.module.member.member.repository.MemberRepository;
 import com.zerobase.foodlier.module.recipe.domain.model.Recipe;
 import com.zerobase.foodlier.module.request.domain.model.Request;
 import com.zerobase.foodlier.module.request.domain.vo.Ingredient;
+import com.zerobase.foodlier.module.request.dto.RequestDetailDto;
 import com.zerobase.foodlier.module.request.exception.RequestException;
 import com.zerobase.foodlier.module.request.repository.RequestRepository;
 import com.zerobase.foodlier.module.requestform.domain.model.RequestForm;
@@ -43,6 +44,36 @@ public class RequestServiceImpl implements RequestService {
     public void setDmRoom(Request request, DmRoom dmRoom){
         request.setDmRoom(dmRoom);
         requestRepository.save(request);
+    }
+
+    @Override
+    public RequestDetailDto getRequestDetail(Long memberId, Long requestId){
+        Request request = getRequest(requestId);
+        Member member = getMember(memberId);
+
+        validateGetRequestDetail(member, request);
+
+        RequestDetailDto.RequestDetailDtoBuilder builder = RequestDetailDto.builder()
+                .requestId(request.getId())
+                .requesterNickname(request.getMember().getNickname())
+                .title(request.getTitle())
+                .content(request.getContent())
+                .ingredientList(request.getIngredientList().stream()
+                        .map(Ingredient::getIngredientName)
+                        .collect(Collectors.toList()))
+                .expectedPrice(request.getExpectedPrice())
+                .expectedAt(request.getExpectedAt())
+                .address(request.getMember().getAddress().getRoadAddress())
+                .addressDetail(request.getMember().getAddress().getAddressDetail());
+
+        if(!Objects.isNull(request.getRecipe())){
+            builder.mainImageUrl(request.getRecipe().getMainImageUrl())
+                    .recipeTitle(request.getRecipe().getSummary().getTitle())
+                    .recipeContent(request.getRecipe().getSummary().getContent())
+                    .heartCount(request.getRecipe().getHeartCount());
+        }
+
+        return builder.build();
     }
 
     /**
@@ -169,6 +200,19 @@ public class RequestServiceImpl implements RequestService {
 
 
     // ===================== Validates =======================
+
+    private void validateGetRequestDetail(Member member, Request request){
+
+        //요청서에 요리사가 할당되지 않았을 경우는 존재할 수 없는 ID를 할당함.
+        Long chefMemberId = Objects.isNull(request.getChefMember()) ? -1L :
+                request.getChefMember().getMember().getId();
+
+        if(!Objects.equals(request.getMember().getId(), member.getId()) &&
+                !Objects.equals(chefMemberId, member.getId())){
+            throw new RequestException(CANNOT_ACCESS_REQUEST);
+        }
+    }
+
     private void validateSendRequest(Member member, ChefMember chefMember){
 
         if(Objects.equals(member.getId(), chefMember.getMember().getId())){
