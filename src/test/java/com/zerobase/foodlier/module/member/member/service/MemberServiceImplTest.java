@@ -2,15 +2,18 @@ package com.zerobase.foodlier.module.member.member.service;
 
 import com.zerobase.foodlier.common.security.provider.JwtTokenProvider;
 import com.zerobase.foodlier.common.security.provider.dto.TokenDto;
+import com.zerobase.foodlier.module.member.chef.domain.model.ChefMember;
 import com.zerobase.foodlier.module.member.member.domain.model.Member;
 import com.zerobase.foodlier.module.member.member.domain.vo.Address;
 import com.zerobase.foodlier.module.member.member.dto.MemberRegisterDto;
+import com.zerobase.foodlier.module.member.member.dto.RequestedMemberDto;
 import com.zerobase.foodlier.module.member.member.dto.SignInForm;
 import com.zerobase.foodlier.module.member.member.exception.MemberException;
 import com.zerobase.foodlier.module.member.member.profile.dto.MemberPrivateProfileResponse;
 import com.zerobase.foodlier.module.member.member.profile.dto.MemberUpdateDto;
 import com.zerobase.foodlier.module.member.member.repository.MemberRepository;
 import com.zerobase.foodlier.module.member.member.type.RegistrationType;
+import com.zerobase.foodlier.module.member.member.type.RequestedOrderingType;
 import com.zerobase.foodlier.module.member.member.type.RoleType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -20,17 +23,20 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
 import static com.zerobase.foodlier.module.member.member.exception.MemberErrorCode.*;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -488,4 +494,274 @@ class MemberServiceImplTest {
         assertEquals(PHONE_NUMBER_IS_ALREADY_EXIST,
                 memberException.getErrorCode());
     }
+
+    @Test
+    @DisplayName("주변 요청자 조회 성공 - 가까운 거리순 정렬")
+    void success_getRequestedMemberList_order_by_distance(){
+        //given
+        ChefMember chefMember = ChefMember.builder().build();
+        given(memberRepository.findById(anyLong()))
+                .willReturn(Optional.of(Member.builder()
+                        .id(3L)
+                        .chefMember(chefMember)
+                                .address(Address.builder()
+                                        .lat(37.5)
+                                        .lnt(127.5)
+                                        .build())
+                        .build()));
+
+        RequestedMemberDto memberOne = getMemberDtoOne();
+        RequestedMemberDto memberTwo = getMemberDtoTwo();
+
+        given(memberRepository.getRequestedMemberListOrderByDistance(
+                any(), anyDouble(), anyDouble(), any()
+        )).willReturn(
+                new PageImpl<>(
+                        new ArrayList<>(
+                                Arrays.asList(
+                                        memberTwo,
+                                        memberOne
+                                )
+                        )
+                )
+        );
+
+        //when
+        List<RequestedMemberDto> responseList = memberService
+                .getRequestedMemberList(3L,
+                RequestedOrderingType.DISTANCE, PageRequest.of(0, 10));
+
+        //then
+        assertAll(
+                () -> assertEquals(memberTwo.getMemberId(), responseList.get(0).getMemberId()),
+                () -> assertEquals(memberTwo.getProfileUrl(), responseList.get(0).getProfileUrl()),
+                () -> assertEquals(memberTwo.getNickname(), responseList.get(0).getNickname()),
+                () -> assertEquals(memberTwo.getDistance(), responseList.get(0).getDistance()),
+                () -> assertEquals(memberTwo.getLat(), responseList.get(0).getLat()),
+                () -> assertEquals(memberTwo.getLnt(), responseList.get(0).getLnt()),
+                () -> assertEquals(memberTwo.getRequestId(), responseList.get(0).getRequestId()),
+                () -> assertEquals(memberTwo.getTitle(), responseList.get(0).getTitle()),
+                () -> assertEquals(memberTwo.getMainImageUrl(), responseList.get(0).getMainImageUrl()),
+
+                () -> assertEquals(memberOne.getMemberId(), responseList.get(1).getMemberId()),
+                () -> assertEquals(memberOne.getProfileUrl(), responseList.get(1).getProfileUrl()),
+                () -> assertEquals(memberOne.getNickname(), responseList.get(1).getNickname()),
+                () -> assertEquals(memberOne.getDistance(), responseList.get(1).getDistance()),
+                () -> assertEquals(memberOne.getLat(), responseList.get(1).getLat()),
+                () -> assertEquals(memberOne.getLnt(), responseList.get(1).getLnt()),
+                () -> assertEquals(memberOne.getRequestId(), responseList.get(1).getRequestId()),
+                () -> assertEquals(memberOne.getTitle(), responseList.get(1).getTitle()),
+                () -> assertEquals(memberOne.getMainImageUrl(), responseList.get(1).getMainImageUrl())
+        );
+    }
+
+    @Test
+    @DisplayName("주변 요청자 조회 성공 - 적은 희망가격순 정렬")
+    void success_getRequestedMemberList_order_by_expected_price(){
+        //given
+        ChefMember chefMember = ChefMember.builder().build();
+        given(memberRepository.findById(anyLong()))
+                .willReturn(Optional.of(Member.builder()
+                        .id(3L)
+                        .chefMember(chefMember)
+                        .address(Address.builder()
+                                .lat(37.5)
+                                .lnt(127.5)
+                                .build())
+                        .build()));
+
+        RequestedMemberDto memberOne = getMemberDtoOne();
+        RequestedMemberDto memberTwo = getMemberDtoTwo();
+
+        given(memberRepository.getRequestedMemberListOrderByPrice(
+                any(), anyDouble(), anyDouble(), any()
+        )).willReturn(
+                new PageImpl<>(
+                        new ArrayList<>(
+                                Arrays.asList(
+                                        memberOne,
+                                        memberTwo
+                                )
+                        )
+                )
+        );
+
+        //when
+        List<RequestedMemberDto> responseList = memberService
+                .getRequestedMemberList(3L,
+                        RequestedOrderingType.PRICE, PageRequest.of(0, 10));
+
+        //then
+        assertAll(
+                () -> assertEquals(memberOne.getMemberId(), responseList.get(0).getMemberId()),
+                () -> assertEquals(memberOne.getProfileUrl(), responseList.get(0).getProfileUrl()),
+                () -> assertEquals(memberOne.getNickname(), responseList.get(0).getNickname()),
+                () -> assertEquals(memberOne.getDistance(), responseList.get(0).getDistance()),
+                () -> assertEquals(memberOne.getLat(), responseList.get(0).getLat()),
+                () -> assertEquals(memberOne.getLnt(), responseList.get(0).getLnt()),
+                () -> assertEquals(memberOne.getRequestId(), responseList.get(0).getRequestId()),
+                () -> assertEquals(memberOne.getTitle(), responseList.get(0).getTitle()),
+                () -> assertEquals(memberOne.getMainImageUrl(), responseList.get(0).getMainImageUrl()),
+
+                () -> assertEquals(memberTwo.getMemberId(), responseList.get(1).getMemberId()),
+                () -> assertEquals(memberTwo.getProfileUrl(), responseList.get(1).getProfileUrl()),
+                () -> assertEquals(memberTwo.getNickname(), responseList.get(1).getNickname()),
+                () -> assertEquals(memberTwo.getDistance(), responseList.get(1).getDistance()),
+                () -> assertEquals(memberTwo.getLat(), responseList.get(1).getLat()),
+                () -> assertEquals(memberTwo.getLnt(), responseList.get(1).getLnt()),
+                () -> assertEquals(memberTwo.getRequestId(), responseList.get(1).getRequestId()),
+                () -> assertEquals(memberTwo.getTitle(), responseList.get(1).getTitle()),
+                () -> assertEquals(memberTwo.getMainImageUrl(), responseList.get(1).getMainImageUrl())
+        );
+    }
+
+    @Test
+    @DisplayName("주변 요청자 조회 실패 - 회원 X")
+    void fail_getRequestedMemberList_member_not_found(){
+        //given
+        given(memberRepository.findById(anyLong()))
+                .willReturn(Optional.empty());
+
+        //when
+        MemberException exception = assertThrows(MemberException.class,
+                () -> memberService
+                        .getRequestedMemberList(3L,
+                                RequestedOrderingType.PRICE,
+                                PageRequest.of(0, 10)));
+        //then
+        assertEquals(MEMBER_NOT_FOUND, exception.getErrorCode());
+    }
+
+    @Test
+    @DisplayName("주변 요청자 조회 실패 - 요리사가 아님")
+    void fail_getRequestedMemberList_member_is_not_chef(){
+        //given
+        given(memberRepository.findById(anyLong()))
+                .willReturn(Optional.of(Member.builder()
+                        .id(3L)
+                        .address(Address.builder()
+                                .lat(37.5)
+                                .lnt(127.5)
+                                .build())
+                        .build()));
+
+        //when
+        MemberException exception = assertThrows(MemberException.class,
+                () -> memberService
+                        .getRequestedMemberList(3L,
+                                RequestedOrderingType.PRICE,
+                                PageRequest.of(0, 10)));
+        //then
+        assertEquals(MEMBER_IS_NOT_CHEF, exception.getErrorCode());
+    }
+
+    // 테스트에 사용될 객체 정의
+    private RequestedMemberDto getMemberDtoOne(){
+        return new RequestedMemberDto() {
+            @Override
+            public Long getMemberId() {
+                return 1L;
+            }
+
+            @Override
+            public String getProfileUrl() {
+                return "https://s3.test.com/image1.png";
+            }
+
+            @Override
+            public String getNickname() {
+                return "person1";
+            }
+
+            @Override
+            public double getDistance() {
+                return 0.5;
+            }
+
+            @Override
+            public double getLat() {
+                return 37.1;
+            }
+
+            @Override
+            public double getLnt() {
+                return 127.1;
+            }
+
+            @Override
+            public Long getRequestId() {
+                return 1L;
+            }
+
+            @Override
+            public Long getExpectedPrice() {
+                return 12000L;
+            }
+
+            @Override
+            public String getTitle() {
+                return "살려주세요";
+            }
+
+            @Override
+            public String getMainImageUrl() {
+                return "https://s3.test.com/main1.png";
+            }
+        };
+    }
+
+    private RequestedMemberDto getMemberDtoTwo(){
+        return new RequestedMemberDto() {
+            @Override
+            public Long getMemberId() {
+                return 2L;
+            }
+
+            @Override
+            public String getProfileUrl() {
+                return "https://s3.test.com/image2.png";
+            }
+
+            @Override
+            public String getNickname() {
+                return "person2";
+            }
+
+            @Override
+            public double getDistance() {
+                return 0.1;
+            }
+
+            @Override
+            public double getLat() {
+                return 37.2;
+            }
+
+            @Override
+            public double getLnt() {
+                return 127.2;
+            }
+
+            @Override
+            public Long getRequestId() {
+                return 2L;
+            }
+
+            @Override
+            public Long getExpectedPrice() {
+                return 30000L;
+            }
+
+            @Override
+            public String getTitle() {
+                return "살려주세요?";
+            }
+
+            @Override
+            public String getMainImageUrl() {
+                return "https://s3.test.com/main2.png";
+            }
+        };
+    }
+
 }
