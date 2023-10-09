@@ -21,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static com.zerobase.foodlier.module.recipe.exception.recipe.RecipeErrorCode.NO_SUCH_RECIPE;
@@ -210,6 +211,21 @@ public class RecipeServiceImpl implements RecipeService {
 
         recipe.getRecipeStatistics().minusStar(star);
         recipeRepository.save(recipe);
+    }
+
+    @Override
+    public Recipe plusCommentCount(Long recipeId){
+        Recipe recipe = recipeRepository.findById(recipeId)
+                .orElseThrow(() -> new RecipeException(NO_SUCH_RECIPE));
+        recipe.plusCommentCount();
+        return recipeRepository.save(recipe);
+    }
+
+    @Override
+    public void minusCommentCount(Long recipeId) {
+        Recipe recipe = recipeRepository.findById(recipeId)
+                .orElseThrow(() -> new RecipeException(NO_SUCH_RECIPE));;
+        recipe.minusCommentCount();
     }
 
 }
