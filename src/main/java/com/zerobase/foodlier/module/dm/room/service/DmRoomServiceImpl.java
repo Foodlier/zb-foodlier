@@ -58,9 +58,6 @@ public class DmRoomServiceImpl implements DmRoomService {
                 Sort.by(SORT_BY_CREATED_AT).descending());
         List<DmRoomDto> dmRoomDtoList = dmRoomRepository.getDmRoomPage(id, pageable);
 
-        if (dmRoomDtoList.isEmpty()) {
-            throw new DmRoomException(DM_ROOM_NOT_FOUND);
-        }
         return dmRoomDtoList;
     }
 
