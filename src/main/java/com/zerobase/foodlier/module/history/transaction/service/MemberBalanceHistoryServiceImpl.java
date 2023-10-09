@@ -4,7 +4,6 @@ import com.zerobase.foodlier.common.security.provider.dto.MemberAuthDto;
 import com.zerobase.foodlier.module.history.transaction.domain.model.MemberBalanceHistory;
 import com.zerobase.foodlier.module.history.transaction.dto.MemberBalanceHistoryDto;
 import com.zerobase.foodlier.module.history.transaction.repository.MemberBalanceHistoryRepository;
-import com.zerobase.foodlier.module.history.type.TransactionType;
 import com.zerobase.foodlier.module.member.member.domain.model.Member;
 import com.zerobase.foodlier.module.member.member.exception.MemberException;
 import com.zerobase.foodlier.module.member.member.repository.MemberRepository;
