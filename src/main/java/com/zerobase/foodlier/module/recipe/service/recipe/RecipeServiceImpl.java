@@ -13,7 +13,6 @@ import com.zerobase.foodlier.module.recipe.exception.recipe.RecipeErrorCode;
 import com.zerobase.foodlier.module.recipe.exception.recipe.RecipeException;
 import com.zerobase.foodlier.module.recipe.repository.RecipeRepository;
 import com.zerobase.foodlier.module.recipe.repository.RecipeSearchRepository;
-import com.zerobase.foodlier.module.review.recipe.exception.RecipeReviewException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -25,6 +24,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static com.zerobase.foodlier.module.recipe.exception.recipe.RecipeErrorCode.NO_SUCH_RECIPE;
+import static com.zerobase.foodlier.module.recipe.exception.recipe.RecipeErrorCode.NO_SUCH_RECIPE_DOCUMENT;
 
 @Service
 @RequiredArgsConstructor
@@ -215,17 +215,35 @@ public class RecipeServiceImpl implements RecipeService {
 
     @Override
     public Recipe plusCommentCount(Long recipeId){
+        // 레시피의 댓글 수 증가
         Recipe recipe = recipeRepository.findById(recipeId)
                 .orElseThrow(() -> new RecipeException(NO_SUCH_RECIPE));
         recipe.plusCommentCount();
+
+        // 레시피 검색 객체의 댓글 수 증가
+        RecipeDocument recipeDocument = recipeSearchRepository.findById(recipeId)
+                .orElseThrow(() -> new RecipeException(NO_SUCH_RECIPE_DOCUMENT));
+        recipeDocument.plusNumberOfComment();
+        recipeSearchRepository.save(recipeDocument);
+
         return recipeRepository.save(recipe);
     }
 
     @Override
     public void minusCommentCount(Long recipeId) {
+
+        // 레시피 댓글 수 감소
         Recipe recipe = recipeRepository.findById(recipeId)
-                .orElseThrow(() -> new RecipeException(NO_SUCH_RECIPE));;
+                .orElseThrow(() -> new RecipeException(NO_SUCH_RECIPE));
         recipe.minusCommentCount();
+
+        // 레시피 검색 객체의 댓글 수 감소
+        RecipeDocument recipeDocument = recipeSearchRepository.findById(recipeId)
+                .orElseThrow(() -> new RecipeException(NO_SUCH_RECIPE_DOCUMENT));
+        recipeDocument.minusNumberOfComment();
+        recipeSearchRepository.save(recipeDocument);
+
+        recipeRepository.save(recipe);
     }
 
 }

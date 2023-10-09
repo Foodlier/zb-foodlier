@@ -1,15 +1,15 @@
 package com.zerobase.foodlier.module.recipe.domain.document;
 
-import com.zerobase.foodlier.module.recipe.domain.model.Recipe;
-import com.zerobase.foodlier.module.recipe.domain.vo.RecipeIngredient;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.springframework.data.elasticsearch.annotations.Document;
 import org.springframework.data.elasticsearch.annotations.Mapping;
 import org.springframework.data.elasticsearch.annotations.Setting;
 
 import javax.persistence.Id;
 import java.util.List;
-import java.util.stream.Collectors;
 
 
 @Getter
@@ -45,7 +45,10 @@ public class RecipeDocument {
         this.numberOfHeart = numberOfHeart;
     }
 
-    public void updateNumberOfComment(long numberOfComment) {
-        this.numberOfComment = numberOfComment;
+    public void plusNumberOfComment() {
+        this.numberOfComment++;
+    }
+    public void minusNumberOfComment() {
+        this.numberOfComment--;
     }
 }
