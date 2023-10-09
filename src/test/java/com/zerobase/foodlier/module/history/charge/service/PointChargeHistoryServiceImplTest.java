@@ -23,6 +23,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import static com.zerobase.foodlier.module.history.type.TransactionType.CHARGE_CANCEL;
+import static com.zerobase.foodlier.module.history.type.TransactionType.CHARGE_POINT;
 import static com.zerobase.foodlier.module.member.member.exception.MemberErrorCode.MEMBER_NOT_FOUND;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -61,6 +63,7 @@ class PointChargeHistoryServiceImplTest {
                                 .id(1L)
                                 .build())
                         .chargePoint(1000L)
+                        .transactionType(CHARGE_POINT)
                         .build());
 
         ArgumentCaptor<PointChargeHistory> captor =
@@ -77,7 +80,9 @@ class PointChargeHistoryServiceImplTest {
         assertAll(
                 () -> assertEquals("paymentKey", value.getPaymentKey()),
                 () -> assertEquals(1L, value.getMember().getId()),
-                () -> assertEquals(1000L, value.getChargePoint())
+                () -> assertEquals(1000L, value.getChargePoint()),
+                () -> assertEquals("포인트 충전",
+                        value.getTransactionType().getDescription())
         );
     }
 
@@ -100,6 +105,7 @@ class PointChargeHistoryServiceImplTest {
                                 .id(1L)
                                 .build())
                         .chargePoint(1000L)
+                        .transactionType(CHARGE_CANCEL)
                         .build());
 
         ArgumentCaptor<PointChargeHistory> captor =
@@ -116,7 +122,9 @@ class PointChargeHistoryServiceImplTest {
         assertAll(
                 () -> assertEquals("paymentKey", value.getPaymentKey()),
                 () -> assertEquals(1L, value.getMember().getId()),
-                () -> assertEquals(-1000L, value.getChargePoint())
+                () -> assertEquals(1000L, value.getChargePoint()),
+                () -> assertEquals("결제 취소",
+                        value.getTransactionType().getDescription())
         );
     }
 
@@ -134,20 +142,20 @@ class PointChargeHistoryServiceImplTest {
                                 PointChargeHistory.builder()
                                         .paymentKey("paymentKey1")
                                         .chargePoint(1000L)
-                                        .description("포인트 충전")
-                                        .createdAt(LocalDateTime.of(2023, 10, 9, 0, 0))
+                                        .transactionType(CHARGE_POINT)
+                                        .createdAt(LocalDateTime.of(2023, 10, 9, 1, 2, 3))
                                         .build(),
                                 PointChargeHistory.builder()
                                         .paymentKey("paymentKey2")
                                         .chargePoint(1000L)
-                                        .createdAt(LocalDateTime.of(2023, 10, 9, 0, 0))
-                                        .description("포인트 충전")
+                                        .createdAt(LocalDateTime.of(2023, 10, 9, 4, 5, 6))
+                                        .transactionType(CHARGE_POINT)
                                         .build(),
                                 PointChargeHistory.builder()
                                         .paymentKey("paymentKey1")
-                                        .chargePoint(-1000L)
-                                        .createdAt(LocalDateTime.of(2023, 10, 9, 0, 0))
-                                        .description("결제 취소")
+                                        .chargePoint(1000L)
+                                        .createdAt(LocalDateTime.of(2023, 10, 9, 7, 8, 9))
+                                        .transactionType(CHARGE_CANCEL)
                                         .build()
                         ))));
 
@@ -162,7 +170,7 @@ class PointChargeHistoryServiceImplTest {
                         pointHistoryList.get(0).getPaymentKey()),
                 () -> assertEquals(1000L,
                         pointHistoryList.get(0).getChargePoint()),
-                () -> assertEquals("2023-10-09",
+                () -> assertEquals(LocalDateTime.of(2023, 10, 9, 1, 2, 3),
                         pointHistoryList.get(0).getChargeAt()),
                 () -> assertEquals("포인트 충전",
                         pointHistoryList.get(0).getDescription()),
@@ -171,16 +179,16 @@ class PointChargeHistoryServiceImplTest {
                         pointHistoryList.get(1).getPaymentKey()),
                 () -> assertEquals(1000L,
                         pointHistoryList.get(1).getChargePoint()),
-                () -> assertEquals("2023-10-09",
+                () -> assertEquals(LocalDateTime.of(2023, 10, 9, 4, 5, 6),
                         pointHistoryList.get(1).getChargeAt()),
                 () -> assertEquals("포인트 충전",
                         pointHistoryList.get(1).getDescription()),
 
                 () -> assertEquals("paymentKey1",
                         pointHistoryList.get(2).getPaymentKey()),
-                () -> assertEquals(-1000L,
+                () -> assertEquals(1000L,
                         pointHistoryList.get(2).getChargePoint()),
-                () -> assertEquals("2023-10-09",
+                () -> assertEquals(LocalDateTime.of(2023, 10, 9, 7, 8, 9),
                         pointHistoryList.get(2).getChargeAt()),
                 () -> assertEquals("결제 취소",
                         pointHistoryList.get(2).getDescription())

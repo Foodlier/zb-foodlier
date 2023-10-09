@@ -1,13 +1,15 @@
 package com.zerobase.foodlier.module.history.charge.domain.model;
 
 import com.zerobase.foodlier.common.jpa.audit.Audit;
-import com.zerobase.foodlier.module.history.charge.dto.PointChargeHistoryDto;
+import com.zerobase.foodlier.module.history.type.TransactionType;
 import com.zerobase.foodlier.module.member.member.domain.model.Member;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
 import javax.persistence.*;
-import java.time.LocalDate;
 
 @Getter
 @Setter
@@ -28,14 +30,5 @@ public class PointChargeHistory extends Audit {
     @Column(nullable = false)
     private Long chargePoint;
     @Column(nullable = false)
-    private String description;
-
-    public static PointChargeHistoryDto from(PointChargeHistory pointChargeHistory) {
-        return PointChargeHistoryDto.builder()
-                .paymentKey(pointChargeHistory.getPaymentKey())
-                .chargePoint(pointChargeHistory.getChargePoint())
-                .chargeAt(String.valueOf(LocalDate.from(pointChargeHistory.getCreatedAt())))
-                .description(pointChargeHistory.getDescription())
-                .build();
-    }
+    private TransactionType transactionType;
 }

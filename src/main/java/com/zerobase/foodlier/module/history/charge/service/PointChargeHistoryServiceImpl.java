@@ -15,6 +15,8 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.zerobase.foodlier.module.history.type.TransactionType.CHARGE_CANCEL;
+import static com.zerobase.foodlier.module.history.type.TransactionType.CHARGE_POINT;
 import static com.zerobase.foodlier.module.member.member.exception.MemberErrorCode.MEMBER_NOT_FOUND;
 
 @Service
@@ -34,7 +36,7 @@ public class PointChargeHistoryServiceImpl implements PointChargeHistoryService 
                 .paymentKey(payment.getPaymentKey())
                 .member(payment.getMember())
                 .chargePoint(payment.getAmount())
-                .description("포인트 충전")
+                .transactionType(CHARGE_POINT)
                 .build());
     }
 
@@ -48,8 +50,8 @@ public class PointChargeHistoryServiceImpl implements PointChargeHistoryService 
         pointChargeHistoryRepository.save(PointChargeHistory.builder()
                 .paymentKey(payment.getPaymentKey())
                 .member(payment.getMember())
-                .chargePoint(-payment.getAmount())
-                .description("결제 취소")
+                .chargePoint(payment.getAmount())
+                .transactionType(CHARGE_CANCEL)
                 .build());
     }
 
@@ -67,7 +69,7 @@ public class PointChargeHistoryServiceImpl implements PointChargeHistoryService 
         return pointChargeHistoryRepository
                 .findByMemberOrderByCreatedAtDesc(member, pageable)
                 .stream()
-                .map(PointChargeHistory::from)
+                .map(PointChargeHistoryDto::from)
                 .collect(Collectors.toList());
     }
 }
