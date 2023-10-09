@@ -115,6 +115,7 @@ public class ChefMemberServiceImpl implements ChefMemberService{
     public void plusExp(Long chefMemberId, int star){
         ChefMember chefMember = getChefMember(chefMemberId);
         chefMember.plusExp(star * EXPERIENCE_MULTIPLIER);
+        chefMemberRepository.save(chefMember);
     }
 
     /**
@@ -126,6 +127,7 @@ public class ChefMemberServiceImpl implements ChefMemberService{
     public void plusStar(Long chefMemberId, int star){
         ChefMember chefMember = getChefMember(chefMemberId);
         chefMember.plusStar(star);
+        chefMemberRepository.save(chefMember);
     }
 
     /**

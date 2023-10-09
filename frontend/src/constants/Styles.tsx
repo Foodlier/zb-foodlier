@@ -12,6 +12,7 @@ export const palette = {
   shadow: 'rgba(0,0,0,10%)',
   dim: 'rgba(0,0,0,70%)',
   white: '#fff',
+  yellow: '#FFE921',
 }
 
 export const typography = {
@@ -37,4 +38,10 @@ export const spacing = {
   // medium: '8px',
   // large: '16px',
   // xLarge: '32px',
+}
+
+export const zindex = {
+  base: 1,
+  header: 10,
+  modal: 20,
 }

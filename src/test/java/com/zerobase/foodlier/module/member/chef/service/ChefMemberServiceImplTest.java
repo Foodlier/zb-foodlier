@@ -695,7 +695,77 @@ class ChefMemberServiceImplTest {
         };
     }
 
+    @Test
+    @DisplayName("요리사의 경험치를 올림 성공")
+    void success_plusExp(){
+        //given
+        given(chefMemberRepository.findById(anyLong()))
+                .willReturn(Optional.of(ChefMember.builder()
+                        .id(1L)
+                        .exp(0)
+                        .build()));
 
+        //when
+        chefMemberService.plusExp(1L, 5);
 
+        //then
+        ArgumentCaptor<ChefMember> captor = ArgumentCaptor.forClass(ChefMember.class);
+        verify(chefMemberRepository, times(1)).save(captor.capture());
+
+        assertEquals(500, captor.getValue().getExp());
+    }
+
+    @Test
+    @DisplayName("요리사의 경험치를 올림 실패 - 요리사 X")
+    void fail_plusExp_chef_member_not_found(){
+        //given
+        given(chefMemberRepository.findById(anyLong()))
+                .willReturn(Optional.empty());
+        //when
+        ChefMemberException exception = assertThrows(ChefMemberException.class,
+                () -> chefMemberService.plusExp(1L, 5));
+        //then
+        assertEquals(CHEF_MEMBER_NOT_FOUND, exception.getErrorCode());
+    }
+
+    @Test
+    @DisplayName("요리사의 별점 추가 성공")
+    void success_plusStar(){
+        //given
+        given(chefMemberRepository.findById(anyLong()))
+                .willReturn(Optional.of(ChefMember.builder()
+                        .id(1L)
+                        .starSum(0)
+                        .starAvg(0)
+                        .reviewCount(0)
+                        .build()));
+
+        //when
+        chefMemberService.plusStar(1L, 5);
+
+        //then
+        ArgumentCaptor<ChefMember> captor = ArgumentCaptor.forClass(ChefMember.class);
+        verify(chefMemberRepository, times(1)).save(captor.capture());
+
+        assertAll(
+                () -> assertEquals(5, captor.getValue().getStarAvg()),
+                () -> assertEquals(5, captor.getValue().getStarSum()),
+                () -> assertEquals(1, captor.getValue().getReviewCount())
+        );
+
+    }
+
+    @Test
+    @DisplayName("요리사의 별점 추가 실패 - 요리사 X")
+    void fail_plusStar_chef_member_not_found(){
+        //given
+        given(chefMemberRepository.findById(anyLong()))
+                .willReturn(Optional.empty());
+        //when
+        ChefMemberException exception = assertThrows(ChefMemberException.class,
+                () -> chefMemberService.plusStar(1L, 5));
+        //then
+        assertEquals(CHEF_MEMBER_NOT_FOUND, exception.getErrorCode());
+    }
 
 }
