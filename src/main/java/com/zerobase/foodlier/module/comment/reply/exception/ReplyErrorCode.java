@@ -7,7 +7,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public enum ReplyErrorCode {
 
-    NEW_ENUM("enum 추가");
+    NO_SUCH_REPLY("해당 답글을 찾을 수 없습니다.");
 
     private final String description;
 }
