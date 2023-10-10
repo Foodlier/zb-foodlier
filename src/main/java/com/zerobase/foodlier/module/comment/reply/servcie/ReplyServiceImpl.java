@@ -1,12 +1,11 @@
 package com.zerobase.foodlier.module.comment.reply.servcie;
 
+import com.zerobase.foodlier.common.response.ListResponse;
 import com.zerobase.foodlier.module.comment.reply.domain.model.Reply;
 import com.zerobase.foodlier.module.comment.reply.dto.ReplyDto;
-import com.zerobase.foodlier.module.comment.reply.dto.ReplyPagingDto;
 import com.zerobase.foodlier.module.comment.reply.exception.ReplyException;
 import com.zerobase.foodlier.module.comment.reply.reposiotry.ReplyRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -44,17 +43,9 @@ public class ReplyServiceImpl implements ReplyService{
 
     @Override
     @Transactional(readOnly = true)
-    public ReplyPagingDto getReplyList(Long commentId, PageRequest pageRequest) {
-
-        Page<ReplyDto> replyList = replyRepository.findReplyList(commentId, pageRequest);
-
-        return ReplyPagingDto.builder()
-                .hasNextPage(replyList.hasNext())
-                .totalElements(replyList.getTotalElements())
-                .totalPages(replyList.getTotalPages())
-                .replyDtoList(replyList.getContent())
-                .build();
+    public ListResponse<ReplyDto> getReplyList(Long commentId, PageRequest pageRequest) {
+        return ListResponse.from(
+                replyRepository.findReplyList(commentId, pageRequest));
     }
-
 
 }

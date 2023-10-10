@@ -1,5 +1,6 @@
 package com.zerobase.foodlier.module.member.chef.service;
 
+import com.zerobase.foodlier.common.response.ListResponse;
 import com.zerobase.foodlier.module.member.chef.domain.model.ChefMember;
 import com.zerobase.foodlier.module.member.chef.dto.AroundChefDto;
 import com.zerobase.foodlier.module.member.chef.dto.ChefIntroduceForm;
@@ -20,7 +21,11 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -313,29 +318,46 @@ class ChefMemberServiceImplTest {
                 }
         );
 
-        given(chefMemberRepository.findRequestedChef(anyLong(), anyInt(), anyInt()))
+        given(chefMemberRepository.findRequestedChef(anyLong(), any()))
                 .willReturn(
-                    chefList
+                        new PageImpl<>(
+                                new ArrayList<>(
+                                        chefList
+                                )
+                        )
                 );
         //when
-        List<RequestedChefDto> responseChefList = chefMemberService
-                .getRequestedChefList(1L, 0, 10);
+        ListResponse<RequestedChefDto> responseChefList = chefMemberService
+                .getRequestedChefList(1L, PageRequest.of(0, 10));
 
         //then
         assertAll(
-                () -> assertEquals(chefList.get(0).getChefId(), responseChefList.get(0).getChefId()),
-                () -> assertEquals(chefList.get(0).getIntroduce(), responseChefList.get(0).getIntroduce()),
-                () -> assertEquals(chefList.get(0).getStarAvg(), responseChefList.get(0).getStarAvg()),
-                () -> assertEquals(chefList.get(0).getReviewCount(), responseChefList.get(0).getReviewCount()),
-                () -> assertEquals(chefList.get(0).getProfileUrl(), responseChefList.get(0).getProfileUrl()),
-                () -> assertEquals(chefList.get(0).getNickname(), responseChefList.get(0).getNickname()),
-                () -> assertEquals(chefList.get(0).getDistance(), responseChefList.get(0).getDistance()),
-                () -> assertEquals(chefList.get(0).getLat(), responseChefList.get(0).getLat()),
-                () -> assertEquals(chefList.get(0).getLnt(), responseChefList.get(0).getLnt()),
-                () -> assertEquals(chefList.get(0).getRecipeCount(), responseChefList.get(0).getRecipeCount()),
-                () -> assertEquals(chefList.get(0).getRequestId(), responseChefList.get(0).getRequestId()),
-                () -> assertEquals(chefList.get(0).getIsQuotation(), responseChefList.get(0).getIsQuotation()),
-                () -> assertEquals(chefList.get(0).getQuotationId(), responseChefList.get(0).getQuotationId())
+                () -> assertEquals(chefList.get(0).getChefId(),
+                        responseChefList.getContent().get(0).getChefId()),
+                () -> assertEquals(chefList.get(0).getIntroduce(),
+                        responseChefList.getContent().get(0).getIntroduce()),
+                () -> assertEquals(chefList.get(0).getStarAvg(),
+                        responseChefList.getContent().get(0).getStarAvg()),
+                () -> assertEquals(chefList.get(0).getReviewCount(),
+                        responseChefList.getContent().get(0).getReviewCount()),
+                () -> assertEquals(chefList.get(0).getProfileUrl(),
+                        responseChefList.getContent().get(0).getProfileUrl()),
+                () -> assertEquals(chefList.get(0).getNickname(),
+                        responseChefList.getContent().get(0).getNickname()),
+                () -> assertEquals(chefList.get(0).getDistance(),
+                        responseChefList.getContent().get(0).getDistance()),
+                () -> assertEquals(chefList.get(0).getLat(),
+                        responseChefList.getContent().get(0).getLat()),
+                () -> assertEquals(chefList.get(0).getLnt(),
+                        responseChefList.getContent().get(0).getLnt()),
+                () -> assertEquals(chefList.get(0).getRecipeCount(),
+                        responseChefList.getContent().get(0).getRecipeCount()),
+                () -> assertEquals(chefList.get(0).getRequestId(),
+                        responseChefList.getContent().get(0).getRequestId()),
+                () -> assertEquals(chefList.get(0).getIsQuotation(),
+                        responseChefList.getContent().get(0).getIsQuotation()),
+                () -> assertEquals(chefList.get(0).getQuotationId(),
+                        responseChefList.getContent().get(0).getQuotationId())
         );
 
     }
@@ -360,41 +382,45 @@ class ChefMemberServiceImplTest {
                 ));
 
         given(chefMemberRepository.findAroundChefOrderByDistance(
-                anyLong(), anyDouble(), anyDouble(), anyDouble(), anyInt(), anyInt()
+                anyLong(), anyDouble(), anyDouble(), anyDouble(), any()
         )).willReturn(
-                List.of(
-                        chef2, chef1
+                new PageImpl<>(
+                        new ArrayList<>(
+                                Arrays.asList(
+                                        chef2, chef1
+                                )
+                        )
                 )
         );
 
         //when
-        List<AroundChefDto> response = chefMemberService
-                .getAroundChefList(1L, 0, 10,
+        ListResponse<AroundChefDto> response = chefMemberService
+                .getAroundChefList(1L, PageRequest.of(0, 10),
                         ChefSearchType.DISTANCE);
 
         //then
         assertAll(
-                () -> assertEquals(chef2.getChefId(), response.get(0).getChefId()),
-                () -> assertEquals(chef2.getIntroduce(), response.get(0).getIntroduce()),
-                () -> assertEquals(chef2.getStarAvg(), response.get(0).getStarAvg()),
-                () -> assertEquals(chef2.getReviewCount(), response.get(0).getReviewCount()),
-                () -> assertEquals(chef2.getProfileUrl(), response.get(0).getProfileUrl()),
-                () -> assertEquals(chef2.getDistance(), response.get(0).getDistance()),
-                () -> assertEquals(chef2.getLat(), response.get(0).getLat()),
-                () -> assertEquals(chef2.getLnt(), response.get(0).getLnt()),
-                () -> assertEquals(chef2.getNickname(), response.get(0).getNickname()),
-                () -> assertEquals(chef2.getRecipeCount(), response.get(0).getRecipeCount()),
+                () -> assertEquals(chef2.getChefId(), response.getContent().get(0).getChefId()),
+                () -> assertEquals(chef2.getIntroduce(), response.getContent().get(0).getIntroduce()),
+                () -> assertEquals(chef2.getStarAvg(), response.getContent().get(0).getStarAvg()),
+                () -> assertEquals(chef2.getReviewCount(), response.getContent().get(0).getReviewCount()),
+                () -> assertEquals(chef2.getProfileUrl(), response.getContent().get(0).getProfileUrl()),
+                () -> assertEquals(chef2.getDistance(), response.getContent().get(0).getDistance()),
+                () -> assertEquals(chef2.getLat(), response.getContent().get(0).getLat()),
+                () -> assertEquals(chef2.getLnt(), response.getContent().get(0).getLnt()),
+                () -> assertEquals(chef2.getNickname(), response.getContent().get(0).getNickname()),
+                () -> assertEquals(chef2.getRecipeCount(), response.getContent().get(0).getRecipeCount()),
 
-                () -> assertEquals(chef1.getChefId(), response.get(1).getChefId()),
-                () -> assertEquals(chef1.getIntroduce(), response.get(1).getIntroduce()),
-                () -> assertEquals(chef1.getStarAvg(), response.get(1).getStarAvg()),
-                () -> assertEquals(chef1.getReviewCount(), response.get(1).getReviewCount()),
-                () -> assertEquals(chef1.getProfileUrl(), response.get(1).getProfileUrl()),
-                () -> assertEquals(chef1.getDistance(), response.get(1).getDistance()),
-                () -> assertEquals(chef1.getLat(), response.get(1).getLat()),
-                () -> assertEquals(chef1.getLnt(), response.get(1).getLnt()),
-                () -> assertEquals(chef1.getNickname(), response.get(1).getNickname()),
-                () -> assertEquals(chef1.getRecipeCount(), response.get(1).getRecipeCount())
+                () -> assertEquals(chef1.getChefId(), response.getContent().get(1).getChefId()),
+                () -> assertEquals(chef1.getIntroduce(), response.getContent().get(1).getIntroduce()),
+                () -> assertEquals(chef1.getStarAvg(), response.getContent().get(1).getStarAvg()),
+                () -> assertEquals(chef1.getReviewCount(), response.getContent().get(1).getReviewCount()),
+                () -> assertEquals(chef1.getProfileUrl(), response.getContent().get(1).getProfileUrl()),
+                () -> assertEquals(chef1.getDistance(), response.getContent().get(1).getDistance()),
+                () -> assertEquals(chef1.getLat(), response.getContent().get(1).getLat()),
+                () -> assertEquals(chef1.getLnt(), response.getContent().get(1).getLnt()),
+                () -> assertEquals(chef1.getNickname(), response.getContent().get(1).getNickname()),
+                () -> assertEquals(chef1.getRecipeCount(), response.getContent().get(1).getRecipeCount())
         );
     }
 
@@ -418,41 +444,45 @@ class ChefMemberServiceImplTest {
                 ));
 
         given(chefMemberRepository.findAroundChefOrderByStar(
-                anyLong(), anyDouble(), anyDouble(), anyDouble(), anyInt(), anyInt()
+                anyLong(), anyDouble(), anyDouble(), anyDouble(), any()
         )).willReturn(
-                List.of(
-                        chef1, chef2
+                new PageImpl<>(
+                        new ArrayList<>(
+                                Arrays.asList(
+                                        chef1, chef2
+                                )
+                        )
                 )
         );
 
         //when
-        List<AroundChefDto> response = chefMemberService
-                .getAroundChefList(1L, 0, 10,
+        ListResponse<AroundChefDto> response = chefMemberService
+                .getAroundChefList(1L, PageRequest.of(0, 10),
                         ChefSearchType.STAR);
 
         //then
         assertAll(
-                () -> assertEquals(chef1.getChefId(), response.get(0).getChefId()),
-                () -> assertEquals(chef1.getIntroduce(), response.get(0).getIntroduce()),
-                () -> assertEquals(chef1.getStarAvg(), response.get(0).getStarAvg()),
-                () -> assertEquals(chef1.getReviewCount(), response.get(0).getReviewCount()),
-                () -> assertEquals(chef1.getProfileUrl(), response.get(0).getProfileUrl()),
-                () -> assertEquals(chef1.getDistance(), response.get(0).getDistance()),
-                () -> assertEquals(chef1.getLat(), response.get(0).getLat()),
-                () -> assertEquals(chef1.getLnt(), response.get(0).getLnt()),
-                () -> assertEquals(chef1.getNickname(), response.get(0).getNickname()),
-                () -> assertEquals(chef1.getRecipeCount(), response.get(0).getRecipeCount()),
+                () -> assertEquals(chef1.getChefId(), response.getContent().get(0).getChefId()),
+                () -> assertEquals(chef1.getIntroduce(), response.getContent().get(0).getIntroduce()),
+                () -> assertEquals(chef1.getStarAvg(), response.getContent().get(0).getStarAvg()),
+                () -> assertEquals(chef1.getReviewCount(), response.getContent().get(0).getReviewCount()),
+                () -> assertEquals(chef1.getProfileUrl(), response.getContent().get(0).getProfileUrl()),
+                () -> assertEquals(chef1.getDistance(), response.getContent().get(0).getDistance()),
+                () -> assertEquals(chef1.getLat(), response.getContent().get(0).getLat()),
+                () -> assertEquals(chef1.getLnt(), response.getContent().get(0).getLnt()),
+                () -> assertEquals(chef1.getNickname(), response.getContent().get(0).getNickname()),
+                () -> assertEquals(chef1.getRecipeCount(), response.getContent().get(0).getRecipeCount()),
 
-                () -> assertEquals(chef2.getChefId(), response.get(1).getChefId()),
-                () -> assertEquals(chef2.getIntroduce(), response.get(1).getIntroduce()),
-                () -> assertEquals(chef2.getStarAvg(), response.get(1).getStarAvg()),
-                () -> assertEquals(chef2.getReviewCount(), response.get(1).getReviewCount()),
-                () -> assertEquals(chef2.getProfileUrl(), response.get(1).getProfileUrl()),
-                () -> assertEquals(chef2.getDistance(), response.get(1).getDistance()),
-                () -> assertEquals(chef2.getLat(), response.get(1).getLat()),
-                () -> assertEquals(chef2.getLnt(), response.get(1).getLnt()),
-                () -> assertEquals(chef2.getNickname(), response.get(1).getNickname()),
-                () -> assertEquals(chef2.getRecipeCount(), response.get(1).getRecipeCount())
+                () -> assertEquals(chef2.getChefId(), response.getContent().get(1).getChefId()),
+                () -> assertEquals(chef2.getIntroduce(), response.getContent().get(1).getIntroduce()),
+                () -> assertEquals(chef2.getStarAvg(), response.getContent().get(1).getStarAvg()),
+                () -> assertEquals(chef2.getReviewCount(), response.getContent().get(1).getReviewCount()),
+                () -> assertEquals(chef2.getProfileUrl(), response.getContent().get(1).getProfileUrl()),
+                () -> assertEquals(chef2.getDistance(), response.getContent().get(1).getDistance()),
+                () -> assertEquals(chef2.getLat(), response.getContent().get(1).getLat()),
+                () -> assertEquals(chef2.getLnt(), response.getContent().get(1).getLnt()),
+                () -> assertEquals(chef2.getNickname(), response.getContent().get(1).getNickname()),
+                () -> assertEquals(chef2.getRecipeCount(), response.getContent().get(1).getRecipeCount())
         );
     }
 
@@ -476,41 +506,45 @@ class ChefMemberServiceImplTest {
                 ));
 
         given(chefMemberRepository.findAroundChefOrderByReview(
-                anyLong(), anyDouble(), anyDouble(), anyDouble(), anyInt(), anyInt()
+                anyLong(), anyDouble(), anyDouble(), anyDouble(), any()
         )).willReturn(
-                List.of(
-                        chef1, chef2
+                new PageImpl<>(
+                        new ArrayList<>(
+                                Arrays.asList(
+                                        chef1, chef2
+                                )
+                        )
                 )
         );
 
         //when
-        List<AroundChefDto> response = chefMemberService
-                .getAroundChefList(1L, 0, 10,
+        ListResponse<AroundChefDto> response = chefMemberService
+                .getAroundChefList(1L, PageRequest.of(0, 10),
                         ChefSearchType.REVIEW);
 
         //then
         assertAll(
-                () -> assertEquals(chef1.getChefId(), response.get(0).getChefId()),
-                () -> assertEquals(chef1.getIntroduce(), response.get(0).getIntroduce()),
-                () -> assertEquals(chef1.getStarAvg(), response.get(0).getStarAvg()),
-                () -> assertEquals(chef1.getReviewCount(), response.get(0).getReviewCount()),
-                () -> assertEquals(chef1.getProfileUrl(), response.get(0).getProfileUrl()),
-                () -> assertEquals(chef1.getDistance(), response.get(0).getDistance()),
-                () -> assertEquals(chef1.getLat(), response.get(0).getLat()),
-                () -> assertEquals(chef1.getLnt(), response.get(0).getLnt()),
-                () -> assertEquals(chef1.getNickname(), response.get(0).getNickname()),
-                () -> assertEquals(chef1.getRecipeCount(), response.get(0).getRecipeCount()),
+                () -> assertEquals(chef1.getChefId(), response.getContent().get(0).getChefId()),
+                () -> assertEquals(chef1.getIntroduce(), response.getContent().get(0).getIntroduce()),
+                () -> assertEquals(chef1.getStarAvg(), response.getContent().get(0).getStarAvg()),
+                () -> assertEquals(chef1.getReviewCount(), response.getContent().get(0).getReviewCount()),
+                () -> assertEquals(chef1.getProfileUrl(), response.getContent().get(0).getProfileUrl()),
+                () -> assertEquals(chef1.getDistance(), response.getContent().get(0).getDistance()),
+                () -> assertEquals(chef1.getLat(), response.getContent().get(0).getLat()),
+                () -> assertEquals(chef1.getLnt(), response.getContent().get(0).getLnt()),
+                () -> assertEquals(chef1.getNickname(), response.getContent().get(0).getNickname()),
+                () -> assertEquals(chef1.getRecipeCount(), response.getContent().get(0).getRecipeCount()),
 
-                () -> assertEquals(chef2.getChefId(), response.get(1).getChefId()),
-                () -> assertEquals(chef2.getIntroduce(), response.get(1).getIntroduce()),
-                () -> assertEquals(chef2.getStarAvg(), response.get(1).getStarAvg()),
-                () -> assertEquals(chef2.getReviewCount(), response.get(1).getReviewCount()),
-                () -> assertEquals(chef2.getProfileUrl(), response.get(1).getProfileUrl()),
-                () -> assertEquals(chef2.getDistance(), response.get(1).getDistance()),
-                () -> assertEquals(chef2.getLat(), response.get(1).getLat()),
-                () -> assertEquals(chef2.getLnt(), response.get(1).getLnt()),
-                () -> assertEquals(chef2.getNickname(), response.get(1).getNickname()),
-                () -> assertEquals(chef2.getRecipeCount(), response.get(1).getRecipeCount())
+                () -> assertEquals(chef2.getChefId(), response.getContent().get(1).getChefId()),
+                () -> assertEquals(chef2.getIntroduce(), response.getContent().get(1).getIntroduce()),
+                () -> assertEquals(chef2.getStarAvg(), response.getContent().get(1).getStarAvg()),
+                () -> assertEquals(chef2.getReviewCount(), response.getContent().get(1).getReviewCount()),
+                () -> assertEquals(chef2.getProfileUrl(), response.getContent().get(1).getProfileUrl()),
+                () -> assertEquals(chef2.getDistance(), response.getContent().get(1).getDistance()),
+                () -> assertEquals(chef2.getLat(), response.getContent().get(1).getLat()),
+                () -> assertEquals(chef2.getLnt(), response.getContent().get(1).getLnt()),
+                () -> assertEquals(chef2.getNickname(), response.getContent().get(1).getNickname()),
+                () -> assertEquals(chef2.getRecipeCount(), response.getContent().get(1).getRecipeCount())
         );
     }
 
@@ -534,41 +568,45 @@ class ChefMemberServiceImplTest {
                 ));
 
         given(chefMemberRepository.findAroundChefOrderByRecipeCount(
-                anyLong(), anyDouble(), anyDouble(), anyDouble(), anyInt(), anyInt()
+                anyLong(), anyDouble(), anyDouble(), anyDouble(), any()
         )).willReturn(
-                List.of(
-                        chef2, chef1
+                new PageImpl<>(
+                        new ArrayList<>(
+                                Arrays.asList(
+                                        chef2, chef1
+                                )
+                        )
                 )
         );
 
         //when
-        List<AroundChefDto> response = chefMemberService
-                .getAroundChefList(1L, 0, 10,
+        ListResponse<AroundChefDto> response = chefMemberService
+                .getAroundChefList(1L, PageRequest.of(0, 10),
                         ChefSearchType.RECIPE);
 
         //then
         assertAll(
-                () -> assertEquals(chef2.getChefId(), response.get(0).getChefId()),
-                () -> assertEquals(chef2.getIntroduce(), response.get(0).getIntroduce()),
-                () -> assertEquals(chef2.getStarAvg(), response.get(0).getStarAvg()),
-                () -> assertEquals(chef2.getReviewCount(), response.get(0).getReviewCount()),
-                () -> assertEquals(chef2.getProfileUrl(), response.get(0).getProfileUrl()),
-                () -> assertEquals(chef2.getDistance(), response.get(0).getDistance()),
-                () -> assertEquals(chef2.getLat(), response.get(0).getLat()),
-                () -> assertEquals(chef2.getLnt(), response.get(0).getLnt()),
-                () -> assertEquals(chef2.getNickname(), response.get(0).getNickname()),
-                () -> assertEquals(chef2.getRecipeCount(), response.get(0).getRecipeCount()),
+                () -> assertEquals(chef2.getChefId(), response.getContent().get(0).getChefId()),
+                () -> assertEquals(chef2.getIntroduce(), response.getContent().get(0).getIntroduce()),
+                () -> assertEquals(chef2.getStarAvg(), response.getContent().get(0).getStarAvg()),
+                () -> assertEquals(chef2.getReviewCount(), response.getContent().get(0).getReviewCount()),
+                () -> assertEquals(chef2.getProfileUrl(), response.getContent().get(0).getProfileUrl()),
+                () -> assertEquals(chef2.getDistance(), response.getContent().get(0).getDistance()),
+                () -> assertEquals(chef2.getLat(), response.getContent().get(0).getLat()),
+                () -> assertEquals(chef2.getLnt(), response.getContent().get(0).getLnt()),
+                () -> assertEquals(chef2.getNickname(), response.getContent().get(0).getNickname()),
+                () -> assertEquals(chef2.getRecipeCount(), response.getContent().get(0).getRecipeCount()),
 
-                () -> assertEquals(chef1.getChefId(), response.get(1).getChefId()),
-                () -> assertEquals(chef1.getIntroduce(), response.get(1).getIntroduce()),
-                () -> assertEquals(chef1.getStarAvg(), response.get(1).getStarAvg()),
-                () -> assertEquals(chef1.getReviewCount(), response.get(1).getReviewCount()),
-                () -> assertEquals(chef1.getProfileUrl(), response.get(1).getProfileUrl()),
-                () -> assertEquals(chef1.getDistance(), response.get(1).getDistance()),
-                () -> assertEquals(chef1.getLat(), response.get(1).getLat()),
-                () -> assertEquals(chef1.getLnt(), response.get(1).getLnt()),
-                () -> assertEquals(chef1.getNickname(), response.get(1).getNickname()),
-                () -> assertEquals(chef1.getRecipeCount(), response.get(1).getRecipeCount())
+                () -> assertEquals(chef1.getChefId(), response.getContent().get(1).getChefId()),
+                () -> assertEquals(chef1.getIntroduce(), response.getContent().get(1).getIntroduce()),
+                () -> assertEquals(chef1.getStarAvg(), response.getContent().get(1).getStarAvg()),
+                () -> assertEquals(chef1.getReviewCount(), response.getContent().get(1).getReviewCount()),
+                () -> assertEquals(chef1.getProfileUrl(), response.getContent().get(1).getProfileUrl()),
+                () -> assertEquals(chef1.getDistance(), response.getContent().get(1).getDistance()),
+                () -> assertEquals(chef1.getLat(), response.getContent().get(1).getLat()),
+                () -> assertEquals(chef1.getLnt(), response.getContent().get(1).getLnt()),
+                () -> assertEquals(chef1.getNickname(), response.getContent().get(1).getNickname()),
+                () -> assertEquals(chef1.getRecipeCount(), response.getContent().get(1).getRecipeCount())
         );
     }
 
@@ -581,7 +619,7 @@ class ChefMemberServiceImplTest {
         //when
         MemberException exception = assertThrows(MemberException.class,
                 () -> chefMemberService.getAroundChefList(1L,
-                        0, 10, ChefSearchType.DISTANCE));
+                        PageRequest.of(0, 10), ChefSearchType.DISTANCE));
 
         //then
         assertEquals(MEMBER_NOT_FOUND, exception.getErrorCode());
