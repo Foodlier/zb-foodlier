@@ -61,7 +61,8 @@ class RequestServiceImplTest {
             //given
             DmRoom dmRoom = DmRoom.builder()
                     .id(1L)
-                    .isExist(false)
+                    .isChefExit(false)
+                    .isMemberExit(false)
                     .build();
 
             Request request = Request.builder()

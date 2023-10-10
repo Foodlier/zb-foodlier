@@ -134,6 +134,7 @@ const MyProfilePage = () => {
                 <span>P</span>
               </S.GradeList>
             </S.MyGradeDiv>
+
             <S.ReviewContainer>
               <S.ReviewIntro>
                 <S.ReviewTitle>

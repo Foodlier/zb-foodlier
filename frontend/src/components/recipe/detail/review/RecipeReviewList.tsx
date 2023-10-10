@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import useIcon from '../../../../hooks/useIcon'
 import RecipeReviewItem from './RecipeReviewItem'
@@ -72,6 +72,7 @@ function RecipeReviewList() {
   const { IcAddLight } = useIcon()
 
   const handleShowMore = () => {
+    console.log(setReviews)
     setVisibleReviews(visibleReviews + 5)
   }
 

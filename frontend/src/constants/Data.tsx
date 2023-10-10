@@ -8,7 +8,7 @@ export const DIFFICULTY_LIST = [
   },
   {
     content: '보통',
-    value: 'MIDEUM',
+    value: 'MEDIUM',
   },
   {
     content: '쉬움',

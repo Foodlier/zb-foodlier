@@ -11,6 +11,7 @@ import com.zerobase.foodlier.module.member.member.domain.vo.Address;
 import com.zerobase.foodlier.module.member.member.dto.MemberRegisterDto;
 import com.zerobase.foodlier.module.member.member.exception.MemberException;
 import com.zerobase.foodlier.module.member.member.profile.dto.MemberUpdateDto;
+import com.zerobase.foodlier.module.member.member.profile.dto.PasswordChangeForm;
 import com.zerobase.foodlier.module.member.member.repository.MemberRepository;
 import com.zerobase.foodlier.module.member.member.type.RequestedOrderingType;
 import com.zerobase.foodlier.module.member.member.type.RoleType;
@@ -70,7 +71,7 @@ public class MemberServiceImpl implements MemberService {
     @Override
     public TokenDto signIn(SignInForm form) {
         Member member = memberRepository.findByEmail(form.getEmail()).stream()
-                .filter(m-> passwordEncoder.matches(form.getPassword(), m.getPassword()))
+                .filter(m -> passwordEncoder.matches(form.getPassword(), m.getPassword()))
                 .findFirst()
                 .orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
 
@@ -142,22 +143,22 @@ public class MemberServiceImpl implements MemberService {
     }
 
     /**
-     *  작성자 : 전현서
-     *  작성일 : 2023-10-04
-     *  냉장고를 부탁해 페이지에서, 요리사 입장에서 요청한 주변 요리사를 페이징하여 조회함.
-     *  정렬 조건 확장 가능성을 위해서, switch문으로 구현함.
-     *  값이 없으면 기본적으로 가까운 거리순으로 반환함.
+     * 작성자 : 전현서
+     * 작성일 : 2023-10-04
+     * 냉장고를 부탁해 페이지에서, 요리사 입장에서 요청한 주변 요리사를 페이징하여 조회함.
+     * 정렬 조건 확장 가능성을 위해서, switch문으로 구현함.
+     * 값이 없으면 기본적으로 가까운 거리순으로 반환함.
      */
     @Override
     public List<RequestedMemberDto> getRequestedMemberList(Long memberId,
                                                            RequestedOrderingType type,
-                                                           Pageable pageable){
+                                                           Pageable pageable) {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
 
         validateGetRequestedMemberList(member);
 
-        switch (type){
+        switch (type) {
             case PRICE:
                 return memberRepository.getRequestedMemberListOrderByPrice(
                         member.getChefMember().getId(), member.getAddress().getLat(),
@@ -166,13 +167,35 @@ public class MemberServiceImpl implements MemberService {
                 ).getContent();
             case DISTANCE:
                 return memberRepository.getRequestedMemberListOrderByDistance(
-                    member.getChefMember().getId(), member.getAddress().getLat(),
-                    member.getAddress().getLnt(),
-                    pageable
-            ).getContent();
+                        member.getChefMember().getId(), member.getAddress().getLat(),
+                        member.getAddress().getLnt(),
+                        pageable
+                ).getContent();
 
         }
-        throw new MemberException(ORDER_TYPE_IS_NULL);
+        return new ArrayList<>();
+    }
+
+    /**
+     * 작성자 : 이승현
+     * 작성일 : 2023-10-08
+     * 현재 비밀번호 일치하는지 확인한 후 비밀번호를 새로 입력한 것으로 변경합니다.
+     * redis에 존재하는 refresh 토큰을 제거합니다.
+     */
+    @Override
+    public String updatePassword(MemberAuthDto memberAuthDto,
+                                 PasswordChangeForm form) {
+        Member member = memberRepository.findById(memberAuthDto.getId()).stream()
+                .filter(m -> passwordEncoder
+                        .matches(form.getCurrentPassword(), m.getPassword()))
+                .findFirst()
+                .orElseThrow(()->new MemberException(MEMBER_NOT_FOUND));
+
+        member.setPassword(passwordEncoder.encode(form.getNewPassword()));
+
+        tokenProvider.deleteRefreshToken(member.getEmail());
+
+        return "비밀번호 변경 완료";
     }
 
     @Override
@@ -206,8 +229,8 @@ public class MemberServiceImpl implements MemberService {
         }
     }
 
-    private void validateGetRequestedMemberList(Member member){
-        if(member.getChefMember() == NOT_CHEF_MEMBER){
+    private void validateGetRequestedMemberList(Member member) {
+        if (member.getChefMember() == NOT_CHEF_MEMBER) {
             throw new MemberException(MEMBER_IS_NOT_CHEF);
         }
     }
