@@ -198,11 +198,12 @@ public class RecipeServiceImpl implements RecipeService {
     }
 
     @Override
-    public List<RecipeDtoTopResponse> getRecipeForHeart(Long memberId){
-        return recipeRepository.findByHeart(memberId)
-                .stream()
-                .map(recipe -> RecipeDtoTopResponse.from(recipe, true))
-                .collect(Collectors.toList());
+    public ListResponse<RecipeDtoTopResponse> getRecipeForHeart(Long memberId,
+                                                        Pageable pageable){
+        return ListResponse.from(
+                recipeRepository.findByHeart(memberId, pageable),
+                recipe -> RecipeDtoTopResponse.from(recipe, true));
+
     }
 
     /**
@@ -211,7 +212,7 @@ public class RecipeServiceImpl implements RecipeService {
      *  해당 회원이 작성한 꿀조합 목록을 반환함.
      */
     @Override
-    public List<RecipeDtoTopResponse> getRecipeListByMemberId(Long memberId,
+    public ListResponse<RecipeDtoTopResponse> getRecipeListByMemberId(Long memberId,
                                                               Long targetMemberId,
                                                               Pageable pageable){
         Member member = memberRepository.findById(memberId)
@@ -220,12 +221,11 @@ public class RecipeServiceImpl implements RecipeService {
         Member targetMember = memberRepository.findById(targetMemberId)
                 .orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
 
-        return recipeRepository.findByMemberAndIsPublicTrueAndIsQuotationFalse(targetMember, pageable)
-                .getContent()
-                .stream()
-                .map(recipe -> RecipeDtoTopResponse.from(recipe, getIsHeart(member, recipe)))
-                .collect(Collectors.toList());
-
+        return ListResponse.from(
+                recipeRepository
+                        .findByMemberAndIsPublicTrueAndIsQuotationFalse(targetMember,
+                                pageable),
+                recipe -> RecipeDtoTopResponse.from(recipe, getIsHeart(member, recipe)));
     }
 
     private boolean getIsHeart(Member member, Recipe recipe){

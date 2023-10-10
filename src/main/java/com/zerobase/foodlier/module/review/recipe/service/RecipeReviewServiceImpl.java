@@ -18,9 +18,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
 import static com.zerobase.foodlier.module.member.member.exception.MemberErrorCode.MEMBER_NOT_FOUND;
 import static com.zerobase.foodlier.module.recipe.exception.recipe.RecipeErrorCode.NO_SUCH_RECIPE;
 import static com.zerobase.foodlier.module.review.recipe.exception.RecipeReviewErrorCode.*;
@@ -90,13 +87,12 @@ public class RecipeReviewServiceImpl implements RecipeReviewService{
      *  작성일 : 2023-10-08
      *  공개 프로필에서 해당 멤버에게 달린 레시피 후기를 날짜 내림차순으로 보여줌.
      */
-    public List<RecipeReviewResponseDto> getRecipeReviewForProfile(Long memberId,
+    public ListResponse<RecipeReviewResponseDto> getRecipeReviewForProfile(Long memberId,
                                                                    Pageable pageable){
         Member member = getMember(memberId);
-        return recipeReviewRepository.findByMemberOrderByCreatedAtDesc(member, pageable)
-                .stream()
-                .map(RecipeReviewResponseDto::from)
-                .collect(Collectors.toList());
+        return ListResponse.from(
+                recipeReviewRepository.findByMemberOrderByCreatedAtDesc(member, pageable),
+                RecipeReviewResponseDto::from);
     }
 
     /**

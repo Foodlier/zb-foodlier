@@ -7,8 +7,6 @@ import com.zerobase.foodlier.module.comment.comment.dto.MyPageCommentDto;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
-import java.util.List;
-
 public interface CommentService {
     void createComment(Comment comment);
     void updateComment(Long memberId, Long commentId, String modifiedMessage);
@@ -16,5 +14,5 @@ public interface CommentService {
     ListResponse<CommentDto> getCommentList(Long recipeId, PageRequest pageRequest);
     Comment findComment(Long commentId);
 
-    List<MyPageCommentDto> getMyCommentList(Long memberId, Pageable pageable);
+    ListResponse<MyPageCommentDto> getMyCommentList(Long memberId, Pageable pageable);
 }

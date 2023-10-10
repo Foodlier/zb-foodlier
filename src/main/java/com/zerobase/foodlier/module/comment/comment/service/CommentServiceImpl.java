@@ -12,8 +12,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-
 import static com.zerobase.foodlier.module.comment.comment.exception.CommentErrorCode.ALREADY_DELETED;
 import static com.zerobase.foodlier.module.comment.comment.exception.CommentErrorCode.NO_SUCH_COMMENT;
 
@@ -63,9 +61,9 @@ public class CommentServiceImpl implements CommentService {
                 commentRepository.findCommentList(recipeId, pageRequest));
     }
 
-    public List<MyPageCommentDto> getMyCommentList(Long memberId, Pageable pageable){
-        return commentRepository.findMyCommentList(memberId, pageable)
-                .getContent();
+    public ListResponse<MyPageCommentDto> getMyCommentList(Long memberId, Pageable pageable){
+        return ListResponse.from(
+                commentRepository.findMyCommentList(memberId, pageable));
     }
 
 }

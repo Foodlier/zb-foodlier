@@ -9,8 +9,6 @@ import com.zerobase.foodlier.module.recipe.dto.recipe.RecipeDtoResponse;
 import com.zerobase.foodlier.module.recipe.dto.recipe.RecipeDtoTopResponse;
 import org.springframework.data.domain.Pageable;
 
-import java.util.List;
-
 public interface RecipeService {
     void createRecipe(Member member, RecipeDtoRequest recipeDtoRequest);
 
@@ -25,8 +23,9 @@ public interface RecipeService {
     ListResponse<Recipe> getRecipeByTitle(String recipeTitle, Pageable pageable);
 
     ImageUrlDto getBeforeImageUrl(Long id);
-    List<RecipeDtoTopResponse> getRecipeForHeart(Long memberId);
-    List<RecipeDtoTopResponse> getRecipeListByMemberId(Long memberId,
+    ListResponse<RecipeDtoTopResponse> getRecipeForHeart(Long memberId,
+                                                         Pageable pageable);
+    ListResponse<RecipeDtoTopResponse> getRecipeListByMemberId(Long memberId,
                                                        Long targetMemberId,
                                                        Pageable pageable);
 

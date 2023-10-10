@@ -9,7 +9,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import java.util.List;
 import java.util.Optional;
 
 public interface RecipeRepository extends JpaRepository<Recipe, Long> {
@@ -21,8 +20,9 @@ public interface RecipeRepository extends JpaRepository<Recipe, Long> {
     @Query(
             "SELECT r FROM Recipe r JOIN Heart h ON h.recipe = r AND h.member.id = :memberId"
     )
-    List<Recipe> findByHeart(
-            @Param("memberId")Long memberId
+    Page<Recipe> findByHeart(
+            @Param("memberId")Long memberId,
+            Pageable pageable
     );
 
     @Query(
