@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react'
 import styled from 'styled-components'
 import Header from '../../components/Header'
 import BottomNavigation from '../../components/BottomNavigation'
@@ -6,6 +7,8 @@ import DetailIngredients from '../../components/recipe/detail/DetailIngredients'
 import DetailProcedure from '../../components/recipe/detail/DetailProcedure'
 import RecipeComment from '../../components/recipe/detail/comment/RecipeComment'
 import RecipeReviewList from '../../components/recipe/detail/review/RecipeReviewList'
+import axiosInstance from '../../utils/FetchCall'
+import { Recipe } from '../../constants/Interfacs'
 
 export const DetailContainer = styled.div`
   width: 100%;
@@ -13,78 +16,41 @@ export const DetailContainer = styled.div`
 `
 
 const RecipeDetailPage = () => {
-  const comments = [
-    {
-      message: '댓글 내용 1',
-      createdAt: '2023-10-09',
-      isDeleted: false,
-      nickname: '유저1',
-      profileUrl: 'https://source.unsplash.com/random/50x50/?person',
-    },
-    // {
-    //   message: '댓글 내용 2',
-    //   createdAt: '2023-10-10',
-    //   isDeleted: false,
-    //   nickname: '유저2',
-    //   profileUrl: 'https://source.unsplash.com/random/50x50/?person',
-    // },
-  ]
-  const recipe = {
-    recipeId: '',
-    memberId: '',
-    nickname: '닉네임',
-    profileUrl: '/images/chef.svg',
-    mainImageUrl: '/images/contents/food_img_05.jpg',
-    title: '레시피 제목',
-    content:
-      'Lorem Ipsum is simply dummy text of the printing  and typesetting industry. Lorem Ipsum has been the industrys standard dummy text ever since the  1500s, when an unknown printer took a galley',
-    difficulty: '어려움',
-    expectedTime: '30분',
-  }
-  const ingredients = [
-    {
-      name: '재료1',
-      count: 2,
-      unit: '개',
-    },
-    {
-      name: '재료2',
-      count: 200,
-      unit: 'g',
-    },
-    {
-      name: '재료3',
-      count: 1,
-      unit: '팩',
-    },
-  ]
+  const [isLoadng, setIsLoading] = useState(true)
+  const [recipeData, setRecipeData] = useState<Recipe | undefined>()
 
-  const detail = [
-    {
-      cookingOrderImageUrl: '/images/contents/food_img_03.jpg',
-      cookingOrder:
-        'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industrys standard dummy text ever since the 1500s, when an unknown printer took a galley',
-    },
-    {
-      cookingOrderImageUrl: '/images/contents/food_img_04.jpg',
-      cookingOrder:
-        'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has',
-    },
-    {
-      cookingOrderImageUrl: '/images/contents/food_img_05.jpg',
-      cookingOrder: 'Lorem Ipsum is simply dummy',
-    },
-  ]
+  const getRecipe = async () => {
+    const recipeId = 1
+    try {
+      // 현재 List 조회 API X -> 추후 id 받아오는 형식으로 수정 필요
+      const res = await axiosInstance.get(`/recipe/${recipeId}`)
+
+      if (res.status === 200) {
+        setRecipeData(res.data)
+        setIsLoading(false)
+      }
+    } catch (error) {
+      // 추후 Error code를 통한 에러 처리 구현 예정
+      console.log(error)
+    }
+  }
+
+  useEffect(() => {
+    getRecipe()
+  }, [])
+
+  // 로딩 component 구현 필요
+  if (isLoadng) return null
 
   return (
     <>
       <Header />
 
       <DetailContainer>
-        <DetailMainItem recipe={recipe} />
-        <DetailIngredients ingredients={ingredients} />
-        <DetailProcedure detail={detail} />
-        <RecipeComment comments={comments} />
+        <DetailMainItem recipe={recipeData} />
+        <DetailIngredients ingredients={recipeData?.recipeIngredientDtoList} />
+        <DetailProcedure detail={recipeData?.recipeDetailDtoList} />
+        <RecipeCommentList recipeId={recipeData?.recipeId} />
         <RecipeReviewList />
       </DetailContainer>
 
