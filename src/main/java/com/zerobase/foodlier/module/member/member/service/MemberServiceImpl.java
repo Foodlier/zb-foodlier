@@ -207,6 +207,7 @@ public class MemberServiceImpl implements MemberService {
                 .orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
 
         member.setPassword(passwordEncoder.encode(newPassword));
+        memberRepository.save(member);
 
         return "비밀번호 재설정 완료.";
     }
