@@ -22,4 +22,5 @@ export interface RecipeIngredientDtoList {
   name: string
   count: number
   unit: string
+  [key: string]: string | number
 }
