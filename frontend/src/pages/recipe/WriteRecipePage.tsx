@@ -15,24 +15,16 @@ import {
 } from '../../constants/Data'
 import axiosInstance from '../../utils/FetchCall'
 import ModalWithoutButton from '../../components/ui/ModalWithoutButton'
-
-interface IngredientInterface {
-  name: string
-  count: number
-  unit: string
-  [key: string]: string | number
-}
-
-interface RecipeDetailDtoList {
-  cookingOrderImageUrl: string
-  cookingOrder: string
-}
+import {
+  RecipeIngredientDtoList,
+  RecipeDetailDtoList,
+} from '../../constants/Interfacs'
 
 interface Recipe {
   title: string
   content: string
   mainImageUrl: string
-  recipeIngredientDtoList: IngredientInterface[]
+  recipeIngredientDtoList: RecipeIngredientDtoList[]
   difficulty: string
   recipeDetailDtoList: RecipeDetailDtoList[]
   expectedTime: number
@@ -114,7 +106,7 @@ const WriteRecipePage = () => {
 
   const postRecipe = async () => {
     try {
-      const res = await axiosInstance.post('/api/recipe', recipeValue)
+      const res = await axiosInstance.post('/recipe', recipeValue)
       if (res.status === 200) {
         setIsCompleteModal(true)
         setTimeout(() => {
@@ -220,7 +212,7 @@ const WriteRecipePage = () => {
 
         <S.WrapForm>
           <S.Title>순서</S.Title>
-          {recipeValue.recipeDetailDtoList.map((item, index) => (
+          {recipeValue.recipeDetailDtoList.map((_, index) => (
             <S.WrapOrder key={`key-${index}`}>
               <RecipeImage size={7} isText={false} />
               <S.Input

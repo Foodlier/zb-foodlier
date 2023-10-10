@@ -23,7 +23,7 @@ const RecipeDetailPage = () => {
     const recipeId = 1
     try {
       // 현재 List 조회 API X -> 추후 id 받아오는 형식으로 수정 필요
-      const res = await axiosInstance.get(`/api/recipe/${recipeId}`)
+      const res = await axiosInstance.get(`/recipe/${recipeId}`)
 
       if (res.status === 200) {
         setRecipeData(res.data)
