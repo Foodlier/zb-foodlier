@@ -18,6 +18,7 @@ import com.zerobase.foodlier.module.recipe.exception.recipe.RecipeErrorCode;
 import com.zerobase.foodlier.module.recipe.exception.recipe.RecipeException;
 import com.zerobase.foodlier.module.recipe.repository.RecipeRepository;
 import com.zerobase.foodlier.module.recipe.repository.RecipeSearchRepository;
+import com.zerobase.foodlier.module.recipe.type.OrderType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -31,8 +32,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static com.zerobase.foodlier.module.member.member.exception.MemberErrorCode.MEMBER_NOT_FOUND;
-import static com.zerobase.foodlier.module.recipe.exception.recipe.RecipeErrorCode.NO_SUCH_RECIPE;
-import static com.zerobase.foodlier.module.recipe.exception.recipe.RecipeErrorCode.NO_SUCH_RECIPE_DOCUMENT;
+import static com.zerobase.foodlier.module.recipe.exception.recipe.RecipeErrorCode.*;
 
 @Service
 @RequiredArgsConstructor
@@ -288,26 +288,76 @@ public class RecipeServiceImpl implements RecipeService {
      */
     @Override
     public ListResponse<RecipeListDto> getRecipePageRecipeList(MemberAuthDto memberAuthDto,
-                                                               Pageable pageable) {
+                                                               Pageable pageable,
+                                                               OrderType orderType) {
         Member member = memberRepository.findById(memberAuthDto.getId())
                 .orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
 
-        Page<Recipe> recipePage = recipeRepository.findByOrderByCreatedAtDesc(pageable);
-        int totalPages = recipePage.getTotalPages();
-        boolean hasNext = recipePage.hasNext();
-        return ListResponse.<RecipeListDto>builder()
-                .totalPages(totalPages)
-                .hasNextPage(hasNext)
-                .content(
-                        recipePage.stream()
-                                .map(r -> RecipeListDto.builder()
-                                        .title(r.getSummary().getTitle())
-                                        .content(r.getSummary().getContent())
-                                        .heartCount(r.getHeartCount())
-                                        .isHeart(heartRepository.existsByRecipeAndMember(r, member))
-                                        .build())
-                                .collect(Collectors.toList()))
-                .build();
+        ListResponse<RecipeListDto> listResponse;
+        Page<Recipe> recipePage;
+        int totalPages;
+        boolean hasNext;
+
+        switch (orderType) {
+            case CREATED_AT:
+                recipePage = recipeRepository.findByOrderByCreatedAtDesc(pageable);
+                totalPages = recipePage.getTotalPages();
+                hasNext = recipePage.hasNext();
+                listResponse = ListResponse.<RecipeListDto>builder()
+                        .totalPages(totalPages)
+                        .hasNextPage(hasNext)
+                        .content(
+                                recipePage.stream()
+                                        .map(r -> RecipeListDto.builder()
+                                                .title(r.getSummary().getTitle())
+                                                .content(r.getSummary().getContent())
+                                                .heartCount(r.getHeartCount())
+                                                .isHeart(heartRepository.existsByRecipeAndMember(r, member))
+                                                .build())
+                                        .collect(Collectors.toList()))
+                        .build();
+                break;
+            case HEART_COUNT:
+                recipePage = recipeRepository.findByOrderByHeartCountDesc(pageable);
+                totalPages = recipePage.getTotalPages();
+                hasNext = recipePage.hasNext();
+                listResponse = ListResponse.<RecipeListDto>builder()
+                        .totalPages(totalPages)
+                        .hasNextPage(hasNext)
+                        .content(
+                                recipePage.stream()
+                                        .map(r -> RecipeListDto.builder()
+                                                .title(r.getSummary().getTitle())
+                                                .content(r.getSummary().getContent())
+                                                .heartCount(r.getHeartCount())
+                                                .isHeart(heartRepository.existsByRecipeAndMember(r, member))
+                                                .build())
+                                        .collect(Collectors.toList()))
+                        .build();
+                break;
+            case COMMENT_COUNT:
+                recipePage = recipeRepository.findByOrderByCommentCountDesc(pageable);
+                totalPages = recipePage.getTotalPages();
+                hasNext = recipePage.hasNext();
+                listResponse = ListResponse.<RecipeListDto>builder()
+                        .totalPages(totalPages)
+                        .hasNextPage(hasNext)
+                        .content(
+                                recipePage.stream()
+                                        .map(r -> RecipeListDto.builder()
+                                                .title(r.getSummary().getTitle())
+                                                .content(r.getSummary().getContent())
+                                                .heartCount(r.getHeartCount())
+                                                .isHeart(heartRepository.existsByRecipeAndMember(r, member))
+                                                .build())
+                                        .collect(Collectors.toList()))
+                        .build();
+                break;
+            default:
+                throw new RecipeException(ORDER_TYPE_NOT_FOUND);
+        }
+
+        return listResponse;
     }
 
     /**

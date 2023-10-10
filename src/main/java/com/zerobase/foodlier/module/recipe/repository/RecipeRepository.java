@@ -83,5 +83,9 @@ public interface RecipeRepository extends JpaRepository<Recipe, Long> {
 
     Page<Recipe> findByOrderByCreatedAtDesc(Pageable pageable);
 
+    Page<Recipe> findByOrderByHeartCountDesc(Pageable pageable);
+
+    Page<Recipe> findByOrderByCommentCountDesc(Pageable pageable);
+
     List<Recipe> findTop5ByCreatedAtAfterOrderByHeartCountDesc(LocalDateTime createdAt);
 }

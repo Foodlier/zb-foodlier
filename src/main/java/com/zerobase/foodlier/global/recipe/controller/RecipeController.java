@@ -10,6 +10,7 @@ import com.zerobase.foodlier.module.recipe.dto.recipe.RecipeDtoRequest;
 import com.zerobase.foodlier.module.recipe.dto.recipe.RecipeDtoResponse;
 import com.zerobase.foodlier.module.recipe.dto.recipe.RecipeListDto;
 import com.zerobase.foodlier.module.recipe.service.recipe.RecipeService;
+import com.zerobase.foodlier.module.recipe.type.OrderType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
@@ -83,7 +84,7 @@ public class RecipeController {
     public ResponseEntity<ListResponse<Recipe>> getRecipeListByTitle(@AuthenticationPrincipal MemberAuthDto memberAuthDto,
                                                                      @PathVariable int pageIdx,
                                                                      @PathVariable int pageSize,
-                                                                     @RequestParam String recipeTitle){
+                                                                     @RequestParam String recipeTitle) {
         return ResponseEntity.ok(recipeService.getRecipeByTitle(recipeTitle, PageRequest.of(pageIdx, pageSize)));
     }
 
@@ -113,15 +114,16 @@ public class RecipeController {
                 getMainPageRecipeList(memberAuthDto));
     }
 
-    @GetMapping("/r/{pageIdx}/{pageSize}")
+    @GetMapping("/default/{pageIdx}/{pageSize}")
     public ResponseEntity<ListResponse<RecipeListDto>> getRecipePageRecipeList(
             @AuthenticationPrincipal MemberAuthDto memberAuthDto,
             @PathVariable int pageIdx,
-            @PathVariable int pageSize
+            @PathVariable int pageSize,
+            @RequestParam OrderType orderType
     ) {
         return ResponseEntity.ok(recipeService
                 .getRecipePageRecipeList(memberAuthDto,
-                        PageRequest.of(pageIdx, pageSize)));
+                        PageRequest.of(pageIdx, pageSize), orderType));
     }
 
     @GetMapping("/recommended")
