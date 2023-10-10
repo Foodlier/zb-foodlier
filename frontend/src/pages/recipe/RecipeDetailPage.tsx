@@ -8,7 +8,6 @@ import DetailProcedure from '../../components/recipe/detail/DetailProcedure'
 import RecipeCommentList from '../../components/recipe/detail/comment/RecipeCommentList'
 import RecipeReviewList from '../../components/recipe/detail/review/RecipeReviewList'
 import axiosInstance from '../../utils/FetchCall'
-import Loader from '../../components/Loader'
 import { Recipe } from '../../constants/Interfacs'
 
 export const DetailContainer = styled.div`
@@ -40,7 +39,8 @@ const RecipeDetailPage = () => {
     getRecipe()
   }, [])
 
-  if (isLoadng) return <Loader />
+  // 로딩 component 구현 필요
+  if (isLoadng) return null
 
   return (
     <>
