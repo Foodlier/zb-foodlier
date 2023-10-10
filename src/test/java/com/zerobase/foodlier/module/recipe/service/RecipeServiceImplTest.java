@@ -1,5 +1,6 @@
 package com.zerobase.foodlier.module.recipe.service;
 
+import com.zerobase.foodlier.common.response.ListResponse;
 import com.zerobase.foodlier.module.member.member.domain.model.Member;
 import com.zerobase.foodlier.module.recipe.domain.document.RecipeDocument;
 import com.zerobase.foodlier.module.recipe.domain.model.Recipe;
@@ -387,8 +388,9 @@ class RecipeServiceImplTest {
                 .thenReturn(Optional.of(recipe), Optional.of(otherRecipe));
 
         // when
-        List<Recipe> recipeList = recipeService.getRecipeByTitle("제육볶음", PageRequest.of(0, 10));
-        List<String> titleList = recipeList.stream()
+        ListResponse<Recipe> recipeList = recipeService.getRecipeByTitle("제육볶음", PageRequest.of(0, 10));
+        List<String> titleList = recipeList.getContent()
+                .stream()
                 .map(Recipe::getSummary)
                 .map(Summary::getTitle)
                 .collect(Collectors.toList());
@@ -435,13 +437,13 @@ class RecipeServiceImplTest {
                 .willReturn(Page.empty());
 
         // when
-        List<Recipe> recipeList = recipeService.getRecipeByTitle("숙주미나리볶음",
+        ListResponse<Recipe> recipeList = recipeService.getRecipeByTitle("숙주미나리볶음",
                 PageRequest.of(0, 10));
 
         // then
         verify(recipeSearchRepository, times(1)).findByTitle(any(), any());
 
-        assertEquals(recipeList.size(), 0);
+        assertEquals(recipeList.getContent().size(), 0);
 
     }
 
