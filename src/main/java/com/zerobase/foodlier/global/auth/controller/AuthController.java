@@ -18,6 +18,9 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.time.LocalDateTime;
 
+import static com.zerobase.foodlier.common.security.constants.AuthorizationConstants.REFRESH_HEADER;
+import static com.zerobase.foodlier.common.security.constants.AuthorizationConstants.TOKEN_PREFIX;
+
 @RestController
 @RequestMapping("/auth")
 @RequiredArgsConstructor
@@ -78,6 +81,10 @@ public class AuthController {
                 .sendMailAndUpdateNewPassword(form));
     }
 
+    @PostMapping("/reissue")
+    public ResponseEntity<String> reissue(@RequestHeader(REFRESH_HEADER) final String refreshToken){
+        return ResponseEntity.ok(memberService.reissue(refreshToken.substring(TOKEN_PREFIX.length())));
+    }
     @DeleteMapping("/withdraw")
     public ResponseEntity<String> withdraw(
             @AuthenticationPrincipal MemberAuthDto memberAuthDto

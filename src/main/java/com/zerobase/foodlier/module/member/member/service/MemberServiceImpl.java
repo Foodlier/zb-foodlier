@@ -25,6 +25,7 @@ import org.springframework.util.StringUtils;
 
 import javax.transaction.Transactional;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -98,6 +99,14 @@ public class MemberServiceImpl implements MemberService {
     @Override
     public void signOut(String email) {
         tokenProvider.deleteRefreshToken(email);
+    }
+
+    @Override
+    public String reissue(String refreshToken) {
+        String email = tokenProvider.getEmail(refreshToken);
+        Member member = memberRepository.findByEmail(email)
+                .orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
+        return tokenProvider.reissue(refreshToken, member.getRoles(), new Date());
     }
 
     /**

@@ -37,4 +37,6 @@ public interface MemberService {
     String withdraw(MemberAuthDto memberAuthDto);
 
     Member findByEmail(String email);
+
+    String reissue(String refreshToken);
 }
