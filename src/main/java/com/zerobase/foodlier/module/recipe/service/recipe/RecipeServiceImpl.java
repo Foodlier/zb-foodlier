@@ -293,7 +293,6 @@ public class RecipeServiceImpl implements RecipeService {
         Member member = memberRepository.findById(memberAuthDto.getId())
                 .orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
 
-        ListResponse<RecipeListDto> listResponse;
         Page<Recipe> recipePage;
         int totalPages;
         boolean hasNext;
@@ -303,61 +302,34 @@ public class RecipeServiceImpl implements RecipeService {
                 recipePage = recipeRepository.findByOrderByCreatedAtDesc(pageable);
                 totalPages = recipePage.getTotalPages();
                 hasNext = recipePage.hasNext();
-                listResponse = ListResponse.<RecipeListDto>builder()
-                        .totalPages(totalPages)
-                        .hasNextPage(hasNext)
-                        .content(
-                                recipePage.stream()
-                                        .map(r -> RecipeListDto.builder()
-                                                .title(r.getSummary().getTitle())
-                                                .content(r.getSummary().getContent())
-                                                .heartCount(r.getHeartCount())
-                                                .isHeart(heartRepository.existsByRecipeAndMember(r, member))
-                                                .build())
-                                        .collect(Collectors.toList()))
-                        .build();
                 break;
             case HEART_COUNT:
                 recipePage = recipeRepository.findByOrderByHeartCountDesc(pageable);
                 totalPages = recipePage.getTotalPages();
                 hasNext = recipePage.hasNext();
-                listResponse = ListResponse.<RecipeListDto>builder()
-                        .totalPages(totalPages)
-                        .hasNextPage(hasNext)
-                        .content(
-                                recipePage.stream()
-                                        .map(r -> RecipeListDto.builder()
-                                                .title(r.getSummary().getTitle())
-                                                .content(r.getSummary().getContent())
-                                                .heartCount(r.getHeartCount())
-                                                .isHeart(heartRepository.existsByRecipeAndMember(r, member))
-                                                .build())
-                                        .collect(Collectors.toList()))
-                        .build();
                 break;
             case COMMENT_COUNT:
                 recipePage = recipeRepository.findByOrderByCommentCountDesc(pageable);
                 totalPages = recipePage.getTotalPages();
                 hasNext = recipePage.hasNext();
-                listResponse = ListResponse.<RecipeListDto>builder()
-                        .totalPages(totalPages)
-                        .hasNextPage(hasNext)
-                        .content(
-                                recipePage.stream()
-                                        .map(r -> RecipeListDto.builder()
-                                                .title(r.getSummary().getTitle())
-                                                .content(r.getSummary().getContent())
-                                                .heartCount(r.getHeartCount())
-                                                .isHeart(heartRepository.existsByRecipeAndMember(r, member))
-                                                .build())
-                                        .collect(Collectors.toList()))
-                        .build();
                 break;
             default:
                 throw new RecipeException(ORDER_TYPE_NOT_FOUND);
         }
 
-        return listResponse;
+        return ListResponse.<RecipeListDto>builder()
+                .totalPages(totalPages)
+                .hasNextPage(hasNext)
+                .content(
+                        recipePage.stream()
+                                .map(r -> RecipeListDto.builder()
+                                        .title(r.getSummary().getTitle())
+                                        .content(r.getSummary().getContent())
+                                        .heartCount(r.getHeartCount())
+                                        .isHeart(heartRepository.existsByRecipeAndMember(r, member))
+                                        .build())
+                                .collect(Collectors.toList()))
+                .build();
     }
 
     /**
