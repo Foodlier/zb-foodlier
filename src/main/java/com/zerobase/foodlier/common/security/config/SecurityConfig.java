@@ -45,7 +45,7 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
 
         httpSecurity.csrf().disable();
-        httpSecurity.cors(Customizer.withDefaults());
+        httpSecurity.cors().configurationSource(corsConfigurationSource());
         httpSecurity.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
         httpSecurity
                 .addFilterBefore(
@@ -76,10 +76,7 @@ public class SecurityConfig {
                         "/**/auth/verify",
                         "/**/auth/signin",
                         "/**/success/**",
-                        "/**/fail/**",
-                        "/pub/**",
-                        "/sub/**",
-                        "/ws/**"
+                        "/**/fail/**"
                 );
     }
 
