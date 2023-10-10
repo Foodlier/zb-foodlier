@@ -30,6 +30,9 @@ import static com.zerobase.foodlier.module.requestform.exception.RequestFormErro
 @Service
 @RequiredArgsConstructor
 public class RequestServiceImpl implements RequestService {
+
+    private static final Long NOT_EXIST_CHEF_MEMBER_ID = -1L;
+
     private final RequestRepository requestRepository;
     private final RequestFormRepository requestFormRepository;
     private final ChefMemberRepository chefMemberRepository;
@@ -204,7 +207,8 @@ public class RequestServiceImpl implements RequestService {
     private void validateGetRequestDetail(Member member, Request request){
 
         //요청서에 요리사가 할당되지 않았을 경우는 존재할 수 없는 ID를 할당함.
-        Long chefMemberId = Objects.isNull(request.getChefMember()) ? -1L :
+        Long chefMemberId = Objects.isNull(request.getChefMember()) ?
+                NOT_EXIST_CHEF_MEMBER_ID :
                 request.getChefMember().getMember().getId();
 
         if(!Objects.equals(request.getMember().getId(), member.getId()) &&
