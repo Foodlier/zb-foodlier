@@ -26,12 +26,9 @@ export const MainImgWrap = styled.section`
   margin: 2rem 0;
   display: flex;
   width: 100%;
-  max-width: 100rem;
-  height: clamp(33rem, 100%, 33rem);
   justify-content: center;
   align-items: center;
   border-radius: 1rem;
-  overflow: hidden;
 
   ${breakpoints.large} {
     margin: 0 0 1rem 0;
@@ -39,12 +36,14 @@ export const MainImgWrap = styled.section`
 `
 
 export const MainImg = styled.img`
+  min-width: 40rem;
   width: 100%;
-  height: 100%;
-  object-fit: cover;
+  height: 30rem;
+  border: 1px solid ${palette.divider};
+  border-radius: inherit;
 `
 
-export const ProfileWrap = styled.div`
+export const ProfileWrap = styled.button`
   width: 100%;
   display: flex;
   justify-content: space-between;
@@ -61,18 +60,16 @@ export const Profile = styled.div`
   align-items: center;
 `
 export const ProfileImg = styled.img`
-  width: 4rem;
-  height: 4rem;
-  stroke-width: 2rem;
-  border: 0.2rem solid ${palette.main};
-  border-radius: 50%;
+  width: 5rem;
+  height: 5rem;
+  border: 1px solid ${palette.main};
+  border-radius: 100%;
   padding: 0.5rem;
   margin-right: 1rem;
+  object-fit: contain;
 `
 
-export const ProfileId = styled.div`
-  width: 100%;
-`
+export const ProfileId = styled.div``
 // RightWrap
 export const RightWrap = styled.div`
   width: 100%;
@@ -88,7 +85,7 @@ export const Info = styled.div`
   border: 0.1rem solid ${palette.divider};
   box-shadow: 0.1rem 0.5rem 1.1rem ${palette.shadow};
 
-  padding: 1rem 8%;
+  padding: 1rem 5%;
   font-weight: 600;
 
   &::after {
@@ -105,9 +102,9 @@ export const Info = styled.div`
 `
 
 export const DifficultyInfo = styled.div`
+  flex: 1;
   display: flex;
   justify-content: center;
-  width: 12rem;
   color: ${palette.main};
 `
 
@@ -118,12 +115,13 @@ export const InfoTit = styled.div`
 export const InfoTxt = styled.div`
   display: flex;
   align-items: center;
+  margin-left: 1rem;
 `
 export const TimeInfo = styled.div`
+  flex: 1;
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 12rem;
 `
 
 export const MainTit = styled.div`
