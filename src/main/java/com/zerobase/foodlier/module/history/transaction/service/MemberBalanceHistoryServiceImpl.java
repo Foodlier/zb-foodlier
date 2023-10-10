@@ -1,5 +1,6 @@
 package com.zerobase.foodlier.module.history.transaction.service;
 
+import com.zerobase.foodlier.common.response.ListResponse;
 import com.zerobase.foodlier.common.security.provider.dto.MemberAuthDto;
 import com.zerobase.foodlier.module.history.transaction.domain.model.MemberBalanceHistory;
 import com.zerobase.foodlier.module.history.transaction.dto.MemberBalanceHistoryDto;
@@ -11,9 +12,6 @@ import com.zerobase.foodlier.module.transaction.dto.TransactionDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 import static com.zerobase.foodlier.module.history.type.TransactionType.POINT_RECEIVE;
 import static com.zerobase.foodlier.module.history.type.TransactionType.POINT_SEND;
@@ -65,15 +63,14 @@ public class MemberBalanceHistoryServiceImpl implements MemberBalanceHistoryServ
      * 거래 내역을 조회합니다.
      */
     @Override
-    public List<MemberBalanceHistoryDto> getTransactionHistory(MemberAuthDto memberAuthDto,
-                                                               Pageable pageable) {
+    public ListResponse<MemberBalanceHistoryDto> getTransactionHistory(MemberAuthDto memberAuthDto,
+                                                                       Pageable pageable) {
         Member member = memberRepository.findById(memberAuthDto.getId())
                 .orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
 
-        return memberBalanceHistoryRepository
-                .findByMemberOrderByCreatedAtDesc(member, pageable)
-                .stream()
-                .map(MemberBalanceHistoryDto::from)
-                .collect(Collectors.toList());
+        return ListResponse.from(
+                memberBalanceHistoryRepository
+                .findByMemberOrderByCreatedAtDesc(member, pageable),
+                MemberBalanceHistoryDto::from);
     }
 }
