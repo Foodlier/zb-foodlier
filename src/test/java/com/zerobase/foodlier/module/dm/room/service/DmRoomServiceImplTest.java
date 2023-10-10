@@ -1,5 +1,6 @@
 package com.zerobase.foodlier.module.dm.room.service;
 
+import com.zerobase.foodlier.common.response.ListResponse;
 import com.zerobase.foodlier.module.dm.dm.domain.model.Dm;
 import com.zerobase.foodlier.module.dm.dm.repository.DmRepository;
 import com.zerobase.foodlier.module.dm.room.domain.model.DmRoom;
@@ -16,6 +17,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.PageImpl;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -59,22 +61,25 @@ public class DmRoomServiceImplTest {
         );
 
         given(dmRoomRepository.getDmRoomPage(any(), any()))
-                .willReturn(expectDmRoomDtoList);
+                .willReturn(new PageImpl<>(
+                                new ArrayList<>(expectDmRoomDtoList)
+                            )
+                        );
 
         //when
-        List<DmRoomDto> dmRoomDtoList =
+        ListResponse<DmRoomDto> dmRoomDtoList =
                 dmRoomService.getDmRoomList(id, pageIdx, pageSize);
 
         //then
         assertAll(
                 () -> assertEquals(expectDmRoomDtoList.get(0).getNickname(),
-                        dmRoomDtoList.get(0).getNickname()),
+                        dmRoomDtoList.getContent().get(0).getNickname()),
                 () -> assertEquals(expectDmRoomDtoList.get(0).getId(),
-                        dmRoomDtoList.get(0).getId()),
+                        dmRoomDtoList.getContent().get(0).getId()),
                 () -> assertEquals(expectDmRoomDtoList.get(1).getNickname(),
-                        dmRoomDtoList.get(1).getNickname()),
+                        dmRoomDtoList.getContent().get(1).getNickname()),
                 () -> assertEquals(expectDmRoomDtoList.get(1).getId(),
-                        dmRoomDtoList.get(1).getId())
+                        dmRoomDtoList.getContent().get(1).getId())
         );
     }
 

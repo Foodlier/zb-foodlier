@@ -1,5 +1,6 @@
 package com.zerobase.foodlier.module.recipe.service.quotation;
 
+import com.zerobase.foodlier.common.response.ListResponse;
 import com.zerobase.foodlier.module.member.member.domain.model.Member;
 import com.zerobase.foodlier.module.member.member.exception.MemberException;
 import com.zerobase.foodlier.module.member.member.repository.MemberRepository;
@@ -161,17 +162,22 @@ class QuotationServiceImplTest {
                     );
 
             //when
-            List<QuotationTopResponse> responseList = quotationService
+            ListResponse<QuotationTopResponse> responseList = quotationService
                     .getQuotationListForRefrigerator(1L,
                             PageRequest.of(0, 10));
 
             //then
             assertAll(
-                    () -> assertEquals(topResponse.getQuotationId(), responseList.get(0).getQuotationId()),
-                    () -> assertEquals(topResponse.getTitle(), responseList.get(0).getTitle()),
-                    () -> assertEquals(topResponse.getContent(), responseList.get(0).getContent()),
-                    () -> assertEquals(topResponse.getDifficulty(), responseList.get(0).getDifficulty()),
-                    () -> assertEquals(topResponse.getExpectedTime(), responseList.get(0).getExpectedTime())
+                    () -> assertEquals(topResponse.getQuotationId(),
+                            responseList.getContent().get(0).getQuotationId()),
+                    () -> assertEquals(topResponse.getTitle(),
+                            responseList.getContent().get(0).getTitle()),
+                    () -> assertEquals(topResponse.getContent(),
+                            responseList.getContent().get(0).getContent()),
+                    () -> assertEquals(topResponse.getDifficulty(),
+                            responseList.getContent().get(0).getDifficulty()),
+                    () -> assertEquals(topResponse.getExpectedTime(),
+                            responseList.getContent().get(0).getExpectedTime())
             );
 
         }
@@ -208,17 +214,22 @@ class QuotationServiceImplTest {
                     );
 
             //when
-            List<QuotationTopResponse> responseList = quotationService
+            ListResponse<QuotationTopResponse> responseList = quotationService
                     .getQuotationListForRecipe(1L,
                             PageRequest.of(0, 10));
 
             //then
             assertAll(
-                    () -> assertEquals(topResponse.getQuotationId(), responseList.get(0).getQuotationId()),
-                    () -> assertEquals(topResponse.getTitle(), responseList.get(0).getTitle()),
-                    () -> assertEquals(topResponse.getContent(), responseList.get(0).getContent()),
-                    () -> assertEquals(topResponse.getDifficulty(), responseList.get(0).getDifficulty()),
-                    () -> assertEquals(topResponse.getExpectedTime(), responseList.get(0).getExpectedTime())
+                    () -> assertEquals(topResponse.getQuotationId(),
+                            responseList.getContent().get(0).getQuotationId()),
+                    () -> assertEquals(topResponse.getTitle(),
+                            responseList.getContent().get(0).getTitle()),
+                    () -> assertEquals(topResponse.getContent(),
+                            responseList.getContent().get(0).getContent()),
+                    () -> assertEquals(topResponse.getDifficulty(),
+                            responseList.getContent().get(0).getDifficulty()),
+                    () -> assertEquals(topResponse.getExpectedTime(),
+                            responseList.getContent().get(0).getExpectedTime())
             );
         }
 

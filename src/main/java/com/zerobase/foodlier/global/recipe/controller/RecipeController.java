@@ -1,5 +1,6 @@
 package com.zerobase.foodlier.global.recipe.controller;
 
+import com.zerobase.foodlier.common.response.ListResponse;
 import com.zerobase.foodlier.common.security.provider.dto.MemberAuthDto;
 import com.zerobase.foodlier.module.heart.service.HeartService;
 import com.zerobase.foodlier.module.recipe.dto.recipe.RecipeImageResponse;
@@ -78,10 +79,10 @@ public class RecipeController {
     }
 
     @GetMapping("/{pageIdx}/{pageSize}")
-    public ResponseEntity<List<Recipe>> getRecipeListByTitle(@AuthenticationPrincipal MemberAuthDto memberAuthDto,
-                                                             @PathVariable int pageIdx,
-                                                             @PathVariable int pageSize,
-                                                             @RequestParam String recipeTitle){
+    public ResponseEntity<ListResponse<Recipe>> getRecipeListByTitle(@AuthenticationPrincipal MemberAuthDto memberAuthDto,
+                                                                     @PathVariable int pageIdx,
+                                                                     @PathVariable int pageSize,
+                                                                     @RequestParam String recipeTitle){
         return ResponseEntity.ok(recipeService.getRecipeByTitle(recipeTitle, PageRequest.of(pageIdx, pageSize)));
     }
 

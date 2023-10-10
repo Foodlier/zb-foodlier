@@ -1,5 +1,6 @@
 package com.zerobase.foodlier.module.recipe.service.quotation;
 
+import com.zerobase.foodlier.common.response.ListResponse;
 import com.zerobase.foodlier.module.member.member.domain.model.Member;
 import com.zerobase.foodlier.module.member.member.exception.MemberException;
 import com.zerobase.foodlier.module.member.member.repository.MemberRepository;
@@ -20,7 +21,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.stream.Collectors;
 
 import static com.zerobase.foodlier.module.member.member.exception.MemberErrorCode.MEMBER_NOT_FOUND;
@@ -72,8 +72,9 @@ public class QuotationServiceImpl implements QuotationService{
      * 본인이 전송 가능한, 견적서 목록을 조회합니다. (냉장고를 부탁해에서 호출되는 목록)
      */
     @Override
-    public List<QuotationTopResponse> getQuotationListForRefrigerator(Long memberId, Pageable pageable){
-        return recipeRepository.findQuotationListForRefrigerator(memberId, pageable).getContent();
+    public ListResponse<QuotationTopResponse> getQuotationListForRefrigerator(Long memberId, Pageable pageable){
+        return ListResponse.from(
+                recipeRepository.findQuotationListForRefrigerator(memberId, pageable));
     }
 
     /**
@@ -82,8 +83,9 @@ public class QuotationServiceImpl implements QuotationService{
      * 결제까지 완료된 견적서 목록을 조회합니다. (레시피 작성시에, 레시피로 변환할 견적서 조회)
      */
     @Override
-    public List<QuotationTopResponse> getQuotationListForRecipe(Long memberId, Pageable pageable){
-        return recipeRepository.findQuotationListForRecipe(memberId, pageable).getContent();
+    public ListResponse<QuotationTopResponse> getQuotationListForRecipe(Long memberId, Pageable pageable){
+        return ListResponse.from(
+                recipeRepository.findQuotationListForRecipe(memberId, pageable));
     }
 
     /**

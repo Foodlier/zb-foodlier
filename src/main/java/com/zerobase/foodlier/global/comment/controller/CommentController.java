@@ -1,11 +1,12 @@
 package com.zerobase.foodlier.global.comment.controller;
 
+import com.zerobase.foodlier.common.response.ListResponse;
 import com.zerobase.foodlier.common.security.provider.dto.MemberAuthDto;
 import com.zerobase.foodlier.global.comment.facade.comment.CommentFacade;
 import com.zerobase.foodlier.global.comment.facade.reply.ReplyFacade;
-import com.zerobase.foodlier.module.comment.comment.dto.CommentPagingDto;
+import com.zerobase.foodlier.module.comment.comment.dto.CommentDto;
 import com.zerobase.foodlier.module.comment.comment.service.CommentServiceImpl;
-import com.zerobase.foodlier.module.comment.reply.dto.ReplyPagingDto;
+import com.zerobase.foodlier.module.comment.reply.dto.ReplyDto;
 import com.zerobase.foodlier.module.comment.reply.servcie.ReplyService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
@@ -51,9 +52,9 @@ public class CommentController {
     }
 
     @GetMapping("/{recipeId}/{pageIdx}/{pageSize}")
-    public ResponseEntity<CommentPagingDto> getCommentList(@PathVariable int pageIdx,
-                                                           @PathVariable int pageSize,
-                                                           @PathVariable Long recipeId)
+    public ResponseEntity<ListResponse<CommentDto>> getCommentList(@PathVariable int pageIdx,
+                                                                   @PathVariable int pageSize,
+                                                                   @PathVariable Long recipeId)
     {
         return ResponseEntity.ok(commentService.getCommentList(recipeId,
                 PageRequest.of(pageIdx, pageSize)));
@@ -90,10 +91,10 @@ public class CommentController {
     }
 
     @GetMapping("/reply/{commentId}/{pageIdx}/{pageSize}")
-    public ResponseEntity<ReplyPagingDto> getReplyList(@AuthenticationPrincipal MemberAuthDto memberAuthDto,
-                                                       @PathVariable Long commentId,
-                                                       @PathVariable int pageIdx,
-                                                       @PathVariable int pageSize)
+    public ResponseEntity<ListResponse<ReplyDto>> getReplyList(@AuthenticationPrincipal MemberAuthDto memberAuthDto,
+                                               @PathVariable Long commentId,
+                                               @PathVariable int pageIdx,
+                                               @PathVariable int pageSize)
     {
         return ResponseEntity.ok(replyService.getReplyList(commentId,
                 PageRequest.of(pageIdx, pageSize)));
