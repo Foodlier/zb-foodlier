@@ -260,6 +260,11 @@ public class RecipeServiceImpl implements RecipeService {
         recipeRepository.save(recipe);
     }
 
+    /**
+     * 작성자 : 이승현
+     * 작성일 : 2023-10-10
+     * 메인 페이지에서 상위 3개를 미리보기로 조회해서 가져옵니다.
+     */
     @Override
     public List<RecipeListDto> getMainPageRecipeList(MemberAuthDto memberAuthDto) {
         Member member = memberRepository.findById(memberAuthDto.getId())
@@ -276,6 +281,11 @@ public class RecipeServiceImpl implements RecipeService {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * 작성자 : 이승현
+     * 작성일 : 2023-10-10
+     * 레시피 페이지에서 레시피를 생성된 순으로 조회해 옵니다.
+     */
     @Override
     public ListResponse<RecipeListDto> getRecipePageRecipeList(MemberAuthDto memberAuthDto,
                                                                Pageable pageable) {
@@ -300,6 +310,11 @@ public class RecipeServiceImpl implements RecipeService {
                 .build();
     }
 
+    /**
+     * 작성자 : 이승현
+     * 작성일 : 2023-10-10
+     * 오늘 생성된 레시피 중 좋아요 높은 순으로 5개를 조회해 옵니다.
+     */
     @Override
     public List<RecipeListDto> recommendedRecipe(MemberAuthDto memberAuthDto) {
         Member member = memberRepository.findById(memberAuthDto.getId())
