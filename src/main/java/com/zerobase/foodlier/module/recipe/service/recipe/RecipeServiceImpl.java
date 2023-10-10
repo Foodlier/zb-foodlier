@@ -284,7 +284,7 @@ public class RecipeServiceImpl implements RecipeService {
     /**
      * 작성자 : 이승현
      * 작성일 : 2023-10-10
-     * 레시피 페이지에서 레시피를 생성된 순으로 조회해 옵니다.
+     * 레시피 페이지에서 레시피를 orderTpye에 따라서 조회해 옵니다.
      */
     @Override
     public ListResponse<RecipeListDto> getRecipePageRecipeList(MemberAuthDto memberAuthDto,
