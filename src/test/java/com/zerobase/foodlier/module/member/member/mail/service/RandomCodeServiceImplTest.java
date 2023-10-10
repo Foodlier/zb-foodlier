@@ -5,11 +5,11 @@ import org.junit.jupiter.api.Test;
 import static com.zerobase.foodlier.module.member.member.mail.constants.GenerateCodeConstants.CODE_LENGTH;
 import static org.junit.jupiter.api.Assertions.*;
 
-class VerificationCodeServiceImplTest {
+class RandomCodeServiceImplTest {
 
     @Test
-    void success_createAuthenticationCode(){
-        String verificationCode = new VerificationCodeServiceImpl().createAuthenticationCode();
+    void success_createRandomCode(){
+        String verificationCode = new RandomCodeServiceImpl().createRandomCode();
 
         assertAll(
                 () -> assertEquals(CODE_LENGTH, verificationCode.length()),
