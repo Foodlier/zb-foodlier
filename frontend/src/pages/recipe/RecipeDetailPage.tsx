@@ -4,26 +4,8 @@ import BottomNavigation from '../../components/BottomNavigation'
 import DetailMainItem from '../../components/recipe/detail/DetailMain'
 import DetailIngredients from '../../components/recipe/detail/DetailIngredients'
 import DetailProcedure from '../../components/recipe/detail/DetailProcedure'
-import RecipeCommentList from '../../components/recipe/detail/comment/RecipeComment'
+import RecipeComment from '../../components/recipe/detail/comment/RecipeComment'
 import RecipeReviewList from '../../components/recipe/detail/review/RecipeReviewList'
-
-const comments = [
-  {
-    message: '댓글 내용 1',
-    createdAt: '2023-10-09',
-    isDeleted: false,
-    nickname: '유저1',
-    profileUrl: 'https://source.unsplash.com/random/50x50/?person',
-  },
-  {
-    message: '댓글 내용 2',
-    createdAt: '2023-10-10',
-    isDeleted: false,
-    nickname: '유저2',
-    profileUrl: 'https://source.unsplash.com/random/50x50/?person',
-  },
-  // 댓글 목록 계속 추가
-]
 
 export const DetailContainer = styled.div`
   width: 100%;
@@ -31,6 +13,22 @@ export const DetailContainer = styled.div`
 `
 
 const RecipeDetailPage = () => {
+  const comments = [
+    {
+      message: '댓글 내용 1',
+      createdAt: '2023-10-09',
+      isDeleted: false,
+      nickname: '유저1',
+      profileUrl: 'https://source.unsplash.com/random/50x50/?person',
+    },
+    // {
+    //   message: '댓글 내용 2',
+    //   createdAt: '2023-10-10',
+    //   isDeleted: false,
+    //   nickname: '유저2',
+    //   profileUrl: 'https://source.unsplash.com/random/50x50/?person',
+    // },
+  ]
   const recipe = {
     recipeId: '',
     memberId: '',
@@ -86,7 +84,7 @@ const RecipeDetailPage = () => {
         <DetailMainItem recipe={recipe} />
         <DetailIngredients ingredients={ingredients} />
         <DetailProcedure detail={detail} />
-        <RecipeCommentList comments={comments} />
+        <RecipeComment comments={comments} />
         <RecipeReviewList />
       </DetailContainer>
 

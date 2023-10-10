@@ -1,24 +1,17 @@
 import styled from 'styled-components'
 import { palette } from '../../../../constants/Styles'
 
-export const CommentContainer = styled.section`
-  padding-bottom: 15rem;
+export const CommentItemWrapper = styled.section`
+  border-bottom: 1px solid ${palette.divider};
+  margin: 1rem 0;
+  padding: 2.5rem 2rem;
 `
-// export const RecipeCommentList = styled.section`
-//   padding-bottom: 15rem;
-// `
+export const CommentHeader = styled.div`
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+`
 
-// export const CommentTit = styled.h2`
-//   margin-bottom: 2rem;
-// `
-// export const LoadMoreCommentsButton = styled.div`
-//   margin-bottom: 2rem;
-// `
-// export const MoreButtonBox = styled.div`
-//   display: flex;
-//   justify-content: center;
-//   margin-top: 5rem;
-// `
 export const CommentUserInfo = styled.div`
   display: flex;
   align-items: center;
@@ -42,9 +35,14 @@ export const CommentDate = styled.p`
 export const CommentContent = styled.div`
   width: 100%;
 `
+export const ReplyTo = styled.span`
+  display: flex;
+  align-items: center;
+  margin-bottom: 1rem;
+`
 
 // RecipeCommentForm
-export const CommentForm = styled.div`
+export const CommentForm = styled.form`
   width: 100%;
   display: flex;
 
