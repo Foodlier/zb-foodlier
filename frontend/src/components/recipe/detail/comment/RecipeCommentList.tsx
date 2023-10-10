@@ -18,7 +18,7 @@ interface Comment {
 }
 
 interface CommentListProps {
-  recipeId: string | number
+  recipeId: number | undefined
 }
 
 const RecipeCommentList: React.FC<CommentListProps> = ({ recipeId }) => {

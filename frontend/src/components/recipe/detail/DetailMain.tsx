@@ -1,25 +1,23 @@
+import { useNavigate } from 'react-router-dom'
 import * as S from '../../../styles/recipe/detail/DetailMain.styled'
 import { palette } from '../../../constants/Styles'
 import useIcon from '../../../hooks/useIcon'
-
-interface DetailMain {
-  recipeId: string
-  memberId: string
-  nickname: string
-  profileUrl: string
-  title: string
-  content: string
-  mainImageUrl: string
-  difficulty: string
-  expectedTime: string
-}
+import { Recipe } from '../../../constants/Interfacs'
 
 interface DetailMainProps {
-  recipe: DetailMain
+  recipe: Recipe | undefined
 }
 
-function DetailMainItem({ recipe }: DetailMainProps) {
+const DetailMainItem = ({ recipe }: DetailMainProps) => {
+  const navigate = useNavigate()
   const { IcExpandRight, IcExportLight, IcTimeLight } = useIcon()
+
+  const goToProfile = () => {
+    // 정확한 경로로 router 수정
+    navigate(`profile/${recipe?.memberId}`)
+  }
+
+  if (!recipe) return null
 
   return (
     <>
@@ -29,7 +27,7 @@ function DetailMainItem({ recipe }: DetailMainProps) {
           <S.MainImgWrap>
             <S.MainImg src={recipe.mainImageUrl} alt={recipe.title} />
           </S.MainImgWrap>
-          <S.ProfileWrap>
+          <S.ProfileWrap onClick={goToProfile}>
             <S.Profile>
               <S.ProfileImg src={recipe.profileUrl} alt={recipe.nickname} />
               <S.ProfileId>{recipe.nickname}</S.ProfileId>
@@ -46,10 +44,8 @@ function DetailMainItem({ recipe }: DetailMainProps) {
             </S.DifficultyInfo>
             <S.TimeInfo>
               <S.InfoTit>조리시간</S.InfoTit>
-              <S.InfoTxt>
-                <IcTimeLight size={2} color={palette.textSecondary} />
-                {recipe.expectedTime}
-              </S.InfoTxt>
+              <IcTimeLight size={2} color={palette.textSecondary} />
+              <S.InfoTxt>{`${recipe.expectedTime}분`}</S.InfoTxt>
             </S.TimeInfo>
           </S.Info>
           <S.MainTit>
