@@ -1,9 +1,9 @@
 package com.zerobase.foodlier.module.comment.reply.servcie;
 
+import com.zerobase.foodlier.common.response.ListResponse;
 import com.zerobase.foodlier.module.comment.comment.domain.model.Comment;
 import com.zerobase.foodlier.module.comment.reply.domain.model.Reply;
 import com.zerobase.foodlier.module.comment.reply.dto.ReplyDto;
-import com.zerobase.foodlier.module.comment.reply.dto.ReplyPagingDto;
 import com.zerobase.foodlier.module.comment.reply.exception.ReplyException;
 import com.zerobase.foodlier.module.comment.reply.reposiotry.ReplyRepository;
 import com.zerobase.foodlier.module.member.member.domain.model.Member;
@@ -184,29 +184,24 @@ class ReplyServiceTest {
         PageImpl<ReplyDto> findingResult = getReplyList();
         given(replyRepository.findReplyList(any(), any()))
                 .willReturn(findingResult);
-        ReplyPagingDto expectedPagingDto = ReplyPagingDto.builder()
-                .replyDtoList(findingResult.toList())
-                .hasNextPage(findingResult.hasNext())
-                .totalElements(findingResult.getTotalElements())
-                .totalPages(findingResult.getTotalPages())
-                .build();
+        ListResponse<ReplyDto> expectedPagingDto = ListResponse.from(findingResult);
         // when
 
-        ReplyPagingDto replyPagingDto = replyService.getReplyList(any(), any());
+        ListResponse<ReplyDto> replyPagingDto = replyService.getReplyList(any(), any());
 
         // then
         assertAll(
-                () -> assertEquals(replyPagingDto.getReplyDtoList().size(), expectedPagingDto.getReplyDtoList().size()),
+                () -> assertEquals(replyPagingDto.getContent().size(), expectedPagingDto.getContent().size()),
                 () -> assertEquals(replyPagingDto.getTotalPages(), expectedPagingDto.getTotalPages()),
                 () -> assertEquals(replyPagingDto.isHasNextPage(), expectedPagingDto.isHasNextPage()),
                 () -> assertEquals(replyPagingDto.getTotalElements(), expectedPagingDto.getTotalElements())
         );
 
-        for (int i = 0; i < expectedPagingDto.getReplyDtoList().size(); i++) {
-            assertEquals(replyPagingDto.getReplyDtoList().get(i).getMessage(),
-                    expectedPagingDto.getReplyDtoList().get(i).getMessage());
-            assertEquals(replyPagingDto.getReplyDtoList().get(i).getCreatedAt(),
-                    expectedPagingDto.getReplyDtoList().get(i).getCreatedAt());
+        for (int i = 0; i < expectedPagingDto.getContent().size(); i++) {
+            assertEquals(replyPagingDto.getContent().get(i).getMessage(),
+                    expectedPagingDto.getContent().get(i).getMessage());
+            assertEquals(replyPagingDto.getContent().get(i).getCreatedAt(),
+                    expectedPagingDto.getContent().get(i).getCreatedAt());
         }
 
     }

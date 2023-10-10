@@ -1,8 +1,8 @@
 package com.zerobase.foodlier.module.comment.comment.service;
 
+import com.zerobase.foodlier.common.response.ListResponse;
 import com.zerobase.foodlier.module.comment.comment.domain.model.Comment;
 import com.zerobase.foodlier.module.comment.comment.dto.CommentDto;
-import com.zerobase.foodlier.module.comment.comment.dto.CommentPagingDto;
 import com.zerobase.foodlier.module.comment.comment.exception.CommentErrorCode;
 import com.zerobase.foodlier.module.comment.comment.exception.CommentException;
 import com.zerobase.foodlier.module.comment.comment.repository.CommentRepository;
@@ -208,21 +208,16 @@ class CommentServiceTest {
 
         // given
         PageImpl<CommentDto> commentDtos = getCommentDtoPages();
-        CommentPagingDto expectedPagingDto = CommentPagingDto.builder()
-                .commentDtoList(commentDtos.toList())
-                .hasNextPage(commentDtos.hasNext())
-                .totalPages(commentDtos.getTotalPages())
-                .totalElements(commentDtos.getTotalElements())
-                .build();
+        ListResponse<CommentDto> expectedPagingDto = ListResponse.from(commentDtos);
         given(commentRepository.findCommentList(anyLong(), any()))
                 .willReturn(commentDtos);
 
         // when
-        CommentPagingDto commentPagingDto = commentService.getCommentList(1L, PageRequest.of(0, 10));
+        ListResponse<CommentDto> commentPagingDto = commentService.getCommentList(1L, PageRequest.of(0, 10));
 
         // then
         verify(commentRepository, times(1)).findCommentList(anyLong(), any());
-        assertEquals(commentPagingDto.getCommentDtoList(), expectedPagingDto.getCommentDtoList());
+        assertEquals(commentPagingDto.getContent(), expectedPagingDto.getContent());
         assertEquals(commentPagingDto.getTotalPages(), expectedPagingDto.getTotalPages());
         assertEquals(commentPagingDto.isHasNextPage(), expectedPagingDto.isHasNextPage());
     }
