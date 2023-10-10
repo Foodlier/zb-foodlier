@@ -1,5 +1,6 @@
 package com.zerobase.foodlier.module.review.chef.service;
 
+import com.zerobase.foodlier.common.response.ListResponse;
 import com.zerobase.foodlier.module.member.chef.domain.model.ChefMember;
 import com.zerobase.foodlier.module.member.chef.exception.ChefMemberException;
 import com.zerobase.foodlier.module.member.chef.repository.ChefMemberRepository;
@@ -26,7 +27,6 @@ import org.springframework.data.domain.PageRequest;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Optional;
 
 import static com.zerobase.foodlier.module.member.chef.exception.ChefMemberErrorCode.CHEF_MEMBER_NOT_FOUND;
@@ -286,16 +286,16 @@ class ChefReviewServiceImplTest {
                         )
                 );
         //when
-        List<ChefReviewResponseDto> chefReviewList = chefReviewService.getChefReviewList(
+        ListResponse<ChefReviewResponseDto> chefReviewList = chefReviewService.getChefReviewList(
                 1L, PageRequest.of(0, 10)
         );
 
         //then
         assertAll(
-                () -> assertEquals(member.getNickname(), chefReviewList.get(0).getNickname()),
-                () -> assertEquals(member.getProfileUrl(), chefReviewList.get(0).getProfileUrl()),
-                () -> assertEquals("content", chefReviewList.get(0).getContent()),
-                () -> assertEquals(5, chefReviewList.get(0).getStar())
+                () -> assertEquals(member.getNickname(), chefReviewList.getContent().get(0).getNickname()),
+                () -> assertEquals(member.getProfileUrl(), chefReviewList.getContent().get(0).getProfileUrl()),
+                () -> assertEquals("content", chefReviewList.getContent().get(0).getContent()),
+                () -> assertEquals(5, chefReviewList.getContent().get(0).getStar())
         );
     }
 
