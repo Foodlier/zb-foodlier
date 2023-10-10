@@ -5,6 +5,7 @@ import com.zerobase.foodlier.common.security.provider.dto.MemberAuthDto;
 import com.zerobase.foodlier.common.security.provider.dto.TokenDto;
 import com.zerobase.foodlier.module.member.member.domain.model.Member;
 import com.zerobase.foodlier.module.member.member.dto.MemberRegisterDto;
+import com.zerobase.foodlier.module.member.member.dto.PasswordFindForm;
 import com.zerobase.foodlier.module.member.member.dto.RequestedMemberDto;
 import com.zerobase.foodlier.module.member.member.dto.SignInForm;
 import com.zerobase.foodlier.module.member.member.profile.dto.MemberPrivateProfileResponse;
@@ -15,6 +16,7 @@ import org.springframework.data.domain.Pageable;
 
 public interface MemberService {
     void register(MemberRegisterDto memberRegisterDto);
+
     TokenDto signIn(SignInForm form);
 
     void signOut(String email);
@@ -28,6 +30,9 @@ public interface MemberService {
 
     String updatePassword(MemberAuthDto memberAuthDto,
                           PasswordChangeForm form);
+
+
+    String updateRandomPassword(PasswordFindForm form, String newPassword);
 
     Member findByEmail(String email);
 }
