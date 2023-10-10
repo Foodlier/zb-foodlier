@@ -31,6 +31,7 @@ import java.util.stream.Collectors;
 import static com.zerobase.foodlier.module.recipe.domain.type.Difficulty.EASY;
 import static com.zerobase.foodlier.module.recipe.domain.type.Difficulty.HARD;
 import static com.zerobase.foodlier.module.recipe.exception.recipe.RecipeErrorCode.NO_SUCH_RECIPE;
+import static com.zerobase.foodlier.module.recipe.exception.recipe.RecipeErrorCode.NO_SUCH_RECIPE_DOCUMENT;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
@@ -57,7 +58,7 @@ class RecipeServiceImplTest {
         Member member = getMember();
         RecipeDtoRequest recipeDtoRequest = getRecipeDtoRequest();
 
-        RecipeDocument expectedRecipeDocument = getRecipeDocument(member, recipeDtoRequest);
+        RecipeDocument expectedRecipeDocument = getRecipeUpdatedDocument(member, recipeDtoRequest);
 
         given(recipeRepository.save(any()))
                 .willReturn(getExpectedRecipe(member));
@@ -122,7 +123,7 @@ class RecipeServiceImplTest {
 
         RecipeDocument expectedFindingRecipeDocument = getRecipeDocument(member);
 
-        RecipeDocument expectedUpdateRecipeDocument = getRecipeDocument(member, updateRecipe);
+        RecipeDocument expectedUpdateRecipeDocument = getRecipeUpdatedDocument(member, updateRecipe);
 
         given(recipeRepository.findById(any()))
                 .willReturn(Optional.ofNullable(getExpectedRecipe(member)));
@@ -174,7 +175,7 @@ class RecipeServiceImplTest {
 
         RecipeDocument expectedFindingRecipeDocument = getRecipeDocument(member);
 
-        RecipeDocument expectedUpdateRecipeDocument = getRecipeDocument(member, updateRecipe);
+        RecipeDocument expectedUpdateRecipeDocument = getRecipeUpdatedDocument(member, updateRecipe);
 
         given(recipeRepository.findById(any()))
                 .willReturn(Optional.of(getExpectedRecipe(member)));
@@ -447,7 +448,7 @@ class RecipeServiceImplTest {
 
     @Test
     @DisplayName("별점 추가 성공")
-    void success_plusReviewStar(){
+    void success_plusReviewStar() {
         //given
         given(recipeRepository.findById(anyLong()))
                 .willReturn(Optional.of(
@@ -482,7 +483,7 @@ class RecipeServiceImplTest {
 
     @Test
     @DisplayName("별점 추가 실패 - 꿀조합 X")
-    void fail_plusReviewStar_no_such_recipe(){
+    void fail_plusReviewStar_no_such_recipe() {
         //given
         given(recipeRepository.findById(anyLong()))
                 .willReturn(Optional.empty());
@@ -497,7 +498,7 @@ class RecipeServiceImplTest {
 
     @Test
     @DisplayName("별점 수정 성공")
-    void success_updateReviewStar(){
+    void success_updateReviewStar() {
         //given
         given(recipeRepository.findById(anyLong()))
                 .willReturn(Optional.of(
@@ -532,7 +533,7 @@ class RecipeServiceImplTest {
 
     @Test
     @DisplayName("별점 수정 실패 - 꿀조합 X")
-    void fail_updateReviewStar(){
+    void fail_updateReviewStar() {
         //given
         given(recipeRepository.findById(anyLong()))
                 .willReturn(Optional.empty());
@@ -547,7 +548,7 @@ class RecipeServiceImplTest {
 
     @Test
     @DisplayName("별점 차감 성공")
-    void success_minusReviewStar(){
+    void success_minusReviewStar() {
         //given
         given(recipeRepository.findById(anyLong()))
                 .willReturn(Optional.of(
@@ -582,7 +583,7 @@ class RecipeServiceImplTest {
 
     @Test
     @DisplayName("별점 차감 실패 - 꿀조합 X")
-    void fail_minusReviewStar_(){
+    void fail_minusReviewStar_() {
         //given
         given(recipeRepository.findById(anyLong()))
                 .willReturn(Optional.empty());
@@ -593,6 +594,186 @@ class RecipeServiceImplTest {
 
         //then
         assertEquals(NO_SUCH_RECIPE, exception.getErrorCode());
+    }
+
+    @Test
+    @DisplayName("레시피 댓글 수 증가 성공")
+    void success_plusNumberOfComment() {
+
+        // given
+        Member member = getMember();
+        Recipe recipe = getExpectedRecipe(member);
+        Recipe updatedRecipe = getCommentPlusRecipe(member);
+
+        RecipeDocument recipeDocument = getRecipeDocument(member);
+        RecipeDocument updatedRecipeDocument = RecipeDocument.builder()
+                .ingredients(recipeDocument.getIngredients())
+                .numberOfComment(recipeDocument.getNumberOfComment() + 1)
+                .numberOfHeart(recipeDocument.getNumberOfHeart())
+                .writer(recipeDocument.getWriter())
+                .id(recipeDocument.getId())
+                .build();
+        given(recipeRepository.findById(any()))
+                .willReturn(Optional.of(recipe));
+
+        given(recipeSearchRepository.findById(any()))
+                .willReturn(Optional.of(recipeDocument));
+
+        given(recipeSearchRepository.save(any()))
+                .willReturn(updatedRecipeDocument);
+
+        given(recipeRepository.save(any()))
+                .willReturn(updatedRecipe);
+        // when
+
+        Recipe recipeResult = recipeService.plusCommentCount(1L);
+
+        // then
+        ArgumentCaptor<RecipeDocument> recipeDocumentCaptor = ArgumentCaptor.forClass(RecipeDocument.class);
+        ArgumentCaptor<Recipe> recipeCaptor = ArgumentCaptor.forClass(Recipe.class);
+
+        verify(recipeRepository, times(1)).findById(any());
+        verify(recipeSearchRepository, times(1)).findById(any());
+        verify(recipeSearchRepository, times(1)).save(recipeDocumentCaptor.capture());
+        verify(recipeRepository, times(1)).save(recipeCaptor.capture());
+
+        assertAll(
+                () -> assertEquals(updatedRecipeDocument.getNumberOfComment(),
+                        recipeDocumentCaptor.getValue().getNumberOfComment()),
+                () -> assertEquals(recipeResult.getCommentCount(), recipeCaptor.getValue().getCommentCount())
+        );
+    }
+
+    @Test
+    @DisplayName("레시피 댓글 수 증가 실패 - 해당하는 레시피를 찾을 수 없음")
+    void fail_plusNumberOfComment_NO_SUCH_RECIPE() {
+
+        // given
+        given(recipeRepository.findById(any()))
+                .willThrow(new RecipeException(NO_SUCH_RECIPE));
+
+        // when
+        RecipeException recipeException = assertThrows(RecipeException.class, () -> recipeService.plusCommentCount(1L));
+
+        // then
+
+        verify(recipeRepository, times(1)).findById(any());
+        assertEquals(NO_SUCH_RECIPE, recipeException.getErrorCode());
+        assertEquals(NO_SUCH_RECIPE.getDescription(), recipeException.getDescription());
+    }
+
+    @Test
+    @DisplayName("레시피 댓글 수 증가 실패 - 해당하는 레시피 검색 객체를 찾을 수 없음")
+    void fail_plusNumberOfComment_NO_SUCH_RECIPE_DOCUEMENT() {
+
+        // given
+        Member member = getMember();
+        Recipe recipe = getExpectedRecipe(member);
+
+        given(recipeRepository.findById(any()))
+                .willReturn(Optional.of(recipe));
+
+        given(recipeSearchRepository.findById(any()))
+                .willThrow(new RecipeException(NO_SUCH_RECIPE_DOCUMENT));
+
+        // when
+        RecipeException recipeException = assertThrows(RecipeException.class, () -> recipeService.plusCommentCount(1L));
+
+        // then
+        verify(recipeRepository, times(1)).findById(any());
+        assertEquals(NO_SUCH_RECIPE_DOCUMENT, recipeException.getErrorCode());
+        assertEquals(NO_SUCH_RECIPE_DOCUMENT.getDescription(), recipeException.getDescription());
+    }
+
+    @Test
+    @DisplayName("레시피 댓글 수 감소 성공")
+    void success_minusNumberOfComment() {
+
+        // given
+        Member member = getMember();
+        Recipe recipe = getExpectedRecipe(member);
+        Recipe updatedRecipe = getCommentMinusRecipe(member);
+
+        RecipeDocument recipeDocument = getRecipeDocument(member);
+
+        RecipeDocument updatedRecipeDocument = RecipeDocument.builder()
+                .ingredients(recipeDocument.getIngredients())
+                .numberOfComment(recipeDocument.getNumberOfComment() - 1)
+                .numberOfHeart(recipeDocument.getNumberOfHeart())
+                .writer(recipeDocument.getWriter())
+                .id(recipeDocument.getId())
+                .build();
+
+        given(recipeRepository.findById(any()))
+                .willReturn(Optional.of(recipe));
+
+        given(recipeSearchRepository.findById(any()))
+                .willReturn(Optional.of(recipeDocument));
+
+        given(recipeSearchRepository.save(any()))
+                .willReturn(updatedRecipeDocument);
+
+        given(recipeRepository.save(any()))
+                .willReturn(updatedRecipe);
+        // when
+
+        recipeService.minusCommentCount(1L);
+
+        // then
+        ArgumentCaptor<RecipeDocument> recipeDocumentCaptor = ArgumentCaptor.forClass(RecipeDocument.class);
+        ArgumentCaptor<Recipe> recipeCaptor = ArgumentCaptor.forClass(Recipe.class);
+
+        verify(recipeRepository, times(1)).findById(any());
+        verify(recipeSearchRepository, times(1)).findById(any());
+        verify(recipeSearchRepository, times(1)).save(recipeDocumentCaptor.capture());
+        verify(recipeRepository, times(1)).save(recipeCaptor.capture());
+
+        assertAll(
+                () -> assertEquals(updatedRecipeDocument.getNumberOfComment(),
+                        recipeDocumentCaptor.getValue().getNumberOfComment()),
+                () -> assertEquals(updatedRecipe.getCommentCount(), recipeCaptor.getValue().getCommentCount())
+        );
+    }
+
+    @Test
+    @DisplayName("레시피 댓글 수 감소 실패 - 해당하는 레시피를 찾을 수 없음")
+    void fail_minusNumberOfComment_NO_SUCH_RECIPE() {
+
+        // given
+        given(recipeRepository.findById(any()))
+                .willThrow(new RecipeException(NO_SUCH_RECIPE));
+
+        // when
+        RecipeException recipeException = assertThrows(RecipeException.class, () -> recipeService.minusCommentCount(1L));
+
+        // then
+
+        verify(recipeRepository, times(1)).findById(any());
+        assertEquals(NO_SUCH_RECIPE, recipeException.getErrorCode());
+        assertEquals(NO_SUCH_RECIPE.getDescription(), recipeException.getDescription());
+    }
+
+    @Test
+    @DisplayName("레시피 댓글 수 감소 실패 - 해당하는 레시피 검색 객체를 찾을 수 없음")
+    void fail_minusNumberOfComment_NO_SUCH_RECIPE_DOCUEMENT() {
+
+        // given
+        Member member = getMember();
+        Recipe recipe = getExpectedRecipe(member);
+
+        given(recipeRepository.findById(any()))
+                .willReturn(Optional.of(recipe));
+
+        given(recipeSearchRepository.findById(any()))
+                .willThrow(new RecipeException(NO_SUCH_RECIPE_DOCUMENT));
+
+        // when
+        RecipeException recipeException = assertThrows(RecipeException.class, () -> recipeService.minusCommentCount(1L));
+
+        // then
+        verify(recipeRepository, times(1)).findById(any());
+        assertEquals(NO_SUCH_RECIPE_DOCUMENT, recipeException.getErrorCode());
+        assertEquals(NO_SUCH_RECIPE_DOCUMENT.getDescription(), recipeException.getDescription());
     }
 
 
@@ -617,6 +798,7 @@ class RecipeServiceImplTest {
                 .expectedTime(30)
                 .difficulty(HARD)
                 .member(member)
+                .commentCount(1)
                 .build();
     }
 
@@ -669,7 +851,7 @@ class RecipeServiceImplTest {
                 .build();
     }
 
-    private static RecipeDocument getRecipeDocument(Member member, RecipeDtoRequest updateRecipe) {
+    private static RecipeDocument getRecipeUpdatedDocument(Member member, RecipeDtoRequest updateRecipe) {
         return RecipeDocument
                 .builder()
                 .title(updateRecipe.getTitle())
@@ -678,6 +860,35 @@ class RecipeServiceImplTest {
                 .ingredients(updateRecipe.getRecipeIngredientDtoList().stream()
                         .map(RecipeIngredientDto::getName).collect(Collectors.toList()))
                 .numberOfComment(0L)
+                .build();
+    }
+    private static Recipe getCommentMinusRecipe(Member member){
+        return Recipe.builder()
+                .id(1L)
+                .summary(Summary.builder()
+                        .title("title")
+                        .content("content")
+                        .build())
+                .mainImageUrl("image.jpg")
+                .expectedTime(30)
+                .difficulty(HARD)
+                .member(member)
+                .commentCount(0)
+                .build();
+    }
+
+    private static Recipe getCommentPlusRecipe(Member member){
+        return Recipe.builder()
+                .id(1L)
+                .summary(Summary.builder()
+                        .title("title")
+                        .content("content")
+                        .build())
+                .mainImageUrl("image.jpg")
+                .expectedTime(30)
+                .difficulty(HARD)
+                .member(member)
+                .commentCount(2)
                 .build();
     }
 }
