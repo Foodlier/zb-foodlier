@@ -1,8 +1,13 @@
 package com.zerobase.foodlier.global.point.controller;
 
+import com.zerobase.foodlier.common.response.ListResponse;
 import com.zerobase.foodlier.common.security.provider.dto.MemberAuthDto;
 import com.zerobase.foodlier.global.point.facade.PaymentFacade;
 import com.zerobase.foodlier.global.point.facade.TransactionFacade;
+import com.zerobase.foodlier.module.history.charge.dto.PointChargeHistoryDto;
+import com.zerobase.foodlier.module.history.charge.service.PointChargeHistoryService;
+import com.zerobase.foodlier.module.history.transaction.dto.MemberBalanceHistoryDto;
+import com.zerobase.foodlier.module.history.transaction.service.MemberBalanceHistoryService;
 import com.zerobase.foodlier.module.payment.dto.PaymentRequest;
 import com.zerobase.foodlier.module.payment.dto.PaymentResponse;
 import com.zerobase.foodlier.module.payment.dto.PaymentResponseHandleFailDto;
@@ -10,6 +15,7 @@ import com.zerobase.foodlier.module.payment.service.PaymentService;
 import com.zerobase.foodlier.module.transaction.dto.SuggestionForm;
 import com.zerobase.foodlier.module.transaction.service.TransactionService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -22,6 +28,8 @@ public class PointController {
     private final TransactionService transactionService;
     private final PaymentFacade paymentFacade;
     private final TransactionFacade transactionFacade;
+    private final MemberBalanceHistoryService memberBalanceHistoryService;
+    private final PointChargeHistoryService pointChargeHistoryService;
 
     @PostMapping("/charge")
     public ResponseEntity<PaymentResponse> requestPayments(
@@ -98,5 +106,25 @@ public class PointController {
     ) {
         return ResponseEntity.ok(transactionService
                 .rejectSuggestion(memberAuthDto, dmRoomId));
+    }
+
+    @GetMapping("/charge/{pageIdx}/{pageSize}")
+    public ResponseEntity<ListResponse<PointChargeHistoryDto>> getPointHistory(
+            @AuthenticationPrincipal MemberAuthDto memberAuthDto,
+            @PathVariable int pageIdx,
+            @PathVariable int pageSize
+    ) {
+        return ResponseEntity.ok(pointChargeHistoryService
+                .getPointHistory(memberAuthDto, PageRequest.of(pageIdx, pageSize)));
+    }
+
+    @GetMapping("/transaction/{pageIdx}/{pageSize}")
+    public ResponseEntity<ListResponse<MemberBalanceHistoryDto>> getTransactionHistory(
+            @AuthenticationPrincipal MemberAuthDto memberAuthDto,
+            @PathVariable int pageIdx,
+            @PathVariable int pageSize
+    ) {
+        return ResponseEntity.ok(memberBalanceHistoryService
+                .getTransactionHistory(memberAuthDto, PageRequest.of(pageIdx, pageSize)));
     }
 }

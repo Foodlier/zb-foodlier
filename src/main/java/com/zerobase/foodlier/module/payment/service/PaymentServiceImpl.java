@@ -1,8 +1,6 @@
 package com.zerobase.foodlier.module.payment.service;
 
 import com.zerobase.foodlier.common.security.provider.dto.MemberAuthDto;
-import com.zerobase.foodlier.module.history.charge.domain.model.PointChargeHistory;
-import com.zerobase.foodlier.module.history.charge.repository.PointChargeHistoryRepository;
 import com.zerobase.foodlier.module.member.member.domain.model.Member;
 import com.zerobase.foodlier.module.member.member.exception.MemberException;
 import com.zerobase.foodlier.module.member.member.repository.MemberRepository;
@@ -37,7 +35,6 @@ import static com.zerobase.foodlier.module.payment.exception.PaymentErrorCode.*;
 public class PaymentServiceImpl implements PaymentService {
     private final PaymentRepository paymentRepository;
     private final MemberRepository memberRepository;
-    private final PointChargeHistoryRepository pointChargeHistoryRepository;
     private final RestTemplate restTemplate;
 
     @Value("${payments.toss.test_client_api_key}")
@@ -137,12 +134,18 @@ public class PaymentServiceImpl implements PaymentService {
 
     /**
      * 작성자 : 이승현
-     * 작성일 : 2023-10-02
+     * 작성일 : 2023-10-02(2023-10-09)
      * 결제를 취소합니다.
      */
     @Transactional
     @Override
     public Payment requestPaymentCancel(String paymentKey, String cancelReason) {
+        Payment payment = paymentRepository.findByPaymentKey(paymentKey)
+                .filter(p -> p.getPaySuccessYn().equals(SUCCESS_Y))
+                .orElseThrow(() -> new PaymentException(PAYMENT_REQUEST_NOT_FOUND));
+
+        validRequestPaymentCancel(payment);
+
         URI uri = URI.create(tossOriginUrl + paymentKey + "/cancel");
 
         HttpHeaders httpHeaders = new HttpHeaders();
@@ -161,9 +164,6 @@ public class PaymentServiceImpl implements PaymentService {
             throw new PaymentException(PAYMENT_CANCEL_ERROR);
         }
 
-        Payment payment = paymentRepository.findByPaymentKey(paymentKey)
-                .filter(p -> p.getPaySuccessYn().equals(SUCCESS_Y))
-                .orElseThrow(() -> new PaymentException(PAYMENT_REQUEST_NOT_FOUND));
         Long amount = payment.getAmount();
         payment.getMember().setPoint(payment.getMember().getPoint() - amount);
         payment.setCanceled(true);
@@ -185,5 +185,11 @@ public class PaymentServiceImpl implements PaymentService {
                             throw new PaymentException(UNDEFINED_ERROR);
                         }
                 );
+    }
+
+    private static void validRequestPaymentCancel(Payment payment) {
+        if (payment.getMember().getPoint() < payment.getAmount()) {
+            throw new PaymentException(PAYMENT_CANCEL_ERROR);
+        }
     }
 }

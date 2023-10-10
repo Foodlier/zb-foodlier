@@ -1,5 +1,6 @@
 package com.zerobase.foodlier.global.notification.controller;
 
+import com.zerobase.foodlier.common.response.ListResponse;
 import com.zerobase.foodlier.common.security.provider.dto.MemberAuthDto;
 import com.zerobase.foodlier.global.notification.facade.NotificationFacade;
 import com.zerobase.foodlier.module.notification.dto.NotificationDto;
@@ -11,8 +12,6 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
-import java.util.List;
-
 @RestController
 @RequestMapping("/notification")
 @RequiredArgsConstructor
@@ -21,9 +20,9 @@ public class NotificationController {
     private final NotificationService notificationService;
 
     @GetMapping("/{pageIdx}/{pageSize}")
-    public ResponseEntity<List<NotificationDto>> getSimpleNotificationList(@AuthenticationPrincipal MemberAuthDto principal,
-                                                                           @PathVariable int pageIdx,
-                                                                           @PathVariable int pageSize)
+    public ResponseEntity<ListResponse<NotificationDto>> getSimpleNotificationList(@AuthenticationPrincipal MemberAuthDto principal,
+                                                                                   @PathVariable int pageIdx,
+                                                                                   @PathVariable int pageSize)
     {
         return ResponseEntity.ok(notificationService.getNotificationBy(principal.getId(),
                 PageRequest.of(pageIdx, pageSize)));

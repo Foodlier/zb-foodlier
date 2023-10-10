@@ -1,5 +1,6 @@
 package com.zerobase.foodlier.module.recipe.service.recipe;
 
+import com.zerobase.foodlier.common.response.ListResponse;
 import com.zerobase.foodlier.module.member.member.domain.model.Member;
 import com.zerobase.foodlier.module.recipe.domain.model.Recipe;
 import com.zerobase.foodlier.module.recipe.dto.recipe.ImageUrlDto;
@@ -21,7 +22,7 @@ public interface RecipeService {
 
     void deleteRecipe(Long id);
 
-    List<Recipe> getRecipeByTitle(String recipeTitle, Pageable pageable);
+    ListResponse<Recipe> getRecipeByTitle(String recipeTitle, Pageable pageable);
 
     ImageUrlDto getBeforeImageUrl(Long id);
     List<RecipeDtoTopResponse> getRecipeForHeart(Long memberId);

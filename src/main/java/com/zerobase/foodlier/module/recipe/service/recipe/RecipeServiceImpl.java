@@ -1,6 +1,7 @@
 package com.zerobase.foodlier.module.recipe.service.recipe;
 
 import com.zerobase.foodlier.common.aop.RedissonLock;
+import com.zerobase.foodlier.common.response.ListResponse;
 import com.zerobase.foodlier.module.heart.reposiotry.HeartRepository;
 import com.zerobase.foodlier.module.member.member.domain.model.Member;
 import com.zerobase.foodlier.module.member.member.exception.MemberException;
@@ -17,13 +18,13 @@ import com.zerobase.foodlier.module.recipe.exception.recipe.RecipeException;
 import com.zerobase.foodlier.module.recipe.repository.RecipeRepository;
 import com.zerobase.foodlier.module.recipe.repository.RecipeSearchRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static com.zerobase.foodlier.module.member.member.exception.MemberErrorCode.MEMBER_NOT_FOUND;
@@ -164,17 +165,21 @@ public class RecipeServiceImpl implements RecipeService {
      */
 
     @Override
-    public List<Recipe> getRecipeByTitle(String recipeTitle, Pageable pageable) {
-        List<RecipeDocument> byTitle = recipeSearchRepository.findByTitle(recipeTitle, pageable).getContent();
+    public ListResponse<Recipe> getRecipeByTitle(String recipeTitle, Pageable pageable) {
+        Page<RecipeDocument> byTitle = recipeSearchRepository.findByTitle(recipeTitle, pageable);
         List<Recipe> recipeList = new ArrayList<>();
-        for (RecipeDocument recipeDocument : byTitle) {
+        for (RecipeDocument recipeDocument : byTitle.getContent()) {
             Recipe recipe = recipeRepository.findById(recipeDocument.getId())
                     .orElseThrow(() -> new RecipeException(NO_SUCH_RECIPE));
             recipeList.add(recipe);
         }
 
-        return recipeList;
-
+        return ListResponse.<Recipe>builder()
+                .totalElements(byTitle.getTotalElements())
+                .totalPages(byTitle.getTotalPages())
+                .hasNextPage(byTitle.hasNext())
+                .content(recipeList)
+                .build();
     }
 
     /**

@@ -1,5 +1,6 @@
 package com.zerobase.foodlier.module.review.recipe.service;
 
+import com.zerobase.foodlier.common.response.ListResponse;
 import com.zerobase.foodlier.module.member.member.domain.model.Member;
 import com.zerobase.foodlier.module.member.member.exception.MemberException;
 import com.zerobase.foodlier.module.member.member.repository.MemberRepository;
@@ -75,14 +76,13 @@ public class RecipeReviewServiceImpl implements RecipeReviewService{
      *  꿀조합의 후기를 페이징 하여 가져옵니다.
      */
     @Override
-    public List<RecipeReviewResponseDto> getRecipeReviewList(Long memberId,
-                                                             Long recipeId,
-                                                             Pageable pageable){
-        return recipeReviewRepository.findByRecipe(recipeId, memberId, pageable)
-                .getContent()
-                .stream()
-                .map(RecipeReviewResponseDto::from)
-                .collect(Collectors.toList());
+    public ListResponse<RecipeReviewResponseDto> getRecipeReviewList(Long memberId,
+                                                                     Long recipeId,
+                                                                     Pageable pageable){
+        return ListResponse.from(
+                recipeReviewRepository.findByRecipe(recipeId, memberId, pageable),
+                RecipeReviewResponseDto::from
+        );
     }
 
     /**

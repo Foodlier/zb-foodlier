@@ -1,5 +1,6 @@
 package com.zerobase.foodlier.global.dm.controller;
 
+import com.zerobase.foodlier.common.response.ListResponse;
 import com.zerobase.foodlier.common.security.provider.dto.MemberAuthDto;
 import com.zerobase.foodlier.module.dm.dm.dto.MessageResponseDto;
 import com.zerobase.foodlier.module.dm.dm.service.DmService;
@@ -10,8 +11,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @RestController
 @RequestMapping("/dm")
 @RequiredArgsConstructor
@@ -21,7 +20,7 @@ public class DmController {
     private final DmService dmService;
 
     @GetMapping("/room/{pageIdx}/{pageSize}")
-    public ResponseEntity<List<DmRoomDto>> getDmRoomPage(
+    public ResponseEntity<ListResponse<DmRoomDto>> getDmRoomPage(
             @AuthenticationPrincipal MemberAuthDto memberAuthDto,
             @PathVariable int pageIdx,
             @PathVariable int pageSize

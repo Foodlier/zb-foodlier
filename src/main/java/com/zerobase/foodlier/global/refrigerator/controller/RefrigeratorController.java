@@ -1,5 +1,6 @@
 package com.zerobase.foodlier.global.refrigerator.controller;
 
+import com.zerobase.foodlier.common.response.ListResponse;
 import com.zerobase.foodlier.common.security.provider.dto.MemberAuthDto;
 import com.zerobase.foodlier.global.refrigerator.facade.RefrigeratorFacade;
 import com.zerobase.foodlier.module.member.chef.dto.AroundChefDto;
@@ -9,20 +10,18 @@ import com.zerobase.foodlier.module.member.chef.type.ChefSearchType;
 import com.zerobase.foodlier.module.member.member.dto.RequestedMemberDto;
 import com.zerobase.foodlier.module.member.member.service.MemberService;
 import com.zerobase.foodlier.module.member.member.type.RequestedOrderingType;
+import com.zerobase.foodlier.module.request.dto.RequestDetailDto;
 import com.zerobase.foodlier.module.request.service.RequestService;
 import com.zerobase.foodlier.module.requestform.dto.RequestFormDetailDto;
 import com.zerobase.foodlier.module.requestform.dto.RequestFormDto;
 import com.zerobase.foodlier.module.requestform.dto.RequestFormResponseDto;
 import com.zerobase.foodlier.module.requestform.service.RequestFormService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -92,7 +91,7 @@ public class RefrigeratorController {
     }
 
     @GetMapping("/{pageIdx}/{pageSize}")
-    public ResponseEntity<Page<RequestFormResponseDto>> getMyRequestForm(
+    public ResponseEntity<ListResponse<RequestFormResponseDto>> getMyRequestForm(
             @AuthenticationPrincipal MemberAuthDto memberAuthDto,
             @PathVariable int pageIdx,
             @PathVariable int pageSize
@@ -108,6 +107,16 @@ public class RefrigeratorController {
     ) {
         return ResponseEntity.ok(requestFormService.getRequestFormDetail(
                 memberAuthDto.getId(), requestFormId));
+    }
+
+    @GetMapping("/request/{requestId}")
+    public ResponseEntity<RequestDetailDto> getRequestDetail(
+            @AuthenticationPrincipal MemberAuthDto memberAuthDto,
+            @PathVariable Long requestId
+    ){
+        return ResponseEntity.ok(
+                requestService.getRequestDetail(memberAuthDto.getId(), requestId)
+        );
     }
 
     @PutMapping("{requestFormId}")
@@ -133,19 +142,19 @@ public class RefrigeratorController {
     }
 
     @GetMapping("/chef/requested/{pageIdx}/{pageSize}")
-    public ResponseEntity<List<RequestedChefDto>> getRequestedChefList(
+    public ResponseEntity<ListResponse<RequestedChefDto>> getRequestedChefList(
             @AuthenticationPrincipal MemberAuthDto memberAuthDto,
             @PathVariable int pageIdx,
             @PathVariable int pageSize
     ){
         return ResponseEntity.ok(
                 chefMemberService.getRequestedChefList(memberAuthDto.getId(),
-                        pageIdx, pageSize)
+                        PageRequest.of(pageIdx, pageSize))
         );
     }
 
     @GetMapping("/chef/{pageIdx}/{pageSize}")
-    public ResponseEntity<List<AroundChefDto>> getAroundChefList(
+    public ResponseEntity<ListResponse<AroundChefDto>> getAroundChefList(
             @AuthenticationPrincipal MemberAuthDto memberAuthDto,
             @PathVariable int pageIdx,
             @PathVariable int pageSize,
@@ -153,12 +162,12 @@ public class RefrigeratorController {
     ){
         return ResponseEntity.ok(
                 chefMemberService.getAroundChefList(memberAuthDto.getId(),
-                        pageIdx, pageSize, type)
+                        PageRequest.of(pageIdx, pageSize), type)
         );
     }
 
     @GetMapping("/requester/{pageIdx}/{pageSize}")
-    public ResponseEntity<List<RequestedMemberDto>> getRequestedMemberList(
+    public ResponseEntity<ListResponse<RequestedMemberDto>> getRequestedMemberList(
             @AuthenticationPrincipal MemberAuthDto memberAuthDto,
             @PathVariable int pageIdx,
             @PathVariable int pageSize,

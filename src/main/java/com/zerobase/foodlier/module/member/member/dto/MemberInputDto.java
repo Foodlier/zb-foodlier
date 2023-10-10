@@ -18,7 +18,7 @@ public class MemberInputDto {
     @Email(message = "이메일 형식으로 입력해주세요.")
     private String email;
     private String password;
-    @Pattern(regexp = "^010-[0-9]{4}-[0-9]{4}$", message = "전화번호 형식으로 입력해주세요")
+    @Pattern(regexp = "^010[0-9]{8}$", message = "전화번호 형식으로 입력해주세요")
     private String phoneNumber;
     private String roadAddress;
     private String addressDetail;

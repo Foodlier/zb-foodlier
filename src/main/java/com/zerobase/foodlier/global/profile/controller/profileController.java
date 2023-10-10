@@ -1,5 +1,6 @@
 package com.zerobase.foodlier.global.profile.controller;
 
+import com.zerobase.foodlier.common.response.ListResponse;
 import com.zerobase.foodlier.common.security.provider.dto.MemberAuthDto;
 import com.zerobase.foodlier.global.profile.facade.ProfileFacade;
 import com.zerobase.foodlier.module.comment.comment.dto.MyPageCommentDto;
@@ -10,6 +11,7 @@ import com.zerobase.foodlier.module.member.chef.service.ChefMemberService;
 import com.zerobase.foodlier.module.member.member.dto.DefaultProfileDtoResponse;
 import com.zerobase.foodlier.module.member.member.profile.dto.MemberPrivateProfileForm;
 import com.zerobase.foodlier.module.member.member.profile.dto.MemberPrivateProfileResponse;
+import com.zerobase.foodlier.module.member.member.profile.dto.PasswordChangeForm;
 import com.zerobase.foodlier.module.member.member.service.MemberService;
 import com.zerobase.foodlier.module.recipe.dto.recipe.RecipeDtoTopResponse;
 import com.zerobase.foodlier.module.recipe.service.recipe.RecipeService;
@@ -82,7 +84,7 @@ public class profileController {
     public ResponseEntity<String> registerChef(
             @AuthenticationPrincipal MemberAuthDto memberAuthDto,
             @RequestBody ChefIntroduceForm chefIntroduceForm
-    ){
+    ) {
         chefMemberService.registerChef(memberAuthDto.getId(), chefIntroduceForm);
         return ResponseEntity.ok("요리사가 되었습니다.");
     }
@@ -91,7 +93,7 @@ public class profileController {
     public ResponseEntity<String> updateChefIntroduce(
             @AuthenticationPrincipal MemberAuthDto memberAuthDto,
             @RequestBody ChefIntroduceForm chefIntroduceForm
-            ){
+    ) {
         chefMemberService.updateChefIntroduce(memberAuthDto.getId(), chefIntroduceForm);
         return ResponseEntity.ok("요리사 소개가 수정되었습니다.");
     }
@@ -115,11 +117,11 @@ public class profileController {
     }
 
     @GetMapping("/public/chefreview/{pageIdx}/{pageSize}/{chefMemberId}")
-    public ResponseEntity<List<ChefReviewResponseDto>> getChefReviewList(
+    public ResponseEntity<ListResponse<ChefReviewResponseDto>> getChefReviewList(
             @PathVariable int pageIdx,
             @PathVariable int pageSize,
             @PathVariable Long chefMemberId
-    ){
+    ) {
         return ResponseEntity.ok(
                 chefReviewService.getChefReviewList(chefMemberId,
                         PageRequest.of(pageIdx, pageSize))
@@ -159,4 +161,11 @@ public class profileController {
         );
     }
 
+    @PutMapping("/private/password")
+    public ResponseEntity<String> updatePassword(
+            @AuthenticationPrincipal MemberAuthDto memberAuthDto,
+            @RequestBody PasswordChangeForm form
+    ) {
+        return ResponseEntity.ok(memberService.updatePassword(memberAuthDto, form));
+    }
 }
