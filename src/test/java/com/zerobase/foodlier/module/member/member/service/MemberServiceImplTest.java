@@ -33,10 +33,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static com.zerobase.foodlier.module.member.member.exception.MemberErrorCode.*;
 import static org.junit.jupiter.api.Assertions.*;
@@ -501,17 +498,17 @@ class MemberServiceImplTest {
 
     @Test
     @DisplayName("주변 요청자 조회 성공 - 가까운 거리순 정렬")
-    void success_getRequestedMemberList_order_by_distance(){
+    void success_getRequestedMemberList_order_by_distance() {
         //given
         ChefMember chefMember = ChefMember.builder().build();
         given(memberRepository.findById(anyLong()))
                 .willReturn(Optional.of(Member.builder()
                         .id(3L)
                         .chefMember(chefMember)
-                                .address(Address.builder()
-                                        .lat(37.5)
-                                        .lnt(127.5)
-                                        .build())
+                        .address(Address.builder()
+                                .lat(37.5)
+                                .lnt(127.5)
+                                .build())
                         .build()));
 
         RequestedMemberDto memberOne = getMemberDtoOne();
@@ -533,7 +530,7 @@ class MemberServiceImplTest {
         //when
         ListResponse<RequestedMemberDto> responseList = memberService
                 .getRequestedMemberList(3L,
-                RequestedOrderingType.DISTANCE, PageRequest.of(0, 10));
+                        RequestedOrderingType.DISTANCE, PageRequest.of(0, 10));
 
         //then
         assertAll(
@@ -561,7 +558,7 @@ class MemberServiceImplTest {
 
     @Test
     @DisplayName("주변 요청자 조회 성공 - 적은 희망가격순 정렬")
-    void success_getRequestedMemberList_order_by_expected_price(){
+    void success_getRequestedMemberList_order_by_expected_price() {
         //given
         ChefMember chefMember = ChefMember.builder().build();
         given(memberRepository.findById(anyLong()))
@@ -621,7 +618,7 @@ class MemberServiceImplTest {
 
     @Test
     @DisplayName("주변 요청자 조회 실패 - 회원 X")
-    void fail_getRequestedMemberList_member_not_found(){
+    void fail_getRequestedMemberList_member_not_found() {
         //given
         given(memberRepository.findById(anyLong()))
                 .willReturn(Optional.empty());
@@ -638,7 +635,7 @@ class MemberServiceImplTest {
 
     @Test
     @DisplayName("주변 요청자 조회 실패 - 요리사가 아님")
-    void fail_getRequestedMemberList_member_is_not_chef(){
+    void fail_getRequestedMemberList_member_is_not_chef() {
         //given
         given(memberRepository.findById(anyLong()))
                 .willReturn(Optional.of(Member.builder()
@@ -660,7 +657,7 @@ class MemberServiceImplTest {
     }
 
     // 테스트에 사용될 객체 정의
-    private RequestedMemberDto getMemberDtoOne(){
+    private RequestedMemberDto getMemberDtoOne() {
         return new RequestedMemberDto() {
             @Override
             public Long getMemberId() {
@@ -714,7 +711,7 @@ class MemberServiceImplTest {
         };
     }
 
-    private RequestedMemberDto getMemberDtoTwo(){
+    private RequestedMemberDto getMemberDtoTwo() {
         return new RequestedMemberDto() {
             @Override
             public Long getMemberId() {
@@ -821,6 +818,7 @@ class MemberServiceImplTest {
         //then
         assertEquals(MEMBER_NOT_FOUND, memberException.getErrorCode());
     }
+
     @Test
     @DisplayName("비밀번호 재설정 성공")
     void success_updateRandomPassword() {
@@ -861,6 +859,63 @@ class MemberServiceImplTest {
                         .email("test@test.com")
                         .phoneNumber("01012345678")
                         .build(), "newPassword"));
+
+        //then
+        assertEquals(MEMBER_NOT_FOUND, memberException.getErrorCode());
+    }
+
+    @Test
+    @DisplayName("회원 탈퇴 성공")
+    void success_withdraw() {
+        //given
+        Member member = Member.builder()
+                .id(1L)
+                .nickname("test")
+                .phoneNumber("01012345678")
+                .email("test@test.com")
+                .isDeleted(false)
+                .build();
+
+        given(memberRepository.findById(anyLong()))
+                .willReturn(Optional.ofNullable(member));
+
+        ArgumentCaptor<Member> captor = ArgumentCaptor.forClass(Member.class);
+
+        //when
+        memberService.withdraw(MemberAuthDto.builder()
+                .id(1L)
+                .email("test@test.com")
+                .build());
+
+        //then
+        verify(memberRepository, times(1))
+                .save(captor.capture());
+        verify(tokenProvider, times(1))
+                .deleteRefreshToken(Objects.requireNonNull(member).getEmail());
+
+        Member value = captor.getValue();
+        assertAll(
+                () -> assertEquals(1L, value.getId()),
+                () -> assertTrue(value.getEmail().startsWith("DEL")),
+                () -> assertTrue(value.getNickname().startsWith("DEL")),
+                () -> assertTrue(value.getPhoneNumber().startsWith("DEL")),
+                () -> assertTrue(value.isDeleted())
+        );
+    }
+
+    @Test
+    @DisplayName("회원 탈퇴 실패 - 회원을 찾을 수 없음")
+    void fail_withdraw_memberNotFound() {
+        //given
+        given(memberRepository.findById(anyLong()))
+                .willReturn(Optional.empty());
+
+        //when
+        MemberException memberException = assertThrows(MemberException.class,
+                () -> memberService.withdraw(MemberAuthDto.builder()
+                        .id(1L)
+                        .email("test@test.com")
+                        .build()));
 
         //then
         assertEquals(MEMBER_NOT_FOUND, memberException.getErrorCode());
