@@ -1,4 +1,4 @@
-import { ChangeEvent, useState, useRef } from 'react'
+import { ChangeEvent, useState, useRef, useEffect } from 'react'
 import DaumPostcode from 'react-daum-postcode'
 import { rest } from 'msw'
 import * as S from '../../styles/auth/RegisterPage.styled'
@@ -53,11 +53,12 @@ const Register = () => {
 
   /*
     폼 유효성 검사 결과에 따른 버튼 활성화 상태
+    정규식은 개발 단계이므로 간단하게 작성하였습니다.
   */
-  // const [isFormValid] = useState(false)
+  const [isFormValid, setIsFormValid] = useState(false)
 
   const validateNickname = (nickname: string) => {
-    const nicknameRegex = /^[가-힣a-zA-Z0-9]{4,10}$/
+    const nicknameRegex = /^[a-zA-Z0-9]{4,}$/
     return nicknameRegex.test(nickname)
   }
 
@@ -67,7 +68,7 @@ const Register = () => {
   }
 
   const validatePassword = (password: string) => {
-    const passwordRegex = /^[A-Za-z0-9!@#$%^&*()_+{}[\]:;<>,.?~\\-]{8,16}$/
+    const passwordRegex = /^[a-zA-Z0-9]{4,}$/
     return passwordRegex.test(password)
   }
 
@@ -131,7 +132,7 @@ const Register = () => {
       if (!validateNickname(value)) {
         setFormErrors({
           ...formErrors,
-          [name]: '4~10자의 한글, 영문, 숫자만 사용 가능합니다.',
+          [name]: '4~16자의 영문, 숫자를 사용하세요.',
         })
       }
     } else if (name === 'email') {
@@ -145,7 +146,7 @@ const Register = () => {
       if (!validatePassword(value)) {
         setFormErrors({
           ...formErrors,
-          [name]: '8~16자의 영문, 숫자, 특수문자를 사용하세요.',
+          [name]: '4~16자의 영문, 숫자를 사용하세요.',
         })
       }
     } else if (name === 'passwordCheck') {
@@ -172,11 +173,26 @@ const Register = () => {
     }
   }
 
-  /*
-    회원가입 폼 제출 이벤트
-  */
+  // 입력값 여부에 따라 버튼 활성화 상태 변경
+  useEffect(() => {
+    if (
+      formData.nickname !== '' &&
+      formData.email !== '' &&
+      formData.password !== '' &&
+      formData.passwordCheck !== '' &&
+      formData.address !== '' &&
+      formData.detailAddress !== ''
+    ) {
+      setIsFormValid(true)
+    } else {
+      setIsFormValid(false)
+    }
+  }, [formData])
+
+  //  회원가입 폼 제출 이벤트
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    console.log(formErrors)
     try {
       // 회원가입 API 엔드포인트
       const endpoint = '/auth/signup'
@@ -313,7 +329,13 @@ const Register = () => {
             onChange={handleChange}
           />
           <S.ErrorMessage>{formErrors.detailAddress}</S.ErrorMessage>
-          <S.ConfirmButton type="submit">가입하기</S.ConfirmButton>
+          {isFormValid ? (
+            <S.ConfirmButton type="submit" disabled>
+              가입하기
+            </S.ConfirmButton>
+          ) : (
+            <S.DisabledButton type="button">가입하기</S.DisabledButton>
+          )}
         </S.Form>
       </S.Container>
     </>

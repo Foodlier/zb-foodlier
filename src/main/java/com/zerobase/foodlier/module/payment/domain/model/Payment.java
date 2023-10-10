@@ -40,7 +40,7 @@ public class Payment extends Audit {
     private String paymentKey;
     private String paySuccessYn;
     private String payFailReason;
-    private boolean isCanceled = false;
+    private boolean isCanceled;
 
     @ManyToOne(targetEntity = Member.class, fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
     private Member member;

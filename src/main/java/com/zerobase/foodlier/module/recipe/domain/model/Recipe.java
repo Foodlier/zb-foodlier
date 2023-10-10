@@ -24,7 +24,7 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 public class Recipe extends Audit {
-
+    private final static int ZERO = 0;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -37,7 +37,7 @@ public class Recipe extends Audit {
     private int expectedTime;
 
     private int heartCount;
-
+    private int commentCount;
     @Embedded
     private RecipeStatistics recipeStatistics;
 
@@ -83,8 +83,17 @@ public class Recipe extends Audit {
     }
 
     public void minusHeart() {
-        if (heartCount > 0) {
+        if (heartCount > ZERO) {
             this.heartCount--;
         }
     }
+
+    public void plusCommentCount(){
+        ++this.commentCount;
+    }
+
+    public void minusCommentCount(){
+        this.commentCount = Math.max(ZERO, --this.commentCount);
+    }
+
 }

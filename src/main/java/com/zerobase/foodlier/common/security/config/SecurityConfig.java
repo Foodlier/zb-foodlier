@@ -16,6 +16,11 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import java.util.Arrays;
 
 @Configuration
 @EnableWebSecurity
@@ -39,6 +44,7 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
 
         httpSecurity.csrf().disable();
+        httpSecurity.cors().configurationSource(corsConfigurationSource());
         httpSecurity.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
         httpSecurity
                 .addFilterBefore(
@@ -67,9 +73,15 @@ public class SecurityConfig {
                         "/**/auth/login",
                         "/**/authKey/send",
                         "/**/auth/verify",
+                        "/**/auth/verification/**",
                         "/**/auth/signin",
                         "/**/success/**",
-                        "/**/fail/**"
+                        "/**/fail/**",
+                        "/pub/**",
+                        "/sub/**",
+                        "/ws/**",
+                        "/env/**",
+                        "/actuator/health"
                 );
     }
 
@@ -78,4 +90,20 @@ public class SecurityConfig {
         return authenticationConfiguration.getAuthenticationManager();
     }
 
+    @Bean
+    CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.setAllowedOrigins(Arrays.asList("http://localhost:5173/",
+                "http://127.0.0.1:5173/", "https://zb-foodlier.vercel.app/",
+                "https://zb-foodlier.vercel.app:443/",
+                "http://ec2-15-165-55-217.ap-northeast-2.compute.amazonaws.com/",
+                "http://ec2-15-165-55-217.ap-northeast-2.compute.amazonaws.com:80/"));
+        configuration.setAllowCredentials(true);
+        configuration.setAllowedMethods(Arrays.asList("GET","POST", "PUT", "DELETE", "PATCH"));
+        configuration.setAllowedHeaders(Arrays.asList("*"));
+        configuration.setExposedHeaders(Arrays.asList("*"));
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
+    }
 }
