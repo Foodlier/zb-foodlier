@@ -11,6 +11,7 @@ import {
   EMPTY_ORDER,
   INGREDIENT_LIST,
 } from '../../constants/Data'
+import axiosInstance from '../../utils/fetchCall'
 
 interface IngredientInterface {
   index: number
@@ -92,6 +93,37 @@ const WriteRecipePage = () => {
       ...prevRecipeValue,
       recipeIngredientDtoList: updatedValue,
     }))
+  }
+
+  const body = {
+    content: 'string',
+    difficulty: 'EASY',
+    expectedTime: 0,
+    mainImageUrl: 'string',
+    recipeDetailDtoList: [
+      {
+        cookingOrder: 'string',
+        cookingOrderImageUrl: 'string',
+      },
+    ],
+    recipeIngredientDtoList: [
+      {
+        count: 0,
+        name: 'string',
+        unit: 'string',
+      },
+    ],
+    title: 'string',
+  }
+
+  const postRecipe = async e => {
+    e.preventDefault()
+    const res = await axiosInstance.post('/recipe', body)
+    console.log(res)
+    // if (res.status === 200) {
+    //   setRecipeData(res.data)
+    //   setIsLoading(false)
+    // }
   }
 
   // 해당 index의 순서 값 수정
@@ -216,7 +248,7 @@ const WriteRecipePage = () => {
           </S.AddButton>
         </S.WrapForm>
 
-        <S.RequestButton>레시피 등록하기</S.RequestButton>
+        <S.RequestButton onClick={postRecipe}>레시피 등록하기</S.RequestButton>
       </S.Container>
 
       <BottomNavigation />
