@@ -23,7 +23,7 @@ public interface RecipeService {
 
     void deleteRecipe(Long id);
 
-    List<Recipe> getRecipeByTitle(String recipeTitle, Pageable pageable);
+    ListResponse<Recipe> getRecipeByTitle(String recipeTitle, Pageable pageable);
 
     ImageUrlDto getBeforeImageUrl(Long id);
 
@@ -35,8 +35,8 @@ public interface RecipeService {
 
     List<RecipeListDto> getMainPageRecipeList(MemberAuthDto memberAuthDto);
 
-    List<?> getRecipePageRecipeList(MemberAuthDto memberAuthDto,
-                                    Pageable pageable);
+    ListResponse<RecipeListDto> getRecipePageRecipeList(MemberAuthDto memberAuthDto,
+                                                        Pageable pageable);
 
     List<RecipeListDto> recommendedRecipe(MemberAuthDto memberAuthDto);
 }

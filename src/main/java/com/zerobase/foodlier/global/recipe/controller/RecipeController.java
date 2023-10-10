@@ -8,6 +8,7 @@ import com.zerobase.foodlier.global.recipe.facade.RecipeFacade;
 import com.zerobase.foodlier.module.recipe.domain.model.Recipe;
 import com.zerobase.foodlier.module.recipe.dto.recipe.RecipeDtoRequest;
 import com.zerobase.foodlier.module.recipe.dto.recipe.RecipeDtoResponse;
+import com.zerobase.foodlier.module.recipe.dto.recipe.RecipeListDto;
 import com.zerobase.foodlier.module.recipe.service.recipe.RecipeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
@@ -105,7 +106,7 @@ public class RecipeController {
     }
 
     @GetMapping("/main")
-    public ResponseEntity<?> getMainPageRecipeList(
+    public ResponseEntity<List<RecipeListDto>> getMainPageRecipeList(
             @AuthenticationPrincipal MemberAuthDto memberAuthDto
     ) {
         return ResponseEntity.ok(recipeService.
@@ -113,7 +114,7 @@ public class RecipeController {
     }
 
     @GetMapping("/r/{pageIdx}/{pageSize}")
-    public ResponseEntity<?> getRecipePageRecipeList(
+    public ResponseEntity<ListResponse<RecipeListDto>> getRecipePageRecipeList(
             @AuthenticationPrincipal MemberAuthDto memberAuthDto,
             @PathVariable int pageIdx,
             @PathVariable int pageSize
@@ -124,7 +125,7 @@ public class RecipeController {
     }
 
     @GetMapping("/recommended")
-    public ResponseEntity<?> getRecommendedRecipeList(
+    public ResponseEntity<List<RecipeListDto>> getRecommendedRecipeList(
             @AuthenticationPrincipal MemberAuthDto memberAuthDto
     ) {
         return ResponseEntity.ok(recipeService.recommendedRecipe(memberAuthDto));

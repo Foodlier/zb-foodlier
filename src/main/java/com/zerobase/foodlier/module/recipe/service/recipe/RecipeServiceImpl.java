@@ -277,22 +277,27 @@ public class RecipeServiceImpl implements RecipeService {
     }
 
     @Override
-    public List<?> getRecipePageRecipeList(MemberAuthDto memberAuthDto,
-                                           Pageable pageable) {
+    public ListResponse<RecipeListDto> getRecipePageRecipeList(MemberAuthDto memberAuthDto,
+                                                               Pageable pageable) {
         Member member = memberRepository.findById(memberAuthDto.getId())
                 .orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
 
         Page<Recipe> recipePage = recipeRepository.findByOrderByCreatedAtDesc(pageable);
         int totalPages = recipePage.getTotalPages();
         boolean hasNext = recipePage.hasNext();
-        return recipePage.stream()
-                .map(r -> RecipeListDto.builder()
-                        .title(r.getSummary().getTitle())
-                        .content(r.getSummary().getContent())
-                        .heartCount(r.getHeartCount())
-                        .isHeart(heartRepository.existsByRecipeAndMember(r, member))
-                        .build())
-                .collect(Collectors.toList());
+        return ListResponse.<RecipeListDto>builder()
+                .totalPages(totalPages)
+                .hasNextPage(hasNext)
+                .content(
+                        recipePage.stream()
+                                .map(r -> RecipeListDto.builder()
+                                        .title(r.getSummary().getTitle())
+                                        .content(r.getSummary().getContent())
+                                        .heartCount(r.getHeartCount())
+                                        .isHeart(heartRepository.existsByRecipeAndMember(r, member))
+                                        .build())
+                                .collect(Collectors.toList()))
+                .build();
     }
 
     @Override
