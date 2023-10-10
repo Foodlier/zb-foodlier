@@ -40,6 +40,8 @@ public class MemberServiceImpl implements MemberService {
     private final JwtTokenProvider tokenProvider;
 
     private static final String DEL_PREFIX = "DEL";
+    private static final String RANDOM_CODE =
+            UUID.randomUUID().toString().replace("-", "");
 
     @Override
     public void register(MemberRegisterDto memberRegisterDto) {
@@ -227,12 +229,9 @@ public class MemberServiceImpl implements MemberService {
         Member member = memberRepository.findById(memberAuthDto.getId())
                 .orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
 
-        String delNickName = DEL_PREFIX +
-                UUID.randomUUID().toString().replace("-", "");
-        String delEmail = DEL_PREFIX +
-                UUID.randomUUID().toString().replace("-", "");
-        String delPhoneNumber = DEL_PREFIX +
-                UUID.randomUUID().toString().replace("-", "");
+        String delNickName = DEL_PREFIX + RANDOM_CODE;
+        String delEmail = DEL_PREFIX + RANDOM_CODE;
+        String delPhoneNumber = DEL_PREFIX + RANDOM_CODE;
         member.setNickname(delNickName);
         member.setEmail(delEmail);
         member.setPhoneNumber(delPhoneNumber);
