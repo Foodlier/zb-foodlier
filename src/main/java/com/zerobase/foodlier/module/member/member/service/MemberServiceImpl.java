@@ -1,5 +1,6 @@
 package com.zerobase.foodlier.module.member.member.service;
 
+import com.zerobase.foodlier.common.response.ListResponse;
 import com.zerobase.foodlier.common.security.provider.JwtTokenProvider;
 import com.zerobase.foodlier.common.security.provider.dto.MemberAuthDto;
 import com.zerobase.foodlier.common.security.provider.dto.TokenDto;
@@ -150,9 +151,9 @@ public class MemberServiceImpl implements MemberService {
      * 값이 없으면 기본적으로 가까운 거리순으로 반환함.
      */
     @Override
-    public List<RequestedMemberDto> getRequestedMemberList(Long memberId,
-                                                           RequestedOrderingType type,
-                                                           Pageable pageable) {
+    public ListResponse<RequestedMemberDto> getRequestedMemberList(Long memberId,
+                                                                   RequestedOrderingType type,
+                                                                   Pageable pageable) {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
 
@@ -160,20 +161,22 @@ public class MemberServiceImpl implements MemberService {
 
         switch (type) {
             case PRICE:
-                return memberRepository.getRequestedMemberListOrderByPrice(
+                return ListResponse.from(
+                        memberRepository.getRequestedMemberListOrderByPrice(
                         member.getChefMember().getId(), member.getAddress().getLat(),
                         member.getAddress().getLnt(),
                         pageable
-                ).getContent();
+                ));
             case DISTANCE:
-                return memberRepository.getRequestedMemberListOrderByDistance(
+                return ListResponse.from(
+                        memberRepository.getRequestedMemberListOrderByDistance(
                         member.getChefMember().getId(), member.getAddress().getLat(),
                         member.getAddress().getLnt(),
                         pageable
-                ).getContent();
+                ));
 
         }
-        return new ArrayList<>();
+        return new ListResponse<>();
     }
 
     /**

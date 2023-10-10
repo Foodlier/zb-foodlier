@@ -1,5 +1,6 @@
 package com.zerobase.foodlier.module.member.member.service;
 
+import com.zerobase.foodlier.common.response.ListResponse;
 import com.zerobase.foodlier.common.security.provider.JwtTokenProvider;
 import com.zerobase.foodlier.common.security.provider.dto.TokenDto;
 import com.zerobase.foodlier.module.member.chef.domain.model.ChefMember;
@@ -527,31 +528,31 @@ class MemberServiceImplTest {
         );
 
         //when
-        List<RequestedMemberDto> responseList = memberService
+        ListResponse<RequestedMemberDto> responseList = memberService
                 .getRequestedMemberList(3L,
                 RequestedOrderingType.DISTANCE, PageRequest.of(0, 10));
 
         //then
         assertAll(
-                () -> assertEquals(memberTwo.getMemberId(), responseList.get(0).getMemberId()),
-                () -> assertEquals(memberTwo.getProfileUrl(), responseList.get(0).getProfileUrl()),
-                () -> assertEquals(memberTwo.getNickname(), responseList.get(0).getNickname()),
-                () -> assertEquals(memberTwo.getDistance(), responseList.get(0).getDistance()),
-                () -> assertEquals(memberTwo.getLat(), responseList.get(0).getLat()),
-                () -> assertEquals(memberTwo.getLnt(), responseList.get(0).getLnt()),
-                () -> assertEquals(memberTwo.getRequestId(), responseList.get(0).getRequestId()),
-                () -> assertEquals(memberTwo.getTitle(), responseList.get(0).getTitle()),
-                () -> assertEquals(memberTwo.getMainImageUrl(), responseList.get(0).getMainImageUrl()),
+                () -> assertEquals(memberTwo.getMemberId(), responseList.getContent().get(0).getMemberId()),
+                () -> assertEquals(memberTwo.getProfileUrl(), responseList.getContent().get(0).getProfileUrl()),
+                () -> assertEquals(memberTwo.getNickname(), responseList.getContent().get(0).getNickname()),
+                () -> assertEquals(memberTwo.getDistance(), responseList.getContent().get(0).getDistance()),
+                () -> assertEquals(memberTwo.getLat(), responseList.getContent().get(0).getLat()),
+                () -> assertEquals(memberTwo.getLnt(), responseList.getContent().get(0).getLnt()),
+                () -> assertEquals(memberTwo.getRequestId(), responseList.getContent().get(0).getRequestId()),
+                () -> assertEquals(memberTwo.getTitle(), responseList.getContent().get(0).getTitle()),
+                () -> assertEquals(memberTwo.getMainImageUrl(), responseList.getContent().get(0).getMainImageUrl()),
 
-                () -> assertEquals(memberOne.getMemberId(), responseList.get(1).getMemberId()),
-                () -> assertEquals(memberOne.getProfileUrl(), responseList.get(1).getProfileUrl()),
-                () -> assertEquals(memberOne.getNickname(), responseList.get(1).getNickname()),
-                () -> assertEquals(memberOne.getDistance(), responseList.get(1).getDistance()),
-                () -> assertEquals(memberOne.getLat(), responseList.get(1).getLat()),
-                () -> assertEquals(memberOne.getLnt(), responseList.get(1).getLnt()),
-                () -> assertEquals(memberOne.getRequestId(), responseList.get(1).getRequestId()),
-                () -> assertEquals(memberOne.getTitle(), responseList.get(1).getTitle()),
-                () -> assertEquals(memberOne.getMainImageUrl(), responseList.get(1).getMainImageUrl())
+                () -> assertEquals(memberOne.getMemberId(), responseList.getContent().get(1).getMemberId()),
+                () -> assertEquals(memberOne.getProfileUrl(), responseList.getContent().get(1).getProfileUrl()),
+                () -> assertEquals(memberOne.getNickname(), responseList.getContent().get(1).getNickname()),
+                () -> assertEquals(memberOne.getDistance(), responseList.getContent().get(1).getDistance()),
+                () -> assertEquals(memberOne.getLat(), responseList.getContent().get(1).getLat()),
+                () -> assertEquals(memberOne.getLnt(), responseList.getContent().get(1).getLnt()),
+                () -> assertEquals(memberOne.getRequestId(), responseList.getContent().get(1).getRequestId()),
+                () -> assertEquals(memberOne.getTitle(), responseList.getContent().get(1).getTitle()),
+                () -> assertEquals(memberOne.getMainImageUrl(), responseList.getContent().get(1).getMainImageUrl())
         );
     }
 
@@ -587,31 +588,31 @@ class MemberServiceImplTest {
         );
 
         //when
-        List<RequestedMemberDto> responseList = memberService
+        ListResponse<RequestedMemberDto> responseList = memberService
                 .getRequestedMemberList(3L,
                         RequestedOrderingType.PRICE, PageRequest.of(0, 10));
 
         //then
         assertAll(
-                () -> assertEquals(memberOne.getMemberId(), responseList.get(0).getMemberId()),
-                () -> assertEquals(memberOne.getProfileUrl(), responseList.get(0).getProfileUrl()),
-                () -> assertEquals(memberOne.getNickname(), responseList.get(0).getNickname()),
-                () -> assertEquals(memberOne.getDistance(), responseList.get(0).getDistance()),
-                () -> assertEquals(memberOne.getLat(), responseList.get(0).getLat()),
-                () -> assertEquals(memberOne.getLnt(), responseList.get(0).getLnt()),
-                () -> assertEquals(memberOne.getRequestId(), responseList.get(0).getRequestId()),
-                () -> assertEquals(memberOne.getTitle(), responseList.get(0).getTitle()),
-                () -> assertEquals(memberOne.getMainImageUrl(), responseList.get(0).getMainImageUrl()),
+                () -> assertEquals(memberOne.getMemberId(), responseList.getContent().get(0).getMemberId()),
+                () -> assertEquals(memberOne.getProfileUrl(), responseList.getContent().get(0).getProfileUrl()),
+                () -> assertEquals(memberOne.getNickname(), responseList.getContent().get(0).getNickname()),
+                () -> assertEquals(memberOne.getDistance(), responseList.getContent().get(0).getDistance()),
+                () -> assertEquals(memberOne.getLat(), responseList.getContent().get(0).getLat()),
+                () -> assertEquals(memberOne.getLnt(), responseList.getContent().get(0).getLnt()),
+                () -> assertEquals(memberOne.getRequestId(), responseList.getContent().get(0).getRequestId()),
+                () -> assertEquals(memberOne.getTitle(), responseList.getContent().get(0).getTitle()),
+                () -> assertEquals(memberOne.getMainImageUrl(), responseList.getContent().get(0).getMainImageUrl()),
 
-                () -> assertEquals(memberTwo.getMemberId(), responseList.get(1).getMemberId()),
-                () -> assertEquals(memberTwo.getProfileUrl(), responseList.get(1).getProfileUrl()),
-                () -> assertEquals(memberTwo.getNickname(), responseList.get(1).getNickname()),
-                () -> assertEquals(memberTwo.getDistance(), responseList.get(1).getDistance()),
-                () -> assertEquals(memberTwo.getLat(), responseList.get(1).getLat()),
-                () -> assertEquals(memberTwo.getLnt(), responseList.get(1).getLnt()),
-                () -> assertEquals(memberTwo.getRequestId(), responseList.get(1).getRequestId()),
-                () -> assertEquals(memberTwo.getTitle(), responseList.get(1).getTitle()),
-                () -> assertEquals(memberTwo.getMainImageUrl(), responseList.get(1).getMainImageUrl())
+                () -> assertEquals(memberTwo.getMemberId(), responseList.getContent().get(1).getMemberId()),
+                () -> assertEquals(memberTwo.getProfileUrl(), responseList.getContent().get(1).getProfileUrl()),
+                () -> assertEquals(memberTwo.getNickname(), responseList.getContent().get(1).getNickname()),
+                () -> assertEquals(memberTwo.getDistance(), responseList.getContent().get(1).getDistance()),
+                () -> assertEquals(memberTwo.getLat(), responseList.getContent().get(1).getLat()),
+                () -> assertEquals(memberTwo.getLnt(), responseList.getContent().get(1).getLnt()),
+                () -> assertEquals(memberTwo.getRequestId(), responseList.getContent().get(1).getRequestId()),
+                () -> assertEquals(memberTwo.getTitle(), responseList.getContent().get(1).getTitle()),
+                () -> assertEquals(memberTwo.getMainImageUrl(), responseList.getContent().get(1).getMainImageUrl())
         );
     }
 
