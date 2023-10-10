@@ -21,6 +21,7 @@ public enum RequestErrorCode {
     ALREADY_APPROVED("이미 수락된 요청입니다."),
     CANNOT_REQUEST_TO_ME("자기 자신에 대한 요청은 불가능 합니다."),
     ALREADY_SETTED_QUOTATION("이미 해당 요청에 견적서가 할당되어있습니다."),
+    CANNOT_ACCESS_REQUEST("해당 요청에 접근할 수 없습니다."),
     ;
 
     private final String description;

@@ -9,6 +9,7 @@ import com.zerobase.foodlier.module.member.chef.type.ChefSearchType;
 import com.zerobase.foodlier.module.member.member.dto.RequestedMemberDto;
 import com.zerobase.foodlier.module.member.member.service.MemberService;
 import com.zerobase.foodlier.module.member.member.type.RequestedOrderingType;
+import com.zerobase.foodlier.module.request.dto.RequestDetailDto;
 import com.zerobase.foodlier.module.request.service.RequestService;
 import com.zerobase.foodlier.module.requestform.dto.RequestFormDetailDto;
 import com.zerobase.foodlier.module.requestform.dto.RequestFormDto;
@@ -108,6 +109,16 @@ public class RefrigeratorController {
     ) {
         return ResponseEntity.ok(requestFormService.getRequestFormDetail(
                 memberAuthDto.getId(), requestFormId));
+    }
+
+    @GetMapping("/request/{requestId}")
+    public ResponseEntity<RequestDetailDto> getRequestDetail(
+            @AuthenticationPrincipal MemberAuthDto memberAuthDto,
+            @PathVariable Long requestId
+    ){
+        return ResponseEntity.ok(
+                requestService.getRequestDetail(memberAuthDto.getId(), requestId)
+        );
     }
 
     @PutMapping("{requestFormId}")
