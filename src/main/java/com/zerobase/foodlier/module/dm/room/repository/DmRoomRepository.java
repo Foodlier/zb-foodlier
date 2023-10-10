@@ -3,13 +3,12 @@ package com.zerobase.foodlier.module.dm.room.repository;
 import com.zerobase.foodlier.module.dm.room.domain.model.DmRoom;
 import com.zerobase.foodlier.module.dm.room.dto.DmRoomDto;
 import com.zerobase.foodlier.module.request.domain.model.Request;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import java.util.List;
 import java.util.Optional;
 
 public interface DmRoomRepository extends JpaRepository<DmRoom, Long> {
@@ -51,6 +50,6 @@ public interface DmRoomRepository extends JpaRepository<DmRoom, Long> {
             "((d.request.chefMember.member.id = :requester AND d.isChefExit = false) " +
             "OR " +
             "(d.request.member.id = :requester AND d.isMemberExit = false))")
-    List<DmRoomDto> getDmRoomPage(@Param("requester") Long id, Pageable pageable);
+    Page<DmRoomDto> getDmRoomPage(@Param("requester") Long id, Pageable pageable);
 
 }
