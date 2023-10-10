@@ -33,7 +33,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @RequestMapping("/profile")
 @Slf4j
-public class profileController {
+public class ProfileController {
     private final MemberService memberService;
     private final ProfileFacade profileFacade;
     private final ChefMemberService chefMemberService;
