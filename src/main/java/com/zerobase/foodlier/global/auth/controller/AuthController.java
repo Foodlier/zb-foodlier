@@ -47,7 +47,7 @@ public class AuthController {
     }
 
     @PostMapping("/signup")
-    public ResponseEntity<String> signUp(@ModelAttribute @Valid MemberInputDto memberInputDto){
+    public ResponseEntity<String> signUp(@ModelAttribute @Valid MemberInputDto memberInputDto) {
         memberRegisterFacade.domainRegister(memberInputDto);
         return ResponseEntity.ok(
                 "회원가입 완료"
@@ -73,8 +73,15 @@ public class AuthController {
     @PostMapping("/findPassword")
     public ResponseEntity<String> passwordFind(
             @RequestBody @Valid PasswordFindForm form
-            ){
+    ) {
         return ResponseEntity.ok(passwordFindFacade
                 .sendMailAndUpdateNewPassword(form));
+    }
+
+    @DeleteMapping("/withdraw")
+    public ResponseEntity<String> withdraw(
+            @AuthenticationPrincipal MemberAuthDto memberAuthDto
+    ) {
+        return ResponseEntity.ok(memberService.withdraw(memberAuthDto));
     }
 }

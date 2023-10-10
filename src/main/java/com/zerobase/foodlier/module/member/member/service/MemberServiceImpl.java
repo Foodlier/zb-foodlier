@@ -3,14 +3,14 @@ package com.zerobase.foodlier.module.member.member.service;
 import com.zerobase.foodlier.common.security.provider.JwtTokenProvider;
 import com.zerobase.foodlier.common.security.provider.dto.MemberAuthDto;
 import com.zerobase.foodlier.common.security.provider.dto.TokenDto;
-import com.zerobase.foodlier.module.member.member.dto.PasswordFindForm;
-import com.zerobase.foodlier.module.member.member.dto.RequestedMemberDto;
-import com.zerobase.foodlier.module.member.member.dto.SignInForm;
-import com.zerobase.foodlier.module.member.member.profile.dto.MemberPrivateProfileResponse;
 import com.zerobase.foodlier.module.member.member.domain.model.Member;
 import com.zerobase.foodlier.module.member.member.domain.vo.Address;
 import com.zerobase.foodlier.module.member.member.dto.MemberRegisterDto;
+import com.zerobase.foodlier.module.member.member.dto.PasswordFindForm;
+import com.zerobase.foodlier.module.member.member.dto.RequestedMemberDto;
+import com.zerobase.foodlier.module.member.member.dto.SignInForm;
 import com.zerobase.foodlier.module.member.member.exception.MemberException;
+import com.zerobase.foodlier.module.member.member.profile.dto.MemberPrivateProfileResponse;
 import com.zerobase.foodlier.module.member.member.profile.dto.MemberUpdateDto;
 import com.zerobase.foodlier.module.member.member.profile.dto.PasswordChangeForm;
 import com.zerobase.foodlier.module.member.member.repository.MemberRepository;
@@ -25,6 +25,7 @@ import org.springframework.util.StringUtils;
 import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import static com.zerobase.foodlier.module.member.member.exception.MemberErrorCode.*;
 
@@ -37,6 +38,8 @@ public class MemberServiceImpl implements MemberService {
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider tokenProvider;
+
+    private static final String DEL_PREFIX = "DEL";
 
     @Override
     public void register(MemberRegisterDto memberRegisterDto) {
@@ -210,6 +213,34 @@ public class MemberServiceImpl implements MemberService {
         member.setPassword(passwordEncoder.encode(newPassword));
 
         return "비밀번호 재설정 완료.";
+    }
+
+    /**
+     * 작성자 : 이승현
+     * 작성일 : 2023-10-10
+     * 회원 탈퇴 시 닉네임, 이메일, 핸드폰 번호를 랜덤값으로 변경합니다.
+     * 멤버의 delete 상태를 true로 변경합니다.
+     * refresh 토큰이 존재한다면 토큰을 제거합니다.
+     */
+    @Override
+    public String withdraw(MemberAuthDto memberAuthDto) {
+        Member member = memberRepository.findById(memberAuthDto.getId())
+                .orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
+
+        String delNickName = DEL_PREFIX +
+                UUID.randomUUID().toString().replace("-", "");
+        String delEmail = DEL_PREFIX +
+                UUID.randomUUID().toString().replace("-", "");
+        String delPhoneNumber = DEL_PREFIX +
+                UUID.randomUUID().toString().replace("-", "");
+        member.setNickname(delNickName);
+        member.setEmail(delEmail);
+        member.setPhoneNumber(delPhoneNumber);
+        member.setDeleted(true);
+
+        tokenProvider.deleteRefreshToken(member.getEmail());
+
+        return "회원탈퇴 완료";
     }
 
     @Override

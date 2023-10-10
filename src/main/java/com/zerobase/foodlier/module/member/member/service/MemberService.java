@@ -36,5 +36,7 @@ public interface MemberService {
 
     String updateRandomPassword(PasswordFindForm form, String newPassword);
 
+    String withdraw(MemberAuthDto memberAuthDto);
+
     Member findByEmail(String email);
 }
