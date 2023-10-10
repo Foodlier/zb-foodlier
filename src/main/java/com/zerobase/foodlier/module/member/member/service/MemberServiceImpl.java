@@ -192,6 +192,7 @@ public class MemberServiceImpl implements MemberService {
                 .orElseThrow(()->new MemberException(MEMBER_NOT_FOUND));
 
         member.setPassword(passwordEncoder.encode(form.getNewPassword()));
+        memberRepository.save(member);
 
         tokenProvider.deleteRefreshToken(member.getEmail());
 

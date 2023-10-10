@@ -1,6 +1,7 @@
 package com.zerobase.foodlier.module.member.member.service;
 
 import com.zerobase.foodlier.common.security.provider.JwtTokenProvider;
+import com.zerobase.foodlier.common.security.provider.dto.MemberAuthDto;
 import com.zerobase.foodlier.common.security.provider.dto.TokenDto;
 import com.zerobase.foodlier.module.member.chef.domain.model.ChefMember;
 import com.zerobase.foodlier.module.member.member.domain.model.Member;
@@ -11,6 +12,7 @@ import com.zerobase.foodlier.module.member.member.dto.SignInForm;
 import com.zerobase.foodlier.module.member.member.exception.MemberException;
 import com.zerobase.foodlier.module.member.member.profile.dto.MemberPrivateProfileResponse;
 import com.zerobase.foodlier.module.member.member.profile.dto.MemberUpdateDto;
+import com.zerobase.foodlier.module.member.member.profile.dto.PasswordChangeForm;
 import com.zerobase.foodlier.module.member.member.repository.MemberRepository;
 import com.zerobase.foodlier.module.member.member.type.RegistrationType;
 import com.zerobase.foodlier.module.member.member.type.RequestedOrderingType;
@@ -497,17 +499,17 @@ class MemberServiceImplTest {
 
     @Test
     @DisplayName("주변 요청자 조회 성공 - 가까운 거리순 정렬")
-    void success_getRequestedMemberList_order_by_distance(){
+    void success_getRequestedMemberList_order_by_distance() {
         //given
         ChefMember chefMember = ChefMember.builder().build();
         given(memberRepository.findById(anyLong()))
                 .willReturn(Optional.of(Member.builder()
                         .id(3L)
                         .chefMember(chefMember)
-                                .address(Address.builder()
-                                        .lat(37.5)
-                                        .lnt(127.5)
-                                        .build())
+                        .address(Address.builder()
+                                .lat(37.5)
+                                .lnt(127.5)
+                                .build())
                         .build()));
 
         RequestedMemberDto memberOne = getMemberDtoOne();
@@ -529,7 +531,7 @@ class MemberServiceImplTest {
         //when
         List<RequestedMemberDto> responseList = memberService
                 .getRequestedMemberList(3L,
-                RequestedOrderingType.DISTANCE, PageRequest.of(0, 10));
+                        RequestedOrderingType.DISTANCE, PageRequest.of(0, 10));
 
         //then
         assertAll(
@@ -557,7 +559,7 @@ class MemberServiceImplTest {
 
     @Test
     @DisplayName("주변 요청자 조회 성공 - 적은 희망가격순 정렬")
-    void success_getRequestedMemberList_order_by_expected_price(){
+    void success_getRequestedMemberList_order_by_expected_price() {
         //given
         ChefMember chefMember = ChefMember.builder().build();
         given(memberRepository.findById(anyLong()))
@@ -617,7 +619,7 @@ class MemberServiceImplTest {
 
     @Test
     @DisplayName("주변 요청자 조회 실패 - 회원 X")
-    void fail_getRequestedMemberList_member_not_found(){
+    void fail_getRequestedMemberList_member_not_found() {
         //given
         given(memberRepository.findById(anyLong()))
                 .willReturn(Optional.empty());
@@ -634,7 +636,7 @@ class MemberServiceImplTest {
 
     @Test
     @DisplayName("주변 요청자 조회 실패 - 요리사가 아님")
-    void fail_getRequestedMemberList_member_is_not_chef(){
+    void fail_getRequestedMemberList_member_is_not_chef() {
         //given
         given(memberRepository.findById(anyLong()))
                 .willReturn(Optional.of(Member.builder()
@@ -656,7 +658,7 @@ class MemberServiceImplTest {
     }
 
     // 테스트에 사용될 객체 정의
-    private RequestedMemberDto getMemberDtoOne(){
+    private RequestedMemberDto getMemberDtoOne() {
         return new RequestedMemberDto() {
             @Override
             public Long getMemberId() {
@@ -710,7 +712,7 @@ class MemberServiceImplTest {
         };
     }
 
-    private RequestedMemberDto getMemberDtoTwo(){
+    private RequestedMemberDto getMemberDtoTwo() {
         return new RequestedMemberDto() {
             @Override
             public Long getMemberId() {
@@ -764,4 +766,57 @@ class MemberServiceImplTest {
         };
     }
 
+
+    @Test
+    @DisplayName("비밀번호 변경 성공")
+    void success_updatePassword() {
+        //given
+        given(memberRepository.findById(anyLong()))
+                .willReturn(Optional.ofNullable(Member.builder()
+                        .id(1L)
+                        .email("test@test.com")
+                        .password(passwordEncoder.encode("1"))
+                        .build()));
+
+        ArgumentCaptor<Member> captor = ArgumentCaptor.forClass(Member.class);
+
+        //when
+        memberService.updatePassword(MemberAuthDto.builder()
+                .id(1L)
+                .email("test@test.com")
+                .build(), PasswordChangeForm.builder()
+                .currentPassword("1")
+                .newPassword("123")
+                .build());
+
+        //then
+        verify(tokenProvider, times(1))
+                .deleteRefreshToken("test@test.com");
+        verify(memberRepository, times(1))
+                .save(captor.capture());
+
+        assertTrue(passwordEncoder
+                .matches("123", captor.getValue().getPassword()));
+    }
+
+    @Test
+    @DisplayName("비밀번호 변경 실패 - 회원을 찾을 수 없음")
+    void fail_updatePassword_memberNotFound() {
+        //given
+        given(memberRepository.findById(anyLong()))
+                .willReturn(Optional.empty());
+
+        //when
+        MemberException memberException = assertThrows(MemberException.class,
+                () -> memberService.updatePassword(MemberAuthDto.builder()
+                        .id(1L)
+                        .email("test@test.com")
+                        .build(), PasswordChangeForm.builder()
+                        .currentPassword("1")
+                        .newPassword("123")
+                        .build()));
+
+        //then
+        assertEquals(MEMBER_NOT_FOUND, memberException.getErrorCode());
+    }
 }
