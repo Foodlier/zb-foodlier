@@ -237,6 +237,7 @@ public class MemberServiceImpl implements MemberService {
         member.setEmail(delEmail);
         member.setPhoneNumber(delPhoneNumber);
         member.setDeleted(true);
+        memberRepository.save(member);
 
         tokenProvider.deleteRefreshToken(member.getEmail());
 
