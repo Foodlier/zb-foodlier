@@ -263,7 +263,7 @@ public class RecipeServiceImpl implements RecipeService {
     /**
      * 작성자 : 이승현
      * 작성일 : 2023-10-10
-     * 메인 페이지에서 상위 3개를 미리보기로 조회해서 가져옵니다.
+     * 메인 페이지에서 생성된 순으로 3개를 조회해 옵니다.
      */
     @Override
     public List<RecipeListDto> getMainPageRecipeList(MemberAuthDto memberAuthDto) {
