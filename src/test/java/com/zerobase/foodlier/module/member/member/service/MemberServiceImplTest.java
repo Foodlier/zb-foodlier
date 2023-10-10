@@ -875,6 +875,7 @@ class MemberServiceImplTest {
                 .email("test@test.com")
                 .isDeleted(false)
                 .build();
+        String delPreFix = "DEL";
 
         given(memberRepository.findById(anyLong()))
                 .willReturn(Optional.ofNullable(member));
@@ -896,9 +897,9 @@ class MemberServiceImplTest {
         Member value = captor.getValue();
         assertAll(
                 () -> assertEquals(1L, value.getId()),
-                () -> assertTrue(value.getEmail().startsWith("DEL")),
-                () -> assertTrue(value.getNickname().startsWith("DEL")),
-                () -> assertTrue(value.getPhoneNumber().startsWith("DEL")),
+                () -> assertTrue(value.getEmail().startsWith(delPreFix)),
+                () -> assertTrue(value.getNickname().startsWith(delPreFix)),
+                () -> assertTrue(value.getPhoneNumber().startsWith(delPreFix)),
                 () -> assertTrue(value.isDeleted())
         );
     }
