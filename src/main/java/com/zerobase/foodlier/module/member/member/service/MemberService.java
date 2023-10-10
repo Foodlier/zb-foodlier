@@ -37,4 +37,6 @@ public interface MemberService {
     String updateRandomPassword(PasswordFindForm form, String newPassword);
 
     Member findByEmail(String email);
+
+    String reissue(String refreshToken);
 }
