@@ -1,7 +1,11 @@
 package com.zerobase.foodlier.module.recipe.service.recipe;
 
 import com.zerobase.foodlier.common.aop.RedissonLock;
+import com.zerobase.foodlier.common.security.provider.dto.MemberAuthDto;
+import com.zerobase.foodlier.module.heart.reposiotry.HeartRepository;
 import com.zerobase.foodlier.module.member.member.domain.model.Member;
+import com.zerobase.foodlier.module.member.member.exception.MemberException;
+import com.zerobase.foodlier.module.member.member.repository.MemberRepository;
 import com.zerobase.foodlier.module.recipe.domain.document.RecipeDocument;
 import com.zerobase.foodlier.module.recipe.domain.model.Recipe;
 import com.zerobase.foodlier.module.recipe.domain.vo.RecipeDetail;
@@ -14,15 +18,18 @@ import com.zerobase.foodlier.module.recipe.exception.recipe.RecipeException;
 import com.zerobase.foodlier.module.recipe.repository.RecipeRepository;
 import com.zerobase.foodlier.module.recipe.repository.RecipeSearchRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static com.zerobase.foodlier.module.member.member.exception.MemberErrorCode.MEMBER_NOT_FOUND;
 import static com.zerobase.foodlier.module.recipe.exception.recipe.RecipeErrorCode.NO_SUCH_RECIPE;
 import static com.zerobase.foodlier.module.recipe.exception.recipe.RecipeErrorCode.NO_SUCH_RECIPE_DOCUMENT;
 
@@ -32,6 +39,8 @@ public class RecipeServiceImpl implements RecipeService {
 
     private final RecipeRepository recipeRepository;
     private final RecipeSearchRepository recipeSearchRepository;
+    private final MemberRepository memberRepository;
+    private final HeartRepository heartRepository;
 
     /**
      * 작성자: 황태원(이종욱)
@@ -187,7 +196,7 @@ public class RecipeServiceImpl implements RecipeService {
     }
 
     @RedissonLock(group = "recipeReview", key = "#recipeId")
-    public void plusReviewStar(Long recipeId, int star){
+    public void plusReviewStar(Long recipeId, int star) {
         Recipe recipe = recipeRepository.findById(recipeId)
                 .orElseThrow(() -> new RecipeException(NO_SUCH_RECIPE));
 
@@ -196,7 +205,7 @@ public class RecipeServiceImpl implements RecipeService {
     }
 
     @RedissonLock(group = "recipeReview", key = "#recipeId")
-    public void updateReviewStar(Long recipeId, int originStar, int newStar){
+    public void updateReviewStar(Long recipeId, int originStar, int newStar) {
         Recipe recipe = recipeRepository.findById(recipeId)
                 .orElseThrow(() -> new RecipeException(NO_SUCH_RECIPE));
 
@@ -205,7 +214,7 @@ public class RecipeServiceImpl implements RecipeService {
     }
 
     @RedissonLock(group = "recipeReview", key = "#recipeId")
-    public void minusReviewStar(Long recipeId, int star){
+    public void minusReviewStar(Long recipeId, int star) {
         Recipe recipe = recipeRepository.findById(recipeId)
                 .orElseThrow(() -> new RecipeException(NO_SUCH_RECIPE));
 
@@ -214,7 +223,7 @@ public class RecipeServiceImpl implements RecipeService {
     }
 
     @Override
-    public Recipe plusCommentCount(Long recipeId){
+    public Recipe plusCommentCount(Long recipeId) {
         // 레시피의 댓글 수 증가
         Recipe recipe = recipeRepository.findById(recipeId)
                 .orElseThrow(() -> new RecipeException(NO_SUCH_RECIPE));
@@ -246,4 +255,56 @@ public class RecipeServiceImpl implements RecipeService {
         recipeRepository.save(recipe);
     }
 
+    @Override
+    public List<RecipeListDto> getMainPageRecipeList(MemberAuthDto memberAuthDto) {
+        Member member = memberRepository.findById(memberAuthDto.getId())
+                .orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
+
+        return recipeRepository.findTop3ByOrderByCreatedAtDesc()
+                .stream()
+                .map(r -> RecipeListDto.builder()
+                        .title(r.getSummary().getTitle())
+                        .content(r.getSummary().getContent())
+                        .heartCount(r.getHeartCount())
+                        .isHeart(heartRepository.existsByRecipeAndMember(r, member))
+                        .build())
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<?> getRecipePageRecipeList(MemberAuthDto memberAuthDto,
+                                           Pageable pageable) {
+        Member member = memberRepository.findById(memberAuthDto.getId())
+                .orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
+
+        Page<Recipe> recipePage = recipeRepository.findByOrderByCreatedAtDesc(pageable);
+        int totalPages = recipePage.getTotalPages();
+        boolean hasNext = recipePage.hasNext();
+        return recipePage.stream()
+                .map(r -> RecipeListDto.builder()
+                        .title(r.getSummary().getTitle())
+                        .content(r.getSummary().getContent())
+                        .heartCount(r.getHeartCount())
+                        .isHeart(heartRepository.existsByRecipeAndMember(r, member))
+                        .build())
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<RecipeListDto> recommendedRecipe(MemberAuthDto memberAuthDto) {
+        Member member = memberRepository.findById(memberAuthDto.getId())
+                .orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
+
+        LocalDate now = LocalDate.now();
+        return recipeRepository.findTop5ByCreatedAtAfterOrderByHeartCountDesc(
+                        LocalDateTime.of(now.getYear(), now.getMonth(), now.getDayOfMonth(), 0, 0, 0))
+                .stream()
+                .map(r -> RecipeListDto.builder()
+                        .title(r.getSummary().getTitle())
+                        .content(r.getSummary().getContent())
+                        .heartCount(r.getHeartCount())
+                        .isHeart(heartRepository.existsByRecipeAndMember(r, member))
+                        .build())
+                .collect(Collectors.toList());
+    }
 }

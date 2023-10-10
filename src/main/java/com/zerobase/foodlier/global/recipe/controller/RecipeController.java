@@ -81,7 +81,7 @@ public class RecipeController {
     public ResponseEntity<List<Recipe>> getRecipeListByTitle(@AuthenticationPrincipal MemberAuthDto memberAuthDto,
                                                              @PathVariable int pageIdx,
                                                              @PathVariable int pageSize,
-                                                             @RequestParam String recipeTitle){
+                                                             @RequestParam String recipeTitle) {
         return ResponseEntity.ok(recipeService.getRecipeByTitle(recipeTitle, PageRequest.of(pageIdx, pageSize)));
     }
 
@@ -89,8 +89,8 @@ public class RecipeController {
     public ResponseEntity<String> createHeart(
             @AuthenticationPrincipal MemberAuthDto memberAuthDto,
             @PathVariable Long recipeId
-    ){
-        heartService.createHeart(memberAuthDto,recipeId);
+    ) {
+        heartService.createHeart(memberAuthDto, recipeId);
         return ResponseEntity.ok("좋아요를 눌렀습니다");
     }
 
@@ -98,8 +98,34 @@ public class RecipeController {
     public ResponseEntity<String> deleteHeart(
             @AuthenticationPrincipal MemberAuthDto memberAuthDto,
             @PathVariable Long recipeId
-    ){
-        heartService.deleteHeart(memberAuthDto,recipeId);
+    ) {
+        heartService.deleteHeart(memberAuthDto, recipeId);
         return ResponseEntity.ok("좋아요를 취소하였습니다.");
+    }
+
+    @GetMapping("/main")
+    public ResponseEntity<?> getMainPageRecipeList(
+            @AuthenticationPrincipal MemberAuthDto memberAuthDto
+    ) {
+        return ResponseEntity.ok(recipeService.
+                getMainPageRecipeList(memberAuthDto));
+    }
+
+    @GetMapping("/r/{pageIdx}/{pageSize}")
+    public ResponseEntity<?> getRecipePageRecipeList(
+            @AuthenticationPrincipal MemberAuthDto memberAuthDto,
+            @PathVariable int pageIdx,
+            @PathVariable int pageSize
+    ) {
+        return ResponseEntity.ok(recipeService
+                .getRecipePageRecipeList(memberAuthDto,
+                        PageRequest.of(pageIdx, pageSize)));
+    }
+
+    @GetMapping("/recommended")
+    public ResponseEntity<?> getRecommendedRecipeList(
+            @AuthenticationPrincipal MemberAuthDto memberAuthDto
+    ) {
+        return ResponseEntity.ok(recipeService.recommendedRecipe(memberAuthDto));
     }
 }
