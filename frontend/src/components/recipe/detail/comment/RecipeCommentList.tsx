@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react'
 import * as S from '../../../../styles/recipe/detail/comment/RecipeCommentList.styled'
-// import RecipeCommentItem from './RecipeCommentItem'
-// import RecipeCommentForm from './RecipeCommentForm'
-// import allDummyComments from './allDummyComments'
+import RecipeCommentItem from './RecipeCommentItem'
+import RecipeCommentForm from './RecipeCommentForm'
+import allDummyComments from './allDummyComments'
 import CommonButton from '../../../ui/Button'
 
 interface Comment {
