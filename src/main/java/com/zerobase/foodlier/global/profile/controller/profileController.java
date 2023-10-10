@@ -1,5 +1,6 @@
 package com.zerobase.foodlier.global.profile.controller;
 
+import com.zerobase.foodlier.common.response.ListResponse;
 import com.zerobase.foodlier.common.security.provider.dto.MemberAuthDto;
 import com.zerobase.foodlier.global.profile.facade.ProfileFacade;
 import com.zerobase.foodlier.module.member.chef.dto.ChefIntroduceForm;
@@ -16,8 +17,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -65,7 +64,7 @@ public class profileController {
     }
 
     @GetMapping("/public/chefreview/{pageIdx}/{pageSize}/{chefMemberId}")
-    public ResponseEntity<List<ChefReviewResponseDto>> getChefReviewList(
+    public ResponseEntity<ListResponse<ChefReviewResponseDto>> getChefReviewList(
             @PathVariable int pageIdx,
             @PathVariable int pageSize,
             @PathVariable Long chefMemberId
