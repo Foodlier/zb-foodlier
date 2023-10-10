@@ -1,3 +1,5 @@
+/* eslint-disable react/no-array-index-key */
+import { useNavigate } from 'react-router-dom'
 import React, { useState } from 'react'
 import Header from '../../components/Header'
 import BottomNavigation from '../../components/BottomNavigation'
@@ -11,9 +13,10 @@ import {
   EMPTY_ORDER,
   INGREDIENT_LIST,
 } from '../../constants/Data'
+import axiosInstance from '../../utils/FetchCall'
+import ModalWithoutButton from '../../components/ui/ModalWithoutButton'
 
 interface IngredientInterface {
-  index: number
   name: string
   count: number
   unit: string
@@ -21,9 +24,8 @@ interface IngredientInterface {
 }
 
 interface RecipeDetailDtoList {
-  index: number
-  image: string
-  content: string
+  cookingOrderImageUrl: string
+  cookingOrder: string
 }
 
 interface Recipe {
@@ -33,12 +35,14 @@ interface Recipe {
   recipeIngredientDtoList: IngredientInterface[]
   difficulty: string
   recipeDetailDtoList: RecipeDetailDtoList[]
-  expectedTime: string
+  expectedTime: number
 }
 
 const WriteRecipePage = () => {
+  const navigate = useNavigate()
   const { IcAddRound, IcFileDockLight } = useIcon()
 
+  const [isCompleteModal, setIsCompleteModal] = useState(false)
   const [recipeValue, setRecipeValue] = useState<Recipe>({
     title: '',
     content: '',
@@ -46,7 +50,7 @@ const WriteRecipePage = () => {
     recipeIngredientDtoList: [{ ...EMPTY_INGREDIENT }],
     difficulty: '',
     recipeDetailDtoList: [{ ...EMPTY_ORDER }],
-    expectedTime: '',
+    expectedTime: 0,
   })
 
   // 레시피 재료 or 순서 추가
@@ -56,7 +60,6 @@ const WriteRecipePage = () => {
         ...recipeValue.recipeIngredientDtoList,
         {
           ...EMPTY_INGREDIENT,
-          index: recipeValue.recipeIngredientDtoList.length,
         },
       ]
       setRecipeValue({
@@ -66,7 +69,7 @@ const WriteRecipePage = () => {
     } else {
       const updateValue = [
         ...recipeValue.recipeDetailDtoList,
-        { ...EMPTY_ORDER, index: recipeValue.recipeDetailDtoList.length },
+        { ...EMPTY_ORDER },
       ]
       setRecipeValue({
         ...recipeValue,
@@ -101,12 +104,28 @@ const WriteRecipePage = () => {
   ) => {
     const updatedValue = [...recipeValue.recipeDetailDtoList]
 
-    updatedValue[index].content = e.target.value
+    updatedValue[index].cookingOrder = e.target.value
 
     setRecipeValue(prevRecipeValue => ({
       ...prevRecipeValue,
       recipeDetailDtoList: updatedValue,
     }))
+  }
+
+  const postRecipe = async () => {
+    try {
+      const res = await axiosInstance.post('/api/recipe', recipeValue)
+      if (res.status === 200) {
+        setIsCompleteModal(true)
+        setTimeout(() => {
+          setIsCompleteModal(false)
+          navigate(-1)
+        }, 1500)
+      }
+    } catch (error) {
+      // 추후 에러 처리 필요
+      console.log(error)
+    }
   }
 
   return (
@@ -142,7 +161,7 @@ const WriteRecipePage = () => {
         <S.WrapForm>
           <S.Title>재료</S.Title>
           {recipeValue.recipeIngredientDtoList.map((item, index) => (
-            <S.WrapIngredient key={item.index}>
+            <S.WrapIngredient key={`key-${index}`}>
               <S.WrapItemInput>
                 {INGREDIENT_LIST.map(ingredientItem => (
                   <S.ItemInput
@@ -187,7 +206,10 @@ const WriteRecipePage = () => {
           <S.WrapTime>
             <S.Input
               onChange={e =>
-                setRecipeValue({ ...recipeValue, expectedTime: e.target.value })
+                setRecipeValue({
+                  ...recipeValue,
+                  expectedTime: Number(e.target.value),
+                })
               }
               $width={30}
               $marginRi={0.6}
@@ -199,7 +221,7 @@ const WriteRecipePage = () => {
         <S.WrapForm>
           <S.Title>순서</S.Title>
           {recipeValue.recipeDetailDtoList.map((item, index) => (
-            <S.WrapOrder key={item.index}>
+            <S.WrapOrder key={`key-${index}`}>
               <RecipeImage size={7} isText={false} />
               <S.Input
                 onChange={e => updateOrder(e, index)}
@@ -216,8 +238,14 @@ const WriteRecipePage = () => {
           </S.AddButton>
         </S.WrapForm>
 
-        <S.RequestButton>레시피 등록하기</S.RequestButton>
+        <S.RequestButton onClick={postRecipe}>레시피 등록하기</S.RequestButton>
       </S.Container>
+      {isCompleteModal && (
+        <ModalWithoutButton
+          content="게시글 작성이 완료되었습니다."
+          setIsModalFalse={() => setIsCompleteModal(false)}
+        />
+      )}
 
       <BottomNavigation />
     </>
