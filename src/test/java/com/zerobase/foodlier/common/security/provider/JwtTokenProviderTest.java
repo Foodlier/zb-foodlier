@@ -22,6 +22,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.BDDMockito.given;
@@ -167,7 +168,6 @@ public class JwtTokenProviderTest {
                 .email("test@gmail.com")
                 .roles(List.of(RoleType.ROLE_USER.name()))
                 .build();
-
         Date date = new Date();
         Date expectedAccessTokenExpiredDate = new Date(date.getTime() + accessTokenExpiredTime);
 
@@ -183,7 +183,11 @@ public class JwtTokenProviderTest {
 
         // when
 
-        String reissue = jwtTokenProvider.reissue(accessToken, date);
+        String reissue = jwtTokenProvider.reissue(accessToken,
+                memberAuthDto.getRoles().stream()
+                .map(String::valueOf)
+                        .collect(Collectors.toList()),
+                date);
 
         // then
         Claims claims = parseClaims(reissue);
@@ -210,7 +214,6 @@ public class JwtTokenProviderTest {
                 .email("test@gmail.com")
                 .roles(List.of(RoleType.ROLE_USER.name()))
                 .build();
-
         Date date = new Date();
 
         when(tokenExpiredConstant.getAccessTokenExpiredDate(date))
@@ -221,7 +224,12 @@ public class JwtTokenProviderTest {
                 .willReturn(false);
 
         // when
-        JwtException jwtException = assertThrows(JwtException.class, () -> jwtTokenProvider.reissue(accessToken, date));
+        JwtException jwtException = assertThrows(JwtException.class, () -> jwtTokenProvider.reissue(
+                accessToken,
+                memberAuthDto.getRoles().stream()
+                .map(String::valueOf)
+                .collect(Collectors.toList()),
+                date));
         // then
 
         assertAll(

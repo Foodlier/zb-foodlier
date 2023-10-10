@@ -1,5 +1,6 @@
 package com.zerobase.foodlier.module.review.chef.service;
 
+import com.zerobase.foodlier.common.response.ListResponse;
 import com.zerobase.foodlier.module.member.chef.domain.model.ChefMember;
 import com.zerobase.foodlier.module.member.chef.exception.ChefMemberException;
 import com.zerobase.foodlier.module.member.chef.repository.ChefMemberRepository;
@@ -18,9 +19,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 import static com.zerobase.foodlier.module.member.chef.exception.ChefMemberErrorCode.CHEF_MEMBER_NOT_FOUND;
 import static com.zerobase.foodlier.module.member.member.exception.MemberErrorCode.MEMBER_NOT_FOUND;
@@ -70,17 +69,16 @@ public class ChefReviewServiceImpl implements ChefReviewService{
      *  요리사에 대한 후기 목록을 조회함.
      */
     @Override
-    public List<ChefReviewResponseDto> getChefReviewList(Long chefMemberId,
-                                                         Pageable pageable){
+    public ListResponse<ChefReviewResponseDto> getChefReviewList(Long chefMemberId,
+                                                                 Pageable pageable){
 
         ChefMember chefMember = chefMemberRepository.findById(chefMemberId)
                 .orElseThrow(() -> new ChefMemberException(CHEF_MEMBER_NOT_FOUND));
 
-        return chefReviewRepository.findByChefMemberOrderByCreatedAtDesc(chefMember, pageable)
-                .getContent()
-                .stream()
-                .map(ChefReviewResponseDto::from)
-                .collect(Collectors.toList());
+        return ListResponse.from(
+                chefReviewRepository.findByChefMemberOrderByCreatedAtDesc(chefMember, pageable),
+                ChefReviewResponseDto::from);
+
     }
 
     //=============== Validates ===================

@@ -1,6 +1,7 @@
 package com.zerobase.foodlier.module.recipe.service.recipe;
 
 import com.zerobase.foodlier.common.aop.RedissonLock;
+import com.zerobase.foodlier.common.response.ListResponse;
 import com.zerobase.foodlier.common.security.provider.dto.MemberAuthDto;
 import com.zerobase.foodlier.module.heart.reposiotry.HeartRepository;
 import com.zerobase.foodlier.module.member.member.domain.model.Member;
@@ -167,17 +168,21 @@ public class RecipeServiceImpl implements RecipeService {
      */
 
     @Override
-    public List<Recipe> getRecipeByTitle(String recipeTitle, Pageable pageable) {
-        List<RecipeDocument> byTitle = recipeSearchRepository.findByTitle(recipeTitle, pageable).getContent();
+    public ListResponse<Recipe> getRecipeByTitle(String recipeTitle, Pageable pageable) {
+        Page<RecipeDocument> byTitle = recipeSearchRepository.findByTitle(recipeTitle, pageable);
         List<Recipe> recipeList = new ArrayList<>();
-        for (RecipeDocument recipeDocument : byTitle) {
+        for (RecipeDocument recipeDocument : byTitle.getContent()) {
             Recipe recipe = recipeRepository.findById(recipeDocument.getId())
                     .orElseThrow(() -> new RecipeException(NO_SUCH_RECIPE));
             recipeList.add(recipe);
         }
 
-        return recipeList;
-
+        return ListResponse.<Recipe>builder()
+                .totalElements(byTitle.getTotalElements())
+                .totalPages(byTitle.getTotalPages())
+                .hasNextPage(byTitle.hasNext())
+                .content(recipeList)
+                .build();
     }
 
     /**

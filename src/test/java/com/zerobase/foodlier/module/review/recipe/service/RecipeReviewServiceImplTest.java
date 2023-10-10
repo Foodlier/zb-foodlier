@@ -1,5 +1,6 @@
 package com.zerobase.foodlier.module.review.recipe.service;
 
+import com.zerobase.foodlier.common.response.ListResponse;
 import com.zerobase.foodlier.module.member.member.domain.model.Member;
 import com.zerobase.foodlier.module.member.member.exception.MemberException;
 import com.zerobase.foodlier.module.member.member.repository.MemberRepository;
@@ -26,7 +27,6 @@ import org.springframework.data.domain.PageRequest;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Optional;
 
 import static com.zerobase.foodlier.module.member.member.exception.MemberErrorCode.MEMBER_NOT_FOUND;
@@ -302,18 +302,18 @@ class RecipeReviewServiceImplTest {
                     );
 
             //when
-            List<RecipeReviewResponseDto> responseList = recipeReviewService
+            ListResponse<RecipeReviewResponseDto> responseList = recipeReviewService
                     .getRecipeReviewList(1L, 1L, PageRequest.of(0, 10));
 
             //then
             assertAll(
-                    () -> assertEquals(recipeReview.getId(), responseList.get(0).getRecipeReviewId()),
-                    () -> assertEquals(member.getNickname(), responseList.get(0).getNickname()),
-                    () -> assertEquals(member.getProfileUrl(), responseList.get(0).getProfileUrl()),
-                    () -> assertEquals(recipeReview.getContent(), responseList.get(0).getContent()),
-                    () -> assertEquals(recipeReview.getStar(), responseList.get(0).getStar()),
-                    () -> assertEquals(recipeReview.getCookUrl(), responseList.get(0).getCookUrl()),
-                    () -> assertEquals(recipeReview.getCreatedAt(), responseList.get(0).getCreatedAt())
+                    () -> assertEquals(recipeReview.getId(), responseList.getContent().get(0).getRecipeReviewId()),
+                    () -> assertEquals(member.getNickname(), responseList.getContent().get(0).getNickname()),
+                    () -> assertEquals(member.getProfileUrl(), responseList.getContent().get(0).getProfileUrl()),
+                    () -> assertEquals(recipeReview.getContent(), responseList.getContent().get(0).getContent()),
+                    () -> assertEquals(recipeReview.getStar(), responseList.getContent().get(0).getStar()),
+                    () -> assertEquals(recipeReview.getCookUrl(), responseList.getContent().get(0).getCookUrl()),
+                    () -> assertEquals(recipeReview.getCreatedAt(), responseList.getContent().get(0).getCreatedAt())
             );
         }
 

@@ -1,5 +1,6 @@
 package com.zerobase.foodlier.module.member.member.service;
 
+import com.zerobase.foodlier.common.response.ListResponse;
 import com.zerobase.foodlier.common.security.provider.JwtTokenProvider;
 import com.zerobase.foodlier.common.security.provider.dto.MemberAuthDto;
 import com.zerobase.foodlier.common.security.provider.dto.TokenDto;
@@ -7,6 +8,7 @@ import com.zerobase.foodlier.module.member.chef.domain.model.ChefMember;
 import com.zerobase.foodlier.module.member.member.domain.model.Member;
 import com.zerobase.foodlier.module.member.member.domain.vo.Address;
 import com.zerobase.foodlier.module.member.member.dto.MemberRegisterDto;
+import com.zerobase.foodlier.module.member.member.dto.PasswordFindForm;
 import com.zerobase.foodlier.module.member.member.dto.RequestedMemberDto;
 import com.zerobase.foodlier.module.member.member.dto.SignInForm;
 import com.zerobase.foodlier.module.member.member.exception.MemberException;
@@ -499,17 +501,17 @@ class MemberServiceImplTest {
 
     @Test
     @DisplayName("주변 요청자 조회 성공 - 가까운 거리순 정렬")
-    void success_getRequestedMemberList_order_by_distance() {
+    void success_getRequestedMemberList_order_by_distance(){
         //given
         ChefMember chefMember = ChefMember.builder().build();
         given(memberRepository.findById(anyLong()))
                 .willReturn(Optional.of(Member.builder()
                         .id(3L)
                         .chefMember(chefMember)
-                        .address(Address.builder()
-                                .lat(37.5)
-                                .lnt(127.5)
-                                .build())
+                                .address(Address.builder()
+                                        .lat(37.5)
+                                        .lnt(127.5)
+                                        .build())
                         .build()));
 
         RequestedMemberDto memberOne = getMemberDtoOne();
@@ -529,37 +531,37 @@ class MemberServiceImplTest {
         );
 
         //when
-        List<RequestedMemberDto> responseList = memberService
+        ListResponse<RequestedMemberDto> responseList = memberService
                 .getRequestedMemberList(3L,
-                        RequestedOrderingType.DISTANCE, PageRequest.of(0, 10));
+                RequestedOrderingType.DISTANCE, PageRequest.of(0, 10));
 
         //then
         assertAll(
-                () -> assertEquals(memberTwo.getMemberId(), responseList.get(0).getMemberId()),
-                () -> assertEquals(memberTwo.getProfileUrl(), responseList.get(0).getProfileUrl()),
-                () -> assertEquals(memberTwo.getNickname(), responseList.get(0).getNickname()),
-                () -> assertEquals(memberTwo.getDistance(), responseList.get(0).getDistance()),
-                () -> assertEquals(memberTwo.getLat(), responseList.get(0).getLat()),
-                () -> assertEquals(memberTwo.getLnt(), responseList.get(0).getLnt()),
-                () -> assertEquals(memberTwo.getRequestId(), responseList.get(0).getRequestId()),
-                () -> assertEquals(memberTwo.getTitle(), responseList.get(0).getTitle()),
-                () -> assertEquals(memberTwo.getMainImageUrl(), responseList.get(0).getMainImageUrl()),
+                () -> assertEquals(memberTwo.getMemberId(), responseList.getContent().get(0).getMemberId()),
+                () -> assertEquals(memberTwo.getProfileUrl(), responseList.getContent().get(0).getProfileUrl()),
+                () -> assertEquals(memberTwo.getNickname(), responseList.getContent().get(0).getNickname()),
+                () -> assertEquals(memberTwo.getDistance(), responseList.getContent().get(0).getDistance()),
+                () -> assertEquals(memberTwo.getLat(), responseList.getContent().get(0).getLat()),
+                () -> assertEquals(memberTwo.getLnt(), responseList.getContent().get(0).getLnt()),
+                () -> assertEquals(memberTwo.getRequestId(), responseList.getContent().get(0).getRequestId()),
+                () -> assertEquals(memberTwo.getTitle(), responseList.getContent().get(0).getTitle()),
+                () -> assertEquals(memberTwo.getMainImageUrl(), responseList.getContent().get(0).getMainImageUrl()),
 
-                () -> assertEquals(memberOne.getMemberId(), responseList.get(1).getMemberId()),
-                () -> assertEquals(memberOne.getProfileUrl(), responseList.get(1).getProfileUrl()),
-                () -> assertEquals(memberOne.getNickname(), responseList.get(1).getNickname()),
-                () -> assertEquals(memberOne.getDistance(), responseList.get(1).getDistance()),
-                () -> assertEquals(memberOne.getLat(), responseList.get(1).getLat()),
-                () -> assertEquals(memberOne.getLnt(), responseList.get(1).getLnt()),
-                () -> assertEquals(memberOne.getRequestId(), responseList.get(1).getRequestId()),
-                () -> assertEquals(memberOne.getTitle(), responseList.get(1).getTitle()),
-                () -> assertEquals(memberOne.getMainImageUrl(), responseList.get(1).getMainImageUrl())
+                () -> assertEquals(memberOne.getMemberId(), responseList.getContent().get(1).getMemberId()),
+                () -> assertEquals(memberOne.getProfileUrl(), responseList.getContent().get(1).getProfileUrl()),
+                () -> assertEquals(memberOne.getNickname(), responseList.getContent().get(1).getNickname()),
+                () -> assertEquals(memberOne.getDistance(), responseList.getContent().get(1).getDistance()),
+                () -> assertEquals(memberOne.getLat(), responseList.getContent().get(1).getLat()),
+                () -> assertEquals(memberOne.getLnt(), responseList.getContent().get(1).getLnt()),
+                () -> assertEquals(memberOne.getRequestId(), responseList.getContent().get(1).getRequestId()),
+                () -> assertEquals(memberOne.getTitle(), responseList.getContent().get(1).getTitle()),
+                () -> assertEquals(memberOne.getMainImageUrl(), responseList.getContent().get(1).getMainImageUrl())
         );
     }
 
     @Test
     @DisplayName("주변 요청자 조회 성공 - 적은 희망가격순 정렬")
-    void success_getRequestedMemberList_order_by_expected_price() {
+    void success_getRequestedMemberList_order_by_expected_price(){
         //given
         ChefMember chefMember = ChefMember.builder().build();
         given(memberRepository.findById(anyLong()))
@@ -589,37 +591,37 @@ class MemberServiceImplTest {
         );
 
         //when
-        List<RequestedMemberDto> responseList = memberService
+        ListResponse<RequestedMemberDto> responseList = memberService
                 .getRequestedMemberList(3L,
                         RequestedOrderingType.PRICE, PageRequest.of(0, 10));
 
         //then
         assertAll(
-                () -> assertEquals(memberOne.getMemberId(), responseList.get(0).getMemberId()),
-                () -> assertEquals(memberOne.getProfileUrl(), responseList.get(0).getProfileUrl()),
-                () -> assertEquals(memberOne.getNickname(), responseList.get(0).getNickname()),
-                () -> assertEquals(memberOne.getDistance(), responseList.get(0).getDistance()),
-                () -> assertEquals(memberOne.getLat(), responseList.get(0).getLat()),
-                () -> assertEquals(memberOne.getLnt(), responseList.get(0).getLnt()),
-                () -> assertEquals(memberOne.getRequestId(), responseList.get(0).getRequestId()),
-                () -> assertEquals(memberOne.getTitle(), responseList.get(0).getTitle()),
-                () -> assertEquals(memberOne.getMainImageUrl(), responseList.get(0).getMainImageUrl()),
+                () -> assertEquals(memberOne.getMemberId(), responseList.getContent().get(0).getMemberId()),
+                () -> assertEquals(memberOne.getProfileUrl(), responseList.getContent().get(0).getProfileUrl()),
+                () -> assertEquals(memberOne.getNickname(), responseList.getContent().get(0).getNickname()),
+                () -> assertEquals(memberOne.getDistance(), responseList.getContent().get(0).getDistance()),
+                () -> assertEquals(memberOne.getLat(), responseList.getContent().get(0).getLat()),
+                () -> assertEquals(memberOne.getLnt(), responseList.getContent().get(0).getLnt()),
+                () -> assertEquals(memberOne.getRequestId(), responseList.getContent().get(0).getRequestId()),
+                () -> assertEquals(memberOne.getTitle(), responseList.getContent().get(0).getTitle()),
+                () -> assertEquals(memberOne.getMainImageUrl(), responseList.getContent().get(0).getMainImageUrl()),
 
-                () -> assertEquals(memberTwo.getMemberId(), responseList.get(1).getMemberId()),
-                () -> assertEquals(memberTwo.getProfileUrl(), responseList.get(1).getProfileUrl()),
-                () -> assertEquals(memberTwo.getNickname(), responseList.get(1).getNickname()),
-                () -> assertEquals(memberTwo.getDistance(), responseList.get(1).getDistance()),
-                () -> assertEquals(memberTwo.getLat(), responseList.get(1).getLat()),
-                () -> assertEquals(memberTwo.getLnt(), responseList.get(1).getLnt()),
-                () -> assertEquals(memberTwo.getRequestId(), responseList.get(1).getRequestId()),
-                () -> assertEquals(memberTwo.getTitle(), responseList.get(1).getTitle()),
-                () -> assertEquals(memberTwo.getMainImageUrl(), responseList.get(1).getMainImageUrl())
+                () -> assertEquals(memberTwo.getMemberId(), responseList.getContent().get(1).getMemberId()),
+                () -> assertEquals(memberTwo.getProfileUrl(), responseList.getContent().get(1).getProfileUrl()),
+                () -> assertEquals(memberTwo.getNickname(), responseList.getContent().get(1).getNickname()),
+                () -> assertEquals(memberTwo.getDistance(), responseList.getContent().get(1).getDistance()),
+                () -> assertEquals(memberTwo.getLat(), responseList.getContent().get(1).getLat()),
+                () -> assertEquals(memberTwo.getLnt(), responseList.getContent().get(1).getLnt()),
+                () -> assertEquals(memberTwo.getRequestId(), responseList.getContent().get(1).getRequestId()),
+                () -> assertEquals(memberTwo.getTitle(), responseList.getContent().get(1).getTitle()),
+                () -> assertEquals(memberTwo.getMainImageUrl(), responseList.getContent().get(1).getMainImageUrl())
         );
     }
 
     @Test
     @DisplayName("주변 요청자 조회 실패 - 회원 X")
-    void fail_getRequestedMemberList_member_not_found() {
+    void fail_getRequestedMemberList_member_not_found(){
         //given
         given(memberRepository.findById(anyLong()))
                 .willReturn(Optional.empty());
@@ -636,7 +638,7 @@ class MemberServiceImplTest {
 
     @Test
     @DisplayName("주변 요청자 조회 실패 - 요리사가 아님")
-    void fail_getRequestedMemberList_member_is_not_chef() {
+    void fail_getRequestedMemberList_member_is_not_chef(){
         //given
         given(memberRepository.findById(anyLong()))
                 .willReturn(Optional.of(Member.builder()
@@ -658,7 +660,7 @@ class MemberServiceImplTest {
     }
 
     // 테스트에 사용될 객체 정의
-    private RequestedMemberDto getMemberDtoOne() {
+    private RequestedMemberDto getMemberDtoOne(){
         return new RequestedMemberDto() {
             @Override
             public Long getMemberId() {
@@ -712,7 +714,7 @@ class MemberServiceImplTest {
         };
     }
 
-    private RequestedMemberDto getMemberDtoTwo() {
+    private RequestedMemberDto getMemberDtoTwo(){
         return new RequestedMemberDto() {
             @Override
             public Long getMemberId() {
@@ -815,6 +817,50 @@ class MemberServiceImplTest {
                         .currentPassword("1")
                         .newPassword("123")
                         .build()));
+
+        //then
+        assertEquals(MEMBER_NOT_FOUND, memberException.getErrorCode());
+    }
+    @Test
+    @DisplayName("비밀번호 재설정 성공")
+    void success_updateRandomPassword() {
+        //given
+        given(memberRepository.findByEmail(anyString()))
+                .willReturn(Optional.ofNullable(Member.builder()
+                        .id(1L)
+                        .email("test@test.com")
+                        .phoneNumber("01012345678")
+                        .build()));
+
+        ArgumentCaptor<Member> captor = ArgumentCaptor.forClass(Member.class);
+
+        //when
+        memberService.updateRandomPassword(PasswordFindForm.builder()
+                .email("test@test.com")
+                .phoneNumber("01012345678")
+                .build(), "newPassword");
+
+        //then
+        verify(memberRepository, times(1))
+                .save(captor.capture());
+
+        assertTrue(passwordEncoder.matches("newPassword",
+                captor.getValue().getPassword()));
+    }
+
+    @Test
+    @DisplayName("비밀번호 재설정 실패 - 회원을 찾을 수 없음")
+    void fail_updateRandomPassword_memberNotFound() {
+        //given
+        given(memberRepository.findByEmail(anyString()))
+                .willReturn(Optional.empty());
+
+        //when
+        MemberException memberException = assertThrows(MemberException.class,
+                () -> memberService.updateRandomPassword(PasswordFindForm.builder()
+                        .email("test@test.com")
+                        .phoneNumber("01012345678")
+                        .build(), "newPassword"));
 
         //then
         assertEquals(MEMBER_NOT_FOUND, memberException.getErrorCode());

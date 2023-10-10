@@ -1,5 +1,6 @@
 package com.zerobase.foodlier.module.member.member.service;
 
+import com.zerobase.foodlier.common.response.ListResponse;
 import com.zerobase.foodlier.common.security.provider.JwtTokenProvider;
 import com.zerobase.foodlier.common.security.provider.dto.MemberAuthDto;
 import com.zerobase.foodlier.common.security.provider.dto.TokenDto;
@@ -24,6 +25,7 @@ import org.springframework.util.StringUtils;
 
 import javax.transaction.Transactional;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -99,6 +101,14 @@ public class MemberServiceImpl implements MemberService {
         tokenProvider.deleteRefreshToken(email);
     }
 
+    @Override
+    public String reissue(String refreshToken) {
+        String email = tokenProvider.getEmail(refreshToken);
+        Member member = memberRepository.findByEmail(email)
+                .orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
+        return tokenProvider.reissue(refreshToken, member.getRoles(), new Date());
+    }
+
     /**
      * 작성자 : 이승현
      * 작성일 : 2023-09-24
@@ -156,9 +166,9 @@ public class MemberServiceImpl implements MemberService {
      * 값이 없으면 기본적으로 가까운 거리순으로 반환함.
      */
     @Override
-    public List<RequestedMemberDto> getRequestedMemberList(Long memberId,
-                                                           RequestedOrderingType type,
-                                                           Pageable pageable) {
+    public ListResponse<RequestedMemberDto> getRequestedMemberList(Long memberId,
+                                                                   RequestedOrderingType type,
+                                                                   Pageable pageable) {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
 
@@ -166,20 +176,22 @@ public class MemberServiceImpl implements MemberService {
 
         switch (type) {
             case PRICE:
-                return memberRepository.getRequestedMemberListOrderByPrice(
+                return ListResponse.from(
+                        memberRepository.getRequestedMemberListOrderByPrice(
                         member.getChefMember().getId(), member.getAddress().getLat(),
                         member.getAddress().getLnt(),
                         pageable
-                ).getContent();
+                ));
             case DISTANCE:
-                return memberRepository.getRequestedMemberListOrderByDistance(
+                return ListResponse.from(
+                        memberRepository.getRequestedMemberListOrderByDistance(
                         member.getChefMember().getId(), member.getAddress().getLat(),
                         member.getAddress().getLnt(),
                         pageable
-                ).getContent();
+                ));
 
         }
-        return new ArrayList<>();
+        return new ListResponse<>();
     }
 
     /**
@@ -213,6 +225,7 @@ public class MemberServiceImpl implements MemberService {
                 .orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
 
         member.setPassword(passwordEncoder.encode(newPassword));
+        memberRepository.save(member);
 
         return "비밀번호 재설정 완료.";
     }

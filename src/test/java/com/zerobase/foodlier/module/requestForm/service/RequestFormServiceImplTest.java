@@ -1,5 +1,6 @@
 package com.zerobase.foodlier.module.requestForm.service;
 
+import com.zerobase.foodlier.common.response.ListResponse;
 import com.zerobase.foodlier.module.member.member.domain.model.Member;
 import com.zerobase.foodlier.module.member.member.domain.vo.Address;
 import com.zerobase.foodlier.module.member.member.exception.MemberException;
@@ -330,7 +331,7 @@ class RequestFormServiceImplTest {
         given(requestFormRepository.findAllByMemberOrderByCreatedAtDesc(member,
                 pageRequest)).willReturn(requestFormPage);
         //when
-        Page<RequestFormResponseDto> resultPage = requestFormService
+        ListResponse<RequestFormResponseDto> resultPage = requestFormService
                 .getMyRequestForm(id, pageIdx, pageSize);
 
         //then

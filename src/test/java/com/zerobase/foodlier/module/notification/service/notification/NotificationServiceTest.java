@@ -3,6 +3,7 @@ package com.zerobase.foodlier.module.notification.service.notification;
 import com.zerobase.foodlier.common.aop.notification.type.ActionType;
 import com.zerobase.foodlier.common.aop.notification.type.NotifyMessage;
 import com.zerobase.foodlier.common.aop.notification.type.NotifyUrl;
+import com.zerobase.foodlier.common.response.ListResponse;
 import com.zerobase.foodlier.module.member.member.domain.model.Member;
 import com.zerobase.foodlier.module.notification.domain.model.Notification;
 import com.zerobase.foodlier.module.notification.domain.type.NotificationType;
@@ -20,7 +21,6 @@ import org.springframework.data.domain.PageRequest;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -92,25 +92,33 @@ class NotificationServiceTest {
                 .willReturn(new PageImpl<>(new ArrayList<>(expectedNotification)));
 
         // when
-        List<NotificationDto> notificationBy = notificationService.getNotificationBy(1L, PageRequest.of(0, 10));
+        ListResponse<NotificationDto> notificationBy = notificationService.getNotificationBy(1L, PageRequest.of(0, 10));
 
         // then
         assertAll(
                 // newest notification
-                () -> assertEquals(expectedNotification.get(0).getId(), notificationBy.get(0).getId()),
+                () -> assertEquals(expectedNotification.get(0).getId(),
+                        notificationBy.getContent().get(0).getId()),
                 () -> assertEquals(expectedNotification.get(0).getNotificationType(),
-                        notificationBy.get(0).getNotificationType()),
-                () -> assertEquals(expectedNotification.get(0).getUrl(), notificationBy.get(0).getUrl()),
-                () -> assertEquals(expectedNotification.get(0).getContent(), notificationBy.get(0).getContent()),
-                () -> assertEquals(expectedNotification.get(0).getSentAt(), notificationBy.get(0).getSentAt()),
+                        notificationBy.getContent().get(0).getNotificationType()),
+                () -> assertEquals(expectedNotification.get(0).getUrl(),
+                        notificationBy.getContent().get(0).getUrl()),
+                () -> assertEquals(expectedNotification.get(0).getContent(),
+                        notificationBy.getContent().get(0).getContent()),
+                () -> assertEquals(expectedNotification.get(0).getSentAt(),
+                        notificationBy.getContent().get(0).getSentAt()),
 
                 // next order notification
-                () -> assertEquals(expectedNotification.get(1).getId(), notificationBy.get(1).getId()),
+                () -> assertEquals(expectedNotification.get(1).getId(),
+                        notificationBy.getContent().get(1).getId()),
                 () -> assertEquals(expectedNotification.get(1).getNotificationType(),
-                        notificationBy.get(1).getNotificationType()),
-                () -> assertEquals(expectedNotification.get(1).getUrl(), notificationBy.get(1).getUrl()),
-                () -> assertEquals(expectedNotification.get(1).getContent(), notificationBy.get(1).getContent()),
-                () -> assertEquals(expectedNotification.get(1).getSentAt(), notificationBy.get(1).getSentAt())
+                        notificationBy.getContent().get(1).getNotificationType()),
+                () -> assertEquals(expectedNotification.get(1).getUrl(),
+                        notificationBy.getContent().get(1).getUrl()),
+                () -> assertEquals(expectedNotification.get(1).getContent(),
+                        notificationBy.getContent().get(1).getContent()),
+                () -> assertEquals(expectedNotification.get(1).getSentAt(),
+                        notificationBy.getContent().get(1).getSentAt())
         );
 
     }
