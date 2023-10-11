@@ -31,6 +31,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static com.zerobase.foodlier.module.member.member.exception.MemberErrorCode.MEMBER_NOT_FOUND;
+import static com.zerobase.foodlier.module.recipe.exception.recipe.RecipeErrorCode.NO_SUCH_RECIPE;
+import static com.zerobase.foodlier.module.recipe.exception.recipe.RecipeErrorCode.NO_SUCH_RECIPE_DOCUMENT;
 import static com.zerobase.foodlier.module.recipe.exception.recipe.RecipeErrorCode.*;
 
 @Service
@@ -197,6 +199,41 @@ public class RecipeServiceImpl implements RecipeService {
                         .stream().map(RecipeDetail::getCookingOrderImageUrl)
                         .collect(Collectors.toList()))
                 .build();
+    }
+
+    @Override
+    public ListResponse<RecipeDtoTopResponse> getRecipeForHeart(Long memberId,
+                                                        Pageable pageable){
+        return ListResponse.from(
+                recipeRepository.findByHeart(memberId, pageable),
+                recipe -> RecipeDtoTopResponse.from(recipe, true));
+
+    }
+
+    /**
+     *  작성자 : 전현서
+     *  작성일 : 2023-10-06
+     *  해당 회원이 작성한 꿀조합 목록을 반환함.
+     */
+    @Override
+    public ListResponse<RecipeDtoTopResponse> getRecipeListByMemberId(Long memberId,
+                                                              Long targetMemberId,
+                                                              Pageable pageable){
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
+
+        Member targetMember = memberRepository.findById(targetMemberId)
+                .orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
+
+        return ListResponse.from(
+                recipeRepository
+                        .findByMemberAndIsPublicTrueAndIsQuotationFalse(targetMember,
+                                pageable),
+                recipe -> RecipeDtoTopResponse.from(recipe, getIsHeart(member, recipe)));
+    }
+
+    private boolean getIsHeart(Member member, Recipe recipe){
+        return heartRepository.existsByRecipeAndMember(recipe, member);
     }
 
     @RedissonLock(group = "recipeReview", key = "#recipeId")

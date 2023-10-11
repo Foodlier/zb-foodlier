@@ -10,9 +10,11 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.List;
+
 public interface ChefMemberRepository extends JpaRepository<ChefMember, Long> {
     boolean existsByMember(Member member);
-
+    List<ChefMember> findTop5ByOrderByExpDesc();
     @Query(
             value = "SELECT c.id as chefId, c.introduce as introduce, c.star_avg as starAvg,\n" +
                     "c.review_count as reviewCount, m.profile_url as profileUrl, m.nickname as nickname,\n" +

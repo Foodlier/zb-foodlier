@@ -13,6 +13,8 @@ public interface RecipeReviewService {
     RecipeReviewResponseDto getMyRecipeReview(Long memberId, Long recipeId);
     ListResponse<RecipeReviewResponseDto> getRecipeReviewList(Long memberId, Long recipeId,
                                                               Pageable pageable);
+    ListResponse<RecipeReviewResponseDto> getRecipeReviewForProfile(Long memberId,
+                                                            Pageable pageable);
     RecipeReviewResponseDto getReviewDetail(Long recipeReviewId);
     ChangedRecipeReviewResponse updateRecipeReview(Long memberId, Long recipeReviewId,
                               RecipeReviewRequestDto request);

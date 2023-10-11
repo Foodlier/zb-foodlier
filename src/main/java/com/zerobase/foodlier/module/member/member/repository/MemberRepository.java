@@ -1,6 +1,7 @@
 package com.zerobase.foodlier.module.member.member.repository;
 
 import com.zerobase.foodlier.module.member.member.domain.model.Member;
+import com.zerobase.foodlier.module.member.member.dto.DefaultProfileDtoResponse;
 import com.zerobase.foodlier.module.member.member.dto.RequestedMemberDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -58,5 +59,20 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
             Pageable pageable
     );
 
+    @Query(
+            "SELECT NEW " +
+            "com.zerobase.foodlier.module.member.member.dto.DefaultProfileDtoResponse" +
+            "(m.id, m.nickname, m.profileUrl, COALESCE(SUM(r.heartCount), 0), " +
+            "CASE WHEN cm.id IS NULL THEN false ELSE true END, " +
+            "cm.id) " +
+            "FROM Member m " +
+            "LEFT JOIN ChefMember cm ON cm.member.id = m.id " +
+            "LEFT JOIN Recipe r ON r.member.id = m.id AND r.isPublic = true AND r.isQuotation = false AND r.isDeleted = false " +
+            "WHERE m.id = :memberId " +
+            "GROUP BY m.id, m.nickname, m.profileUrl, cm.id"
+    )
+    DefaultProfileDtoResponse getDefaultProfile(
+            @Param("memberId")Long memberId
+    );
 
 }

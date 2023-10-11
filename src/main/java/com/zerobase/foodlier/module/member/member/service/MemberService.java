@@ -1,10 +1,12 @@
 package com.zerobase.foodlier.module.member.member.service;
 
+import com.zerobase.foodlier.module.member.member.dto.DefaultProfileDtoResponse;
+import com.zerobase.foodlier.module.member.member.dto.MemberRegisterDto;
+
 import com.zerobase.foodlier.common.response.ListResponse;
 import com.zerobase.foodlier.common.security.provider.dto.MemberAuthDto;
 import com.zerobase.foodlier.common.security.provider.dto.TokenDto;
 import com.zerobase.foodlier.module.member.member.domain.model.Member;
-import com.zerobase.foodlier.module.member.member.dto.MemberRegisterDto;
 import com.zerobase.foodlier.module.member.member.dto.PasswordFindForm;
 import com.zerobase.foodlier.module.member.member.dto.RequestedMemberDto;
 import com.zerobase.foodlier.module.member.member.dto.SignInForm;
@@ -31,11 +33,11 @@ public interface MemberService {
     String updatePassword(MemberAuthDto memberAuthDto,
                           PasswordChangeForm form);
 
-
     String updateRandomPassword(PasswordFindForm form, String newPassword);
 
     String withdraw(MemberAuthDto memberAuthDto);
 
+    DefaultProfileDtoResponse getDefaultProfile(Long memberId);
     Member findByEmail(String email);
 
     String reissue(String refreshToken);
