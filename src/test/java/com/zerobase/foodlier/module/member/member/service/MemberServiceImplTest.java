@@ -8,10 +8,7 @@ import com.zerobase.foodlier.common.security.provider.dto.TokenDto;
 import com.zerobase.foodlier.module.member.chef.domain.model.ChefMember;
 import com.zerobase.foodlier.module.member.member.domain.model.Member;
 import com.zerobase.foodlier.module.member.member.domain.vo.Address;
-import com.zerobase.foodlier.module.member.member.dto.MemberRegisterDto;
-import com.zerobase.foodlier.module.member.member.dto.PasswordFindForm;
-import com.zerobase.foodlier.module.member.member.dto.RequestedMemberDto;
-import com.zerobase.foodlier.module.member.member.dto.SignInForm;
+import com.zerobase.foodlier.module.member.member.dto.*;
 import com.zerobase.foodlier.module.member.member.exception.MemberException;
 import com.zerobase.foodlier.module.member.member.profile.dto.MemberPrivateProfileResponse;
 import com.zerobase.foodlier.module.member.member.profile.dto.MemberUpdateDto;
@@ -1032,5 +1029,40 @@ class MemberServiceImplTest {
         assertEquals(jwtException.getErrorCode(), REFRESH_TOKEN_NOT_FOUND);
         assertEquals(jwtException.getDescription(), REFRESH_TOKEN_NOT_FOUND.getDescription());
     }
+
+    @Test
+    @DisplayName("기본 공개 프로필 가져오기 성공")
+    void success_getDefaultProfile(){
+
+        //given
+        DefaultProfileDtoResponse defaultProfileDtoResponse =
+                DefaultProfileDtoResponse.builder()
+                        .memberId(1L)
+                        .nickname("요리의신")
+                        .profileUrl("http://s3.test.com")
+                        .receivedHeart(300L)
+                        .isChef(true)
+                        .chefMemberId(1L)
+                        .build();
+
+        given(memberRepository.getDefaultProfile(anyLong()))
+                .willReturn(defaultProfileDtoResponse);
+
+        //when
+        DefaultProfileDtoResponse response = memberService.getDefaultProfile(1L);
+
+        //then
+        assertAll(
+                () -> assertEquals(defaultProfileDtoResponse.getMemberId(), response.getMemberId()),
+                () -> assertEquals(defaultProfileDtoResponse.getNickname(), response.getNickname()),
+                () -> assertEquals(defaultProfileDtoResponse.getProfileUrl(), response.getProfileUrl()),
+                () -> assertEquals(defaultProfileDtoResponse.getReceivedHeart(), response.getReceivedHeart()),
+                () -> assertEquals(defaultProfileDtoResponse.getIsChef(), response.getIsChef()),
+                () -> assertEquals(defaultProfileDtoResponse.getChefMemberId(), response.getChefMemberId())
+        );
+
+    }
+
+
 
 }
