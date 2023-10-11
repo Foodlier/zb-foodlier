@@ -340,6 +340,8 @@ class MemberServiceImplTest {
                         privateProfile.getNickName()),
                 () -> assertEquals(1000,
                         privateProfile.getPoint()),
+                () -> assertEquals(false,
+                        privateProfile.getIsChef()),
                 () -> assertEquals("test@test.com",
                         privateProfile.getEmail()),
                 () -> assertEquals("010-1234-5678",

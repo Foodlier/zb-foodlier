@@ -25,10 +25,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import javax.transaction.Transactional;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 import static com.zerobase.foodlier.module.member.member.exception.MemberErrorCode.*;
 
@@ -122,6 +119,7 @@ public class MemberServiceImpl implements MemberService {
         return MemberPrivateProfileResponse.builder()
                 .nickName(member.getNickname())
                 .point(member.getPoint())
+                .isChef(!Objects.isNull(member.getChefMember()))
                 .email(member.getEmail())
                 .address(member.getAddress())
                 .phoneNumber(member.getPhoneNumber())

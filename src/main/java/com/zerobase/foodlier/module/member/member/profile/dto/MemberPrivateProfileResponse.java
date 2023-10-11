@@ -15,6 +15,7 @@ public class MemberPrivateProfileResponse {
     private String email;
     private String phoneNumber;
     private long point;
+    private Boolean isChef;
     private Address address;
     private String profileUrl;
 }
