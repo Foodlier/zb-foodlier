@@ -15,7 +15,7 @@ import java.lang.reflect.Method;
 @Aspect
 @Component
 public class LogAop {
-    @Pointcut("execution(* com.zerobase.foodlier.global..controller.*.*(..))")
+    @Pointcut("execution(* com.zerobase.foodlier.global..controller.*Controller.*(..))")
     private void cut() {
     }
 
