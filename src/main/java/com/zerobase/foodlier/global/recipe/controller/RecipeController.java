@@ -1,5 +1,6 @@
 package com.zerobase.foodlier.global.recipe.controller;
 
+import com.zerobase.foodlier.common.response.ListResponse;
 import com.zerobase.foodlier.common.security.provider.dto.MemberAuthDto;
 import com.zerobase.foodlier.module.heart.service.HeartService;
 import com.zerobase.foodlier.module.recipe.dto.recipe.RecipeImageResponse;
@@ -7,7 +8,9 @@ import com.zerobase.foodlier.global.recipe.facade.RecipeFacade;
 import com.zerobase.foodlier.module.recipe.domain.model.Recipe;
 import com.zerobase.foodlier.module.recipe.dto.recipe.RecipeDtoRequest;
 import com.zerobase.foodlier.module.recipe.dto.recipe.RecipeDtoResponse;
+import com.zerobase.foodlier.module.recipe.dto.recipe.RecipeListDto;
 import com.zerobase.foodlier.module.recipe.service.recipe.RecipeService;
+import com.zerobase.foodlier.module.recipe.type.OrderType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
@@ -78,10 +81,10 @@ public class RecipeController {
     }
 
     @GetMapping("/{pageIdx}/{pageSize}")
-    public ResponseEntity<List<Recipe>> getRecipeListByTitle(@AuthenticationPrincipal MemberAuthDto memberAuthDto,
-                                                             @PathVariable int pageIdx,
-                                                             @PathVariable int pageSize,
-                                                             @RequestParam String recipeTitle){
+    public ResponseEntity<ListResponse<Recipe>> getRecipeListByTitle(@AuthenticationPrincipal MemberAuthDto memberAuthDto,
+                                                                     @PathVariable int pageIdx,
+                                                                     @PathVariable int pageSize,
+                                                                     @RequestParam String recipeTitle) {
         return ResponseEntity.ok(recipeService.getRecipeByTitle(recipeTitle, PageRequest.of(pageIdx, pageSize)));
     }
 
@@ -89,8 +92,8 @@ public class RecipeController {
     public ResponseEntity<String> createHeart(
             @AuthenticationPrincipal MemberAuthDto memberAuthDto,
             @PathVariable Long recipeId
-    ){
-        heartService.createHeart(memberAuthDto,recipeId);
+    ) {
+        heartService.createHeart(memberAuthDto, recipeId);
         return ResponseEntity.ok("좋아요를 눌렀습니다");
     }
 
@@ -98,8 +101,35 @@ public class RecipeController {
     public ResponseEntity<String> deleteHeart(
             @AuthenticationPrincipal MemberAuthDto memberAuthDto,
             @PathVariable Long recipeId
-    ){
-        heartService.deleteHeart(memberAuthDto,recipeId);
+    ) {
+        heartService.deleteHeart(memberAuthDto, recipeId);
         return ResponseEntity.ok("좋아요를 취소하였습니다.");
+    }
+
+    @GetMapping("/main")
+    public ResponseEntity<List<RecipeListDto>> getMainPageRecipeList(
+            @AuthenticationPrincipal MemberAuthDto memberAuthDto
+    ) {
+        return ResponseEntity.ok(recipeService.
+                getMainPageRecipeList(memberAuthDto));
+    }
+
+    @GetMapping("/default/{pageIdx}/{pageSize}")
+    public ResponseEntity<ListResponse<RecipeListDto>> getRecipePageRecipeList(
+            @AuthenticationPrincipal MemberAuthDto memberAuthDto,
+            @PathVariable int pageIdx,
+            @PathVariable int pageSize,
+            @RequestParam OrderType orderType
+    ) {
+        return ResponseEntity.ok(recipeService
+                .getRecipePageRecipeList(memberAuthDto,
+                        PageRequest.of(pageIdx, pageSize), orderType));
+    }
+
+    @GetMapping("/recommended")
+    public ResponseEntity<List<RecipeListDto>> getRecommendedRecipeList(
+            @AuthenticationPrincipal MemberAuthDto memberAuthDto
+    ) {
+        return ResponseEntity.ok(recipeService.recommendedRecipe(memberAuthDto));
     }
 }

@@ -1,5 +1,6 @@
 package com.zerobase.foodlier.global.point.controller;
 
+import com.zerobase.foodlier.common.response.ListResponse;
 import com.zerobase.foodlier.common.security.provider.dto.MemberAuthDto;
 import com.zerobase.foodlier.global.point.facade.PaymentFacade;
 import com.zerobase.foodlier.global.point.facade.TransactionFacade;
@@ -18,8 +19,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -110,7 +109,7 @@ public class PointController {
     }
 
     @GetMapping("/charge/{pageIdx}/{pageSize}")
-    public ResponseEntity<List<PointChargeHistoryDto>> getPointHistory(
+    public ResponseEntity<ListResponse<PointChargeHistoryDto>> getPointHistory(
             @AuthenticationPrincipal MemberAuthDto memberAuthDto,
             @PathVariable int pageIdx,
             @PathVariable int pageSize
@@ -120,7 +119,7 @@ public class PointController {
     }
 
     @GetMapping("/transaction/{pageIdx}/{pageSize}")
-    public ResponseEntity<List<MemberBalanceHistoryDto>> getTransactionHistory(
+    public ResponseEntity<ListResponse<MemberBalanceHistoryDto>> getTransactionHistory(
             @AuthenticationPrincipal MemberAuthDto memberAuthDto,
             @PathVariable int pageIdx,
             @PathVariable int pageSize

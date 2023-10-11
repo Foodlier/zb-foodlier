@@ -1,5 +1,6 @@
 package com.zerobase.foodlier.global.review.controller;
 
+import com.zerobase.foodlier.common.response.ListResponse;
 import com.zerobase.foodlier.common.security.provider.dto.MemberAuthDto;
 import com.zerobase.foodlier.global.review.facade.ChefReviewFacade;
 import com.zerobase.foodlier.global.review.facade.RecipeReviewFacade;
@@ -14,7 +15,6 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.List;
 
 @RestController
 @RequestMapping("/review")
@@ -56,7 +56,7 @@ public class ReviewController {
     }
 
     @GetMapping("/recipe/{pageIdx}/{pageSize}/{recipeId}")
-    public ResponseEntity<List<RecipeReviewResponseDto>> getRecipeReviewList(
+    public ResponseEntity<ListResponse<RecipeReviewResponseDto>> getRecipeReviewList(
             @AuthenticationPrincipal MemberAuthDto memberAuthDto,
             @PathVariable int pageIdx,
             @PathVariable int pageSize,
