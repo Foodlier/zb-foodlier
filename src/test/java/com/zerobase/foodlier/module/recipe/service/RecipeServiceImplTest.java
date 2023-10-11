@@ -837,24 +837,36 @@ class RecipeServiceImplTest {
                         .build())
                 .heartCount(1)
                 .createdAt(LocalDateTime.now().minusHours(1))
+                .member(Member.builder()
+                        .id(2L)
+                        .nickname("test1")
+                        .build())
                 .build();
         Recipe recipe2 = Recipe.builder()
-                .id(1L)
+                .id(2L)
                 .summary(Summary.builder()
                         .title("title2")
                         .content("content2")
                         .build())
                 .heartCount(2)
                 .createdAt(LocalDateTime.now().minusHours(2))
+                .member(Member.builder()
+                        .id(2L)
+                        .nickname("test2")
+                        .build())
                 .build();
         Recipe recipe3 = Recipe.builder()
-                .id(1L)
+                .id(3L)
                 .summary(Summary.builder()
                         .title("title3")
                         .content("content3")
                         .build())
                 .heartCount(3)
                 .createdAt(LocalDateTime.now().minusHours(3))
+                .member(Member.builder()
+                        .id(2L)
+                        .nickname("test3")
+                        .build())
                 .build();
         Member member = getMember();
 
@@ -884,6 +896,10 @@ class RecipeServiceImplTest {
                     mainPageRecipeList.get(i).getTitle());
             assertEquals("content" + (i + 1),
                     mainPageRecipeList.get(i).getContent());
+            assertEquals(i + 1,
+                    mainPageRecipeList.get(i).getId());
+            assertEquals("test" + (i + 1),
+                    mainPageRecipeList.get(i).getNickName());
             assertEquals(i + 1,
                     mainPageRecipeList.get(i).getHeartCount());
         }
@@ -924,24 +940,36 @@ class RecipeServiceImplTest {
                         .build())
                 .heartCount(1)
                 .createdAt(LocalDateTime.now().minusHours(1))
+                .member(Member.builder()
+                        .id(1L)
+                        .nickname("test1")
+                        .build())
                 .build();
         Recipe recipe2 = Recipe.builder()
-                .id(1L)
+                .id(2L)
                 .summary(Summary.builder()
                         .title("title2")
                         .content("content2")
                         .build())
                 .heartCount(2)
                 .createdAt(LocalDateTime.now().minusHours(2))
+                .member(Member.builder()
+                        .id(1L)
+                        .nickname("test2")
+                        .build())
                 .build();
         Recipe recipe3 = Recipe.builder()
-                .id(1L)
+                .id(3L)
                 .summary(Summary.builder()
                         .title("title3")
                         .content("content3")
                         .build())
                 .heartCount(3)
                 .createdAt(LocalDateTime.now().minusHours(3))
+                .member(Member.builder()
+                        .id(1L)
+                        .nickname("test3")
+                        .build())
                 .build();
         Member member = getMember();
 
@@ -972,6 +1000,10 @@ class RecipeServiceImplTest {
                     recipePageRecipeList.getContent().get(i).getTitle());
             assertEquals("content" + (i + 1),
                     recipePageRecipeList.getContent().get(i).getContent());
+            assertEquals(i + 1,
+                    recipePageRecipeList.getContent().get(i).getId());
+            assertEquals("test" + (i + 1),
+                    recipePageRecipeList.getContent().get(i).getNickName());
         }
 
         assertAll(
@@ -997,24 +1029,36 @@ class RecipeServiceImplTest {
                         .build())
                 .heartCount(1)
                 .createdAt(LocalDateTime.now().minusHours(1))
+                .member(Member.builder()
+                        .id(1L)
+                        .nickname("test1")
+                        .build())
                 .build();
         Recipe recipe2 = Recipe.builder()
-                .id(1L)
+                .id(2L)
                 .summary(Summary.builder()
                         .title("title2")
                         .content("content2")
                         .build())
                 .heartCount(2)
                 .createdAt(LocalDateTime.now().minusHours(2))
+                .member(Member.builder()
+                        .id(1L)
+                        .nickname("test2")
+                        .build())
                 .build();
         Recipe recipe3 = Recipe.builder()
-                .id(1L)
+                .id(3L)
                 .summary(Summary.builder()
                         .title("title3")
                         .content("content3")
                         .build())
                 .heartCount(3)
                 .createdAt(LocalDateTime.now().minusHours(3))
+                .member(Member.builder()
+                        .id(1L)
+                        .nickname("test3")
+                        .build())
                 .build();
         Member member = getMember();
 
@@ -1047,6 +1091,10 @@ class RecipeServiceImplTest {
                     recipePageRecipeList.getContent().get(i).getTitle());
             assertEquals("content" + (3 - i),
                     recipePageRecipeList.getContent().get(i).getContent());
+            assertEquals(3 - i,
+                    recipePageRecipeList.getContent().get(i).getId());
+            assertEquals("test" + (3 - i),
+                    recipePageRecipeList.getContent().get(i).getNickName());
         }
 
         assertAll(
@@ -1073,9 +1121,13 @@ class RecipeServiceImplTest {
                 .heartCount(1)
                 .createdAt(LocalDateTime.now().minusHours(1))
                 .commentCount(3)
+                .member(Member.builder()
+                        .id(1L)
+                        .nickname("test1")
+                        .build())
                 .build();
         Recipe recipe2 = Recipe.builder()
-                .id(1L)
+                .id(2L)
                 .summary(Summary.builder()
                         .title("title2")
                         .content("content2")
@@ -1083,9 +1135,13 @@ class RecipeServiceImplTest {
                 .heartCount(2)
                 .createdAt(LocalDateTime.now().minusHours(2))
                 .commentCount(2)
+                .member(Member.builder()
+                        .id(1L)
+                        .nickname("test2")
+                        .build())
                 .build();
         Recipe recipe3 = Recipe.builder()
-                .id(1L)
+                .id(3L)
                 .summary(Summary.builder()
                         .title("title3")
                         .content("content3")
@@ -1093,6 +1149,10 @@ class RecipeServiceImplTest {
                 .heartCount(3)
                 .commentCount(1)
                 .createdAt(LocalDateTime.now().minusHours(3))
+                .member(Member.builder()
+                        .id(1L)
+                        .nickname("test3")
+                        .build())
                 .build();
         Member member = getMember();
 
@@ -1125,6 +1185,10 @@ class RecipeServiceImplTest {
                     recipePageRecipeList.getContent().get(i).getTitle());
             assertEquals("content" + (i + 1),
                     recipePageRecipeList.getContent().get(i).getContent());
+            assertEquals(i + 1,
+                    recipePageRecipeList.getContent().get(i).getId());
+            assertEquals("test" + (i + 1),
+                    recipePageRecipeList.getContent().get(i).getNickName());
         }
 
         assertAll(
@@ -1188,6 +1252,10 @@ class RecipeServiceImplTest {
                 .heartCount(1)
                 .createdAt(LocalDateTime.now().minusHours(1))
                 .commentCount(3)
+                .member(Member.builder()
+                        .id(1L)
+                        .nickname("test1")
+                        .build())
                 .build();
         Recipe recipe2 = Recipe.builder()
                 .id(2L)
@@ -1198,6 +1266,10 @@ class RecipeServiceImplTest {
                 .heartCount(2)
                 .createdAt(LocalDateTime.now().minusHours(2))
                 .commentCount(2)
+                .member(Member.builder()
+                        .id(1L)
+                        .nickname("test2")
+                        .build())
                 .build();
         Recipe recipe3 = Recipe.builder()
                 .id(3L)
@@ -1208,6 +1280,10 @@ class RecipeServiceImplTest {
                 .heartCount(3)
                 .commentCount(1)
                 .createdAt(LocalDateTime.now().minusHours(3))
+                .member(Member.builder()
+                        .id(1L)
+                        .nickname("test3")
+                        .build())
                 .build();
         Recipe recipe4 = Recipe.builder()
                 .id(4L)
@@ -1218,6 +1294,10 @@ class RecipeServiceImplTest {
                 .heartCount(4)
                 .createdAt(LocalDateTime.now().minusHours(4))
                 .commentCount(3)
+                .member(Member.builder()
+                        .id(1L)
+                        .nickname("test4")
+                        .build())
                 .build();
         Recipe recipe5 = Recipe.builder()
                 .id(5L)
@@ -1228,6 +1308,10 @@ class RecipeServiceImplTest {
                 .heartCount(5)
                 .createdAt(LocalDateTime.now().minusHours(5))
                 .commentCount(2)
+                .member(Member.builder()
+                        .id(1L)
+                        .nickname("test5")
+                        .build())
                 .build();
 
         given(memberRepository.findById(any()))
@@ -1266,6 +1350,10 @@ class RecipeServiceImplTest {
                     recipeListDtoList.get(i).getContent());
             assertEquals(5 - i,
                     recipeListDtoList.get(i).getHeartCount());
+            assertEquals(5 - i,
+                    recipeListDtoList.get(i).getId());
+            assertEquals("test" + (5 - i),
+                    recipeListDtoList.get(i).getNickName());
         }
 
         assertAll(
