@@ -1,6 +1,7 @@
 package com.zerobase.foodlier.module.member.member.service;
 
 import com.zerobase.foodlier.common.response.ListResponse;
+import com.zerobase.foodlier.common.security.exception.JwtException;
 import com.zerobase.foodlier.common.security.provider.JwtTokenProvider;
 import com.zerobase.foodlier.common.security.provider.dto.MemberAuthDto;
 import com.zerobase.foodlier.common.security.provider.dto.TokenDto;
@@ -19,6 +20,7 @@ import com.zerobase.foodlier.module.member.member.repository.MemberRepository;
 import com.zerobase.foodlier.module.member.member.type.RegistrationType;
 import com.zerobase.foodlier.module.member.member.type.RequestedOrderingType;
 import com.zerobase.foodlier.module.member.member.type.RoleType;
+import io.jsonwebtoken.MalformedJwtException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -38,6 +40,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
+import static com.zerobase.foodlier.common.security.exception.JwtErrorCode.MALFORMED_JWT_REQUEST;
+import static com.zerobase.foodlier.common.security.exception.JwtErrorCode.REFRESH_TOKEN_NOT_FOUND;
 import static com.zerobase.foodlier.module.member.member.exception.MemberErrorCode.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
@@ -865,4 +869,107 @@ class MemberServiceImplTest {
         //then
         assertEquals(MEMBER_NOT_FOUND, memberException.getErrorCode());
     }
+
+    @Test
+    @DisplayName("접속 토큰 재발급 성공")
+    void success_reissue(){
+
+        // given
+
+        Member member = Member.builder()
+                .id(1L)
+                .email("test@gmail.com")
+                .roles(List.of(RoleType.ROLE_USER.toString()))
+                .build();
+        String expectedAccessToken = "expectedAccessToken";
+        String refreshToken = "refreshToken";
+        given(tokenProvider.getEmail(anyString()))
+                .willReturn(member.getEmail());
+        given(memberRepository.findByEmail(anyString()))
+                .willReturn(Optional.of(member));
+        given(tokenProvider.reissue(anyString(), any(), any()))
+                .willReturn(expectedAccessToken);
+        // when
+        String reissuedAccessToken = memberService.reissue(refreshToken);
+
+        // then
+        verify(tokenProvider, times(1)).getEmail(anyString());
+        verify(memberRepository, times(1)).findByEmail(anyString());
+        verify(tokenProvider, times(1)).reissue(anyString(),any(), any());
+        assertEquals(reissuedAccessToken, expectedAccessToken);
+    }
+
+    @Test
+    @DisplayName("접속 토큰 재발급 실패 - 올바르지 않은 토큰인 경우")
+    void fail_reissue_invalid_token(){
+
+        // given
+
+        String refreshToken = "refreshToken";
+        given(tokenProvider.getEmail(anyString()))
+                .willThrow(new MalformedJwtException(MALFORMED_JWT_REQUEST.getDescription()));
+
+        // when
+        MalformedJwtException malformedJwtException = assertThrows(MalformedJwtException.class,
+                () -> memberService.reissue(refreshToken));
+
+        // then
+        verify(tokenProvider, times(1)).getEmail(anyString());
+        assertEquals(malformedJwtException.getMessage(), MALFORMED_JWT_REQUEST.getDescription());
+    }
+
+    @Test
+    @DisplayName("접속 토큰 재발급 실패 - 존재하지 않는 회원인 경우")
+    void fail_reissue_no_such_member(){
+
+        // given
+
+        String refreshToken = "refreshToken";
+        given(tokenProvider.getEmail(anyString()))
+                .willReturn("test@gmail.com");
+        given(memberRepository.findByEmail(anyString()))
+                .willThrow(new MemberException(MEMBER_NOT_FOUND));
+        // when
+        MemberException memberException = assertThrows(MemberException.class,
+                () -> memberService.reissue(refreshToken));
+
+        // then
+        verify(tokenProvider, times(1)).getEmail(anyString());
+        verify(memberRepository, times(1)).findByEmail(anyString());
+        assertEquals(memberException.getErrorCode(), MEMBER_NOT_FOUND);
+        assertEquals(memberException.getDescription(), MEMBER_NOT_FOUND.getDescription());
+    }
+
+    @Test
+    @DisplayName("접속 토큰 재발급 실패 - 재발급 토큰이 redis 저장소에 존재하지 않는 경우")
+    void fail_reissue_refresh_token_not_found(){
+
+        // given
+
+        Member member = Member.builder()
+                .id(1L)
+                .email("test@gmail.com")
+                .roles(List.of(RoleType.ROLE_USER.toString()))
+                .build();
+
+        String refreshToken = "refreshToken";
+        given(tokenProvider.getEmail(anyString()))
+                .willReturn(member.getEmail());
+        given(memberRepository.findByEmail(anyString()))
+                .willReturn(Optional.of(member));
+        given(tokenProvider.reissue(anyString(), any(), any()))
+                .willThrow(new JwtException(REFRESH_TOKEN_NOT_FOUND));
+
+        // when
+        JwtException jwtException = assertThrows(JwtException.class,
+                () -> memberService.reissue(refreshToken));
+
+        // then
+        verify(tokenProvider, times(1)).getEmail(anyString());
+        verify(memberRepository, times(1)).findByEmail(anyString());
+        verify(tokenProvider, times(1)).reissue(anyString(),any(), any());
+        assertEquals(jwtException.getErrorCode(), REFRESH_TOKEN_NOT_FOUND);
+        assertEquals(jwtException.getDescription(), REFRESH_TOKEN_NOT_FOUND.getDescription());
+    }
+
 }
