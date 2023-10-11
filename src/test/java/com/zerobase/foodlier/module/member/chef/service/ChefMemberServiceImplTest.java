@@ -2,9 +2,7 @@ package com.zerobase.foodlier.module.member.chef.service;
 
 import com.zerobase.foodlier.common.response.ListResponse;
 import com.zerobase.foodlier.module.member.chef.domain.model.ChefMember;
-import com.zerobase.foodlier.module.member.chef.dto.AroundChefDto;
-import com.zerobase.foodlier.module.member.chef.dto.ChefIntroduceForm;
-import com.zerobase.foodlier.module.member.chef.dto.RequestedChefDto;
+import com.zerobase.foodlier.module.member.chef.dto.*;
 import com.zerobase.foodlier.module.member.chef.exception.ChefMemberException;
 import com.zerobase.foodlier.module.member.chef.repository.ChefMemberRepository;
 import com.zerobase.foodlier.module.member.chef.type.ChefSearchType;
@@ -805,5 +803,148 @@ class ChefMemberServiceImplTest {
         //then
         assertEquals(CHEF_MEMBER_NOT_FOUND, exception.getErrorCode());
     }
+
+    @Test
+    @DisplayName("TOP 요리사 5명 조회 성공")
+    void success_getTopChefList(){
+        //given
+
+        Member member1 = Member.builder()
+                .id(1L)
+                .nickname("a")
+                .profileUrl("http://s3.test.com/1.png")
+                .build();
+        Member member2 = Member.builder()
+                .id(2L)
+                .nickname("b")
+                .profileUrl("http://s3.test.com/2.png")
+                .build();
+        Member member3 = Member.builder()
+                .id(3L)
+                .nickname("c")
+                .profileUrl("http://s3.test.com/3.png")
+                .build();
+        Member member4 = Member.builder()
+                .id(4L)
+                .nickname("d")
+                .profileUrl("http://s3.test.com/4.png")
+                .build();
+        Member member5 = Member.builder()
+                .id(1L)
+                .nickname("e")
+                .profileUrl("http://s3.test.com/5.png")
+                .build();
+
+
+        ChefMember chef1 = ChefMember.builder()
+                .id(1L)
+                .exp(100)
+                .member(member1)
+                .gradeType(GradeType.BRONZE)
+                .build();
+        ChefMember chef2 = ChefMember.builder()
+                .id(2L)
+                .exp(200)
+                .member(member2)
+                .gradeType(GradeType.BRONZE)
+                .build();
+        ChefMember chef3 = ChefMember.builder()
+                .id(3L)
+                .exp(250)
+                .member(member3)
+                .gradeType(GradeType.SILVER)
+                .build();
+        ChefMember chef4 = ChefMember.builder()
+                .id(4L)
+                .exp(600)
+                .member(member4)
+                .gradeType(GradeType.GOLD)
+                .build();
+        ChefMember chef5 = ChefMember.builder()
+                .id(5L)
+                .exp(950)
+                .member(member5)
+                .gradeType(GradeType.PLATINUM)
+                .build();
+
+        given(chefMemberRepository.findTop5ByOrderByExpDesc())
+                .willReturn(
+                        List.of(
+                                chef5, chef4, chef3, chef2, chef1
+                        )
+                );
+
+        //when
+        List<TopChefDto> topChefDtoList = chefMemberService.getTopChefList();
+
+        //then
+
+        assertAll(
+                () -> assertEquals(member5.getId(), topChefDtoList.get(0).getMemberId()),
+                () -> assertEquals(chef5.getId(), topChefDtoList.get(0).getChefMemberId()),
+                () -> assertEquals(member5.getNickname(), topChefDtoList.get(0).getNickname()),
+                () -> assertEquals(member5.getProfileUrl(), topChefDtoList.get(0).getProfileUrl()),
+
+                () -> assertEquals(member4.getId(), topChefDtoList.get(1).getMemberId()),
+                () -> assertEquals(chef4.getId(), topChefDtoList.get(1).getChefMemberId()),
+                () -> assertEquals(member4.getNickname(), topChefDtoList.get(1).getNickname()),
+                () -> assertEquals(member4.getProfileUrl(), topChefDtoList.get(1).getProfileUrl()),
+
+                () -> assertEquals(member3.getId(), topChefDtoList.get(2).getMemberId()),
+                () -> assertEquals(chef3.getId(), topChefDtoList.get(2).getChefMemberId()),
+                () -> assertEquals(member3.getNickname(), topChefDtoList.get(2).getNickname()),
+                () -> assertEquals(member3.getProfileUrl(), topChefDtoList.get(2).getProfileUrl()),
+
+                () -> assertEquals(member2.getId(), topChefDtoList.get(3).getMemberId()),
+                () -> assertEquals(chef2.getId(), topChefDtoList.get(3).getChefMemberId()),
+                () -> assertEquals(member2.getNickname(), topChefDtoList.get(3).getNickname()),
+                () -> assertEquals(member2.getProfileUrl(), topChefDtoList.get(3).getProfileUrl()),
+
+                () -> assertEquals(member1.getId(), topChefDtoList.get(4).getMemberId()),
+                () -> assertEquals(chef1.getId(), topChefDtoList.get(4).getChefMemberId()),
+                () -> assertEquals(member1.getNickname(), topChefDtoList.get(4).getNickname()),
+                () -> assertEquals(member1.getProfileUrl(), topChefDtoList.get(4).getProfileUrl())
+        );
+
+    }
+
+    @Test
+    @DisplayName("요리사 프로필 조회 성공")
+    void success_getChefProfile(){
+
+        //given
+        ChefMember chefMember = ChefMember.builder()
+                .id(1L)
+                .exp(100)
+                .gradeType(GradeType.BRONZE)
+                .build();
+
+        given(chefMemberRepository.findById(anyLong()))
+                .willReturn(Optional.of(chefMember));
+
+        //when
+        ChefProfileDto chefProfileDto = chefMemberService.getChefProfile(1L);
+
+        //then
+        assertAll(
+                () -> assertEquals(chefMember.getGradeType(), chefProfileDto.getGrade()),
+                () -> assertEquals(chefMember.getExp(), chefProfileDto.getExp())
+        );
+    }
+
+    @Test
+    @DisplayName("요리사 프로필 조회 실패 - 요리사 X")
+    void fail_getChefProfile_chef_member_not_found(){
+        //given
+        given(chefMemberRepository.findById(anyLong()))
+                .willReturn(Optional.empty());
+        //when
+        ChefMemberException exception = assertThrows(ChefMemberException.class,
+                () -> chefMemberService.getChefProfile(1L));
+
+        //then
+        assertEquals(CHEF_MEMBER_NOT_FOUND, exception.getErrorCode());
+    }
+
 
 }
