@@ -21,7 +21,7 @@ public interface RecipeService {
 
     Recipe getRecipe(Long id);
 
-    RecipeDtoResponse getRecipeDetail(Long id);
+    RecipeDtoResponse getRecipeDetail(MemberAuthDto memberAuthDto, Long id);
 
     void deleteRecipe(Long id);
 

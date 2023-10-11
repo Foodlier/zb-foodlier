@@ -62,8 +62,11 @@ public class RecipeController {
     }
 
     @GetMapping("/{recipeId}")
-    public ResponseEntity<RecipeDtoResponse> getRecipe(@PathVariable(name = "recipeId") Long id) {
-        return ResponseEntity.ok(recipeService.getRecipeDetail(id));
+    public ResponseEntity<RecipeDtoResponse> getRecipe(
+            @AuthenticationPrincipal MemberAuthDto memberAuthDto,
+            @PathVariable(name = "recipeId") Long id
+    ) {
+        return ResponseEntity.ok(recipeService.getRecipeDetail(memberAuthDto,id));
     }
 
     @DeleteMapping("/{recipeId}")
