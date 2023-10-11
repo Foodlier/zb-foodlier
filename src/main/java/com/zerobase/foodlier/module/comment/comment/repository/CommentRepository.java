@@ -33,22 +33,22 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
     @Query(
             value = "SELECT recipe_id as recipeId, member_id as memberId, message, created_at as createdAt\n" +
                     "FROM comment\n" +
-                    "WHERE comment.member_id = 1\n" +
+                    "WHERE comment.member_id = :memberId\n" +
                     "UNION \n" +
                     "SELECT c.recipe_id, r.member_id, r.message, r.created_at\n" +
                     "FROM reply r\n" +
                     "JOIN comment c ON c.id = r.comment_id\n" +
-                    "WHERE r.member_id = 1",
+                    "WHERE r.member_id = :memberId",
             countQuery = "SELECT COUNT(*)\n" +
                     "FROM (\n" +
                     "\tSELECT recipe_id, member_id, message, created_at\n" +
                     "\tFROM comment\n" +
-                    "\tWHERE comment.member_id = 1\n" +
+                    "\tWHERE comment.member_id = :memberId\n" +
                     "\tUNION \n" +
                     "\tSELECT c.recipe_id, r.member_id, r.message, r.created_at\n" +
                     "\tFROM reply r\n" +
                     "\tJOIN comment c ON c.id = r.comment_id\n" +
-                    "\tWHERE r.member_id = 1\n" +
+                    "\tWHERE r.member_id = :memberId\n" +
                     ") AS count;\n",
             nativeQuery = true
     )
