@@ -135,11 +135,20 @@ public class RecipeServiceImpl implements RecipeService {
      * 레시피 상세보기, 레시피 수정 시 정보 로드
      */
     @Override
-    public RecipeDtoResponse getRecipeDetail(Long id) {
+    public RecipeDtoResponse getRecipeDetail(MemberAuthDto memberAuthDto, Long id) {
         Recipe recipe = recipeRepository.findById(id)
                 .orElseThrow(() -> new RecipeException(NO_SUCH_RECIPE));
 
-        return RecipeDtoResponse.fromEntity(recipe);
+        Member member = memberRepository.findById(memberAuthDto.getId())
+                .orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
+
+        RecipeDtoResponse recipeDtoResponse =
+                RecipeDtoResponse.fromEntity(recipe);
+
+        recipeDtoResponse.setHeart(heartRepository
+                .existsByRecipeAndMember(recipe, member));
+
+        return recipeDtoResponse;
     }
 
     /**
@@ -294,22 +303,26 @@ public class RecipeServiceImpl implements RecipeService {
 
         Page<Recipe> recipePage;
         int totalPages;
+        long totalElements;
         boolean hasNext;
 
         switch (orderType) {
             case CREATED_AT:
                 recipePage = recipeRepository.findByOrderByCreatedAtDesc(pageable);
+                totalElements = recipePage.getTotalElements();
                 totalPages = recipePage.getTotalPages();
                 hasNext = recipePage.hasNext();
                 break;
             case HEART_COUNT:
                 recipePage = recipeRepository.findByOrderByHeartCountDesc(pageable);
                 totalPages = recipePage.getTotalPages();
+                totalElements = recipePage.getTotalElements();
                 hasNext = recipePage.hasNext();
                 break;
             case COMMENT_COUNT:
                 recipePage = recipeRepository.findByOrderByCommentCountDesc(pageable);
                 totalPages = recipePage.getTotalPages();
+                totalElements = recipePage.getTotalElements();
                 hasNext = recipePage.hasNext();
                 break;
             default:
@@ -319,6 +332,7 @@ public class RecipeServiceImpl implements RecipeService {
         return ListResponse.<RecipeListDto>builder()
                 .totalPages(totalPages)
                 .hasNextPage(hasNext)
+                .totalElements(totalElements)
                 .content(
                         recipePage.stream()
                                 .map(r -> RecipeListDto.builder()
