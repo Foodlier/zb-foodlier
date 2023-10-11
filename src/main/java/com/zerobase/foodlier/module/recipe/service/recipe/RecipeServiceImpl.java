@@ -26,7 +26,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -342,9 +341,8 @@ public class RecipeServiceImpl implements RecipeService {
         Member member = memberRepository.findById(memberAuthDto.getId())
                 .orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
 
-        LocalDate now = LocalDate.now();
         return recipeRepository.findTop5ByCreatedAtAfterOrderByHeartCountDesc(
-                        LocalDateTime.of(now.getYear(), now.getMonth(), now.getDayOfMonth(), 0, 0, 0))
+                        LocalDate.now().atStartOfDay())
                 .stream()
                 .map(r -> RecipeListDto.builder()
                         .title(r.getSummary().getTitle())
