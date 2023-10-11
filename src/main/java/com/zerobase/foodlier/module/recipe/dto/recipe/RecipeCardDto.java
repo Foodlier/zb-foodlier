@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class RecipeListDto {
+public class RecipeCardDto {
     private String title;
     private String mainImageUrl;
     private String content;
