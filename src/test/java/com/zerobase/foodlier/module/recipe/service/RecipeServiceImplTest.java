@@ -1,7 +1,11 @@
 package com.zerobase.foodlier.module.recipe.service;
 
 import com.zerobase.foodlier.common.response.ListResponse;
+import com.zerobase.foodlier.common.security.provider.dto.MemberAuthDto;
+import com.zerobase.foodlier.module.heart.reposiotry.HeartRepository;
 import com.zerobase.foodlier.module.member.member.domain.model.Member;
+import com.zerobase.foodlier.module.member.member.exception.MemberException;
+import com.zerobase.foodlier.module.member.member.repository.MemberRepository;
 import com.zerobase.foodlier.module.recipe.domain.document.RecipeDocument;
 import com.zerobase.foodlier.module.recipe.domain.model.Recipe;
 import com.zerobase.foodlier.module.recipe.domain.vo.RecipeDetail;
@@ -23,16 +27,19 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
+import static com.zerobase.foodlier.module.member.member.exception.MemberErrorCode.MEMBER_NOT_FOUND;
 import static com.zerobase.foodlier.module.recipe.domain.type.Difficulty.EASY;
 import static com.zerobase.foodlier.module.recipe.domain.type.Difficulty.HARD;
-import static com.zerobase.foodlier.module.recipe.exception.recipe.RecipeErrorCode.NO_SUCH_RECIPE;
-import static com.zerobase.foodlier.module.recipe.exception.recipe.RecipeErrorCode.NO_SUCH_RECIPE_DOCUMENT;
+import static com.zerobase.foodlier.module.recipe.exception.recipe.RecipeErrorCode.*;
+import static com.zerobase.foodlier.module.recipe.type.OrderType.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
@@ -44,6 +51,12 @@ class RecipeServiceImplTest {
 
     @Mock
     private RecipeRepository recipeRepository;
+
+    @Mock
+    private HeartRepository heartRepository;
+
+    @Mock
+    private MemberRepository memberRepository;
 
     @Mock
     private RecipeSearchRepository recipeSearchRepository;
@@ -283,9 +296,18 @@ class RecipeServiceImplTest {
         Member member = getMember();
         given(recipeRepository.findById(id))
                 .willReturn(Optional.of(getExpectedRecipe(member)));
+        given(memberRepository.findById(any()))
+                .willReturn(Optional.ofNullable(Member.builder()
+                        .id(2L)
+                        .build()));
+        given(heartRepository.existsByRecipeAndMember(any(), any()))
+                .willReturn(true);
 
         //when
-        RecipeDtoResponse recipeDtoResponse = recipeService.getRecipeDetail(id);
+        RecipeDtoResponse recipeDtoResponse = recipeService
+                .getRecipeDetail(MemberAuthDto.builder()
+                        .id(2L)
+                        .build(), id);
 
         //then
         verify(recipeRepository, times(1)).findById(id);
@@ -296,6 +318,7 @@ class RecipeServiceImplTest {
         assertEquals(30, recipeDtoResponse.getExpectedTime());
         assertEquals(HARD, recipeDtoResponse.getDifficulty());
         assertEquals("nickname", recipeDtoResponse.getNickname());
+        assertTrue(recipeDtoResponse.isHeart());
     }
 
 
@@ -308,10 +331,34 @@ class RecipeServiceImplTest {
 
         //when
         RecipeException recipeException = assertThrows(RecipeException.class,
-                () -> recipeService.getRecipeDetail(id));
+                () -> recipeService.getRecipeDetail(MemberAuthDto.builder()
+                        .id(1L)
+                        .build(), id));
 
         //then
         assertEquals(NO_SUCH_RECIPE, recipeException.getErrorCode());
+    }
+
+    @Test
+    @DisplayName("레시피 상세보기 실패 - 회원을 찾을 수 없음")
+    void fail_get_recipe_detail_memberNotFound() {
+        //given
+        Long id = 1L;
+        Member member = getMember();
+
+        given(recipeRepository.findById(id))
+                .willReturn(Optional.of(getExpectedRecipe(member)));
+        given(memberRepository.findById(any()))
+                .willReturn(Optional.empty());
+
+        //when
+        MemberException memberException = assertThrows(MemberException.class,
+                () -> recipeService.getRecipeDetail(MemberAuthDto.builder()
+                        .id(1L)
+                        .build(), id));
+
+        //then
+        assertEquals(MEMBER_NOT_FOUND, memberException.getErrorCode());
     }
 
     @Test
@@ -351,7 +398,7 @@ class RecipeServiceImplTest {
 
         //when
         RecipeException recipeException = assertThrows(RecipeException.class,
-                () -> recipeService.getRecipeDetail(id));
+                () -> recipeService.deleteRecipe(id));
 
         //then
         assertEquals(NO_SUCH_RECIPE, recipeException.getErrorCode());
@@ -778,6 +825,474 @@ class RecipeServiceImplTest {
         assertEquals(NO_SUCH_RECIPE_DOCUMENT.getDescription(), recipeException.getDescription());
     }
 
+    @Test
+    @DisplayName("메인 페이지 생성 순으로 3개 조회 성공")
+    void success_getMainPageRecipeList() {
+        //given
+        Recipe recipe1 = Recipe.builder()
+                .id(1L)
+                .summary(Summary.builder()
+                        .title("title1")
+                        .content("content1")
+                        .build())
+                .heartCount(1)
+                .createdAt(LocalDateTime.now().minusHours(1))
+                .build();
+        Recipe recipe2 = Recipe.builder()
+                .id(1L)
+                .summary(Summary.builder()
+                        .title("title2")
+                        .content("content2")
+                        .build())
+                .heartCount(2)
+                .createdAt(LocalDateTime.now().minusHours(2))
+                .build();
+        Recipe recipe3 = Recipe.builder()
+                .id(1L)
+                .summary(Summary.builder()
+                        .title("title3")
+                        .content("content3")
+                        .build())
+                .heartCount(3)
+                .createdAt(LocalDateTime.now().minusHours(3))
+                .build();
+        Member member = getMember();
+
+        given(memberRepository.findById(any()))
+                .willReturn(Optional.ofNullable(member));
+        given(recipeRepository.findTop3ByOrderByCreatedAtDesc())
+                .willReturn(List.of(
+                        recipe1,
+                        recipe2,
+                        recipe3
+                ));
+        given(heartRepository.existsByRecipeAndMember(recipe1, member))
+                .willReturn(true);
+        given(heartRepository.existsByRecipeAndMember(recipe2, member))
+                .willReturn(false);
+        given(heartRepository.existsByRecipeAndMember(recipe3, member))
+                .willReturn(true);
+
+        //when
+        List<RecipeListDto> mainPageRecipeList = recipeService.getMainPageRecipeList(MemberAuthDto.builder()
+                .id(1L)
+                .build());
+
+        //then
+        for (int i = 0; i < mainPageRecipeList.size(); i++) {
+            assertEquals("title" + (i + 1),
+                    mainPageRecipeList.get(i).getTitle());
+            assertEquals("content" + (i + 1),
+                    mainPageRecipeList.get(i).getContent());
+            assertEquals(i + 1,
+                    mainPageRecipeList.get(i).getHeartCount());
+        }
+
+        assertAll(
+                () -> assertTrue(mainPageRecipeList.get(0).isHeart()),
+                () -> assertFalse(mainPageRecipeList.get(1).isHeart()),
+                () -> assertTrue(mainPageRecipeList.get(2).isHeart())
+        );
+    }
+
+    @Test
+    @DisplayName("메인 페이지 생성순으로 3개 조회 실패 - 회원을 찾을 수 없음")
+    void fail_getMainPageRecipeList() {
+        //given
+        given(memberRepository.findById(any()))
+                .willReturn(Optional.empty());
+
+        //when
+        MemberException memberException = assertThrows(MemberException.class,
+                () -> recipeService.getMainPageRecipeList(MemberAuthDto.builder()
+                        .id(1L)
+                        .build()));
+
+        //then
+        assertEquals(MEMBER_NOT_FOUND, memberException.getErrorCode());
+    }
+
+    @Test
+    @DisplayName("레시피 페이지에서 생성순으로 조회 성공")
+    void success_getRecipePageRecipeList_orderTypeCreatedAt() {
+        //given
+        Recipe recipe1 = Recipe.builder()
+                .id(1L)
+                .summary(Summary.builder()
+                        .title("title1")
+                        .content("content1")
+                        .build())
+                .heartCount(1)
+                .createdAt(LocalDateTime.now().minusHours(1))
+                .build();
+        Recipe recipe2 = Recipe.builder()
+                .id(1L)
+                .summary(Summary.builder()
+                        .title("title2")
+                        .content("content2")
+                        .build())
+                .heartCount(2)
+                .createdAt(LocalDateTime.now().minusHours(2))
+                .build();
+        Recipe recipe3 = Recipe.builder()
+                .id(1L)
+                .summary(Summary.builder()
+                        .title("title3")
+                        .content("content3")
+                        .build())
+                .heartCount(3)
+                .createdAt(LocalDateTime.now().minusHours(3))
+                .build();
+        Member member = getMember();
+
+        given(memberRepository.findById(any()))
+                .willReturn(Optional.ofNullable(member));
+        given(heartRepository.existsByRecipeAndMember(recipe1, member))
+                .willReturn(true);
+        given(heartRepository.existsByRecipeAndMember(recipe2, member))
+                .willReturn(false);
+        given(heartRepository.existsByRecipeAndMember(recipe3, member))
+                .willReturn(true);
+        given(recipeRepository.findByOrderByCreatedAtDesc(any()))
+                .willReturn(new PageImpl<>(new ArrayList<>(List.of(
+                        recipe1,
+                        recipe2,
+                        recipe3
+                ))));
+
+        //when
+        ListResponse<RecipeListDto> recipePageRecipeList = recipeService
+                .getRecipePageRecipeList(MemberAuthDto.builder()
+                        .id(1L)
+                        .build(), PageRequest.of(0, 10), CREATED_AT);
+
+        //then
+        for (int i = 0; i < recipePageRecipeList.getContent().size(); i++) {
+            assertEquals("title" + (i + 1),
+                    recipePageRecipeList.getContent().get(i).getTitle());
+            assertEquals("content" + (i + 1),
+                    recipePageRecipeList.getContent().get(i).getContent());
+        }
+
+        assertAll(
+                () -> assertEquals(3, recipePageRecipeList.getTotalElements()),
+                () -> assertTrue(recipePageRecipeList.getContent().get(0).isHeart()),
+                () -> assertFalse(recipePageRecipeList.getContent().get(1).isHeart()),
+                () -> assertTrue(recipePageRecipeList.getContent().get(2).isHeart()),
+                () -> assertEquals(1,
+                        recipePageRecipeList.getTotalPages()),
+                () -> assertFalse(recipePageRecipeList.isHasNextPage())
+        );
+    }
+
+    @Test
+    @DisplayName("레시피 페이지에서 좋아요순으로 조회 성공")
+    void success_getRecipePageRecipeList_orderTypeHeartCount() {
+        //given
+        Recipe recipe1 = Recipe.builder()
+                .id(1L)
+                .summary(Summary.builder()
+                        .title("title1")
+                        .content("content1")
+                        .build())
+                .heartCount(1)
+                .createdAt(LocalDateTime.now().minusHours(1))
+                .build();
+        Recipe recipe2 = Recipe.builder()
+                .id(1L)
+                .summary(Summary.builder()
+                        .title("title2")
+                        .content("content2")
+                        .build())
+                .heartCount(2)
+                .createdAt(LocalDateTime.now().minusHours(2))
+                .build();
+        Recipe recipe3 = Recipe.builder()
+                .id(1L)
+                .summary(Summary.builder()
+                        .title("title3")
+                        .content("content3")
+                        .build())
+                .heartCount(3)
+                .createdAt(LocalDateTime.now().minusHours(3))
+                .build();
+        Member member = getMember();
+
+        given(memberRepository.findById(any()))
+                .willReturn(Optional.ofNullable(member));
+        given(heartRepository.existsByRecipeAndMember(recipe1, member))
+                .willReturn(true);
+        given(heartRepository.existsByRecipeAndMember(recipe2, member))
+                .willReturn(false);
+        given(heartRepository.existsByRecipeAndMember(recipe3, member))
+                .willReturn(true);
+        given(recipeRepository.findByOrderByHeartCountDesc(any()))
+                .willReturn(new PageImpl<>(new ArrayList<>(List.of(
+                        recipe1,
+                        recipe2,
+                        recipe3
+                )).stream()
+                        .sorted((x, y) -> y.getHeartCount() - x.getHeartCount())
+                        .collect(Collectors.toList())));
+
+        //when
+        ListResponse<RecipeListDto> recipePageRecipeList = recipeService
+                .getRecipePageRecipeList(MemberAuthDto.builder()
+                        .id(1L)
+                        .build(), PageRequest.of(0, 10), HEART_COUNT);
+
+        //then
+        for (int i = 0; i < recipePageRecipeList.getContent().size(); i++) {
+            assertEquals("title" + (3 - i),
+                    recipePageRecipeList.getContent().get(i).getTitle());
+            assertEquals("content" + (3 - i),
+                    recipePageRecipeList.getContent().get(i).getContent());
+        }
+
+        assertAll(
+                () -> assertEquals(3, recipePageRecipeList.getTotalElements()),
+                () -> assertTrue(recipePageRecipeList.getContent().get(0).isHeart()),
+                () -> assertFalse(recipePageRecipeList.getContent().get(1).isHeart()),
+                () -> assertTrue(recipePageRecipeList.getContent().get(2).isHeart()),
+                () -> assertEquals(1,
+                        recipePageRecipeList.getTotalPages()),
+                () -> assertFalse(recipePageRecipeList.isHasNextPage())
+        );
+    }
+
+    @Test
+    @DisplayName("레시피 페이지에서 댓글순으로 조회 성공")
+    void success_getRecipePageRecipeList_orderTypeCommentCount() {
+        //given
+        Recipe recipe1 = Recipe.builder()
+                .id(1L)
+                .summary(Summary.builder()
+                        .title("title1")
+                        .content("content1")
+                        .build())
+                .heartCount(1)
+                .createdAt(LocalDateTime.now().minusHours(1))
+                .commentCount(3)
+                .build();
+        Recipe recipe2 = Recipe.builder()
+                .id(1L)
+                .summary(Summary.builder()
+                        .title("title2")
+                        .content("content2")
+                        .build())
+                .heartCount(2)
+                .createdAt(LocalDateTime.now().minusHours(2))
+                .commentCount(2)
+                .build();
+        Recipe recipe3 = Recipe.builder()
+                .id(1L)
+                .summary(Summary.builder()
+                        .title("title3")
+                        .content("content3")
+                        .build())
+                .heartCount(3)
+                .commentCount(1)
+                .createdAt(LocalDateTime.now().minusHours(3))
+                .build();
+        Member member = getMember();
+
+        given(memberRepository.findById(any()))
+                .willReturn(Optional.ofNullable(member));
+        given(heartRepository.existsByRecipeAndMember(recipe1, member))
+                .willReturn(true);
+        given(heartRepository.existsByRecipeAndMember(recipe2, member))
+                .willReturn(false);
+        given(heartRepository.existsByRecipeAndMember(recipe3, member))
+                .willReturn(true);
+        given(recipeRepository.findByOrderByCommentCountDesc(any()))
+                .willReturn(new PageImpl<>(new ArrayList<>(List.of(
+                        recipe1,
+                        recipe2,
+                        recipe3
+                )).stream()
+                        .sorted((x, y) -> y.getCommentCount() - x.getCommentCount())
+                        .collect(Collectors.toList())));
+
+        //when
+        ListResponse<RecipeListDto> recipePageRecipeList = recipeService
+                .getRecipePageRecipeList(MemberAuthDto.builder()
+                        .id(1L)
+                        .build(), PageRequest.of(0, 10), COMMENT_COUNT);
+
+        //then
+        for (int i = 0; i < recipePageRecipeList.getContent().size(); i++) {
+            assertEquals("title" + (i + 1),
+                    recipePageRecipeList.getContent().get(i).getTitle());
+            assertEquals("content" + (i + 1),
+                    recipePageRecipeList.getContent().get(i).getContent());
+        }
+
+        assertAll(
+                () -> assertEquals(3, recipePageRecipeList.getTotalElements()),
+                () -> assertTrue(recipePageRecipeList.getContent().get(0).isHeart()),
+                () -> assertFalse(recipePageRecipeList.getContent().get(1).isHeart()),
+                () -> assertTrue(recipePageRecipeList.getContent().get(2).isHeart()),
+                () -> assertEquals(1,
+                        recipePageRecipeList.getTotalPages()),
+                () -> assertFalse(recipePageRecipeList.isHasNextPage())
+        );
+    }
+
+    @Test
+    @DisplayName("레시피 페이지에서 조회 실패 - 회원을 찾을 수 없음")
+    void fail_getRecipePageRecipeList_memberNotFound() {
+        //given
+        given(memberRepository.findById(any()))
+                .willReturn(Optional.empty());
+
+        //when
+        MemberException memberException = assertThrows(MemberException.class,
+                () -> recipeService.getRecipePageRecipeList(MemberAuthDto.builder()
+                        .id(1L)
+                        .build(), PageRequest.of(0, 10), any()));
+
+        //then
+        assertEquals(MEMBER_NOT_FOUND, memberException.getErrorCode());
+    }
+
+    @Test
+    @DisplayName("레시피 페이지에서 조회 실패 - 정의되지 않은 정렬타입")
+    void fail_fail_getRecipePageRecipeList_orderTypeNotFound() {
+        //given
+        Member member = getMember();
+
+        given(memberRepository.findById(any()))
+                .willReturn(Optional.ofNullable(member));
+
+        //when
+        RecipeException recipeException = assertThrows(RecipeException.class,
+                () -> recipeService.getRecipePageRecipeList(MemberAuthDto.builder()
+                        .id(1L)
+                        .build(), PageRequest.of(0, 10), INVALID_TYPE));
+
+        //then
+        assertEquals(ORDER_TYPE_NOT_FOUND, recipeException.getErrorCode());
+    }
+
+    @Test
+    @DisplayName("추천 레시피 조회 성공")
+    void success_recommendedRecipe() {
+        //given
+        Member member = getMember();
+        Recipe recipe1 = Recipe.builder()
+                .id(1L)
+                .summary(Summary.builder()
+                        .title("title1")
+                        .content("content1")
+                        .build())
+                .heartCount(1)
+                .createdAt(LocalDateTime.now().minusHours(1))
+                .commentCount(3)
+                .build();
+        Recipe recipe2 = Recipe.builder()
+                .id(2L)
+                .summary(Summary.builder()
+                        .title("title2")
+                        .content("content2")
+                        .build())
+                .heartCount(2)
+                .createdAt(LocalDateTime.now().minusHours(2))
+                .commentCount(2)
+                .build();
+        Recipe recipe3 = Recipe.builder()
+                .id(3L)
+                .summary(Summary.builder()
+                        .title("title3")
+                        .content("content3")
+                        .build())
+                .heartCount(3)
+                .commentCount(1)
+                .createdAt(LocalDateTime.now().minusHours(3))
+                .build();
+        Recipe recipe4 = Recipe.builder()
+                .id(4L)
+                .summary(Summary.builder()
+                        .title("title4")
+                        .content("content4")
+                        .build())
+                .heartCount(4)
+                .createdAt(LocalDateTime.now().minusHours(4))
+                .commentCount(3)
+                .build();
+        Recipe recipe5 = Recipe.builder()
+                .id(5L)
+                .summary(Summary.builder()
+                        .title("title5")
+                        .content("content5")
+                        .build())
+                .heartCount(5)
+                .createdAt(LocalDateTime.now().minusHours(5))
+                .commentCount(2)
+                .build();
+
+        given(memberRepository.findById(any()))
+                .willReturn(Optional.ofNullable(member));
+        given(recipeRepository.findTop5ByCreatedAtAfterOrderByHeartCountDesc(any()))
+                .willReturn(Stream.of(
+                                recipe1,
+                                recipe2,
+                                recipe3,
+                                recipe4,
+                                recipe5
+                        )
+                        .sorted((x, y) -> y.getHeartCount() - x.getHeartCount())
+                        .collect(Collectors.toList()));
+        given(heartRepository.existsByRecipeAndMember(recipe1, member))
+                .willReturn(true);
+        given(heartRepository.existsByRecipeAndMember(recipe2, member))
+                .willReturn(false);
+        given(heartRepository.existsByRecipeAndMember(recipe3, member))
+                .willReturn(true);
+        given(heartRepository.existsByRecipeAndMember(recipe4, member))
+                .willReturn(true);
+        given(heartRepository.existsByRecipeAndMember(recipe5, member))
+                .willReturn(false);
+
+        //when
+        List<RecipeListDto> recipeListDtoList = recipeService.recommendedRecipe(MemberAuthDto.builder()
+                .id(1L)
+                .build());
+
+        //then
+        for (int i = 0; i < recipeListDtoList.size(); i++) {
+            assertEquals("title" + (5 - i),
+                    recipeListDtoList.get(i).getTitle());
+            assertEquals("content" + (5 - i),
+                    recipeListDtoList.get(i).getContent());
+            assertEquals(5 - i,
+                    recipeListDtoList.get(i).getHeartCount());
+        }
+
+        assertAll(
+                () -> assertTrue(recipeListDtoList.get(4).isHeart()),
+                () -> assertFalse(recipeListDtoList.get(3).isHeart()),
+                () -> assertTrue(recipeListDtoList.get(2).isHeart()),
+                () -> assertTrue(recipeListDtoList.get(1).isHeart()),
+                () -> assertFalse(recipeListDtoList.get(0).isHeart())
+        );
+    }
+
+    @Test
+    @DisplayName("추천 레시피 조회 실패 - 회원을 찾을 수 없음")
+    void fail_recommendedRecipe_memberNotFound() {
+        //given
+        given(memberRepository.findById(any()))
+                .willReturn(Optional.empty());
+
+        //when
+        MemberException memberException = assertThrows(MemberException.class,
+                () -> recipeService.recommendedRecipe(MemberAuthDto.builder()
+                        .id(1L)
+                        .build()));
+
+        //then
+        assertEquals(MEMBER_NOT_FOUND, memberException.getErrorCode());
+    }
 
     // ===============테스트 객체 정의 메소드 ===================
 
@@ -864,7 +1379,8 @@ class RecipeServiceImplTest {
                 .numberOfComment(0L)
                 .build();
     }
-    private static Recipe getCommentMinusRecipe(Member member){
+
+    private static Recipe getCommentMinusRecipe(Member member) {
         return Recipe.builder()
                 .id(1L)
                 .summary(Summary.builder()
@@ -879,7 +1395,7 @@ class RecipeServiceImplTest {
                 .build();
     }
 
-    private static Recipe getCommentPlusRecipe(Member member){
+    private static Recipe getCommentPlusRecipe(Member member) {
         return Recipe.builder()
                 .id(1L)
                 .summary(Summary.builder()
