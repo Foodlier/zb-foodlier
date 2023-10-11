@@ -15,7 +15,7 @@ import {
 import {
   RecipeIngredientDtoList,
   RecipeDetailDtoList,
-} from '../../constants/Interfacs'
+} from '../../constants/Interfaces'
 
 interface Recipe {
   title: string

@@ -24,3 +24,18 @@ export interface RecipeIngredientDtoList {
   unit: string
   [key: string]: string | number
 }
+
+export interface Address {
+  addressDetail: string
+  lat: number
+  lnt: number
+  roadAddress: string
+}
+
+export interface Profile {
+  address: Address
+  email: string
+  nickName: string
+  phoneNumber: string
+  profileUrl: string
+}
