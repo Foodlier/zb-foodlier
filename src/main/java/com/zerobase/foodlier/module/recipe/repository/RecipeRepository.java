@@ -9,6 +9,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 public interface RecipeRepository extends JpaRepository<Recipe, Long> {
@@ -86,4 +88,13 @@ public interface RecipeRepository extends JpaRepository<Recipe, Long> {
             @Param("quotation") Recipe quotation
     );
 
+    List<Recipe> findTop3ByOrderByCreatedAtDesc();
+
+    Page<Recipe> findByOrderByCreatedAtDesc(Pageable pageable);
+
+    Page<Recipe> findByOrderByHeartCountDesc(Pageable pageable);
+
+    Page<Recipe> findByOrderByCommentCountDesc(Pageable pageable);
+
+    List<Recipe> findTop5ByCreatedAtAfterOrderByHeartCountDesc(LocalDateTime createdAt);
 }
