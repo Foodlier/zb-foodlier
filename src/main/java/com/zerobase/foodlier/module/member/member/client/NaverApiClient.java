@@ -1,5 +1,7 @@
 package com.zerobase.foodlier.module.member.member.client;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.zerobase.foodlier.module.member.member.exception.OAuthException;
 import com.zerobase.foodlier.module.member.member.social.dto.*;
 import com.zerobase.foodlier.module.member.member.type.RegistrationType;
@@ -52,9 +54,9 @@ public class NaverApiClient implements OAuthApiClient {
         httpHeaders.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 
         MultiValueMap<String, String> body = params.makeBody();
-        body.add(BODY_GRANT_TYPE, GRANT_TYPE);
-        body.add(BODY_CLIENT_ID, clientId);
-        body.add(BODY_CLIENT_SECRET, clientSecret);
+        body.setAll(new ObjectMapper().convertValue(
+                new RequestBodyNaver(GRANT_TYPE, clientId, clientSecret),
+                new TypeReference<>() {}));
 
         HttpEntity<?> request = new HttpEntity<>(body, httpHeaders);
 
