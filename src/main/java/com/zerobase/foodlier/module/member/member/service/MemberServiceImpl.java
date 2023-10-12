@@ -33,13 +33,11 @@ import static com.zerobase.foodlier.module.member.member.type.RegistrationType.D
 public class MemberServiceImpl implements MemberService {
 
     private static final Object NOT_CHEF_MEMBER = null;
+    private static final String SOCIAL_MEMBER = "소셜회원";
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider tokenProvider;
-
     private static final String DEL_PREFIX = "DEL";
-    private static final String RANDOM_CODE =
-            UUID.randomUUID().toString().replace("-", "");
 
     @Override
     public void register(MemberRegisterDto memberRegisterDto) {
@@ -244,9 +242,11 @@ public class MemberServiceImpl implements MemberService {
         Member member = memberRepository.findById(memberAuthDto.getId())
                 .orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
 
-        String delNickName = DEL_PREFIX + RANDOM_CODE;
-        String delEmail = DEL_PREFIX + RANDOM_CODE;
-        String delPhoneNumber = DEL_PREFIX + RANDOM_CODE;
+        String randomCode = generateRandomCode();
+
+        String delNickName = DEL_PREFIX + randomCode;
+        String delEmail = DEL_PREFIX + randomCode;
+        String delPhoneNumber = DEL_PREFIX + randomCode;
         member.setNickname(delNickName);
         member.setEmail(delEmail);
         member.setPhoneNumber(delPhoneNumber);
@@ -280,20 +280,25 @@ public class MemberServiceImpl implements MemberService {
     }
 
     private Member registerSocialMember(OAuthInfoResponse oAuthInfoResponse) {
+        String randomCode = generateRandomCode();
         return memberRepository.save(
                 Member.builder()
-                        .nickname("소셜회원" + RANDOM_CODE)
+                        .nickname(SOCIAL_MEMBER + randomCode)
                         .email(oAuthInfoResponse.getEmail())
-                        .password(passwordEncoder.encode(RANDOM_CODE))
+                        .password(passwordEncoder.encode(randomCode))
                         .registrationType(oAuthInfoResponse.getRegistrationType())
                         .address(Address.builder().build())
-                        .phoneNumber(RANDOM_CODE)
-                        .profileUrl(RANDOM_CODE)
+                        .phoneNumber(randomCode)
+                        .profileUrl(randomCode)
                         .isTemp(true)
                         .roles(new ArrayList<>(
                                 List.of(RoleType.ROLE_USER.name())
                         ))
                         .build());
+    }
+
+    private String generateRandomCode() {
+        return UUID.randomUUID().toString().replace("-", "");
     }
 
     //======================= Validates =========================
