@@ -34,6 +34,7 @@ public class OAuthFacade {
         if (params.registrationType() != member.getRegistrationType()) {
             return SocialLoginResponse.builder()
                     .email(member.getEmail())
+                    .isTemp(member.isTemp())
                     .registrationType(member.getRegistrationType()).build();
         }
 
