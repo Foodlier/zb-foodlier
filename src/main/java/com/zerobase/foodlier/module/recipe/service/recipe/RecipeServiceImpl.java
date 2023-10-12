@@ -1,7 +1,12 @@
 package com.zerobase.foodlier.module.recipe.service.recipe;
 
 import com.zerobase.foodlier.common.aop.RedissonLock;
+import com.zerobase.foodlier.common.response.ListResponse;
+import com.zerobase.foodlier.common.security.provider.dto.MemberAuthDto;
+import com.zerobase.foodlier.module.heart.reposiotry.HeartRepository;
 import com.zerobase.foodlier.module.member.member.domain.model.Member;
+import com.zerobase.foodlier.module.member.member.exception.MemberException;
+import com.zerobase.foodlier.module.member.member.repository.MemberRepository;
 import com.zerobase.foodlier.module.recipe.domain.document.RecipeDocument;
 import com.zerobase.foodlier.module.recipe.domain.model.Recipe;
 import com.zerobase.foodlier.module.recipe.domain.vo.RecipeDetail;
@@ -13,18 +18,22 @@ import com.zerobase.foodlier.module.recipe.exception.recipe.RecipeErrorCode;
 import com.zerobase.foodlier.module.recipe.exception.recipe.RecipeException;
 import com.zerobase.foodlier.module.recipe.repository.RecipeRepository;
 import com.zerobase.foodlier.module.recipe.repository.RecipeSearchRepository;
+import com.zerobase.foodlier.module.recipe.type.OrderType;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static com.zerobase.foodlier.module.member.member.exception.MemberErrorCode.MEMBER_NOT_FOUND;
 import static com.zerobase.foodlier.module.recipe.exception.recipe.RecipeErrorCode.NO_SUCH_RECIPE;
 import static com.zerobase.foodlier.module.recipe.exception.recipe.RecipeErrorCode.NO_SUCH_RECIPE_DOCUMENT;
+import static com.zerobase.foodlier.module.recipe.exception.recipe.RecipeErrorCode.*;
 
 @Service
 @RequiredArgsConstructor
@@ -32,6 +41,8 @@ public class RecipeServiceImpl implements RecipeService {
 
     private final RecipeRepository recipeRepository;
     private final RecipeSearchRepository recipeSearchRepository;
+    private final MemberRepository memberRepository;
+    private final HeartRepository heartRepository;
 
     /**
      * 작성자: 황태원(이종욱)
@@ -126,11 +137,20 @@ public class RecipeServiceImpl implements RecipeService {
      * 레시피 상세보기, 레시피 수정 시 정보 로드
      */
     @Override
-    public RecipeDtoResponse getRecipeDetail(Long id) {
+    public RecipeDtoResponse getRecipeDetail(MemberAuthDto memberAuthDto, Long id) {
         Recipe recipe = recipeRepository.findById(id)
                 .orElseThrow(() -> new RecipeException(NO_SUCH_RECIPE));
 
-        return RecipeDtoResponse.fromEntity(recipe);
+        Member member = memberRepository.findById(memberAuthDto.getId())
+                .orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
+
+        RecipeDtoResponse recipeDtoResponse =
+                RecipeDtoResponse.fromEntity(recipe);
+
+        recipeDtoResponse.setHeart(heartRepository
+                .existsByRecipeAndMember(recipe, member));
+
+        return recipeDtoResponse;
     }
 
     /**
@@ -158,17 +178,21 @@ public class RecipeServiceImpl implements RecipeService {
      */
 
     @Override
-    public List<Recipe> getRecipeByTitle(String recipeTitle, Pageable pageable) {
-        List<RecipeDocument> byTitle = recipeSearchRepository.findByTitle(recipeTitle, pageable).getContent();
+    public ListResponse<Recipe> getRecipeByTitle(String recipeTitle, Pageable pageable) {
+        Page<RecipeDocument> byTitle = recipeSearchRepository.findByTitle(recipeTitle, pageable);
         List<Recipe> recipeList = new ArrayList<>();
-        for (RecipeDocument recipeDocument : byTitle) {
+        for (RecipeDocument recipeDocument : byTitle.getContent()) {
             Recipe recipe = recipeRepository.findById(recipeDocument.getId())
                     .orElseThrow(() -> new RecipeException(NO_SUCH_RECIPE));
             recipeList.add(recipe);
         }
 
-        return recipeList;
-
+        return ListResponse.<Recipe>builder()
+                .totalElements(byTitle.getTotalElements())
+                .totalPages(byTitle.getTotalPages())
+                .hasNextPage(byTitle.hasNext())
+                .content(recipeList)
+                .build();
     }
 
     /**
@@ -186,8 +210,43 @@ public class RecipeServiceImpl implements RecipeService {
                 .build();
     }
 
+    @Override
+    public ListResponse<RecipeDtoTopResponse> getRecipeForHeart(Long memberId,
+                                                        Pageable pageable){
+        return ListResponse.from(
+                recipeRepository.findByHeart(memberId, pageable),
+                recipe -> RecipeDtoTopResponse.from(recipe, true));
+
+    }
+
+    /**
+     *  작성자 : 전현서
+     *  작성일 : 2023-10-06
+     *  해당 회원이 작성한 꿀조합 목록을 반환함.
+     */
+    @Override
+    public ListResponse<RecipeDtoTopResponse> getRecipeListByMemberId(Long memberId,
+                                                              Long targetMemberId,
+                                                              Pageable pageable){
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
+
+        Member targetMember = memberRepository.findById(targetMemberId)
+                .orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
+
+        return ListResponse.from(
+                recipeRepository
+                        .findByMemberAndIsPublicTrueAndIsQuotationFalse(targetMember,
+                                pageable),
+                recipe -> RecipeDtoTopResponse.from(recipe, getIsHeart(member, recipe)));
+    }
+
+    private boolean getIsHeart(Member member, Recipe recipe){
+        return heartRepository.existsByRecipeAndMember(recipe, member);
+    }
+
     @RedissonLock(group = "recipeReview", key = "#recipeId")
-    public void plusReviewStar(Long recipeId, int star){
+    public void plusReviewStar(Long recipeId, int star) {
         Recipe recipe = recipeRepository.findById(recipeId)
                 .orElseThrow(() -> new RecipeException(NO_SUCH_RECIPE));
 
@@ -196,7 +255,7 @@ public class RecipeServiceImpl implements RecipeService {
     }
 
     @RedissonLock(group = "recipeReview", key = "#recipeId")
-    public void updateReviewStar(Long recipeId, int originStar, int newStar){
+    public void updateReviewStar(Long recipeId, int originStar, int newStar) {
         Recipe recipe = recipeRepository.findById(recipeId)
                 .orElseThrow(() -> new RecipeException(NO_SUCH_RECIPE));
 
@@ -205,7 +264,7 @@ public class RecipeServiceImpl implements RecipeService {
     }
 
     @RedissonLock(group = "recipeReview", key = "#recipeId")
-    public void minusReviewStar(Long recipeId, int star){
+    public void minusReviewStar(Long recipeId, int star) {
         Recipe recipe = recipeRepository.findById(recipeId)
                 .orElseThrow(() -> new RecipeException(NO_SUCH_RECIPE));
 
@@ -214,7 +273,7 @@ public class RecipeServiceImpl implements RecipeService {
     }
 
     @Override
-    public Recipe plusCommentCount(Long recipeId){
+    public Recipe plusCommentCount(Long recipeId) {
         // 레시피의 댓글 수 증가
         Recipe recipe = recipeRepository.findById(recipeId)
                 .orElseThrow(() -> new RecipeException(NO_SUCH_RECIPE));
@@ -246,4 +305,108 @@ public class RecipeServiceImpl implements RecipeService {
         recipeRepository.save(recipe);
     }
 
+    /**
+     * 작성자 : 이승현
+     * 작성일 : 2023-10-10
+     * 메인 페이지에서 생성된 순으로 3개를 조회해 옵니다.
+     */
+    @Override
+    public List<RecipeListDto> getMainPageRecipeList(MemberAuthDto memberAuthDto) {
+        Member member = memberRepository.findById(memberAuthDto.getId())
+                .orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
+
+        return recipeRepository.findTop3ByOrderByCreatedAtDesc()
+                .stream()
+                .map(r -> RecipeListDto.builder()
+                        .id(r.getId())
+                        .nickName(r.getMember().getNickname())
+                        .title(r.getSummary().getTitle())
+                        .content(r.getSummary().getContent())
+                        .heartCount(r.getHeartCount())
+                        .isHeart(heartRepository.existsByRecipeAndMember(r, member))
+                        .build())
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * 작성자 : 이승현
+     * 작성일 : 2023-10-10
+     * 레시피 페이지에서 레시피를 orderTpye에 따라서 조회해 옵니다.
+     */
+    @Override
+    public ListResponse<RecipeListDto> getRecipePageRecipeList(MemberAuthDto memberAuthDto,
+                                                               Pageable pageable,
+                                                               OrderType orderType) {
+        Member member = memberRepository.findById(memberAuthDto.getId())
+                .orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
+
+        Page<Recipe> recipePage;
+        int totalPages;
+        long totalElements;
+        boolean hasNext;
+
+        switch (orderType) {
+            case CREATED_AT:
+                recipePage = recipeRepository.findByOrderByCreatedAtDesc(pageable);
+                totalElements = recipePage.getTotalElements();
+                totalPages = recipePage.getTotalPages();
+                hasNext = recipePage.hasNext();
+                break;
+            case HEART_COUNT:
+                recipePage = recipeRepository.findByOrderByHeartCountDesc(pageable);
+                totalPages = recipePage.getTotalPages();
+                totalElements = recipePage.getTotalElements();
+                hasNext = recipePage.hasNext();
+                break;
+            case COMMENT_COUNT:
+                recipePage = recipeRepository.findByOrderByCommentCountDesc(pageable);
+                totalPages = recipePage.getTotalPages();
+                totalElements = recipePage.getTotalElements();
+                hasNext = recipePage.hasNext();
+                break;
+            default:
+                throw new RecipeException(ORDER_TYPE_NOT_FOUND);
+        }
+
+        return ListResponse.<RecipeListDto>builder()
+                .totalPages(totalPages)
+                .hasNextPage(hasNext)
+                .totalElements(totalElements)
+                .content(
+                        recipePage.stream()
+                                .map(r -> RecipeListDto.builder()
+                                        .id(r.getId())
+                                        .nickName(r.getMember().getNickname())
+                                        .title(r.getSummary().getTitle())
+                                        .content(r.getSummary().getContent())
+                                        .heartCount(r.getHeartCount())
+                                        .isHeart(heartRepository.existsByRecipeAndMember(r, member))
+                                        .build())
+                                .collect(Collectors.toList()))
+                .build();
+    }
+
+    /**
+     * 작성자 : 이승현
+     * 작성일 : 2023-10-10
+     * 오늘 생성된 레시피 중 좋아요 높은 순으로 5개를 조회해 옵니다.
+     */
+    @Override
+    public List<RecipeListDto> recommendedRecipe(MemberAuthDto memberAuthDto) {
+        Member member = memberRepository.findById(memberAuthDto.getId())
+                .orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
+
+        return recipeRepository.findTop5ByCreatedAtAfterOrderByHeartCountDesc(
+                        LocalDate.now().atStartOfDay())
+                .stream()
+                .map(r -> RecipeListDto.builder()
+                        .id(r.getId())
+                        .nickName(r.getMember().getNickname())
+                        .title(r.getSummary().getTitle())
+                        .content(r.getSummary().getContent())
+                        .heartCount(r.getHeartCount())
+                        .isHeart(heartRepository.existsByRecipeAndMember(r, member))
+                        .build())
+                .collect(Collectors.toList());
+    }
 }

@@ -6,7 +6,6 @@ import com.zerobase.foodlier.common.security.provider.JwtTokenProvider;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -73,7 +72,10 @@ public class SecurityConfig {
                         "/**/auth/signup",
                         "/**/auth/login",
                         "/**/authKey/send",
+                        "/**/auth/verification/**",
+                        "/**/auth/findPassword",
                         "/**/auth/verify",
+                        "/**/auth/verification/**",
                         "/**/auth/signin",
                         "/**/auth/oauth2/**",
                         "/**/auth/kakao/callback",
@@ -82,7 +84,8 @@ public class SecurityConfig {
                         "/pub/**",
                         "/sub/**",
                         "/ws/**",
-                        "/env/**"
+                        "/env/**",
+                        "/actuator/health"
                 );
     }
 
@@ -94,7 +97,11 @@ public class SecurityConfig {
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList("http://localhost:5173/"));
+        configuration.setAllowedOrigins(Arrays.asList("http://localhost:5173/",
+                "http://127.0.0.1:5173/", "https://zb-foodlier.vercel.app/",
+                "https://zb-foodlier.vercel.app:443/",
+                "http://ec2-15-165-55-217.ap-northeast-2.compute.amazonaws.com/",
+                "http://ec2-15-165-55-217.ap-northeast-2.compute.amazonaws.com:80/"));
         configuration.setAllowCredentials(true);
         configuration.setAllowedMethods(Arrays.asList("GET","POST", "PUT", "DELETE", "PATCH"));
         configuration.setAllowedHeaders(Arrays.asList("*"));

@@ -8,7 +8,7 @@ export const DIFFICULTY_LIST = [
   },
   {
     content: '보통',
-    value: 'MIDEUM',
+    value: 'MEDIUM',
   },
   {
     content: '쉬움',
@@ -40,7 +40,6 @@ export const INGREDIENT_LIST = [
 
 // 레시피 재료 객체
 export const EMPTY_INGREDIENT = {
-  index: 0,
   name: '',
   count: 0,
   unit: '',
@@ -48,7 +47,6 @@ export const EMPTY_INGREDIENT = {
 
 // 레시피 조리 순서 객체
 export const EMPTY_ORDER = {
-  index: 0,
-  image: '',
-  content: '',
+  cookingOrderImageUrl: '',
+  cookingOrder: '',
 }

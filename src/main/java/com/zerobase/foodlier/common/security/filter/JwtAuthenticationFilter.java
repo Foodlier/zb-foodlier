@@ -1,11 +1,13 @@
 package com.zerobase.foodlier.common.security.filter;
 
+import com.zerobase.foodlier.common.security.constants.AuthorizationConstants;
 import com.zerobase.foodlier.common.security.exception.JwtException;
 import com.zerobase.foodlier.common.security.provider.JwtTokenProvider;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.util.ObjectUtils;
+import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import javax.servlet.FilterChain;
@@ -14,9 +16,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Date;
+import java.util.Objects;
 
-import static com.zerobase.foodlier.common.security.constants.AuthorizationConstants.TOKEN_HEADER;
-import static com.zerobase.foodlier.common.security.constants.AuthorizationConstants.TOKEN_PREFIX;
+import static com.zerobase.foodlier.common.security.constants.AuthorizationConstants.*;
 import static com.zerobase.foodlier.common.security.exception.JwtErrorCode.*;
 
 
@@ -33,30 +35,33 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                                     @NonNull FilterChain filterChain)
             throws ServletException, IOException {
 
-
-        String accessToken = this.resolveTokenFromRequest(request);
-
-        if (this.tokenProvider.isTokenExpired(accessToken)
-                && !this.tokenProvider.existRefreshToken(accessToken)) {
-            throw new JwtException(ALL_TOKEN_EXPIRED);
+        if(request.getRequestURI().contains("reissue")){
+            String refreshToken = this.resolveTokenFromRequest(request, REFRESH_HEADER);
+            if(!StringUtils.hasText(refreshToken)){
+                throw new JwtException(EMPTY_TOKEN);
+            }
+            setSecurityContext(refreshToken);
         }
+        else{
+            String accessToken = this.resolveTokenFromRequest(request, TOKEN_HEADER);
 
-        if (this.tokenProvider.isTokenExpired(accessToken)
-                && this.tokenProvider.existRefreshToken(accessToken)) {
-            String reissuedAccessToken = this.tokenProvider.reissue(accessToken, new Date());
-            response.setHeader(TOKEN_HEADER, reissuedAccessToken);
-            throw new JwtException(ACCESS_TOKEN_EXPIRED);
-        }
+            if (this.tokenProvider.isTokenExpired(accessToken)
+                    && !this.tokenProvider.existRefreshToken(accessToken)) {
+                throw new JwtException(ALL_TOKEN_EXPIRED);
+            }
 
-        if (!this.tokenProvider.isTokenExpired(accessToken)) {
+            if (this.tokenProvider.isTokenExpired(accessToken)){
+                throw new JwtException(ACCESS_TOKEN_EXPIRED);
+            }
             setSecurityContext(accessToken);
         }
 
         filterChain.doFilter(request,response);
     }
 
-    private String resolveTokenFromRequest(@NonNull HttpServletRequest request) {
-        String token = request.getHeader(TOKEN_HEADER);
+    private String resolveTokenFromRequest(@NonNull HttpServletRequest request,
+                                           String header) {
+        String token = request.getHeader(header);
 
         if (ObjectUtils.isEmpty(token)) {
             throw new JwtException(EMPTY_TOKEN);

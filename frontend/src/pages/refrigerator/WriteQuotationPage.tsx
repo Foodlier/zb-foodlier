@@ -1,3 +1,4 @@
+/* eslint-disable react/no-array-index-key */
 import React, { useState } from 'react'
 import Header from '../../components/Header'
 import BottomNavigation from '../../components/BottomNavigation'
@@ -11,25 +12,15 @@ import {
   EMPTY_ORDER,
   INGREDIENT_LIST,
 } from '../../constants/Data'
-
-interface IngredientInterface {
-  index: number
-  name: string
-  count: number
-  unit: string
-  [key: string]: string | number
-}
-
-interface RecipeDetailDtoList {
-  index: number
-  image: string
-  content: string
-}
+import {
+  RecipeIngredientDtoList,
+  RecipeDetailDtoList,
+} from '../../constants/Interfacs'
 
 interface Recipe {
   title: string
   content: string
-  recipeIngredientDtoList: IngredientInterface[]
+  recipeIngredientDtoList: RecipeIngredientDtoList[]
   difficulty: string
   recipeDetailDtoList: RecipeDetailDtoList[]
   expectedTime: string
@@ -59,7 +50,6 @@ const WriteQuotationPage = () => {
         ...recipeValue.recipeIngredientDtoList,
         {
           ...EMPTY_INGREDIENT,
-          index: recipeValue.recipeIngredientDtoList.length,
         },
       ]
       setRecipeValue({
@@ -69,7 +59,7 @@ const WriteQuotationPage = () => {
     } else {
       const updateValue = [
         ...recipeValue.recipeDetailDtoList,
-        { ...EMPTY_ORDER, index: recipeValue.recipeDetailDtoList.length },
+        { ...EMPTY_ORDER },
       ]
       setRecipeValue({
         ...recipeValue,
@@ -104,15 +94,13 @@ const WriteQuotationPage = () => {
   ) => {
     const updatedValue = [...recipeValue.recipeDetailDtoList]
 
-    updatedValue[index].content = e.target.value
+    updatedValue[index].cookingOrder = e.target.value
 
     setRecipeValue(prevRecipeValue => ({
       ...prevRecipeValue,
       recipeDetailDtoList: updatedValue,
     }))
   }
-
-  // console.log(recipeValue)
 
   return (
     <>
@@ -151,7 +139,7 @@ const WriteQuotationPage = () => {
         <S.WrapForm>
           <S.Title>예상 재료</S.Title>
           {recipeValue.recipeIngredientDtoList.map((item, index) => (
-            <S.WrapIngredient key={item.index}>
+            <S.WrapIngredient key={`key-${index}`}>
               <S.WrapItemInput>
                 {INGREDIENT_LIST.map(ingredientItem => (
                   <S.ItemInput
@@ -207,8 +195,8 @@ const WriteQuotationPage = () => {
 
         <S.WrapForm>
           <S.Title>예상 조리순서</S.Title>
-          {recipeValue.recipeDetailDtoList.map((item, index) => (
-            <S.WrapOrder key={item.index}>
+          {recipeValue.recipeDetailDtoList.map((_, index) => (
+            <S.WrapOrder key={`key]${index}`}>
               <S.Input
                 onChange={e => updateOrder(e, index)}
                 placeholder="조리 순서를 입력해주세요."

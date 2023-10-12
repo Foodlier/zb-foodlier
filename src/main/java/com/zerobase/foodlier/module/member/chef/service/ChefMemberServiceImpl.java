@@ -1,10 +1,9 @@
 package com.zerobase.foodlier.module.member.chef.service;
 
 import com.zerobase.foodlier.common.aop.RedissonLock;
+import com.zerobase.foodlier.common.response.ListResponse;
 import com.zerobase.foodlier.module.member.chef.domain.model.ChefMember;
-import com.zerobase.foodlier.module.member.chef.dto.AroundChefDto;
-import com.zerobase.foodlier.module.member.chef.dto.ChefIntroduceForm;
-import com.zerobase.foodlier.module.member.chef.dto.RequestedChefDto;
+import com.zerobase.foodlier.module.member.chef.dto.*;
 import com.zerobase.foodlier.module.member.chef.exception.ChefMemberException;
 import com.zerobase.foodlier.module.member.chef.repository.ChefMemberRepository;
 import com.zerobase.foodlier.module.member.chef.type.ChefSearchType;
@@ -17,11 +16,13 @@ import com.zerobase.foodlier.module.member.member.repository.MemberRepository;
 import com.zerobase.foodlier.module.member.member.type.RoleType;
 import com.zerobase.foodlier.module.recipe.repository.RecipeRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static com.zerobase.foodlier.module.member.chef.exception.ChefMemberErrorCode.*;
 
@@ -82,9 +83,30 @@ public class ChefMemberServiceImpl implements ChefMemberService{
      *  작성일 : 2023-09-29
      *  요청된 요리사의 정보를 가져옴.
      */
-    public List<RequestedChefDto> getRequestedChefList(Long memberId,
-                                                   int pageIdx, int pageSize){
-        return chefMemberRepository.findRequestedChef(memberId, pageIdx * pageSize, pageSize);
+    @Override
+    public ListResponse<RequestedChefDto> getRequestedChefList(Long memberId,
+                                                               Pageable pageable){
+        return ListResponse.from(
+                chefMemberRepository.findRequestedChef(memberId, pageable));
+    }
+
+    @Override
+    public List<TopChefDto> getTopChefList(){
+        return chefMemberRepository.findTop5ByOrderByExpDesc()
+                .stream()
+                .map(TopChefDto::from)
+                .collect(Collectors.toList());
+    }
+
+    /**
+     *  작성자 : 전현서
+     *  작성일 : 2023-10-08
+     *  요리사의 등급 정보를 가져옴.
+     */
+    @Override
+    public ChefProfileDto getChefProfile(Long chefMemberId){
+        return ChefProfileDto.from(chefMemberRepository.findById(chefMemberId)
+                .orElseThrow(() -> new ChefMemberException(CHEF_MEMBER_NOT_FOUND)));
     }
 
     /**
@@ -117,25 +139,28 @@ public class ChefMemberServiceImpl implements ChefMemberService{
      *  반경 1km내의 요리사 리스트를 페이징하여 반환
      *  type이 지정되지 않은 경우는 기본적으로 가까운 거리순
      */
-    public List<AroundChefDto> getAroundChefList(Long memberId,
-                                                 int pageIdx, int pageSize,
+    @Override
+    public ListResponse<AroundChefDto> getAroundChefList(Long memberId,
+                                                 Pageable pageable,
                                                  ChefSearchType type){
         Address address = getMember(memberId).getAddress();
 
         switch (type){
             case STAR:
-                return chefMemberRepository.findAroundChefOrderByStar(memberId, address.getLat(),
-                        address.getLnt(), AROUND_DISTANCE, pageIdx * pageSize, pageSize);
+                return ListResponse.from(
+                        chefMemberRepository.findAroundChefOrderByStar(memberId, address.getLat(),
+                        address.getLnt(), AROUND_DISTANCE, pageable));
             case REVIEW:
-                return chefMemberRepository.findAroundChefOrderByReview(memberId, address.getLat(),
-                        address.getLnt(), AROUND_DISTANCE, pageIdx * pageSize, pageSize);
+                return ListResponse.from(
+                        chefMemberRepository.findAroundChefOrderByReview(memberId, address.getLat(),
+                        address.getLnt(), AROUND_DISTANCE, pageable));
             case RECIPE:
-                return chefMemberRepository.findAroundChefOrderByRecipeCount(memberId, address.getLat(),
-                        address.getLnt(), AROUND_DISTANCE, pageIdx * pageSize, pageSize);
+                return ListResponse.from(chefMemberRepository.findAroundChefOrderByRecipeCount(memberId, address.getLat(),
+                        address.getLnt(), AROUND_DISTANCE, pageable));
         }
 
-        return chefMemberRepository.findAroundChefOrderByDistance(memberId, address.getLat(),
-                address.getLnt(), AROUND_DISTANCE, pageIdx * pageSize, pageSize);
+        return ListResponse.from(chefMemberRepository.findAroundChefOrderByDistance(memberId, address.getLat(),
+                address.getLnt(), AROUND_DISTANCE, pageable));
     }
 
     private Member getMember(Long memberId){

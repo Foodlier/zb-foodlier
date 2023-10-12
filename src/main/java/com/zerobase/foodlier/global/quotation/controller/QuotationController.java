@@ -1,5 +1,6 @@
 package com.zerobase.foodlier.global.quotation.controller;
 
+import com.zerobase.foodlier.common.response.ListResponse;
 import com.zerobase.foodlier.common.security.provider.dto.MemberAuthDto;
 import com.zerobase.foodlier.global.quotation.facade.QuotationFacade;
 import com.zerobase.foodlier.module.recipe.dto.quotation.QuotationDetailResponse;
@@ -12,8 +13,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/quotation")
@@ -45,7 +44,7 @@ public class QuotationController {
     }
 
     @GetMapping("/{pageIdx}/{pageSize}")
-    public ResponseEntity<List<QuotationTopResponse>> getQuotationListForRefrigerator(
+    public ResponseEntity<ListResponse<QuotationTopResponse>> getQuotationListForRefrigerator(
             @AuthenticationPrincipal MemberAuthDto memberAuthDto,
             @PathVariable int pageIdx,
             @PathVariable int pageSize
@@ -56,7 +55,7 @@ public class QuotationController {
     }
 
     @GetMapping("/recipe/{pageIdx}/{pageSize}")
-    public ResponseEntity<List<QuotationTopResponse>> getQuotationListForRecipe(
+    public ResponseEntity<ListResponse<QuotationTopResponse>> getQuotationListForRecipe(
             @AuthenticationPrincipal MemberAuthDto memberAuthDto,
             @PathVariable int pageIdx,
             @PathVariable int pageSize

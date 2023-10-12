@@ -1,7 +1,8 @@
 package com.zerobase.foodlier.module.comment.reply.servcie;
 
+import com.zerobase.foodlier.common.response.ListResponse;
 import com.zerobase.foodlier.module.comment.reply.domain.model.Reply;
-import com.zerobase.foodlier.module.comment.reply.dto.ReplyPagingDto;
+import com.zerobase.foodlier.module.comment.reply.dto.ReplyDto;
 import org.springframework.data.domain.PageRequest;
 
 public interface ReplyService {
@@ -11,5 +12,5 @@ public interface ReplyService {
     void updateReply(Long memberId, Long replyId, String modifiedMessage);
 
     void deleteReply(Long memberId, Long replyId);
-    ReplyPagingDto getReplyList(Long commentId, PageRequest pageRequest);
+    ListResponse<ReplyDto> getReplyList(Long commentId, PageRequest pageRequest);
 }
