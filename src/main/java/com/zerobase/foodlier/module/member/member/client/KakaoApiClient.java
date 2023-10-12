@@ -1,11 +1,11 @@
 package com.zerobase.foodlier.module.member.member.client;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.zerobase.foodlier.module.member.member.exception.OAuthException;
 import com.zerobase.foodlier.module.member.member.social.dto.*;
 import com.zerobase.foodlier.module.member.member.type.RegistrationType;
 import lombok.RequiredArgsConstructor;
-import com.fasterxml.jackson.core.type.TypeReference;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -19,13 +19,14 @@ import java.util.Objects;
 
 import static com.zerobase.foodlier.common.security.constants.AuthorizationConstants.TOKEN_HEADER;
 import static com.zerobase.foodlier.common.security.constants.AuthorizationConstants.TOKEN_PREFIX;
-import static com.zerobase.foodlier.module.member.member.constants.OAuthConstants.*;
 import static com.zerobase.foodlier.module.member.member.exception.OAuthErrorCode.FAILED_AUTH;
 import static com.zerobase.foodlier.module.member.member.type.RegistrationType.KAKAO;
 
 @Component
 @RequiredArgsConstructor
 public class KakaoApiClient implements OAuthApiClient {
+
+    public static final String GRANT_TYPE = "authorization_code";
 
     @Value("${oauth.kakao.url.auth}")
     private String authUrl;
@@ -53,7 +54,8 @@ public class KakaoApiClient implements OAuthApiClient {
         MultiValueMap<String, String> body = params.makeBody();
         body.setAll(new ObjectMapper().convertValue(
                 new RequestBodyKakao(GRANT_TYPE, clientId),
-                new TypeReference<>() {}));
+                new TypeReference<>() {
+                }));
 
         HttpEntity<?> request = new HttpEntity<>(body, httpHeaders);
 

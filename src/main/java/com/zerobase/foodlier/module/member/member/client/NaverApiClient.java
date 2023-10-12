@@ -19,13 +19,14 @@ import java.util.Objects;
 
 import static com.zerobase.foodlier.common.security.constants.AuthorizationConstants.TOKEN_HEADER;
 import static com.zerobase.foodlier.common.security.constants.AuthorizationConstants.TOKEN_PREFIX;
-import static com.zerobase.foodlier.module.member.member.constants.OAuthConstants.*;
 import static com.zerobase.foodlier.module.member.member.exception.OAuthErrorCode.FAILED_AUTH;
 import static com.zerobase.foodlier.module.member.member.type.RegistrationType.NAVER;
 
 @Component
 @RequiredArgsConstructor
 public class NaverApiClient implements OAuthApiClient {
+
+    public static final String GRANT_TYPE = "authorization_code";
 
     @Value("${oauth.naver.url.auth}")
     private String authUrl;
@@ -56,7 +57,8 @@ public class NaverApiClient implements OAuthApiClient {
         MultiValueMap<String, String> body = params.makeBody();
         body.setAll(new ObjectMapper().convertValue(
                 new RequestBodyNaver(GRANT_TYPE, clientId, clientSecret),
-                new TypeReference<>() {}));
+                new TypeReference<>() {
+                }));
 
         HttpEntity<?> request = new HttpEntity<>(body, httpHeaders);
 
