@@ -19,6 +19,7 @@ import com.zerobase.foodlier.module.recipe.exception.recipe.RecipeException;
 import com.zerobase.foodlier.module.recipe.repository.RecipeRepository;
 import com.zerobase.foodlier.module.recipe.repository.RecipeSearchRepository;
 import com.zerobase.foodlier.module.recipe.type.OrderType;
+import com.zerobase.foodlier.module.recipe.type.SortType;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -155,6 +156,10 @@ public class RecipeServiceImpl implements RecipeService {
     @Transactional(readOnly = true)
     public ListResponse<RecipeCardDto> getRecipeList(RecipeSearchRequest recipeSearchRequest) {
         Page<RecipeDocument> findingResult;
+
+        if(!SortType.existsSortType(recipeSearchRequest.getSortType())){
+            throw new RecipeException(SORT_TYPE_NOT_FOUND);
+        }
 
         switch (recipeSearchRequest.getSearchType()) {
 
