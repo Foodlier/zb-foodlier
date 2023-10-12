@@ -99,7 +99,7 @@ public class SecurityConfig {
             "http://localhost:5173",
             "http://127.0.0.1:5173",
             "https://zb-foodlier.vercel.app",
-            "http://ec2-15-165-55-217.ap-northeast-2.compute.amazonaws.com",
+            "http://ec2-15-165-55-217.ap-northeast-2.compute.amazonaws.com"
             ));
         configuration.setAllowCredentials(true);
         configuration.setAllowedMethods(Arrays.asList("GET","POST", "PUT", "DELETE", "PATCH"));
