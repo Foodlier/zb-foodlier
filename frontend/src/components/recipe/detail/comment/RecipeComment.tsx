@@ -1,102 +1,120 @@
-import React, { useState } from 'react'
-import { useRecoilValue } from 'recoil'
+import React, { useState, useEffect, useRef, useCallback } from 'react'
 import * as S from '../../../../styles/recipe/detail/comment/RecipeComment.styled'
-import SingleComment from './SingleComment'
-import ReplyComment from './ReplyComment'
-import { userState } from '../../../../../recoilState'
+import axiosInstance from '../../../../utils/fetchCall'
+import { CommentItem } from '../../../../constants/Interfacs'
+import CommonButton from '../../../ui/Button'
 
-interface Comment {
-  message: string
-  createdAt: string
-  isDeleted: boolean
-  nickname: string
-  profileUrl: string
-}
-
-interface RecipeCommentProps {
-  comments: Comment[]
-}
-
-function RecipeComment({ comments }: RecipeCommentProps) {
-  const countState = useRecoilValue(userState)
-  const [commentValue, setcommentValue] = useState('')
+function RecipeComment() {
+  const [commentValue, setCommentValue] = useState('')
+  const [commentList, setCommentList] = useState<CommentItem[]>([])
+  const [pageIdx, setPageIdx] = useState(1)
+  const pageSize = useRef(5)
+  const endOfList = useRef(false)
 
   const handleClick = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setcommentValue(event.currentTarget.value)
+    setCommentValue(event.currentTarget.value)
   }
 
-  const onSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const onSubmit = (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault()
 
-    try {
-      const newComment: Comment = {
-        message: commentValue,
-        createdAt: '현재 날짜 및 시간',
-        isDeleted: false,
-        nickname: '현재 사용자',
-        profileUrl: 'https://source.unsplash.com/random/50x50/?person',
+    const body = {
+      message: commentValue,
+      recipeId: 1,
+    }
+    const setComment = async () => {
+      const res = await axiosInstance.post('/comment/1', body)
+      if (res.status === 200) {
+        setCommentValue('')
+        setPageIdx(1)
       }
+    }
+    setComment()
+  }
 
-      const updatedComments = [...comments, newComment]
+  const getComment = useCallback(async () => {
+    const res = await axiosInstance.get(
+      `/comment/10/${pageIdx}/${pageSize.current}`
+    )
+    if (res.status === 200) {
+      const comment = res.data.commentDtoList
 
-      setcommentValue('')
+      const messages = comment.map((commentItem: CommentItem) => {
+        const parsedComment = JSON.parse(commentItem.message)
+        return parsedComment || commentItem
+      })
 
-      console.log('새 댓글이 추가되었습니다:', newComment)
-      console.log('업데이트된 댓글 목록:', updatedComments)
-    } catch (error) {
-      console.error('API 호출 오류:', error)
+      if (messages.length === 0) {
+        endOfList.current = true
+      } else if (pageIdx === 1) {
+        setCommentList(messages)
+      } else {
+        setCommentList(prevCommentList => [...prevCommentList, ...messages])
+      }
+    }
+  }, [pageIdx])
+
+  useEffect(() => {
+    getComment()
+  }, [getComment])
+
+  const handleLoadMoreComments = () => {
+    if (!endOfList.current) {
+      setPageIdx(prevPageIdx => prevPageIdx + 1)
     }
   }
 
   return (
     <S.CommentContainer>
-      <S.CommentTit>댓글{countState}</S.CommentTit>
-      {/* Root Comment Form */}
-      <S.CommentForm onSubmit={onSubmit}>
+      <S.CommentTit>댓글</S.CommentTit>
+      <S.CommentForm>
         <S.CommentInput
           type="text"
           placeholder="댓글을 입력하세요"
           onChange={handleClick}
           value={commentValue}
         />
-        <S.CommentSubmit type="submit">등록</S.CommentSubmit>
+        <S.CommentSubmit onClick={onSubmit}>등록</S.CommentSubmit>
       </S.CommentForm>
 
-      {/* Comment Lists  */}
       <S.CommentList>
-        <SingleComment comments={comments} />
-        <ReplyComment comments={comments} />
+        {commentList.map((commentItem, index) => (
+          <div key={commentItem.commentId || index}>
+            <S.CommentItemWrapper>
+              <S.CommentHeader>
+                <S.CommentUserInfo>
+                  <S.UserImg
+                    src={commentItem.profileUrl}
+                    alt={commentItem.nickname}
+                  />
+                  <S.UserNickname>{commentItem.nickname}</S.UserNickname>
+                </S.CommentUserInfo>
+                <S.CommentDate>{commentItem.createdAt}</S.CommentDate>
+              </S.CommentHeader>
+
+              <S.CommentContent>{commentItem.message}</S.CommentContent>
+              <S.CommentButtonWrap>
+                <CommonButton size="small" color="divider">
+                  수정
+                </CommonButton>
+                <CommonButton size="small" color="divider">
+                  삭제
+                </CommonButton>
+              </S.CommentButtonWrap>
+            </S.CommentItemWrapper>
+          </div>
+        ))}
       </S.CommentList>
-      {/* {console.log(props.CommentLists)}
 
-      {props.CommentLists &&
-        props.CommentLists.map(
-          (comment, index) =>
-            !comment.responseTo && (
-              <>
-                <SingleComment
-                  comment={comment}
-                  postId={props.postId}
-                  refreshFunction={props.refreshFunction}
-                />
-                <ReplyComment
-                  CommentLists={props.CommentLists}
-                  postId={props.postId}
-                  parentCommentId={comment._id}
-                  refreshFunction={props.refreshFunction}
-                />
-              </>
-            )
-        )} */}
-
-      {/* {comments.map(comment => (
-        <div key={comment.message}>
-          <S.UserNickname>{comment.nickname}</S.UserNickname>
-          <S.CommentContent>{comment.message}</S.CommentContent>
-          <S.CommentDate>{comment.createdAt}</S.CommentDate>
-          <S.UserImg src={comment.profileUrl} alt={comment.nickname} />
-        </div>
-      ))} */}
+      <S.MoreButtonBox>
+        <CommonButton
+          onClick={handleLoadMoreComments}
+          color="main"
+          border="border"
+        >
+          댓글 더보기
+        </CommonButton>
+      </S.MoreButtonBox>
     </S.CommentContainer>
   )
 }

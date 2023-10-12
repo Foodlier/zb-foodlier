@@ -24,3 +24,16 @@ export interface RecipeIngredientDtoList {
   unit: string
   [key: string]: string | number
 }
+
+export interface CommentItem {
+  // message: string
+  // createdAt: string
+  // isDeleted: boolean
+  // nickname: string
+  // profileUrl: string
+  commentId: number
+  profileUrl: string
+  createdAt: string
+  message: string
+  nickname: string
+}

@@ -13,6 +13,7 @@ import WriteRecipePage from './pages/recipe/WriteRecipePage'
 import RecipeDetailPage from './pages/recipe/RecipeDetailPage'
 import WriteReviewPage from './pages/recipe/WriteReviewPage'
 import ChattingPage from './pages/chat/ChattingPage'
+// import Ab from './components/recipe/detail/comment/ab'
 
 function App() {
   return (
@@ -47,6 +48,7 @@ function App() {
           element={<WriteReviewPage />}
         />
         <Route path="/chat" element={<ChattingPage />} />
+        {/* <Route path="/a" element={<Ab />} /> */}
       </Routes>
     </div>
   )

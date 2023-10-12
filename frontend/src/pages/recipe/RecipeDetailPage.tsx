@@ -7,7 +7,7 @@ import DetailIngredients from '../../components/recipe/detail/DetailIngredients'
 import DetailProcedure from '../../components/recipe/detail/DetailProcedure'
 import RecipeComment from '../../components/recipe/detail/comment/RecipeComment'
 import RecipeReviewList from '../../components/recipe/detail/review/RecipeReviewList'
-import axiosInstance from '../../utils/FetchCall'
+import axiosInstance from '../../utils/fetchCall'
 import { Recipe } from '../../constants/Interfacs'
 
 export const DetailContainer = styled.div`
@@ -50,7 +50,7 @@ const RecipeDetailPage = () => {
         <DetailMainItem recipe={recipeData} />
         <DetailIngredients ingredients={recipeData?.recipeIngredientDtoList} />
         <DetailProcedure detail={recipeData?.recipeDetailDtoList} />
-        <RecipeCommentList recipeId={recipeData?.recipeId} />
+        <RecipeComment />
         <RecipeReviewList />
       </DetailContainer>
 

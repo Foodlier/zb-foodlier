@@ -13,7 +13,7 @@ import {
   EMPTY_ORDER,
   INGREDIENT_LIST,
 } from '../../constants/Data'
-import axiosInstance from '../../utils/FetchCall'
+import axiosInstance from '../../utils/fetchCall'
 import ModalWithoutButton from '../../components/ui/ModalWithoutButton'
 import {
   RecipeIngredientDtoList,
@@ -110,15 +110,15 @@ const WriteRecipePage = () => {
     title: 'string',
   }
 
-  const postRecipe = async e => {
-    e.preventDefault()
-    const res = await axiosInstance.post('/recipe', body)
-    console.log(res)
-    // if (res.status === 200) {
-    //   setRecipeData(res.data)
-    //   setIsLoading(false)
-    // }
-  }
+  // const postRecipe = async e => {
+  //   e.preventDefault()
+  //   const res = await axiosInstance.post('/recipe', body)
+  //   console.log(res)
+  //   // if (res.status === 200) {
+  //   //   setRecipeData(res.data)
+  //   //   setIsLoading(false)
+  //   // }
+  // }
 
   // 해당 index의 순서 값 수정
   const updateOrder = (
@@ -137,7 +137,7 @@ const WriteRecipePage = () => {
 
   const postRecipe = async () => {
     try {
-      const res = await axiosInstance.post('/recipe', recipeValue)
+      const res = await axiosInstance.post('/recipe', body)
       if (res.status === 200) {
         setIsCompleteModal(true)
         setTimeout(() => {
