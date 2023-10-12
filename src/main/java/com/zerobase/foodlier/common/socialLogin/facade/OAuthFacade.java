@@ -19,20 +19,25 @@ import static com.zerobase.foodlier.module.member.member.type.RegistrationType.D
 
 @Component
 @RequiredArgsConstructor
-@Slf4j
 public class OAuthFacade {
     private final RequestOAuthInfoService requestOAuthInfoService;
     private final MemberService memberService;
     private final JwtTokenProvider tokenProvider;
 
+    /**
+     * 작성자 : 황태원
+     * 작성일 : 2023-10-12
+     * 소셜 로그인을 진행합니다.
+     * 이미 자체 사이트 가입이 된 경우라면 가입타입과 email을 반환합니다.
+     */
     public SocialLoginResponse login(OAuthLoginParams params) {
         OAuthInfoResponse oAuthInfoResponse = requestOAuthInfoService.request(params);
-        Member member = memberService.findOrCreateMember(oAuthInfoResponse); // 회원정보가 있다면 가져오면서 회원가입도 진행함
+        Member member = memberService.findOrCreateMember(oAuthInfoResponse);
 
-        if (member.getRegistrationType() == DOMAIN) {
-            log.info("이미 사이트에 가입된 회원입니다.");
+        if (params.registrationType() != member.getRegistrationType()) {
             return SocialLoginResponse.builder()
-                    .registrationType(DOMAIN).build();
+                    .email(member.getEmail())
+                    .registrationType(member.getRegistrationType()).build();
         }
 
         TokenDto tokenDto = tokenProvider.createToken(MemberAuthDto.builder()
@@ -43,6 +48,8 @@ public class OAuthFacade {
 
         return SocialLoginResponse.builder()
                 .registrationType(oAuthInfoResponse.getRegistrationType())
+                .email(member.getEmail())
+                .isTemp(member.isTemp())
                 .tokenDto(tokenDto)
                 .build();
     }
