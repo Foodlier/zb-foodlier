@@ -14,11 +14,11 @@ import java.util.Optional;
 public interface CommentRepository extends JpaRepository<Comment, Long> {
 
     @Query("select new com.zerobase.foodlier.module.comment.comment.dto.CommentDto(" +
-            "c.message, c.createdAt, c.modifiedAt) " +
+            "c.id, c.message, c.createdAt, c.modifiedAt) " +
             "from Comment c " +
             "join c.recipe r " +
             "where r.id=:recipeId " +
-            "order by c.createdAt asc ")
+            "order by c.createdAt desc ")
     Page<CommentDto> findCommentList(@Param("recipeId") Long recipeId,
                                      Pageable pageable);
 
