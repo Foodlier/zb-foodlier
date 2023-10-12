@@ -1,7 +1,7 @@
 package com.zerobase.foodlier.module.member.member.service;
 
 import com.zerobase.foodlier.common.security.provider.dto.MemberAuthDto;
-import com.zerobase.foodlier.common.socialLogin.dto.OAuthInfoResponse;
+import com.zerobase.foodlier.module.member.member.social.dto.OAuthInfoResponse;
 import com.zerobase.foodlier.module.member.member.dto.*;
 
 import com.zerobase.foodlier.common.response.ListResponse;

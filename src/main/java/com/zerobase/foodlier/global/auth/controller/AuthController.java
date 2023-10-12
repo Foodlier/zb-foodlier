@@ -3,17 +3,17 @@ package com.zerobase.foodlier.global.auth.controller;
 import com.zerobase.foodlier.common.redis.service.EmailVerificationService;
 import com.zerobase.foodlier.common.security.provider.dto.MemberAuthDto;
 import com.zerobase.foodlier.common.security.provider.dto.TokenDto;
-import com.zerobase.foodlier.common.socialLogin.dto.KakaoLoginParams;
-import com.zerobase.foodlier.common.socialLogin.dto.NaverLoginParams;
-import com.zerobase.foodlier.common.socialLogin.dto.SocialLoginResponse;
-import com.zerobase.foodlier.common.socialLogin.facade.OAuthFacade;
 import com.zerobase.foodlier.global.member.mail.facade.EmailVerificationFacade;
+import com.zerobase.foodlier.global.member.oAuth.facade.OAuthFacade;
 import com.zerobase.foodlier.global.member.password.facade.PasswordFindFacade;
 import com.zerobase.foodlier.global.member.regiser.facade.MemberRegisterFacade;
 import com.zerobase.foodlier.module.member.member.dto.MemberInputDto;
 import com.zerobase.foodlier.module.member.member.dto.PasswordFindForm;
 import com.zerobase.foodlier.module.member.member.dto.SignInForm;
 import com.zerobase.foodlier.module.member.member.service.MemberService;
+import com.zerobase.foodlier.module.member.member.social.dto.KakaoLoginParams;
+import com.zerobase.foodlier.module.member.member.social.dto.NaverLoginParams;
+import com.zerobase.foodlier.module.member.member.social.dto.SocialLoginResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -87,7 +87,7 @@ public class AuthController {
     }
 
     @PostMapping("/reissue")
-    public ResponseEntity<String> reissue(@RequestHeader(REFRESH_HEADER) final String refreshToken){
+    public ResponseEntity<String> reissue(@RequestHeader(REFRESH_HEADER) final String refreshToken) {
         return ResponseEntity.ok(memberService.reissue(refreshToken.substring(TOKEN_PREFIX.length())));
     }
 
