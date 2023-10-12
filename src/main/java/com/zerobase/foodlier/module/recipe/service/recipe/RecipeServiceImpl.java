@@ -20,6 +20,7 @@ import com.zerobase.foodlier.module.recipe.repository.RecipeRepository;
 import com.zerobase.foodlier.module.recipe.repository.RecipeSearchRepository;
 import com.zerobase.foodlier.module.recipe.type.OrderType;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -33,10 +34,11 @@ import java.util.stream.Collectors;
 import static com.zerobase.foodlier.module.member.member.exception.MemberErrorCode.MEMBER_NOT_FOUND;
 import static com.zerobase.foodlier.module.recipe.exception.recipe.RecipeErrorCode.*;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class RecipeServiceImpl implements RecipeService {
-
+    private static final String DELIMITER = " ";
     private final RecipeRepository recipeRepository;
     private final RecipeSearchRepository recipeSearchRepository;
     private final MemberRepository memberRepository;
@@ -73,13 +75,15 @@ public class RecipeServiceImpl implements RecipeService {
         recipeRepository.save(recipe);
         recipeSearchRepository.save(RecipeDocument.builder()
                 .id(recipe.getId())
+                .memberId(recipe.getMember().getId())
                 .title(recipe.getSummary().getTitle())
                 .writer(recipe.getMember().getNickname())
                 .ingredients(recipe.getRecipeIngredientList().stream()
                         .map(RecipeIngredient::getName)
-                        .collect(Collectors.toList()))
+                        .collect(Collectors.joining(DELIMITER)))
                 .numberOfHeart(recipe.getHeartList().size())
                 .numberOfComment(recipe.getCommentList().size())
+                .createAt(recipe.getCreatedAt())
                 .build());
     }
 
@@ -118,9 +122,70 @@ public class RecipeServiceImpl implements RecipeService {
         recipeDocument.updateTitle(recipe.getSummary().getTitle());
         recipeDocument.updateIngredients(recipe.getRecipeIngredientList().stream()
                 .map(RecipeIngredient::getName)
-                .collect(Collectors.toList()));
+                .collect(Collectors.joining(DELIMITER)));
 
         recipeSearchRepository.save(recipeDocument);
+    }
+
+    private List<RecipeCardDto> searchBy(Page<RecipeDocument> recipeDocumentPage, Long memberId) {
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
+
+        List<RecipeCardDto> recipeListByWriter = new ArrayList<>();
+        for (RecipeDocument recipeDocument : recipeDocumentPage.getContent()) {
+            Recipe recipe = recipeRepository.findById(recipeDocument.getId())
+                    .orElseThrow(() -> new RecipeException(NO_SUCH_RECIPE));
+            recipeListByWriter.add(RecipeCardDto.builder()
+                    .content(recipe.getSummary().getContent())
+                    .title(recipe.getSummary().getTitle())
+                    .mainImageUrl(recipe.getMainImageUrl())
+                    .isHeart(heartRepository.existsByRecipeAndMember(recipe, member))
+                    .heartCount(recipe.getHeartCount())
+                    .build());
+        }
+        return recipeListByWriter;
+    }
+
+    /**
+     * - 작성자: 이종욱
+     * - 검색어와 정렬 타입을 이용하여 조건에 맞는 레시피 목록 반환
+     * - 작성일자: 2023-10-11
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public ListResponse<RecipeCardDto> getRecipeList(RecipeSearchRequest recipeSearchRequest) {
+        Page<RecipeDocument> findingResult;
+
+        switch (recipeSearchRequest.getSearchType()) {
+
+            case TITLE: {
+                findingResult = recipeSearchRepository.findByTitle(recipeSearchRequest.getSearchText(),
+                        recipeSearchRequest.getPageable());
+                break;
+            }
+
+            case WRITER: {
+                findingResult = recipeSearchRepository.findByWriter(recipeSearchRequest.getSearchText(),
+                        recipeSearchRequest.getPageable());
+                break;
+            }
+
+            case INGREDIENTS: {
+                findingResult = recipeSearchRepository.findByIngredients(recipeSearchRequest.getSearchText(),
+                        recipeSearchRequest.getPageable());
+                break;
+            }
+
+            default:
+                throw new RecipeException(SEARCH_TYPE_NOT_FOUND);
+        }
+
+        return ListResponse.<RecipeCardDto>builder()
+                .totalElements(findingResult.getTotalElements())
+                .totalPages(findingResult.getTotalPages())
+                .hasNextPage(findingResult.hasNext())
+                .content(searchBy(findingResult, recipeSearchRequest.getMemberId()))
+                .build();
     }
 
     @Override
@@ -166,23 +231,6 @@ public class RecipeServiceImpl implements RecipeService {
      * - 작성일자: 2023-09-27
      */
 
-    @Override
-    public ListResponse<Recipe> getRecipeByTitle(String recipeTitle, Pageable pageable) {
-        Page<RecipeDocument> byTitle = recipeSearchRepository.findByTitle(recipeTitle, pageable);
-        List<Recipe> recipeList = new ArrayList<>();
-        for (RecipeDocument recipeDocument : byTitle.getContent()) {
-            Recipe recipe = recipeRepository.findById(recipeDocument.getId())
-                    .orElseThrow(() -> new RecipeException(NO_SUCH_RECIPE));
-            recipeList.add(recipe);
-        }
-
-        return ListResponse.<Recipe>builder()
-                .totalElements(byTitle.getTotalElements())
-                .totalPages(byTitle.getTotalPages())
-                .hasNextPage(byTitle.hasNext())
-                .content(recipeList)
-                .build();
-    }
 
     /**
      * 업데이트 시 기존의 이미지 반환
@@ -265,13 +313,13 @@ public class RecipeServiceImpl implements RecipeService {
      * 메인 페이지에서 생성된 순으로 3개를 조회해 옵니다.
      */
     @Override
-    public List<RecipeListDto> getMainPageRecipeList(MemberAuthDto memberAuthDto) {
+    public List<RecipeCardDto> getMainPageRecipeList(MemberAuthDto memberAuthDto) {
         Member member = memberRepository.findById(memberAuthDto.getId())
                 .orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
 
         return recipeRepository.findTop3ByOrderByCreatedAtDesc()
                 .stream()
-                .map(r -> RecipeListDto.builder()
+                .map(r -> RecipeCardDto.builder()
                         .title(r.getSummary().getTitle())
                         .content(r.getSummary().getContent())
                         .heartCount(r.getHeartCount())
@@ -286,7 +334,7 @@ public class RecipeServiceImpl implements RecipeService {
      * 레시피 페이지에서 레시피를 orderTpye에 따라서 조회해 옵니다.
      */
     @Override
-    public ListResponse<RecipeListDto> getRecipePageRecipeList(MemberAuthDto memberAuthDto,
+    public ListResponse<RecipeCardDto> getRecipePageRecipeList(MemberAuthDto memberAuthDto,
                                                                Pageable pageable,
                                                                OrderType orderType) {
         Member member = memberRepository.findById(memberAuthDto.getId())
@@ -316,12 +364,12 @@ public class RecipeServiceImpl implements RecipeService {
                 throw new RecipeException(ORDER_TYPE_NOT_FOUND);
         }
 
-        return ListResponse.<RecipeListDto>builder()
+        return ListResponse.<RecipeCardDto>builder()
                 .totalPages(totalPages)
                 .hasNextPage(hasNext)
                 .content(
                         recipePage.stream()
-                                .map(r -> RecipeListDto.builder()
+                                .map(r -> RecipeCardDto.builder()
                                         .title(r.getSummary().getTitle())
                                         .content(r.getSummary().getContent())
                                         .heartCount(r.getHeartCount())
@@ -337,14 +385,14 @@ public class RecipeServiceImpl implements RecipeService {
      * 오늘 생성된 레시피 중 좋아요 높은 순으로 5개를 조회해 옵니다.
      */
     @Override
-    public List<RecipeListDto> recommendedRecipe(MemberAuthDto memberAuthDto) {
+    public List<RecipeCardDto> recommendedRecipe(MemberAuthDto memberAuthDto) {
         Member member = memberRepository.findById(memberAuthDto.getId())
                 .orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
 
         return recipeRepository.findTop5ByCreatedAtAfterOrderByHeartCountDesc(
                         LocalDate.now().atStartOfDay())
                 .stream()
-                .map(r -> RecipeListDto.builder()
+                .map(r -> RecipeCardDto.builder()
                         .title(r.getSummary().getTitle())
                         .content(r.getSummary().getContent())
                         .heartCount(r.getHeartCount())
