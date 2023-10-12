@@ -15,14 +15,15 @@ import org.springframework.web.client.RestTemplate;
 
 import java.util.Objects;
 
+import static com.zerobase.foodlier.common.security.constants.AuthorizationConstants.TOKEN_HEADER;
+import static com.zerobase.foodlier.common.security.constants.AuthorizationConstants.TOKEN_PREFIX;
+import static com.zerobase.foodlier.module.member.member.constants.OAuthConstants.*;
 import static com.zerobase.foodlier.module.member.member.exception.OAuthErrorCode.FAILED_AUTH;
 import static com.zerobase.foodlier.module.member.member.type.RegistrationType.NAVER;
 
 @Component
 @RequiredArgsConstructor
 public class NaverApiClient implements OAuthApiClient {
-
-    private static final String GRANT_TYPE = "authorization_code";
 
     @Value("${oauth.naver.url.auth}")
     private String authUrl;
@@ -51,9 +52,9 @@ public class NaverApiClient implements OAuthApiClient {
         httpHeaders.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 
         MultiValueMap<String, String> body = params.makeBody();
-        body.add("grant_type", GRANT_TYPE);
-        body.add("client_id", clientId);
-        body.add("client_secret", clientSecret);
+        body.add(BODY_GRANT_TYPE, GRANT_TYPE);
+        body.add(BODY_CLIENT_ID, clientId);
+        body.add(BODY_CLIENT_SECRET, clientSecret);
 
         HttpEntity<?> request = new HttpEntity<>(body, httpHeaders);
 
@@ -72,7 +73,7 @@ public class NaverApiClient implements OAuthApiClient {
 
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-        httpHeaders.set("Authorization", "Bearer " + accessToken);
+        httpHeaders.set(TOKEN_HEADER, TOKEN_PREFIX + " " + accessToken);
 
         MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
 
