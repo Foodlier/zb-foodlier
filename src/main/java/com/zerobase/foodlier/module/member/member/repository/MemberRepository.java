@@ -1,6 +1,7 @@
 package com.zerobase.foodlier.module.member.member.repository;
 
 import com.zerobase.foodlier.module.member.member.domain.model.Member;
+import com.zerobase.foodlier.module.member.member.dto.DefaultProfileDtoResponse;
 import com.zerobase.foodlier.module.member.member.dto.RequestedMemberDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -20,7 +21,7 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
     String baseRequestedMemberQuery =
             "SELECT m.id as memberId, m.profile_url as profileUrl, m.nickname as nickname,\n" +
             "ROUND(st_distance_sphere(point(m.lnt, m.lat), point(:lnt, :lat))/1000, 2) as distance,\n" +
-            "m.lat as lat, m.lnt as lnt, r.id as requestId, r.title as title, r.expected_price as expectedPrice, \n" +
+            "m.lat as lat, m.lnt as lnt, r.id as requestId, r.title as title, r.content as content, r.expected_price as expectedPrice, \n" +
             "rp.main_image_url as mainImageUrl\n" +
             "FROM chef_member cm\n" +
             "JOIN cook_request r ON r.chef_member_id = cm.id AND r.is_paid = false AND r.dm_room_id IS NULL\n" +
@@ -58,5 +59,20 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
             Pageable pageable
     );
 
+    @Query(
+            "SELECT NEW " +
+            "com.zerobase.foodlier.module.member.member.dto.DefaultProfileDtoResponse" +
+            "(m.id, m.nickname, m.profileUrl, COALESCE(SUM(r.heartCount), 0), " +
+            "CASE WHEN cm.id IS NULL THEN false ELSE true END, " +
+            "cm.id) " +
+            "FROM Member m " +
+            "LEFT JOIN ChefMember cm ON cm.member.id = m.id " +
+            "LEFT JOIN Recipe r ON r.member.id = m.id AND r.isPublic = true AND r.isQuotation = false AND r.isDeleted = false " +
+            "WHERE m.id = :memberId " +
+            "GROUP BY m.id, m.nickname, m.profileUrl, cm.id"
+    )
+    DefaultProfileDtoResponse getDefaultProfile(
+            @Param("memberId")Long memberId
+    );
 
 }

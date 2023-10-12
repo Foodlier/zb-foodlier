@@ -1,5 +1,6 @@
 package com.zerobase.foodlier.module.dm.room.service;
 
+import com.zerobase.foodlier.common.response.ListResponse;
 import com.zerobase.foodlier.module.dm.dm.domain.model.Dm;
 import com.zerobase.foodlier.module.dm.dm.repository.DmRepository;
 import com.zerobase.foodlier.module.dm.room.domain.model.DmRoom;
@@ -53,12 +54,11 @@ public class DmRoomServiceImpl implements DmRoomService {
      * 채팅방 목록을 가져옵니다.
      */
     @Override
-    public List<DmRoomDto> getDmRoomList(Long id, int pageIdx, int pageSize) {
+    public ListResponse<DmRoomDto> getDmRoomList(Long id, int pageIdx, int pageSize) {
         Pageable pageable = PageRequest.of(pageIdx, pageSize,
                 Sort.by(SORT_BY_CREATED_AT).descending());
-        List<DmRoomDto> dmRoomDtoList = dmRoomRepository.getDmRoomPage(id, pageable);
-
-        return dmRoomDtoList;
+        return ListResponse.from(
+                dmRoomRepository.getDmRoomPage(id, pageable));
     }
 
     /**
