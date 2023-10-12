@@ -84,6 +84,19 @@ public class RecipeReviewServiceImpl implements RecipeReviewService{
 
     /**
      *  작성자 : 전현서
+     *  작성일 : 2023-10-08
+     *  공개 프로필에서 해당 멤버에게 달린 레시피 후기를 날짜 내림차순으로 보여줌.
+     */
+    public ListResponse<RecipeReviewResponseDto> getRecipeReviewForProfile(Long memberId,
+                                                                   Pageable pageable){
+        Member member = getMember(memberId);
+        return ListResponse.from(
+                recipeReviewRepository.findByMemberOrderByCreatedAtDesc(member, pageable),
+                RecipeReviewResponseDto::from);
+    }
+
+    /**
+     *  작성자 : 전현서
      *  작성일 : 2023-10-04
      *  꿀조합 후기 수정을 위해 상세 정보를 조회합니다 (존재 여부 검토 필요)
      */

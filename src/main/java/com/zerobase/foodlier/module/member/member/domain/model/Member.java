@@ -31,7 +31,6 @@ public class Member extends Audit {
     private String password;
     @Column(unique = true, nullable = false)
     private String phoneNumber;
-    @Column(nullable = false)
     private String profileUrl;
     @Embedded
     private Address address;

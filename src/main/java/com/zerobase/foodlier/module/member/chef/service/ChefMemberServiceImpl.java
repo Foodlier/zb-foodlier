@@ -3,9 +3,7 @@ package com.zerobase.foodlier.module.member.chef.service;
 import com.zerobase.foodlier.common.aop.RedissonLock;
 import com.zerobase.foodlier.common.response.ListResponse;
 import com.zerobase.foodlier.module.member.chef.domain.model.ChefMember;
-import com.zerobase.foodlier.module.member.chef.dto.AroundChefDto;
-import com.zerobase.foodlier.module.member.chef.dto.ChefIntroduceForm;
-import com.zerobase.foodlier.module.member.chef.dto.RequestedChefDto;
+import com.zerobase.foodlier.module.member.chef.dto.*;
 import com.zerobase.foodlier.module.member.chef.exception.ChefMemberException;
 import com.zerobase.foodlier.module.member.chef.repository.ChefMemberRepository;
 import com.zerobase.foodlier.module.member.chef.type.ChefSearchType;
@@ -22,6 +20,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 import static com.zerobase.foodlier.module.member.chef.exception.ChefMemberErrorCode.*;
 
@@ -87,6 +88,25 @@ public class ChefMemberServiceImpl implements ChefMemberService{
                                                                Pageable pageable){
         return ListResponse.from(
                 chefMemberRepository.findRequestedChef(memberId, pageable));
+    }
+
+    @Override
+    public List<TopChefDto> getTopChefList(){
+        return chefMemberRepository.findTop5ByOrderByExpDesc()
+                .stream()
+                .map(TopChefDto::from)
+                .collect(Collectors.toList());
+    }
+
+    /**
+     *  작성자 : 전현서
+     *  작성일 : 2023-10-08
+     *  요리사의 등급 정보를 가져옴.
+     */
+    @Override
+    public ChefProfileDto getChefProfile(Long chefMemberId){
+        return ChefProfileDto.from(chefMemberRepository.findById(chefMemberId)
+                .orElseThrow(() -> new ChefMemberException(CHEF_MEMBER_NOT_FOUND)));
     }
 
     /**

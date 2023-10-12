@@ -4,14 +4,15 @@ import com.zerobase.foodlier.common.response.ListResponse;
 import com.zerobase.foodlier.common.security.provider.JwtTokenProvider;
 import com.zerobase.foodlier.common.security.provider.dto.MemberAuthDto;
 import com.zerobase.foodlier.common.security.provider.dto.TokenDto;
+import com.zerobase.foodlier.module.member.member.dto.DefaultProfileDtoResponse;
+import com.zerobase.foodlier.module.member.member.dto.RequestedMemberDto;
+import com.zerobase.foodlier.module.member.member.dto.SignInForm;
+import com.zerobase.foodlier.module.member.member.profile.dto.MemberPrivateProfileResponse;
 import com.zerobase.foodlier.module.member.member.domain.model.Member;
 import com.zerobase.foodlier.module.member.member.domain.vo.Address;
 import com.zerobase.foodlier.module.member.member.dto.MemberRegisterDto;
 import com.zerobase.foodlier.module.member.member.dto.PasswordFindForm;
-import com.zerobase.foodlier.module.member.member.dto.RequestedMemberDto;
-import com.zerobase.foodlier.module.member.member.dto.SignInForm;
 import com.zerobase.foodlier.module.member.member.exception.MemberException;
-import com.zerobase.foodlier.module.member.member.profile.dto.MemberPrivateProfileResponse;
 import com.zerobase.foodlier.module.member.member.profile.dto.MemberUpdateDto;
 import com.zerobase.foodlier.module.member.member.profile.dto.PasswordChangeForm;
 import com.zerobase.foodlier.module.member.member.repository.MemberRepository;
@@ -24,10 +25,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import javax.transaction.Transactional;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 import static com.zerobase.foodlier.module.member.member.exception.MemberErrorCode.*;
 
@@ -120,6 +118,8 @@ public class MemberServiceImpl implements MemberService {
 
         return MemberPrivateProfileResponse.builder()
                 .nickName(member.getNickname())
+                .point(member.getPoint())
+                .isChef(!Objects.isNull(member.getChefMember()))
                 .email(member.getEmail())
                 .address(member.getAddress())
                 .phoneNumber(member.getPhoneNumber())
@@ -254,6 +254,11 @@ public class MemberServiceImpl implements MemberService {
         tokenProvider.deleteRefreshToken(member.getEmail());
 
         return "회원탈퇴 완료";
+    }
+
+    @Override
+    public DefaultProfileDtoResponse getDefaultProfile(Long memberId){
+        return memberRepository.getDefaultProfile(memberId);
     }
 
     @Override

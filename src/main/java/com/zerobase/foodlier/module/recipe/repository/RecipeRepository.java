@@ -15,8 +15,17 @@ import java.util.Optional;
 
 public interface RecipeRepository extends JpaRepository<Recipe, Long> {
 
+    Page<Recipe> findByMemberAndIsPublicTrueAndIsQuotationFalse(Member member, Pageable pageable);
     int countByMember(Member member);
     Optional<Recipe> findByIdAndMemberAndIsQuotationTrue(Long recipeId, Member member);
+
+    @Query(
+            "SELECT r FROM Recipe r JOIN Heart h ON h.recipe = r AND h.member.id = :memberId"
+    )
+    Page<Recipe> findByHeart(
+            @Param("memberId")Long memberId,
+            Pageable pageable
+    );
 
     @Query(
             "SELECT " +
