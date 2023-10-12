@@ -210,6 +210,11 @@ public class RecipeServiceImpl implements RecipeService {
                 .build();
     }
 
+    /**
+     *  작성자 : 전현서
+     *  작성일 : 2023-10-06
+     *  좋아요를 누른 레시피 목록을 반환함.
+     */
     @Override
     public ListResponse<RecipeDtoTopResponse> getRecipeForHeart(Long memberId,
                                                         Pageable pageable){
