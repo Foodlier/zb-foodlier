@@ -551,6 +551,7 @@ class MemberServiceImplTest {
                 () -> assertEquals(memberTwo.getLnt(), responseList.getContent().get(0).getLnt()),
                 () -> assertEquals(memberTwo.getRequestId(), responseList.getContent().get(0).getRequestId()),
                 () -> assertEquals(memberTwo.getTitle(), responseList.getContent().get(0).getTitle()),
+                () -> assertEquals(memberTwo.getContent(), responseList.getContent().get(0).getContent()),
                 () -> assertEquals(memberTwo.getMainImageUrl(), responseList.getContent().get(0).getMainImageUrl()),
 
                 () -> assertEquals(memberOne.getMemberId(), responseList.getContent().get(1).getMemberId()),
@@ -561,6 +562,7 @@ class MemberServiceImplTest {
                 () -> assertEquals(memberOne.getLnt(), responseList.getContent().get(1).getLnt()),
                 () -> assertEquals(memberOne.getRequestId(), responseList.getContent().get(1).getRequestId()),
                 () -> assertEquals(memberOne.getTitle(), responseList.getContent().get(1).getTitle()),
+                () -> assertEquals(memberOne.getContent(), responseList.getContent().get(1).getContent()),
                 () -> assertEquals(memberOne.getMainImageUrl(), responseList.getContent().get(1).getMainImageUrl())
         );
     }
@@ -714,6 +716,11 @@ class MemberServiceImplTest {
             }
 
             @Override
+            public String getContent() {
+                return "야호";
+            }
+
+            @Override
             public String getMainImageUrl() {
                 return "https://s3.test.com/main1.png";
             }
@@ -765,6 +772,11 @@ class MemberServiceImplTest {
             @Override
             public String getTitle() {
                 return "살려주세요?";
+            }
+
+            @Override
+            public String getContent() {
+                return "야호";
             }
 
             @Override
