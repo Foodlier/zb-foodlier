@@ -1,4 +1,4 @@
-package com.zerobase.foodlier.common.socialLogin.dto;
+package com.zerobase.foodlier.module.member.member.social.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;

@@ -1,4 +1,4 @@
-package com.zerobase.foodlier.common.socialLogin.dto;
+package com.zerobase.foodlier.module.member.member.social.dto;
 
 import com.zerobase.foodlier.module.member.member.type.RegistrationType;
 import org.springframework.util.MultiValueMap;

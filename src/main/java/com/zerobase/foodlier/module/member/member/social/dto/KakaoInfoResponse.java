@@ -1,38 +1,44 @@
-package com.zerobase.foodlier.common.socialLogin.dto;
+package com.zerobase.foodlier.module.member.member.social.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.zerobase.foodlier.module.member.member.type.RegistrationType;
 import lombok.Getter;
 
-import static com.zerobase.foodlier.module.member.member.type.RegistrationType.NAVER;
+import static com.zerobase.foodlier.module.member.member.type.RegistrationType.*;
 
 @Getter
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class NaverInfoResponse implements OAuthInfoResponse {
+public class KakaoInfoResponse implements OAuthInfoResponse {
 
-    @JsonProperty("response")
-    private Response response;
+    @JsonProperty("kakao_account")
+    private KakaoAccount kakaoAccount;
 
     @Getter
     @JsonIgnoreProperties(ignoreUnknown = true)
-    static class Response {
+    static class KakaoAccount {
+        private KakaoProfile profile;
         private String email;
+    }
+
+    @Getter
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    static class KakaoProfile {
         private String nickname;
     }
 
     @Override
     public String getEmail() {
-        return response.email;
+        return kakaoAccount.email;
     }
 
     @Override
     public String getNickname() {
-        return response.nickname;
+        return kakaoAccount.profile.nickname;
     }
 
     @Override
     public RegistrationType getRegistrationType() {
-        return NAVER;
+        return KAKAO;
     }
 }

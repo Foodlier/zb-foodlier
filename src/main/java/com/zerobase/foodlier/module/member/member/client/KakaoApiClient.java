@@ -1,9 +1,12 @@
-package com.zerobase.foodlier.common.socialLogin.client;
+package com.zerobase.foodlier.module.member.member.client;
 
-import com.zerobase.foodlier.common.socialLogin.dto.KakaoInfoResponse;
-import com.zerobase.foodlier.common.socialLogin.dto.KakaoTokens;
-import com.zerobase.foodlier.common.socialLogin.dto.OAuthInfoResponse;
-import com.zerobase.foodlier.common.socialLogin.dto.OAuthLoginParams;
+import com.zerobase.foodlier.module.member.member.exception.MemberException;
+import com.zerobase.foodlier.module.member.member.exception.OAuthErrorCode;
+import com.zerobase.foodlier.module.member.member.exception.OAuthException;
+import com.zerobase.foodlier.module.member.member.social.dto.KakaoInfoResponse;
+import com.zerobase.foodlier.module.member.member.social.dto.KakaoTokens;
+import com.zerobase.foodlier.module.member.member.social.dto.OAuthInfoResponse;
+import com.zerobase.foodlier.module.member.member.social.dto.OAuthLoginParams;
 import com.zerobase.foodlier.module.member.member.type.RegistrationType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -17,6 +20,7 @@ import org.springframework.web.client.RestTemplate;
 
 import java.util.Objects;
 
+import static com.zerobase.foodlier.module.member.member.exception.OAuthErrorCode.*;
 import static com.zerobase.foodlier.module.member.member.type.RegistrationType.KAKAO;
 
 @Component
@@ -53,9 +57,14 @@ public class KakaoApiClient implements OAuthApiClient {
         body.add("client_id", clientId);
 
         HttpEntity<?> request = new HttpEntity<>(body, httpHeaders);
-        KakaoTokens response = restTemplate.postForObject(url, request, KakaoTokens.class);
 
-        return Objects.requireNonNull(response).getAccessToken();
+        try {
+            KakaoTokens response = restTemplate
+                    .postForObject(url, request, KakaoTokens.class);
+            return Objects.requireNonNull(response).getAccessToken();
+        } catch (Exception e) {
+            throw new OAuthException(FAILED_AUTH);
+        }
     }
 
     @Override

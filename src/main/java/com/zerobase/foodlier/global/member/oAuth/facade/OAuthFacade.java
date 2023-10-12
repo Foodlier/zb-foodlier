@@ -1,26 +1,23 @@
-package com.zerobase.foodlier.common.socialLogin.facade;
+package com.zerobase.foodlier.global.member.oAuth.facade;
 
 import com.zerobase.foodlier.common.security.provider.JwtTokenProvider;
 import com.zerobase.foodlier.common.security.provider.dto.MemberAuthDto;
 import com.zerobase.foodlier.common.security.provider.dto.TokenDto;
-import com.zerobase.foodlier.common.socialLogin.dto.OAuthInfoResponse;
-import com.zerobase.foodlier.common.socialLogin.dto.OAuthLoginParams;
-import com.zerobase.foodlier.common.socialLogin.dto.SocialLoginResponse;
-import com.zerobase.foodlier.common.socialLogin.service.RequestOAuthInfoService;
 import com.zerobase.foodlier.module.member.member.domain.model.Member;
 import com.zerobase.foodlier.module.member.member.service.MemberService;
+import com.zerobase.foodlier.module.member.member.service.OAuthInfoService;
+import com.zerobase.foodlier.module.member.member.social.dto.OAuthInfoResponse;
+import com.zerobase.foodlier.module.member.member.social.dto.OAuthLoginParams;
+import com.zerobase.foodlier.module.member.member.social.dto.SocialLoginResponse;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
 
-import static com.zerobase.foodlier.module.member.member.type.RegistrationType.DOMAIN;
-
 @Component
 @RequiredArgsConstructor
 public class OAuthFacade {
-    private final RequestOAuthInfoService requestOAuthInfoService;
+    private final OAuthInfoService oAuthInfoService;
     private final MemberService memberService;
     private final JwtTokenProvider tokenProvider;
 
@@ -31,7 +28,7 @@ public class OAuthFacade {
      * 이미 자체 사이트 가입이 된 경우라면 가입타입과 email을 반환합니다.
      */
     public SocialLoginResponse login(OAuthLoginParams params) {
-        OAuthInfoResponse oAuthInfoResponse = requestOAuthInfoService.request(params);
+        OAuthInfoResponse oAuthInfoResponse = oAuthInfoService.request(params);
         Member member = memberService.findOrCreateMember(oAuthInfoResponse);
 
         if (params.registrationType() != member.getRegistrationType()) {

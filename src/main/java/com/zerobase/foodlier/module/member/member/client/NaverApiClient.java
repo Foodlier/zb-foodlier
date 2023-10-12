@@ -1,9 +1,7 @@
-package com.zerobase.foodlier.common.socialLogin.client;
+package com.zerobase.foodlier.module.member.member.client;
 
-import com.zerobase.foodlier.common.socialLogin.dto.NaverInfoResponse;
-import com.zerobase.foodlier.common.socialLogin.dto.NaverTokens;
-import com.zerobase.foodlier.common.socialLogin.dto.OAuthInfoResponse;
-import com.zerobase.foodlier.common.socialLogin.dto.OAuthLoginParams;
+import com.zerobase.foodlier.module.member.member.exception.OAuthException;
+import com.zerobase.foodlier.module.member.member.social.dto.*;
 import com.zerobase.foodlier.module.member.member.type.RegistrationType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -17,6 +15,7 @@ import org.springframework.web.client.RestTemplate;
 
 import java.util.Objects;
 
+import static com.zerobase.foodlier.module.member.member.exception.OAuthErrorCode.FAILED_AUTH;
 import static com.zerobase.foodlier.module.member.member.type.RegistrationType.NAVER;
 
 @Component
@@ -58,9 +57,13 @@ public class NaverApiClient implements OAuthApiClient {
 
         HttpEntity<?> request = new HttpEntity<>(body, httpHeaders);
 
-        NaverTokens response = restTemplate.postForObject(url, request, NaverTokens.class);
-
-        return Objects.requireNonNull(response).getAccessToken();
+        try {
+            NaverTokens response = restTemplate
+                    .postForObject(url, request, NaverTokens.class);
+            return Objects.requireNonNull(response).getAccessToken();
+        } catch (Exception e) {
+            throw new OAuthException(FAILED_AUTH);
+        }
     }
 
     @Override

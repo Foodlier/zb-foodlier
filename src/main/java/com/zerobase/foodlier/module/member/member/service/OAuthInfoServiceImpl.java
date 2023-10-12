@@ -1,8 +1,8 @@
-package com.zerobase.foodlier.common.socialLogin.service;
+package com.zerobase.foodlier.module.member.member.service;
 
-import com.zerobase.foodlier.common.socialLogin.client.OAuthApiClient;
-import com.zerobase.foodlier.common.socialLogin.dto.OAuthInfoResponse;
-import com.zerobase.foodlier.common.socialLogin.dto.OAuthLoginParams;
+import com.zerobase.foodlier.module.member.member.client.OAuthApiClient;
+import com.zerobase.foodlier.module.member.member.social.dto.OAuthInfoResponse;
+import com.zerobase.foodlier.module.member.member.social.dto.OAuthLoginParams;
 import com.zerobase.foodlier.module.member.member.type.RegistrationType;
 import org.springframework.stereotype.Service;
 
@@ -12,10 +12,10 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Service
-public class RequestOAuthInfoService {
+public class OAuthInfoServiceImpl implements OAuthInfoService {
     private final Map<RegistrationType, OAuthApiClient> clients;
 
-    public RequestOAuthInfoService(List<OAuthApiClient> clients) {
+    public OAuthInfoServiceImpl(List<OAuthApiClient> clients) {
         this.clients = clients.stream().collect(
                 Collectors.toUnmodifiableMap(OAuthApiClient::registrationType, Function.identity())
         );
