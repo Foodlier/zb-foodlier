@@ -78,7 +78,6 @@ public class SecurityConfig {
                         "/**/auth/verification/**",
                         "/**/auth/signin",
                         "/**/auth/oauth2/**",
-                        "/**/auth/kakao/callback",
                         "/**/success/**",
                         "/**/fail/**",
                         "/pub/**",
