@@ -613,6 +613,7 @@ class MemberServiceImplTest {
                 () -> assertEquals(memberOne.getLnt(), responseList.getContent().get(0).getLnt()),
                 () -> assertEquals(memberOne.getRequestId(), responseList.getContent().get(0).getRequestId()),
                 () -> assertEquals(memberOne.getTitle(), responseList.getContent().get(0).getTitle()),
+                () -> assertEquals(memberTwo.getContent(), responseList.getContent().get(0).getContent()),
                 () -> assertEquals(memberOne.getMainImageUrl(), responseList.getContent().get(0).getMainImageUrl()),
 
                 () -> assertEquals(memberTwo.getMemberId(), responseList.getContent().get(1).getMemberId()),
@@ -623,6 +624,7 @@ class MemberServiceImplTest {
                 () -> assertEquals(memberTwo.getLnt(), responseList.getContent().get(1).getLnt()),
                 () -> assertEquals(memberTwo.getRequestId(), responseList.getContent().get(1).getRequestId()),
                 () -> assertEquals(memberTwo.getTitle(), responseList.getContent().get(1).getTitle()),
+                () -> assertEquals(memberOne.getContent(), responseList.getContent().get(1).getContent()),
                 () -> assertEquals(memberTwo.getMainImageUrl(), responseList.getContent().get(1).getMainImageUrl())
         );
     }
