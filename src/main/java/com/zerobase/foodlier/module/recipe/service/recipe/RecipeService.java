@@ -7,6 +7,7 @@ import com.zerobase.foodlier.module.recipe.domain.model.Recipe;
 import com.zerobase.foodlier.module.recipe.dto.recipe.ImageUrlDto;
 import com.zerobase.foodlier.module.recipe.dto.recipe.RecipeDtoRequest;
 import com.zerobase.foodlier.module.recipe.dto.recipe.RecipeDtoResponse;
+import com.zerobase.foodlier.module.recipe.dto.recipe.RecipeDtoTopResponse;
 import com.zerobase.foodlier.module.recipe.dto.recipe.RecipeListDto;
 import com.zerobase.foodlier.module.recipe.type.OrderType;
 import org.springframework.data.domain.Pageable;
@@ -20,13 +21,18 @@ public interface RecipeService {
 
     Recipe getRecipe(Long id);
 
-    RecipeDtoResponse getRecipeDetail(Long id);
+    RecipeDtoResponse getRecipeDetail(MemberAuthDto memberAuthDto, Long id);
 
     void deleteRecipe(Long id);
 
     ListResponse<Recipe> getRecipeByTitle(String recipeTitle, Pageable pageable);
 
     ImageUrlDto getBeforeImageUrl(Long id);
+    ListResponse<RecipeDtoTopResponse> getRecipeForHeart(Long memberId,
+                                                         Pageable pageable);
+    ListResponse<RecipeDtoTopResponse> getRecipeListByMemberId(Long memberId,
+                                                       Long targetMemberId,
+                                                       Pageable pageable);
 
     void plusReviewStar(Long recipeId, int star);
 

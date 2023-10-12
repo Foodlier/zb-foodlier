@@ -10,6 +10,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 public class RecipeListDto {
+    private Long id;
+    private String nickName;
     private String title;
     private String mainImageUrl;
     private String content;

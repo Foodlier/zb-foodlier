@@ -2,7 +2,6 @@ package com.zerobase.foodlier.global.member.regiser.facade;
 
 import com.zerobase.foodlier.common.redis.service.EmailVerificationService;
 import com.zerobase.foodlier.common.s3.service.S3Service;
-import com.zerobase.foodlier.module.member.member.constants.ProfileUrlConstants;
 import com.zerobase.foodlier.module.member.member.dto.MemberInputDto;
 import com.zerobase.foodlier.module.member.member.dto.MemberRegisterDto;
 import com.zerobase.foodlier.module.member.member.local.dto.CoordinateResponseDto;
@@ -13,11 +12,14 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import javax.transaction.Transactional;
+import java.util.Objects;
 
 @Component
 @Transactional
 @RequiredArgsConstructor
 public class MemberRegisterFacade {
+
+    private static final String NOT_PROFILE_IMAGE = null;
 
     private final EmailVerificationService emailVerificationService;
     private final MemberService memberService;
@@ -38,9 +40,9 @@ public class MemberRegisterFacade {
         CoordinateResponseDto coordinateResponseDto = localService.getCoordinate(
                 memberInputDto.getRoadAddress()
         );
-        String profileUrl = memberInputDto.getProfileImage() != null ?
+        String profileUrl = !Objects.isNull(memberInputDto.getProfileImage()) ?
                 s3Service.getImageUrl(memberInputDto.getProfileImage()) :
-                ProfileUrlConstants.PROFILE_DEFAULT_URL;
+                NOT_PROFILE_IMAGE;
 
         memberService.register(
                 MemberRegisterDto.from(

@@ -25,4 +25,6 @@ public interface RecipeReviewRepository extends JpaRepository<RecipeReview, Long
                                     @Param("memberId")Long memberId,
                                     Pageable pageable);
 
+    Page<RecipeReview> findByMemberOrderByCreatedAtDesc(Member member, Pageable pageable);
+
 }
