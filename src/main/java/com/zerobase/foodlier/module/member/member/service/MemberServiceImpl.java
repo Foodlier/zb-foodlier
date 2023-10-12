@@ -3,13 +3,14 @@ package com.zerobase.foodlier.module.member.member.service;
 import com.zerobase.foodlier.common.security.provider.JwtTokenProvider;
 import com.zerobase.foodlier.common.security.provider.dto.MemberAuthDto;
 import com.zerobase.foodlier.common.security.provider.dto.TokenDto;
-import com.zerobase.foodlier.module.member.member.dto.RequestedMemberDto;
-import com.zerobase.foodlier.module.member.member.dto.SignInForm;
-import com.zerobase.foodlier.module.member.member.profile.dto.MemberPrivateProfileResponse;
+import com.zerobase.foodlier.common.socialLogin.dto.OAuthInfoResponse;
 import com.zerobase.foodlier.module.member.member.domain.model.Member;
 import com.zerobase.foodlier.module.member.member.domain.vo.Address;
 import com.zerobase.foodlier.module.member.member.dto.MemberRegisterDto;
+import com.zerobase.foodlier.module.member.member.dto.RequestedMemberDto;
+import com.zerobase.foodlier.module.member.member.dto.SignInForm;
 import com.zerobase.foodlier.module.member.member.exception.MemberException;
+import com.zerobase.foodlier.module.member.member.profile.dto.MemberPrivateProfileResponse;
 import com.zerobase.foodlier.module.member.member.profile.dto.MemberUpdateDto;
 import com.zerobase.foodlier.module.member.member.profile.dto.PasswordChangeForm;
 import com.zerobase.foodlier.module.member.member.repository.MemberRepository;
@@ -24,6 +25,7 @@ import org.springframework.util.StringUtils;
 import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import static com.zerobase.foodlier.module.member.member.exception.MemberErrorCode.*;
 
@@ -189,7 +191,7 @@ public class MemberServiceImpl implements MemberService {
                 .filter(m -> passwordEncoder
                         .matches(form.getCurrentPassword(), m.getPassword()))
                 .findFirst()
-                .orElseThrow(()->new MemberException(MEMBER_NOT_FOUND));
+                .orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
 
         member.setPassword(passwordEncoder.encode(form.getNewPassword()));
 
@@ -202,6 +204,28 @@ public class MemberServiceImpl implements MemberService {
     public Member findByEmail(String email) {
         return memberRepository.findByEmail(email)
                 .orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
+    }
+
+    public Member findOrCreateMember(OAuthInfoResponse oAuthInfoResponse) {
+        return memberRepository.findByEmail(oAuthInfoResponse.getEmail())
+                .orElseGet(() -> registerSocialMember(oAuthInfoResponse));
+    }
+
+    private Member registerSocialMember(OAuthInfoResponse oAuthInfoResponse) {
+        return memberRepository.save(
+                Member.builder()
+                        .nickname("소셜회원"+ UUID.randomUUID().toString()
+                                .replace("-", ""))
+                        .email(oAuthInfoResponse.getEmail())
+                        .password(passwordEncoder.encode(UUID.randomUUID().toString()
+                                .replace("-", "")))
+                        .registrationType(oAuthInfoResponse.getRegistrationType())
+                        .address(Address.builder().build())
+                        .phoneNumber("01000000000")
+                        .roles(new ArrayList<>(
+                                List.of(RoleType.ROLE_USER.name())
+                        ))
+                        .build());
     }
 
     //======================= Validates =========================
