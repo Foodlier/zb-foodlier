@@ -23,20 +23,27 @@ const DarkBackground = styled.div`
   align-items: center;
   justify-content: center;
   background: ${palette.dim};
+  z-index: 11;
 `
 const DialogBlock = styled.div`
-  width: 32rem;
+  width: 52rem;
+  height: 32rem;
   padding: 1.5rem;
   background: ${palette.white};
   border-radius: 0.2rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 
   h3 {
     margin: 0;
-    font-size: 1.5rem;
+    font-size: 1.8rem;
   }
 
   p {
-    font-size: 1.125rem;
+    margin: 3rem 0 2rem;
+    font-size: 1.425rem;
   }
 `
 
@@ -55,9 +62,14 @@ const Dialog: React.FC<DialogProps> = ({
   onCancel,
   visible,
 }) => {
+  const handleBackgroundClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (e.target === e.currentTarget) {
+      onCancel()
+    }
+  }
   if (!visible) return null
   return (
-    <DarkBackground>
+    <DarkBackground onClick={handleBackgroundClick}>
       <DialogBlock>
         <h3>{title}</h3>
         <p>{children}</p>
