@@ -1,14 +1,17 @@
 package com.zerobase.foodlier.module.member.member.service;
 
+import com.zerobase.foodlier.common.response.ListResponse;
 import com.zerobase.foodlier.common.security.provider.JwtTokenProvider;
 import com.zerobase.foodlier.common.security.provider.dto.MemberAuthDto;
 import com.zerobase.foodlier.common.security.provider.dto.TokenDto;
+import com.zerobase.foodlier.module.member.member.dto.DefaultProfileDtoResponse;
 import com.zerobase.foodlier.module.member.member.dto.RequestedMemberDto;
 import com.zerobase.foodlier.module.member.member.dto.SignInForm;
 import com.zerobase.foodlier.module.member.member.profile.dto.MemberPrivateProfileResponse;
 import com.zerobase.foodlier.module.member.member.domain.model.Member;
 import com.zerobase.foodlier.module.member.member.domain.vo.Address;
 import com.zerobase.foodlier.module.member.member.dto.MemberRegisterDto;
+import com.zerobase.foodlier.module.member.member.dto.PasswordFindForm;
 import com.zerobase.foodlier.module.member.member.exception.MemberException;
 import com.zerobase.foodlier.module.member.member.profile.dto.MemberUpdateDto;
 import com.zerobase.foodlier.module.member.member.profile.dto.PasswordChangeForm;
@@ -22,8 +25,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import javax.transaction.Transactional;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 import static com.zerobase.foodlier.module.member.member.exception.MemberErrorCode.*;
 
@@ -36,6 +38,10 @@ public class MemberServiceImpl implements MemberService {
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider tokenProvider;
+
+    private static final String DEL_PREFIX = "DEL";
+    private static final String RANDOM_CODE =
+            UUID.randomUUID().toString().replace("-", "");
 
     @Override
     public void register(MemberRegisterDto memberRegisterDto) {
@@ -93,6 +99,14 @@ public class MemberServiceImpl implements MemberService {
         tokenProvider.deleteRefreshToken(email);
     }
 
+    @Override
+    public String reissue(String refreshToken) {
+        String email = tokenProvider.getEmail(refreshToken);
+        Member member = memberRepository.findByEmail(email)
+                .orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
+        return tokenProvider.reissue(refreshToken, member.getRoles(), new Date());
+    }
+
     /**
      * 작성자 : 이승현
      * 작성일 : 2023-09-24
@@ -104,6 +118,8 @@ public class MemberServiceImpl implements MemberService {
 
         return MemberPrivateProfileResponse.builder()
                 .nickName(member.getNickname())
+                .point(member.getPoint())
+                .isChef(!Objects.isNull(member.getChefMember()))
                 .email(member.getEmail())
                 .address(member.getAddress())
                 .phoneNumber(member.getPhoneNumber())
@@ -150,9 +166,9 @@ public class MemberServiceImpl implements MemberService {
      * 값이 없으면 기본적으로 가까운 거리순으로 반환함.
      */
     @Override
-    public List<RequestedMemberDto> getRequestedMemberList(Long memberId,
-                                                           RequestedOrderingType type,
-                                                           Pageable pageable) {
+    public ListResponse<RequestedMemberDto> getRequestedMemberList(Long memberId,
+                                                                   RequestedOrderingType type,
+                                                                   Pageable pageable) {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
 
@@ -160,20 +176,22 @@ public class MemberServiceImpl implements MemberService {
 
         switch (type) {
             case PRICE:
-                return memberRepository.getRequestedMemberListOrderByPrice(
+                return ListResponse.from(
+                        memberRepository.getRequestedMemberListOrderByPrice(
                         member.getChefMember().getId(), member.getAddress().getLat(),
                         member.getAddress().getLnt(),
                         pageable
-                ).getContent();
+                ));
             case DISTANCE:
-                return memberRepository.getRequestedMemberListOrderByDistance(
+                return ListResponse.from(
+                        memberRepository.getRequestedMemberListOrderByDistance(
                         member.getChefMember().getId(), member.getAddress().getLat(),
                         member.getAddress().getLnt(),
                         pageable
-                ).getContent();
+                ));
 
         }
-        return new ArrayList<>();
+        return new ListResponse<>();
     }
 
     /**
@@ -189,13 +207,58 @@ public class MemberServiceImpl implements MemberService {
                 .filter(m -> passwordEncoder
                         .matches(form.getCurrentPassword(), m.getPassword()))
                 .findFirst()
-                .orElseThrow(()->new MemberException(MEMBER_NOT_FOUND));
+                .orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
 
         member.setPassword(passwordEncoder.encode(form.getNewPassword()));
+        memberRepository.save(member);
 
         tokenProvider.deleteRefreshToken(member.getEmail());
 
         return "비밀번호 변경 완료";
+    }
+
+    @Override
+    public String updateRandomPassword(PasswordFindForm form, String newPassword) {
+        Member member = memberRepository.findByEmail(form.getEmail()).stream()
+                .filter(m -> m.getPhoneNumber().equals(form.getPhoneNumber()))
+                .findFirst()
+                .orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
+
+        member.setPassword(passwordEncoder.encode(newPassword));
+        memberRepository.save(member);
+
+        return "비밀번호 재설정 완료.";
+    }
+
+    /**
+     * 작성자 : 이승현
+     * 작성일 : 2023-10-10
+     * 회원 탈퇴 시 닉네임, 이메일, 핸드폰 번호를 랜덤값으로 변경합니다.
+     * 멤버의 delete 상태를 true로 변경합니다.
+     * refresh 토큰이 존재한다면 토큰을 제거합니다.
+     */
+    @Override
+    public String withdraw(MemberAuthDto memberAuthDto) {
+        Member member = memberRepository.findById(memberAuthDto.getId())
+                .orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
+
+        String delNickName = DEL_PREFIX + RANDOM_CODE;
+        String delEmail = DEL_PREFIX + RANDOM_CODE;
+        String delPhoneNumber = DEL_PREFIX + RANDOM_CODE;
+        member.setNickname(delNickName);
+        member.setEmail(delEmail);
+        member.setPhoneNumber(delPhoneNumber);
+        member.setDeleted(true);
+        memberRepository.save(member);
+
+        tokenProvider.deleteRefreshToken(member.getEmail());
+
+        return "회원탈퇴 완료";
+    }
+
+    @Override
+    public DefaultProfileDtoResponse getDefaultProfile(Long memberId){
+        return memberRepository.getDefaultProfile(memberId);
     }
 
     @Override

@@ -1,39 +1,11 @@
 import { useNavigate } from 'react-router-dom'
-import axios from 'axios'
-import { useState, useEffect } from 'react'
 import kakao from '../../../public/images/auths/btn_kakao.png'
 import logo from '../../../public/images/foodlier_logo.png'
 import naver from '../../../public/images/auths/btn_naver.png'
 import * as S from '../../styles/auth/LoginPage.styled'
 
-interface ResType {
-  id: string
-  name: string
-  country: string
-  language: string
-}
-
 const Login = () => {
-  const [, setPeopleData] = useState<ResType[]>([])
   const navigate = useNavigate()
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const res = await axios({
-          method: 'get',
-          url: '/',
-        })
-        console.log(res.data)
-        if (res.status === 200) {
-          setPeopleData(res.data)
-        }
-      } catch (error) {
-        console.log(error)
-      }
-    }
-    fetchData()
-  }, [])
 
   return (
     <S.Container>

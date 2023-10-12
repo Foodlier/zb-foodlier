@@ -1,13 +1,14 @@
 package com.zerobase.foodlier.module.comment.comment.service;
 
+import com.zerobase.foodlier.common.response.ListResponse;
 import com.zerobase.foodlier.module.comment.comment.domain.model.Comment;
 import com.zerobase.foodlier.module.comment.comment.dto.CommentDto;
-import com.zerobase.foodlier.module.comment.comment.dto.CommentPagingDto;
+import com.zerobase.foodlier.module.comment.comment.dto.MyPageCommentDto;
 import com.zerobase.foodlier.module.comment.comment.exception.CommentException;
 import com.zerobase.foodlier.module.comment.comment.repository.CommentRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -55,16 +56,14 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     @Transactional(readOnly = true)
-    public CommentPagingDto getCommentList(Long recipeId, PageRequest pageRequest) {
+    public ListResponse<CommentDto> getCommentList(Long recipeId, PageRequest pageRequest) {
+        return ListResponse.from(
+                commentRepository.findCommentList(recipeId, pageRequest));
+    }
 
-        Page<CommentDto> commentDtoList = commentRepository.findCommentList(recipeId, pageRequest);
-
-        return CommentPagingDto.builder()
-                .hasNextPage(commentDtoList.hasNext())
-                .totalElements(commentDtoList.getTotalElements())
-                .totalPages(commentDtoList.getTotalPages())
-                .commentDtoList(commentDtoList.getContent())
-                .build();
+    public ListResponse<MyPageCommentDto> getMyCommentList(Long memberId, Pageable pageable){
+        return ListResponse.from(
+                commentRepository.findMyCommentList(memberId, pageable));
     }
 
 }
