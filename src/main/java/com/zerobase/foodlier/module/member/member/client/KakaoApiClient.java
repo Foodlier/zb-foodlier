@@ -1,7 +1,5 @@
 package com.zerobase.foodlier.module.member.member.client;
 
-import com.zerobase.foodlier.module.member.member.exception.MemberException;
-import com.zerobase.foodlier.module.member.member.exception.OAuthErrorCode;
 import com.zerobase.foodlier.module.member.member.exception.OAuthException;
 import com.zerobase.foodlier.module.member.member.social.dto.KakaoInfoResponse;
 import com.zerobase.foodlier.module.member.member.social.dto.KakaoTokens;
@@ -20,7 +18,7 @@ import org.springframework.web.client.RestTemplate;
 
 import java.util.Objects;
 
-import static com.zerobase.foodlier.module.member.member.exception.OAuthErrorCode.*;
+import static com.zerobase.foodlier.module.member.member.exception.OAuthErrorCode.FAILED_AUTH;
 import static com.zerobase.foodlier.module.member.member.type.RegistrationType.KAKAO;
 
 @Component

@@ -1,7 +1,10 @@
 package com.zerobase.foodlier.module.member.member.client;
 
 import com.zerobase.foodlier.module.member.member.exception.OAuthException;
-import com.zerobase.foodlier.module.member.member.social.dto.*;
+import com.zerobase.foodlier.module.member.member.social.dto.NaverInfoResponse;
+import com.zerobase.foodlier.module.member.member.social.dto.NaverTokens;
+import com.zerobase.foodlier.module.member.member.social.dto.OAuthInfoResponse;
+import com.zerobase.foodlier.module.member.member.social.dto.OAuthLoginParams;
 import com.zerobase.foodlier.module.member.member.type.RegistrationType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
