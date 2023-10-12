@@ -15,7 +15,7 @@ public class RecipeDtoTopResponse {
     private String title;
     private String content;
     private int heartCount;
-    private boolean isHeart;
+    private Boolean isHeart;
 
     public static RecipeDtoTopResponse from(Recipe recipe, boolean isHeart){
         return RecipeDtoTopResponse
