@@ -448,7 +448,7 @@ public class RecipeServiceImpl implements RecipeService {
         Member member = memberRepository.findById(memberAuthDto.getId())
                 .orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
 
-        return recipeRepository.findTop5ByIsPublicCreatedAtAfterOrderByHeartCountDesc(
+        return recipeRepository.findByIsPublicAndCreatedAtAfterOrderByHeartCountDesc(
                         false, LocalDate.now().atStartOfDay())
                 .stream()
                 .map(r -> RecipeCardDto.builder()
