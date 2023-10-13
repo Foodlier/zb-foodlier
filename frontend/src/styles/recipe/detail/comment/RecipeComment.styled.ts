@@ -146,7 +146,7 @@ export const CommentEditInput = styled.textarea`
   height: 10rem;
   max-height: auto;
   flex: 1 1 auto;
-  padding: 0 2rem;
+  padding: 1rem 2rem;
   border-radius: 1rem;
   margin: 0 0 1rem;
   border: 0.1rem solid ${palette.divider};

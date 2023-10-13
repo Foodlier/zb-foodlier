@@ -3,23 +3,32 @@ import * as S from '../../../../styles/recipe/detail/comment/RecipeComment.style
 import axiosInstance from '../../../../utils/fetchCall'
 import CommonButton from '../../../ui/Button'
 import Dialog from '../../../ui/Dialog'
-import { CommentItem } from '../../../../constants/Interfacs'
 
-function RecipeComment({ recipeId }: { recipeId: number }) {
+interface CommentItem {
+  id: number
+  message: string
+  isDeleted: boolean
+  nickname: string
+  createdAt: string
+  profileUrl: string
+}
+
+const RecipeComment = recipeId => {
   const [commentValue, setCommentValue] = useState('')
   const [commentList, setCommentList] = useState<CommentItem[]>([])
-  const [pageIdx, setPageIdx] = useState(1)
+  const [pageIdx, setPageIdx] = useState(0)
   const pageSize = useRef(5)
   const endOfList = useRef(false)
-  const [isEditing, setIsEditing] = useState(false)
   const [editValue, setEditValue] = useState('')
-  const [commentId, setCommentId] = useState('')
+  const [commentId, setCommentId] = useState(0)
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
+  const [isEditing, setIsEditing] = useState(false)
 
   const handleClick = (event: React.ChangeEvent<HTMLInputElement>) => {
     setCommentValue(event.currentTarget.value)
   }
 
+  // post
   const onSubmit = async (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault()
 
@@ -29,33 +38,43 @@ function RecipeComment({ recipeId }: { recipeId: number }) {
     }
 
     try {
-      const res = await axiosInstance.post('/comment/10', body)
+      const res = await axiosInstance.post(`/comment/10`, body)
       if (res.status === 200) {
         console.log('작성한다', res.config.data)
         setCommentValue('')
         setPageIdx(1)
       }
     } catch (error) {
-      console.error('Error adding a new comment:', error)
+      console.error('새 댓글 등록 중 오류 발생:', error)
     }
   }
 
+  // get
   const getComment = useCallback(async () => {
     const res = await axiosInstance.get(
       `/comment/10/${pageIdx}/${pageSize.current}`
     )
+    console.log('뭘 받아오지?', res)
     if (res.status === 200) {
-      const comment = res.data.commentDtoList
+      const comment = res.data.content
+      res.data.content.forEach((comment: CommentItem) => {
+        // commentId는 comment.id
+        const commentId = comment.id
+        console.log('댓글 ID:', commentId)
+        setCommentId(commentId)
+      })
 
+      // message 값만 나오게 parse
       const messages = comment.map((commentItem: CommentItem) => {
         const parsedComment = JSON.parse(commentItem.message)
         return parsedComment || commentItem
       })
 
-      if (messages.length === 0) {
+      if (messages.length === -1) {
         endOfList.current = true
-      } else if (pageIdx === 1) {
+      } else if (pageIdx === 0) {
         setCommentList(messages)
+        // console.log('메세지는?', messages)
       } else {
         setCommentList(prevCommentList => [...prevCommentList, ...messages])
       }
@@ -72,72 +91,53 @@ function RecipeComment({ recipeId }: { recipeId: number }) {
     }
   }
 
-  // 댓글을 수정하는 동작을 시작
-  const handleEditComment = (commentId: string, message: string) => {
+  // 수정 버튼 누르면
+  const handleEditComment = (commentId: number) => {
+    console.log('댓글 ID:', commentId)
     setIsEditing(true)
-    setEditValue(message)
     setCommentId(commentId)
   }
 
-  // 실제로 서버에 업데이트하는 역할
-  const handleConfirmEdit = async (commentId: string) => {
+  // 수정 -> 확인 버튼 누르면
+  const handleConfirmEdit = async () => {
     try {
       const body = {
         message: editValue,
       }
       const res = await axiosInstance.put(`/comment/10/${commentId}`, body)
       if (res.status === 200) {
-        const updatedComments = commentList.map(comment =>
-          String(comment.commentId) === commentId
-            ? { ...comment, message: editValue }
-            : comment
-        )
         console.log('업데이트 하였습니다.')
-        setCommentList(updatedComments)
-        setIsEditing(false)
-        setEditValue('')
-        setCommentId('')
       }
     } catch (error) {
-      console.error('Error editing the comment:', error)
+      console.error('업데이트 실패', error)
     }
   }
 
+  // 댓글 수정 취소
   const handleCancelEdit = () => {
     setIsEditing(false)
     setEditValue('')
-    setCommentId('')
   }
 
-  // 댓글 삭제를 확인하기 위해 모달 대화 상자를 열 때 호출
-  const handleConfirmDelete = async () => {
+  // 삭제 버튼 누르면
+  const handleDeleteComment = () => {
+    setIsDeleteModalOpen(true)
+    console.log('삭제버튼 누름')
+  }
+
+  // 댓글을 삭제하시겠습니까? 확인 버튼
+  const handleConfirmDelete = async (index: number, commentId: number) => {
     const res = await axiosInstance.delete(`/comment/10/${commentId}`)
     try {
       if (res.status === 200) {
         console.log('댓글을 삭제하였습니다.')
-        const updatedComments = commentList.filter(
-          comment => String(comment.commentId) !== commentId
-        )
-        setCommentList(updatedComments)
       }
     } catch (error) {
-      console.error('Error deleting the comment:', '삭제가안됨')
+      console.error('삭제 안되서 에러남', error)
     } finally {
-      // 모달 닫기
       setIsDeleteModalOpen(false)
     }
   }
-
-  // 실제 삭제 동작을 담당
-  const handleDeleteComment = (commentId: string) => {
-    if (commentId) {
-      setIsDeleteModalOpen(true)
-      setCommentId(commentId)
-    } else {
-      console.error('Invalid commentId')
-    }
-  }
-
   return (
     <S.CommentContainer>
       <S.CommentTit>댓글</S.CommentTit>
@@ -152,7 +152,7 @@ function RecipeComment({ recipeId }: { recipeId: number }) {
       </S.CommentForm>
       <S.CommentList>
         {commentList.map((commentItem, index) => (
-          <div key={commentItem.commentId || index}>
+          <div key={commentItem.id || index}>
             <S.CommentItemWrapper>
               <S.CommentHeader>
                 <S.CommentUserInfo>
@@ -165,54 +165,44 @@ function RecipeComment({ recipeId }: { recipeId: number }) {
                 <S.CommentDate>{commentItem.createdAt}</S.CommentDate>
               </S.CommentHeader>
 
-              {isEditing && String(commentItem.commentId) === commentId ? (
-                // 수정 모드일 때
-                <div>
-                  <input
-                    type="text"
+              {isEditing ? (
+                <S.CommentEdit>
+                  <S.CommentEditInput
                     value={editValue}
                     onChange={e => setEditValue(e.target.value)}
                   />
-                  <CommonButton
-                    size="small"
-                    color="divider"
-                    onClick={() =>
-                      handleConfirmEdit(String(commentItem.commentId))
-                    }
-                  >
-                    확인
-                  </CommonButton>
-                  <CommonButton
-                    size="small"
-                    color="divider"
-                    onClick={handleCancelEdit}
-                  >
-                    취소
-                  </CommonButton>
-                </div>
+                  <S.CommentButtonWrap>
+                    <CommonButton
+                      size="small"
+                      color="divider"
+                      onClick={() => handleConfirmEdit()}
+                    >
+                      확인
+                    </CommonButton>
+                    <CommonButton
+                      size="small"
+                      color="divider"
+                      onClick={handleCancelEdit}
+                    >
+                      취소
+                    </CommonButton>
+                  </S.CommentButtonWrap>
+                </S.CommentEdit>
               ) : (
-                // 수정 모드가 아닐 때
                 <>
                   <S.CommentContent>{commentItem.message}</S.CommentContent>
                   <S.CommentButtonWrap>
                     <CommonButton
                       size="small"
                       color="divider"
-                      onClick={() =>
-                        handleEditComment(
-                          String(commentItem.commentId),
-                          commentItem.message
-                        )
-                      }
+                      onClick={() => handleEditComment(commentItem.id)}
                     >
                       수정
                     </CommonButton>
                     <CommonButton
                       size="small"
                       color="divider"
-                      onClick={() =>
-                        handleDeleteComment(String(commentItem.commentId))
-                      }
+                      onClick={() => handleDeleteComment()}
                     >
                       삭제
                     </CommonButton>

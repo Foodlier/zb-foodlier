@@ -26,12 +26,9 @@ export interface RecipeIngredientDtoList {
 }
 
 export interface CommentItem {
-  // message: string
-  // createdAt: string
-  // isDeleted: boolean
-  // nickname: string
-  // profileUrl: string
-  commentId: number
+  id: number
+  commentId: string
+  modifiedAt: string
   profileUrl: string
   createdAt: string
   message: string
