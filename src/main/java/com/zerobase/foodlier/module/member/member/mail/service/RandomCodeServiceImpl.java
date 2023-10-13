@@ -17,7 +17,7 @@ public class RandomCodeServiceImpl implements RandomCodeService {
     /**
      *  작성자 : 전현서
      *  작성일 : 2023-10-13
-     *  정수 6자리로 된,
+     *  정수 6자리로 된, 랜덤 코드를 발급함.
      */
     @Override
     public String createIntegerRandomCode(){
