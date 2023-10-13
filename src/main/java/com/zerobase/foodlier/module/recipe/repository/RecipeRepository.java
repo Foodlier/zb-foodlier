@@ -88,13 +88,17 @@ public interface RecipeRepository extends JpaRepository<Recipe, Long> {
             @Param("quotation") Recipe quotation
     );
 
-    List<Recipe> findTop3ByOrderByCreatedAtDesc();
+    List<Recipe> findTop3ByIsPublicOrderByCreatedAtDesc(Boolean isPublic);
 
-    Page<Recipe> findByOrderByCreatedAtDesc(Pageable pageable);
+    Page<Recipe> findByIsPublicOrderByCreatedAtDesc(Boolean isPublic,
+                                                    Pageable pageable);
 
-    Page<Recipe> findByOrderByHeartCountDesc(Pageable pageable);
+    Page<Recipe> findByIsPublicOrderByHeartCountDesc(Boolean isPublic,
+                                                     Pageable pageable);
 
-    Page<Recipe> findByOrderByCommentCountDesc(Pageable pageable);
+    Page<Recipe> findByIsPublicOrderByCommentCountDesc(Boolean isPublic,
+                                                       Pageable pageable);
 
-    List<Recipe> findTop5ByCreatedAtAfterOrderByHeartCountDesc(LocalDateTime createdAt);
+    List<Recipe> findTop5ByIsPublicCreatedAtAfterOrderByHeartCountDesc(
+            Boolean isPublic, LocalDateTime createdAt);
 }
