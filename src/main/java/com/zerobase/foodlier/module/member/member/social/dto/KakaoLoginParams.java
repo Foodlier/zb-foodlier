@@ -1,6 +1,7 @@
 package com.zerobase.foodlier.module.member.member.social.dto;
 
 import com.zerobase.foodlier.module.member.member.type.RegistrationType;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.util.LinkedMultiValueMap;
@@ -11,6 +12,7 @@ import static com.zerobase.foodlier.module.member.member.type.RegistrationType.K
 
 @Getter
 @NoArgsConstructor
+@AllArgsConstructor
 public class KakaoLoginParams implements OAuthLoginParams {
     private String authorizationCode;
 

@@ -14,7 +14,9 @@ import com.zerobase.foodlier.module.member.member.profile.dto.MemberPrivateProfi
 import com.zerobase.foodlier.module.member.member.profile.dto.MemberUpdateDto;
 import com.zerobase.foodlier.module.member.member.profile.dto.PasswordChangeForm;
 import com.zerobase.foodlier.module.member.member.repository.MemberRepository;
-import com.zerobase.foodlier.module.member.member.type.RegistrationType;
+import com.zerobase.foodlier.module.member.member.social.dto.KakaoInfoResponse;
+import com.zerobase.foodlier.module.member.member.social.dto.NaverInfoResponse;
+import com.zerobase.foodlier.module.member.member.social.dto.OAuthInfoResponse;
 import com.zerobase.foodlier.module.member.member.type.RequestedOrderingType;
 import com.zerobase.foodlier.module.member.member.type.RoleType;
 import io.jsonwebtoken.MalformedJwtException;
@@ -37,6 +39,7 @@ import java.util.*;
 import static com.zerobase.foodlier.common.security.exception.JwtErrorCode.MALFORMED_JWT_REQUEST;
 import static com.zerobase.foodlier.common.security.exception.JwtErrorCode.REFRESH_TOKEN_NOT_FOUND;
 import static com.zerobase.foodlier.module.member.member.exception.MemberErrorCode.*;
+import static com.zerobase.foodlier.module.member.member.type.RegistrationType.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
@@ -90,7 +93,7 @@ class MemberServiceImplTest {
                 .addressDetail("상세 주소")
                 .lat(37.1)
                 .lnt(128.1)
-                .registrationType(RegistrationType.DOMAIN)
+                .registrationType(DOMAIN)
                 .build());
 
         //then
@@ -208,7 +211,7 @@ class MemberServiceImplTest {
                                         .lnt(128.1)
                                         .build()
                         )
-                        .registrationType(RegistrationType.DOMAIN)
+                        .registrationType(DOMAIN)
                         .roles(List.of(RoleType.ROLE_USER.name()))
                         .build()));
         given(tokenProvider.createToken(any(), any()))
@@ -272,7 +275,7 @@ class MemberServiceImplTest {
                                         .lnt(128.1)
                                         .build()
                         )
-                        .registrationType(RegistrationType.DOMAIN)
+                        .registrationType(DOMAIN)
                         .roles(List.of(RoleType.ROLE_USER.name()))
                         .build()));
 
@@ -323,7 +326,7 @@ class MemberServiceImplTest {
                                         .lnt(128.1)
                                         .build()
                         )
-                        .registrationType(RegistrationType.DOMAIN)
+                        .registrationType(DOMAIN)
                         .roles(List.of(RoleType.ROLE_USER.name()))
                         .build()));
 
@@ -376,7 +379,7 @@ class MemberServiceImplTest {
                                 .lnt(128.1)
                                 .build()
                 )
-                .registrationType(RegistrationType.DOMAIN)
+                .registrationType(DOMAIN)
                 .roles(List.of(RoleType.ROLE_USER.name()))
                 .build();
 
@@ -451,7 +454,7 @@ class MemberServiceImplTest {
                                         .lnt(128.1)
                                         .build()
                         )
-                        .registrationType(RegistrationType.DOMAIN)
+                        .registrationType(DOMAIN)
                         .roles(List.of(RoleType.ROLE_USER.name()))
                         .build()));
 
@@ -493,7 +496,7 @@ class MemberServiceImplTest {
                                         .lnt(128.1)
                                         .build()
                         )
-                        .registrationType(RegistrationType.DOMAIN)
+                        .registrationType(DOMAIN)
                         .roles(List.of(RoleType.ROLE_USER.name()))
                         .build()));
 
@@ -944,7 +947,7 @@ class MemberServiceImplTest {
 
     @Test
     @DisplayName("접속 토큰 재발급 성공")
-    void success_reissue(){
+    void success_reissue() {
 
         // given
 
@@ -967,13 +970,13 @@ class MemberServiceImplTest {
         // then
         verify(tokenProvider, times(1)).getEmail(anyString());
         verify(memberRepository, times(1)).findByEmail(anyString());
-        verify(tokenProvider, times(1)).reissue(anyString(),any(), any());
+        verify(tokenProvider, times(1)).reissue(anyString(), any(), any());
         assertEquals(reissuedAccessToken, expectedAccessToken);
     }
 
     @Test
     @DisplayName("접속 토큰 재발급 실패 - 올바르지 않은 토큰인 경우")
-    void fail_reissue_invalid_token(){
+    void fail_reissue_invalid_token() {
 
         // given
 
@@ -992,7 +995,7 @@ class MemberServiceImplTest {
 
     @Test
     @DisplayName("접속 토큰 재발급 실패 - 존재하지 않는 회원인 경우")
-    void fail_reissue_no_such_member(){
+    void fail_reissue_no_such_member() {
 
         // given
 
@@ -1014,7 +1017,7 @@ class MemberServiceImplTest {
 
     @Test
     @DisplayName("접속 토큰 재발급 실패 - 재발급 토큰이 redis 저장소에 존재하지 않는 경우")
-    void fail_reissue_refresh_token_not_found(){
+    void fail_reissue_refresh_token_not_found() {
 
         // given
 
@@ -1039,14 +1042,14 @@ class MemberServiceImplTest {
         // then
         verify(tokenProvider, times(1)).getEmail(anyString());
         verify(memberRepository, times(1)).findByEmail(anyString());
-        verify(tokenProvider, times(1)).reissue(anyString(),any(), any());
+        verify(tokenProvider, times(1)).reissue(anyString(), any(), any());
         assertEquals(jwtException.getErrorCode(), REFRESH_TOKEN_NOT_FOUND);
         assertEquals(jwtException.getDescription(), REFRESH_TOKEN_NOT_FOUND.getDescription());
     }
 
     @Test
     @DisplayName("기본 공개 프로필 가져오기 성공")
-    void success_getDefaultProfile(){
+    void success_getDefaultProfile() {
 
         //given
         DefaultProfileDtoResponse defaultProfileDtoResponse =
@@ -1077,6 +1080,140 @@ class MemberServiceImplTest {
 
     }
 
+    @Test
+    @DisplayName("카카오 소셜회원 정보찾기 성공")
+    void success_kakao_find_member() {
 
+        //given
+        Member expectedMember = Member.builder()
+                .nickname("nickname")
+                .email("email")
+                .registrationType(KAKAO)
+                .build();
+        String nickname = "nickname";
+        String email = "email";
+        KakaoInfoResponse.KakaoProfile kakaoProfile =
+                new KakaoInfoResponse.KakaoProfile(nickname);
+        KakaoInfoResponse.KakaoAccount kakaoAccount =
+                new KakaoInfoResponse.KakaoAccount(kakaoProfile, email);
+        OAuthInfoResponse oAuthInfoResponse = new KakaoInfoResponse(kakaoAccount);
+
+        given(memberRepository.findByEmail(oAuthInfoResponse.getEmail()))
+                .willReturn(Optional.ofNullable(expectedMember));
+
+        //when
+        Member member = memberService.findOrCreateMember(oAuthInfoResponse);
+
+        //then
+        assertAll(
+                () -> assertEquals(expectedMember.getNickname(), member.getNickname()),
+                () -> assertEquals(expectedMember.getEmail(), member.getEmail()),
+                () -> assertEquals(expectedMember.getRegistrationType(),
+                        member.getRegistrationType())
+        );
+    }
+
+    @Test
+    @DisplayName("네이버 소셜회원 정보찾기 성공")
+    void success_naver_find_member() {
+
+        //given
+        Member expectedMember = Member.builder()
+                .nickname("nickname")
+                .email("email")
+                .registrationType(NAVER)
+                .build();
+        String nickname = "nickname";
+        String email = "email";
+        NaverInfoResponse.Response response =
+                new NaverInfoResponse.Response(email, nickname);
+        OAuthInfoResponse oAuthInfoResponse = new NaverInfoResponse(response);
+
+        given(memberRepository.findByEmail(oAuthInfoResponse.getEmail()))
+                .willReturn(Optional.ofNullable(expectedMember));
+
+        //when
+        Member member = memberService.findOrCreateMember(oAuthInfoResponse);
+
+        //then
+        assertAll(
+                () -> assertEquals(expectedMember.getNickname(), member.getNickname()),
+                () -> assertEquals(expectedMember.getEmail(), member.getEmail()),
+                () -> assertEquals(expectedMember.getRegistrationType(),
+                        member.getRegistrationType())
+        );
+    }
+
+    @Test
+    @DisplayName("카카오 회원 생성 성공")
+    void success_kakao_create_member() {
+
+        //given
+        Member expectedMember = Member.builder()
+                .email("email")
+                .registrationType(KAKAO)
+                .build();
+        String nickname = "nickname";
+        String email = "email";
+        KakaoInfoResponse.KakaoProfile kakaoProfile =
+                new KakaoInfoResponse.KakaoProfile(nickname);
+        KakaoInfoResponse.KakaoAccount kakaoAccount =
+                new KakaoInfoResponse.KakaoAccount(kakaoProfile, email);
+        OAuthInfoResponse oAuthInfoResponse = new KakaoInfoResponse(kakaoAccount);
+
+
+        given(memberRepository.findByEmail(oAuthInfoResponse.getEmail()))
+                .willReturn(Optional.empty());
+
+        //when
+        memberService.findOrCreateMember(oAuthInfoResponse);
+
+        //then
+        ArgumentCaptor<Member> captor = ArgumentCaptor.forClass(Member.class);
+        verify(memberRepository, times(1)).save(captor.capture());
+        Member member = captor.getValue();
+
+        assertAll(
+                () -> assertEquals(expectedMember.getEmail(), member.getEmail()),
+                () -> assertEquals(expectedMember.getRegistrationType(),
+                        member.getRegistrationType())
+        );
+
+    }
+
+    @Test
+    @DisplayName("네이버 회원 생성 성공")
+    void success_naver_create_member() {
+
+        //given
+        Member expectedMember = Member.builder()
+                .email("email")
+                .registrationType(NAVER)
+                .build();
+        String nickname = "nickname";
+        String email = "email";
+        NaverInfoResponse.Response response =
+                new NaverInfoResponse.Response(email, nickname);
+        OAuthInfoResponse oAuthInfoResponse = new NaverInfoResponse(response);
+
+
+        given(memberRepository.findByEmail(oAuthInfoResponse.getEmail()))
+                .willReturn(Optional.empty());
+
+        //when
+        memberService.findOrCreateMember(oAuthInfoResponse);
+
+        //then
+        ArgumentCaptor<Member> captor = ArgumentCaptor.forClass(Member.class);
+        verify(memberRepository, times(1)).save(captor.capture());
+        Member member = captor.getValue();
+
+        assertAll(
+                () -> assertEquals(expectedMember.getEmail(), member.getEmail()),
+                () -> assertEquals(expectedMember.getRegistrationType(),
+                        member.getRegistrationType())
+        );
+
+    }
 
 }
