@@ -84,6 +84,33 @@ export const Message = styled.div<{ $isMe: boolean }>`
   }
 `
 
+export const Suggestion = styled.div<{ $isMe: boolean }>`
+  max-width: 25rem;
+  border: 2px solid ${palette.yellow};
+  background-color: ${palette.white};
+  padding: 1rem;
+  border-radius: 10px;
+  font-size: 1.2rem;
+  box-sizing: content-box;
+  box-shadow: 0px 2px 6px 2px rgba(89, 97, 104, 0.1);
+  ${breakpoints.large} {
+    max-width: 40rem;
+    font-size: 1.4rem;
+  }
+`
+
+export const SuggestionTitle = styled.p`
+  font-weight: bold;
+`
+
+export const SuggestionButton = styled.button<{ $isAccept: boolean }>`
+  width: 50%;
+  border-radius: 5px;
+  background-color: ${props =>
+    props.$isAccept ? palette.main : palette.divider};
+  color: ${props => (props.$isAccept ? palette.white : palette.textPrimary)};
+`
+
 export const MessageTime = styled.span`
   font-size: 1rem;
   margin: 0 0.5rem;
@@ -150,6 +177,7 @@ export const Button = styled.button`
 
 export const Wrap = styled.div`
   display: flex;
+  align-items: center;
 `
 
 export const FlexAlignCenter = styled.div`
