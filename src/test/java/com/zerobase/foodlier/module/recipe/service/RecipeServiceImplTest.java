@@ -1382,6 +1382,118 @@ class RecipeServiceImplTest {
         assertEquals(MEMBER_NOT_FOUND, memberException.getErrorCode());
     }
 
+    @Test
+    @DisplayName("좋아요 누른 레시피 목록 가져오기 성공")
+    void success_getRecipeForHeart(){
+        //given
+        Recipe recipe = Recipe.builder()
+                .id(1L)
+                .mainImageUrl("http://s3.test.com/main.png")
+                .summary(
+                        Summary.builder()
+                                .title("제육볶음")
+                                .content("맛있는 제육볶음")
+                                .build()
+                )
+                .heartCount(100)
+                .build();
+
+        given(recipeRepository.findByHeart(anyLong(), any()))
+                .willReturn(new PageImpl<>(List.of(recipe)));
+
+        //when
+        ListResponse<RecipeDtoTopResponse> recipeList = recipeService
+                .getRecipeForHeart(1L, PageRequest.of(0, 10));
+
+        //then
+        assertAll(
+                () -> assertEquals(recipe.getId(), recipeList.getContent().get(0).getRecipeId()),
+                () -> assertEquals(recipe.getMainImageUrl(), recipeList.getContent().get(0).getMainImageUrl()),
+                () -> assertEquals(recipe.getSummary().getTitle(), recipeList.getContent().get(0).getTitle()),
+                () -> assertEquals(recipe.getSummary().getContent(), recipeList.getContent().get(0).getContent()),
+                () -> assertEquals(recipe.getHeartCount(), recipeList.getContent().get(0).getHeartCount()),
+                () -> assertTrue(recipeList.getContent().get(0).getIsHeart())
+        );
+    }
+
+    @Test
+    @DisplayName("해당 회원이 작성한 꿀조합 목록 반환 성공")
+    void success_getRecipeListByMemberId(){
+        //given
+        Recipe recipe = Recipe.builder()
+                .id(1L)
+                .mainImageUrl("http://s3.test.com/main.png")
+                .summary(
+                        Summary.builder()
+                                .title("제육볶음")
+                                .content("맛있는 제육볶음")
+                                .build()
+                )
+                .heartCount(100)
+                .build();
+
+        given(memberRepository.findById(1L))
+                .willReturn(Optional.of(Member.builder().id(1L).build()));
+
+        given(memberRepository.findById(2L))
+                .willReturn(Optional.of(Member.builder().id(2L).build()));
+
+        given(recipeRepository.findByMemberAndIsPublicTrueAndIsQuotationFalse(any(), any()))
+                .willReturn(new PageImpl<>(List.of(recipe)));
+
+        given(heartRepository.existsByRecipeAndMember(any(), any()))
+                .willReturn(true);
+
+        //when
+        ListResponse<RecipeDtoTopResponse> recipeList = recipeService
+                .getRecipeListByMemberId(1L, 2L, PageRequest.of(0, 10));
+
+        //then
+        assertAll(
+                () -> assertEquals(recipe.getId(), recipeList.getContent().get(0).getRecipeId()),
+                () -> assertEquals(recipe.getMainImageUrl(), recipeList.getContent().get(0).getMainImageUrl()),
+                () -> assertEquals(recipe.getSummary().getTitle(), recipeList.getContent().get(0).getTitle()),
+                () -> assertEquals(recipe.getSummary().getContent(), recipeList.getContent().get(0).getContent()),
+                () -> assertEquals(recipe.getHeartCount(), recipeList.getContent().get(0).getHeartCount()),
+                () -> assertTrue(recipeList.getContent().get(0).getIsHeart())
+        );
+    }
+
+    @Test
+    @DisplayName("해당 회원이 작성한 꿀조합 목록 반환 실패 - member를 찾을 수 없음")
+    void fail_getRecipeListByMemberId_member_not_found(){
+        //given
+        given(memberRepository.findById(1L))
+                .willReturn(Optional.empty());
+
+        //when
+        MemberException exception = assertThrows(MemberException.class,
+                () -> recipeService.getRecipeListByMemberId(1L,
+                        2L, PageRequest.of(0, 10)));
+
+        //then
+        assertEquals(MEMBER_NOT_FOUND, exception.getErrorCode());
+    }
+
+    @Test
+    @DisplayName("해당 회원이 작성한 꿀조합 목록 반환 실패 - target member를 찾을 수 없음")
+    void fail_getRecipeListByMemberId_target_member_not_found(){
+        //given
+        given(memberRepository.findById(1L))
+                .willReturn(Optional.of(Member.builder().id(1L).build()));
+
+        given(memberRepository.findById(2L))
+                .willReturn(Optional.empty());
+
+        //when
+        MemberException exception = assertThrows(MemberException.class,
+                () -> recipeService.getRecipeListByMemberId(1L,
+                        2L, PageRequest.of(0, 10)));
+
+        //then
+        assertEquals(MEMBER_NOT_FOUND, exception.getErrorCode());
+    }
+
     // ===============테스트 객체 정의 메소드 ===================
 
     private static Member getMember() {

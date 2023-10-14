@@ -3,6 +3,7 @@ package com.zerobase.foodlier.module.comment.comment.service;
 import com.zerobase.foodlier.common.response.ListResponse;
 import com.zerobase.foodlier.module.comment.comment.domain.model.Comment;
 import com.zerobase.foodlier.module.comment.comment.dto.CommentDto;
+import com.zerobase.foodlier.module.comment.comment.dto.MyPageCommentDto;
 import com.zerobase.foodlier.module.comment.comment.exception.CommentErrorCode;
 import com.zerobase.foodlier.module.comment.comment.exception.CommentException;
 import com.zerobase.foodlier.module.comment.comment.repository.CommentRepository;
@@ -220,6 +221,43 @@ class CommentServiceTest {
         assertEquals(commentPagingDto.getContent(), expectedPagingDto.getContent());
         assertEquals(commentPagingDto.getTotalPages(), expectedPagingDto.getTotalPages());
         assertEquals(commentPagingDto.isHasNextPage(), expectedPagingDto.isHasNextPage());
+    }
+
+    @Test
+    @DisplayName("내 댓글 조회하기 성공")
+    void success_getMyCommentList(){
+        //given
+        MyPageCommentDto myPageCommentDto = new MyPageCommentDto() {
+            @Override
+            public Long getRecipeId() {
+                return 1L;
+            }
+
+            @Override
+            public String getMessage() {
+                return "이건 최고의 꿀조합이 분명합니다!";
+            }
+
+            @Override
+            public LocalDateTime getCreatedAt() {
+                return LocalDateTime.of(2023, 10, 1,
+                        9, 0, 0);
+            }
+        };
+        given(commentRepository.findMyCommentList(anyLong(), any()))
+                .willReturn(new PageImpl<>(List.of(myPageCommentDto)));
+
+        //when
+        ListResponse<MyPageCommentDto> response = commentService
+                .getMyCommentList(1L, PageRequest.of(0, 10));
+
+        //then
+        assertAll(
+                () -> assertEquals(myPageCommentDto.getRecipeId(), response.getContent().get(0).getRecipeId()),
+                () -> assertEquals(myPageCommentDto.getMessage(), response.getContent().get(0).getMessage()),
+                () -> assertEquals(myPageCommentDto.getCreatedAt(), response.getContent().get(0).getCreatedAt())
+        );
+
     }
 
     private static Comment getExpectedComment() {

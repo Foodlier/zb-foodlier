@@ -27,6 +27,7 @@ import org.springframework.data.domain.PageRequest;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
 import static com.zerobase.foodlier.module.member.member.exception.MemberErrorCode.MEMBER_NOT_FOUND;
@@ -201,7 +202,9 @@ class RecipeReviewServiceImplTest {
             //given
             Member member = getMember();
             RecipeReview recipeReview = getRecipeReview();
+            Recipe recipe = getRecipe();
             recipeReview.setMember(member);
+            recipeReview.setRecipe(recipe);
             given(memberRepository.findById(anyLong()))
                     .willReturn(Optional.of(member));
             given(recipeRepository.findById(anyLong()))
@@ -216,6 +219,7 @@ class RecipeReviewServiceImplTest {
 
             //then
             assertAll(
+                    () -> assertEquals(recipe.getId(), response.getRecipeId()),
                     () -> assertEquals(recipeReview.getId(), response.getRecipeReviewId()),
                     () -> assertEquals(member.getNickname(), response.getNickname()),
                     () -> assertEquals(member.getProfileUrl(), response.getProfileUrl()),
@@ -287,7 +291,9 @@ class RecipeReviewServiceImplTest {
             //given
             Member member = getMember();
             RecipeReview recipeReview = getRecipeReview();
+            Recipe recipe = getRecipe();
             recipeReview.setMember(member);
+            recipeReview.setRecipe(recipe);
             given(recipeReviewRepository.findByRecipe(anyLong(), anyLong(), any()))
                     .willReturn(
                             new PageImpl<>(
@@ -307,6 +313,7 @@ class RecipeReviewServiceImplTest {
 
             //then
             assertAll(
+                    () -> assertEquals(recipe.getId(), responseList.getContent().get(0).getRecipeId()),
                     () -> assertEquals(recipeReview.getId(), responseList.getContent().get(0).getRecipeReviewId()),
                     () -> assertEquals(member.getNickname(), responseList.getContent().get(0).getNickname()),
                     () -> assertEquals(member.getProfileUrl(), responseList.getContent().get(0).getProfileUrl()),
@@ -329,7 +336,9 @@ class RecipeReviewServiceImplTest {
             //given
             Member member = getMember();
             RecipeReview recipeReview = getRecipeReview();
+            Recipe recipe = getRecipe();
             recipeReview.setMember(member);
+            recipeReview.setRecipe(recipe);
             given(recipeReviewRepository.findById(anyLong()))
                     .willReturn(Optional.of(recipeReview));
 
@@ -340,6 +349,7 @@ class RecipeReviewServiceImplTest {
 
             //then
             assertAll(
+                    () -> assertEquals(recipe.getId(), response.getRecipeId()),
                     () -> assertEquals(recipeReview.getId(), response.getRecipeReviewId()),
                     () -> assertEquals(member.getNickname(), response.getNickname()),
                     () -> assertEquals(member.getProfileUrl(), response.getProfileUrl()),
@@ -492,7 +502,7 @@ class RecipeReviewServiceImplTest {
         }
 
         @Test
-        @DisplayName("꿀조합 후기 삭세 실패 - 꿀조합 후기 X")
+        @DisplayName("꿀조합 후기 삭제 실패 - 꿀조합 후기 X")
         void fail_deleteRecipeReview_recipe_review_not_found(){
             //given
             given(memberRepository.findById(anyLong()))
@@ -507,6 +517,69 @@ class RecipeReviewServiceImplTest {
             assertEquals(RECIPE_REVIEW_NOT_FOUND, exception.getErrorCode());
         }
 
+    }
+
+    @Test
+    @DisplayName("공개 프로필 꿀조합 후기 조회 성공")
+    void success_getRecipeReviewForProfile(){
+        //given
+        Member member = Member.builder()
+                .id(1L)
+                .nickname("nickname")
+                .profileUrl("http://s3.test.com/member.png")
+                .build();
+
+        RecipeReview recipeReview = RecipeReview.builder()
+                .id(1L)
+                .recipe(Recipe.builder().id(1L).build())
+                .member(member)
+                .content("content")
+                .star(5)
+                .cookUrl("http://s3.test.com/cook.png")
+                .createdAt(LocalDateTime.now())
+                .build();
+
+        given(memberRepository.findById(anyLong()))
+                .willReturn(Optional.of(Member.builder().build()));
+
+        given(recipeReviewRepository.findByMemberOrderByCreatedAtDesc(any(), any()))
+                .willReturn(new PageImpl<>(List.of(recipeReview)));
+
+        //when
+        ListResponse<RecipeReviewResponseDto> response = recipeReviewService
+                .getRecipeReviewForProfile(1L,
+                PageRequest.of(0, 10));
+
+        //then
+        assertAll(
+                () -> assertEquals(1L, response.getContent().get(0).getRecipeId()),
+                () -> assertEquals(recipeReview.getId(), response.getContent().get(0).getRecipeReviewId()),
+                () -> assertEquals(member.getNickname(), response.getContent().get(0).getNickname()),
+                () -> assertEquals(member.getProfileUrl(), response.getContent().get(0).getProfileUrl()),
+                () -> assertEquals(recipeReview.getContent(), response.getContent().get(0).getContent()),
+                () -> assertEquals(recipeReview.getStar(), response.getContent().get(0).getStar()),
+                () -> assertEquals(recipeReview.getCookUrl(), response.getContent().get(0).getCookUrl()),
+                () -> assertEquals(recipeReview.getCreatedAt(), response.getContent().get(0).getCreatedAt())
+        );
+
+    }
+
+    @Test
+    @DisplayName("공개 프로필 꿀조합 후기 조회 실패 - 회원 X")
+    void fail_getRecipeReviewForProfile(){
+
+        //given
+        given(memberRepository.findById(anyLong()))
+                .willReturn(Optional.empty());
+
+        //when
+        MemberException exception = assertThrows(MemberException.class,
+                () -> recipeReviewService
+                        .getRecipeReviewForProfile(1L,
+                                PageRequest.of(0, 10)));
+
+        //then
+        assertEquals(MEMBER_NOT_FOUND, exception.getErrorCode());
     }
 
 }
