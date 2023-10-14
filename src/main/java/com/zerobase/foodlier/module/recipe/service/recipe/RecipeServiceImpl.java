@@ -263,7 +263,7 @@ public class RecipeServiceImpl implements RecipeService {
     public ListResponse<RecipeDtoTopResponse> getRecipeForHeart(Long memberId,
                                                                 Pageable pageable) {
         return ListResponse.from(
-                recipeRepository.findByHeart(memberId, pageable),
+                recipeRepository.findHeart(memberId, pageable),
                 recipe -> RecipeDtoTopResponse.from(recipe, true));
 
     }

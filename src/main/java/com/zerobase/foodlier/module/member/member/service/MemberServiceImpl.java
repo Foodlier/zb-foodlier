@@ -4,15 +4,11 @@ import com.zerobase.foodlier.common.response.ListResponse;
 import com.zerobase.foodlier.common.security.provider.JwtTokenProvider;
 import com.zerobase.foodlier.common.security.provider.dto.MemberAuthDto;
 import com.zerobase.foodlier.common.security.provider.dto.TokenDto;
-import com.zerobase.foodlier.module.member.member.dto.DefaultProfileDtoResponse;
-import com.zerobase.foodlier.module.member.member.dto.RequestedMemberDto;
-import com.zerobase.foodlier.module.member.member.dto.SignInForm;
-import com.zerobase.foodlier.module.member.member.profile.dto.MemberPrivateProfileResponse;
 import com.zerobase.foodlier.module.member.member.domain.model.Member;
 import com.zerobase.foodlier.module.member.member.domain.vo.Address;
-import com.zerobase.foodlier.module.member.member.dto.MemberRegisterDto;
-import com.zerobase.foodlier.module.member.member.dto.PasswordFindForm;
+import com.zerobase.foodlier.module.member.member.dto.*;
 import com.zerobase.foodlier.module.member.member.exception.MemberException;
+import com.zerobase.foodlier.module.member.member.profile.dto.MemberPrivateProfileResponse;
 import com.zerobase.foodlier.module.member.member.profile.dto.MemberUpdateDto;
 import com.zerobase.foodlier.module.member.member.profile.dto.PasswordChangeForm;
 import com.zerobase.foodlier.module.member.member.repository.MemberRepository;
@@ -174,24 +170,10 @@ public class MemberServiceImpl implements MemberService {
 
         validateGetRequestedMemberList(member);
 
-        switch (type) {
-            case PRICE:
-                return ListResponse.from(
-                        memberRepository.getRequestedMemberListOrderByPrice(
-                        member.getChefMember().getId(), member.getAddress().getLat(),
-                        member.getAddress().getLnt(),
-                        pageable
-                ));
-            case DISTANCE:
-                return ListResponse.from(
-                        memberRepository.getRequestedMemberListOrderByDistance(
-                        member.getChefMember().getId(), member.getAddress().getLat(),
-                        member.getAddress().getLnt(),
-                        pageable
-                ));
-
-        }
-        return new ListResponse<>();
+        return ListResponse.from(memberRepository
+                .getRequestedMemberListOrderByType(member.getChefMember().getId(),
+                        member.getAddress().getLat(),
+                        member.getAddress().getLnt(), pageable, type));
     }
 
     /**
@@ -257,7 +239,7 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
-    public DefaultProfileDtoResponse getDefaultProfile(Long memberId){
+    public DefaultProfileDtoResponse getDefaultProfile(Long memberId) {
         return memberRepository.getDefaultProfile(memberId);
     }
 

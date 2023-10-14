@@ -145,22 +145,8 @@ public class ChefMemberServiceImpl implements ChefMemberService{
                                                  ChefSearchType type){
         Address address = getMember(memberId).getAddress();
 
-        switch (type){
-            case STAR:
-                return ListResponse.from(
-                        chefMemberRepository.findAroundChefOrderByStar(memberId, address.getLat(),
-                        address.getLnt(), AROUND_DISTANCE, pageable));
-            case REVIEW:
-                return ListResponse.from(
-                        chefMemberRepository.findAroundChefOrderByReview(memberId, address.getLat(),
-                        address.getLnt(), AROUND_DISTANCE, pageable));
-            case RECIPE:
-                return ListResponse.from(chefMemberRepository.findAroundChefOrderByRecipeCount(memberId, address.getLat(),
-                        address.getLnt(), AROUND_DISTANCE, pageable));
-        }
-
-        return ListResponse.from(chefMemberRepository.findAroundChefOrderByDistance(memberId, address.getLat(),
-                address.getLnt(), AROUND_DISTANCE, pageable));
+        return ListResponse.from(chefMemberRepository.findAroundChefOrderByType(memberId, address.getLat(),
+                address.getLnt(), AROUND_DISTANCE, pageable,type));
     }
 
     private Member getMember(Long memberId){
