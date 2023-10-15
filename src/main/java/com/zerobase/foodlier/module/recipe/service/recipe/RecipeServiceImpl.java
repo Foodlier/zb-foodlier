@@ -89,7 +89,7 @@ public class RecipeServiceImpl implements RecipeService {
      * 작성자: 황태원(이종욱)
      * 레시피 수정 정보를 받아 레시피를 수정
      * 레시피 수정 시 레시피 검색을 위한 객체도 레시피 정보를 기반으로 수정
-     * 작성일자: 2023-09-27
+     * 작성일자: 2023-09-27(2023-10-15)
      */
     @Override
     public void updateRecipe(RecipeDtoRequest recipeDtoRequest, Long id) {

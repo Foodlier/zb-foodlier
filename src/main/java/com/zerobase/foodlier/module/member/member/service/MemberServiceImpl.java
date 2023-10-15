@@ -124,8 +124,8 @@ public class MemberServiceImpl implements MemberService {
     }
 
     /**
-     * 작성자 : 이승현
-     * 작성일 : 2023-09-24(2023-09-25)
+     * 작성자 : 이승현(황태원)
+     * 작성일 : 2023-09-24(2023-10-15)
      * 프로필 정보를 수정합니다.
      */
     @Override

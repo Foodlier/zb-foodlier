@@ -126,7 +126,7 @@ public class RequestFormServiceImpl implements RequestFormService {
     }
 
     /**
-     * 작성일 : 2023-09-29
+     * 작성일 : 2023-09-29(2023-10-15)
      * 작성자 : 황태원
      * 요청서 업데이트, 태그된 레시피 또한 업데이트, 변경 시 권한 검증
      */
