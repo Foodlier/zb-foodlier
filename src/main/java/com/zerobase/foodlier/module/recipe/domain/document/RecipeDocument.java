@@ -1,15 +1,15 @@
 package com.zerobase.foodlier.module.recipe.domain.document;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.data.elasticsearch.annotations.Document;
-import org.springframework.data.elasticsearch.annotations.Mapping;
-import org.springframework.data.elasticsearch.annotations.Setting;
+import org.springframework.data.elasticsearch.annotations.*;
+import org.springframework.data.jpa.convert.threeten.Jsr310JpaConverters;
 
 import javax.persistence.Id;
-import java.util.List;
+import java.time.LocalDateTime;
 
 
 @Getter
@@ -20,20 +20,24 @@ import java.util.List;
 @Mapping(mappingPath = "/elasticsearch/recipe-mapping.json")
 @Setting(settingPath = "/elasticsearch/recipe-settings.json")
 public class RecipeDocument {
-
+    private static final int MIN_COMMENT = 0;
+    private static final String DATE_FORMAT = "uuuu-MM-dd'T'HH:mm:ss.SSS";
     @Id
     private Long id;
     private String title;
-    private List<String> ingredients;
+    private String ingredients;
     private String writer;
+    private long memberId;
     private long numberOfHeart;
     private long numberOfComment;
+    @Field(type = FieldType.Date, format = DateFormat.date_hour_minute_second, pattern = DATE_FORMAT)
+    private LocalDateTime createAt;
 
     public void updateTitle(String title) {
         this.title = title;
     }
 
-    public void updateIngredients(List<String> ingredients) {
+    public void updateIngredients(String ingredients) {
         this.ingredients = ingredients;
     }
 
@@ -48,7 +52,8 @@ public class RecipeDocument {
     public void plusNumberOfComment() {
         this.numberOfComment++;
     }
+
     public void minusNumberOfComment() {
-        this.numberOfComment--;
+        this.numberOfComment = Math.max(MIN_COMMENT, --this.numberOfComment);
     }
 }

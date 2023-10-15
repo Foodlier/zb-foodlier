@@ -1,5 +1,6 @@
 package com.zerobase.foodlier.module.history.charge.service;
 
+import com.zerobase.foodlier.common.response.ListResponse;
 import com.zerobase.foodlier.common.security.provider.dto.MemberAuthDto;
 import com.zerobase.foodlier.module.history.charge.domain.model.PointChargeHistory;
 import com.zerobase.foodlier.module.history.charge.dto.PointChargeHistoryDto;
@@ -160,38 +161,38 @@ class PointChargeHistoryServiceImplTest {
                         ))));
 
         //when
-        List<PointChargeHistoryDto> pointHistoryList = pointChargeHistoryService.getPointHistory(MemberAuthDto.builder()
+        ListResponse<PointChargeHistoryDto> pointHistoryList = pointChargeHistoryService.getPointHistory(MemberAuthDto.builder()
                 .id(1L)
                 .build(), PageRequest.of(0, 10));
 
         //then
         assertAll(
                 () -> assertEquals("paymentKey1",
-                        pointHistoryList.get(0).getPaymentKey()),
+                        pointHistoryList.getContent().get(0).getPaymentKey()),
                 () -> assertEquals(1000L,
-                        pointHistoryList.get(0).getChargePoint()),
+                        pointHistoryList.getContent().get(0).getChargePoint()),
                 () -> assertEquals(LocalDateTime.of(2023, 10, 9, 1, 2, 3),
-                        pointHistoryList.get(0).getChargeAt()),
+                        pointHistoryList.getContent().get(0).getChargeAt()),
                 () -> assertEquals("포인트 충전",
-                        pointHistoryList.get(0).getDescription()),
+                        pointHistoryList.getContent().get(0).getDescription()),
 
                 () -> assertEquals("paymentKey2",
-                        pointHistoryList.get(1).getPaymentKey()),
+                        pointHistoryList.getContent().get(1).getPaymentKey()),
                 () -> assertEquals(1000L,
-                        pointHistoryList.get(1).getChargePoint()),
+                        pointHistoryList.getContent().get(1).getChargePoint()),
                 () -> assertEquals(LocalDateTime.of(2023, 10, 9, 4, 5, 6),
-                        pointHistoryList.get(1).getChargeAt()),
+                        pointHistoryList.getContent().get(1).getChargeAt()),
                 () -> assertEquals("포인트 충전",
-                        pointHistoryList.get(1).getDescription()),
+                        pointHistoryList.getContent().get(1).getDescription()),
 
                 () -> assertEquals("paymentKey1",
-                        pointHistoryList.get(2).getPaymentKey()),
+                        pointHistoryList.getContent().get(2).getPaymentKey()),
                 () -> assertEquals(1000L,
-                        pointHistoryList.get(2).getChargePoint()),
+                        pointHistoryList.getContent().get(2).getChargePoint()),
                 () -> assertEquals(LocalDateTime.of(2023, 10, 9, 7, 8, 9),
-                        pointHistoryList.get(2).getChargeAt()),
+                        pointHistoryList.getContent().get(2).getChargeAt()),
                 () -> assertEquals("결제 취소",
-                        pointHistoryList.get(2).getDescription())
+                        pointHistoryList.getContent().get(2).getDescription())
         );
     }
 

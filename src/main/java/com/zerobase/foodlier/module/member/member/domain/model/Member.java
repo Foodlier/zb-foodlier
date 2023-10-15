@@ -31,7 +31,6 @@ public class Member extends Audit {
     private String password;
     @Column(unique = true, nullable = false)
     private String phoneNumber;
-    @Column(nullable = false)
     private String profileUrl;
     @Embedded
     private Address address;
@@ -41,6 +40,8 @@ public class Member extends Audit {
     private RegistrationType registrationType;
     @Builder.Default
     private boolean isDeleted = false;
+    @Builder.Default
+    private boolean isTemp = false;
     @ElementCollection
     @Builder.Default
     private List<String> roles = new ArrayList<>();

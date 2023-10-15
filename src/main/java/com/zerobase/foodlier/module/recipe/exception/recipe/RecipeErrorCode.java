@@ -12,6 +12,9 @@ public enum RecipeErrorCode {
     NOT_PUBLIC_RECIPE("공개되지 않은 레시피입니다."),
     DELETED_RECIPE("삭제된 레시피입니다."),
     QUOTATION_CANNOT_BE_TAGGED("견적서는 태그할 수 없습니다."),
+    ORDER_TYPE_NOT_FOUND("정의되지 않은 정렬타입입니다."),
+    SEARCH_TYPE_NOT_FOUND("정의되지 않은 검색 타입입니다."),
+    SORT_TYPE_NOT_FOUND("정의되지 않은 레시피 검색 정렬 타입입니다."),
     ;
 
     private final String description;

@@ -14,7 +14,6 @@ const ChattingPage = () => {
   const [dmRoomList, setDmRoomList] = useState<RoomInfoInterface[]>([])
   const [isLoading, setIsLoading] = useState(false)
   const firstDmRoomRef = useRef<HTMLButtonElement>(null)
-  // const [isFirstDmRoomRef, setIsFirstDmRoomRef] = useState<HTMLDivElement>(null)
 
   const getDmRoomList = async () => {
     try {

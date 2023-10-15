@@ -1,5 +1,6 @@
 package com.zerobase.foodlier.module.history.charge.service;
 
+import com.zerobase.foodlier.common.response.ListResponse;
 import com.zerobase.foodlier.common.security.provider.dto.MemberAuthDto;
 import com.zerobase.foodlier.module.history.charge.domain.model.PointChargeHistory;
 import com.zerobase.foodlier.module.history.charge.dto.PointChargeHistoryDto;
@@ -11,9 +12,6 @@ import com.zerobase.foodlier.module.payment.domain.model.Payment;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 import static com.zerobase.foodlier.module.history.type.TransactionType.CHARGE_CANCEL;
 import static com.zerobase.foodlier.module.history.type.TransactionType.CHARGE_POINT;
@@ -61,15 +59,14 @@ public class PointChargeHistoryServiceImpl implements PointChargeHistoryService 
      * 포인트 충전 내역을 조회합니다.
      */
     @Override
-    public List<PointChargeHistoryDto> getPointHistory(MemberAuthDto memberAuthDto,
-                                                       Pageable pageable) {
+    public ListResponse<PointChargeHistoryDto> getPointHistory(MemberAuthDto memberAuthDto,
+                                                               Pageable pageable) {
         Member member = memberRepository.findById(memberAuthDto.getId())
                 .orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
 
-        return pointChargeHistoryRepository
-                .findByMemberOrderByCreatedAtDesc(member, pageable)
-                .stream()
-                .map(PointChargeHistoryDto::from)
-                .collect(Collectors.toList());
+        return ListResponse.from(
+                pointChargeHistoryRepository
+                .findByMemberOrderByCreatedAtDesc(member, pageable),
+                PointChargeHistoryDto::from);
     }
 }

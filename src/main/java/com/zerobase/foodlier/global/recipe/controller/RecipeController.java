@@ -1,13 +1,14 @@
 package com.zerobase.foodlier.global.recipe.controller;
 
+import com.zerobase.foodlier.common.response.ListResponse;
 import com.zerobase.foodlier.common.security.provider.dto.MemberAuthDto;
-import com.zerobase.foodlier.module.heart.service.HeartService;
-import com.zerobase.foodlier.module.recipe.dto.recipe.RecipeImageResponse;
 import com.zerobase.foodlier.global.recipe.facade.RecipeFacade;
-import com.zerobase.foodlier.module.recipe.domain.model.Recipe;
-import com.zerobase.foodlier.module.recipe.dto.recipe.RecipeDtoRequest;
-import com.zerobase.foodlier.module.recipe.dto.recipe.RecipeDtoResponse;
+import com.zerobase.foodlier.module.heart.service.HeartService;
+import com.zerobase.foodlier.module.recipe.dto.recipe.*;
 import com.zerobase.foodlier.module.recipe.service.recipe.RecipeService;
+import com.zerobase.foodlier.module.recipe.type.OrderType;
+import com.zerobase.foodlier.module.recipe.type.SearchType;
+import com.zerobase.foodlier.module.recipe.type.SortType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
@@ -59,8 +60,11 @@ public class RecipeController {
     }
 
     @GetMapping("/{recipeId}")
-    public ResponseEntity<RecipeDtoResponse> getRecipe(@PathVariable(name = "recipeId") Long id) {
-        return ResponseEntity.ok(recipeService.getRecipeDetail(id));
+    public ResponseEntity<RecipeDtoResponse> getRecipe(
+            @AuthenticationPrincipal MemberAuthDto memberAuthDto,
+            @PathVariable(name = "recipeId") Long id
+    ) {
+        return ResponseEntity.ok(recipeService.getRecipeDetail(memberAuthDto,id));
     }
 
     @DeleteMapping("/{recipeId}")
@@ -77,20 +81,44 @@ public class RecipeController {
         return ResponseEntity.ok("레시피 접근 가능합니다.");
     }
 
-    @GetMapping("/{pageIdx}/{pageSize}")
-    public ResponseEntity<List<Recipe>> getRecipeListByTitle(@AuthenticationPrincipal MemberAuthDto memberAuthDto,
-                                                             @PathVariable int pageIdx,
-                                                             @PathVariable int pageSize,
-                                                             @RequestParam String recipeTitle){
-        return ResponseEntity.ok(recipeService.getRecipeByTitle(recipeTitle, PageRequest.of(pageIdx, pageSize)));
+    @GetMapping("search/{searchType}/{pageIdx}/{pageSize}")
+    public ResponseEntity<ListResponse<RecipeCardDto>> getRecipeList(@AuthenticationPrincipal MemberAuthDto memberAuthDto,
+                                                                     @PathVariable SearchType searchType,
+                                                                     @PathVariable int pageIdx,
+                                                                     @PathVariable int pageSize,
+                                                                     @RequestParam String searchText) {
+        return ResponseEntity.ok(recipeService.getRecipeList(RecipeSearchRequest.builder()
+                .searchType(searchType)
+                .searchText(searchText)
+                .memberId(memberAuthDto.getId())
+                .pageable(PageRequest.of(pageIdx, pageSize))
+                .build())
+        );
+    }
+
+    @GetMapping("search/{searchType}/{sortType}/{pageIdx}/{pageSize}")
+    public ResponseEntity<ListResponse<RecipeCardDto>> getFilteredRecipeList(@AuthenticationPrincipal MemberAuthDto memberAuthDto,
+                                                                             @PathVariable SearchType searchType,
+                                                                             @PathVariable int pageIdx,
+                                                                             @PathVariable int pageSize,
+                                                                             @PathVariable SortType sortType,
+                                                                             @RequestParam String searchText) {
+        return ResponseEntity.ok(recipeService.getRecipeList(RecipeSearchRequest.builder()
+                .searchType(searchType)
+                .searchText(searchText)
+                .memberId(memberAuthDto.getId())
+                .pageable(PageRequest.of(pageIdx, pageSize))
+                .sortType(sortType)
+                .build())
+        );
     }
 
     @PostMapping("/heart/{recipeId}")
     public ResponseEntity<String> createHeart(
             @AuthenticationPrincipal MemberAuthDto memberAuthDto,
             @PathVariable Long recipeId
-    ){
-        heartService.createHeart(memberAuthDto,recipeId);
+    ) {
+        heartService.createHeart(memberAuthDto, recipeId);
         return ResponseEntity.ok("좋아요를 눌렀습니다");
     }
 
@@ -98,8 +126,35 @@ public class RecipeController {
     public ResponseEntity<String> deleteHeart(
             @AuthenticationPrincipal MemberAuthDto memberAuthDto,
             @PathVariable Long recipeId
-    ){
-        heartService.deleteHeart(memberAuthDto,recipeId);
+    ) {
+        heartService.deleteHeart(memberAuthDto, recipeId);
         return ResponseEntity.ok("좋아요를 취소하였습니다.");
+    }
+
+    @GetMapping("/main")
+    public ResponseEntity<List<RecipeCardDto>> getMainPageRecipeList(
+            @AuthenticationPrincipal MemberAuthDto memberAuthDto
+    ) {
+        return ResponseEntity.ok(recipeService.
+                getMainPageRecipeList(memberAuthDto));
+    }
+
+    @GetMapping("/default/{pageIdx}/{pageSize}")
+    public ResponseEntity<ListResponse<RecipeCardDto>> getRecipePageRecipeList(
+            @AuthenticationPrincipal MemberAuthDto memberAuthDto,
+            @PathVariable int pageIdx,
+            @PathVariable int pageSize,
+            @RequestParam OrderType orderType
+    ) {
+        return ResponseEntity.ok(recipeService
+                .getRecipePageRecipeList(memberAuthDto,
+                        PageRequest.of(pageIdx, pageSize), orderType));
+    }
+
+    @GetMapping("/recommended")
+    public ResponseEntity<List<RecipeCardDto>> getRecommendedRecipeList(
+            @AuthenticationPrincipal MemberAuthDto memberAuthDto
+    ) {
+        return ResponseEntity.ok(recipeService.recommendedRecipe(memberAuthDto));
     }
 }

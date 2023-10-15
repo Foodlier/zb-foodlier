@@ -1,12 +1,11 @@
 package com.zerobase.foodlier.module.history.charge.service;
 
 
+import com.zerobase.foodlier.common.response.ListResponse;
 import com.zerobase.foodlier.common.security.provider.dto.MemberAuthDto;
 import com.zerobase.foodlier.module.history.charge.dto.PointChargeHistoryDto;
 import com.zerobase.foodlier.module.payment.domain.model.Payment;
 import org.springframework.data.domain.Pageable;
-
-import java.util.List;
 
 public interface PointChargeHistoryService {
 
@@ -14,6 +13,6 @@ public interface PointChargeHistoryService {
 
     void createPointCancelHistory(Payment payment);
 
-    List<PointChargeHistoryDto> getPointHistory(MemberAuthDto memberAuthDto,
-                                                Pageable pageable);
+    ListResponse<PointChargeHistoryDto> getPointHistory(MemberAuthDto memberAuthDto,
+                                                        Pageable pageable);
 }

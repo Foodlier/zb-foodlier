@@ -1,16 +1,36 @@
 package com.zerobase.foodlier.module.member.member.dto;
 
-public interface RequestedMemberDto {
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
-    Long getMemberId();
-    String getProfileUrl();
-    String getNickname();
-    double getDistance();
-    double getLat();
-    double getLnt();
-    Long getRequestId();
-    Long getExpectedPrice();
-    String getTitle();
-    String getMainImageUrl();
+@Getter
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
+public class RequestedMemberDto {
+
+    private Long memberId;
+
+    private String profileUrl;
+
+    private String nickname;
+
+    private Double distance;
+
+    private Double lat;
+
+    private Double lnt;
+
+    private Long requestId;
+
+    private String title;
+
+    private String content;
+
+    private Long expectedPrice;
+
+    private String mainImageUrl;
 
 }

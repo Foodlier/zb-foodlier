@@ -1,5 +1,6 @@
 package com.zerobase.foodlier.module.requestform.service;
 
+import com.zerobase.foodlier.common.response.ListResponse;
 import com.zerobase.foodlier.module.member.member.domain.model.Member;
 import com.zerobase.foodlier.module.member.member.exception.MemberException;
 import com.zerobase.foodlier.module.member.member.repository.MemberRepository;
@@ -78,14 +79,17 @@ public class RequestFormServiceImpl implements RequestFormService {
      * 작성한 요청서 반환
      */
     @Override
-    public Page<RequestFormResponseDto> getMyRequestForm(
+    public ListResponse<RequestFormResponseDto> getMyRequestForm(
             Long id, int pageIdx, int pageSize) {
         PageRequest pageRequest = PageRequest.of(pageIdx, pageSize);
         Member member = memberRepository.findById(id)
                 .orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
         Page<RequestForm> requestFormPage = requestFormRepository
                 .findAllByMemberOrderByCreatedAtDesc(member, pageRequest);
-        return requestFormPage.map(RequestFormResponseDto::fromEntity);
+        return ListResponse.from(
+                requestFormPage,
+                RequestFormResponseDto::fromEntity
+        );
     }
 
     /**

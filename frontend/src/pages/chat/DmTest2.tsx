@@ -1,10 +1,19 @@
-import React, { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import SockJS from 'sockjs-client'
 import StompJs from 'stompjs'
 import axiosInstance from '../../utils/FetchCall'
 
+interface DmMessage {
+  roomId: number
+  dmId: number
+  message: string
+  writer: string
+  messageType: string
+  createdAt: string
+}
+
 const DmTest2 = () => {
-  const [messages, setMessages] = useState<string[]>([])
+  const [messages, setMessages] = useState<DmMessage[]>([])
   const [inputState, setInputState] = useState('')
   const [stompClientstate, setStompClientstate] = useState<StompJs.Client>()
 
@@ -69,8 +78,8 @@ const DmTest2 = () => {
   return (
     <div>
       <ul>
-        {messages.map((message, index) => (
-          <li key={index}>
+        {messages.map(message => (
+          <li key={message.dmId}>
             <strong>{message.writer}: </strong>
             {message.message}
           </li>

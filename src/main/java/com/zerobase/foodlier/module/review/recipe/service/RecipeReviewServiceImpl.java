@@ -1,5 +1,6 @@
 package com.zerobase.foodlier.module.review.recipe.service;
 
+import com.zerobase.foodlier.common.response.ListResponse;
 import com.zerobase.foodlier.module.member.member.domain.model.Member;
 import com.zerobase.foodlier.module.member.member.exception.MemberException;
 import com.zerobase.foodlier.module.member.member.repository.MemberRepository;
@@ -16,9 +17,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 import static com.zerobase.foodlier.module.member.member.exception.MemberErrorCode.MEMBER_NOT_FOUND;
 import static com.zerobase.foodlier.module.recipe.exception.recipe.RecipeErrorCode.NO_SUCH_RECIPE;
@@ -75,14 +73,26 @@ public class RecipeReviewServiceImpl implements RecipeReviewService{
      *  꿀조합의 후기를 페이징 하여 가져옵니다.
      */
     @Override
-    public List<RecipeReviewResponseDto> getRecipeReviewList(Long memberId,
-                                                             Long recipeId,
-                                                             Pageable pageable){
-        return recipeReviewRepository.findByRecipe(recipeId, memberId, pageable)
-                .getContent()
-                .stream()
-                .map(RecipeReviewResponseDto::from)
-                .collect(Collectors.toList());
+    public ListResponse<RecipeReviewResponseDto> getRecipeReviewList(Long memberId,
+                                                                     Long recipeId,
+                                                                     Pageable pageable){
+        return ListResponse.from(
+                recipeReviewRepository.findRecipe(recipeId, memberId, pageable),
+                RecipeReviewResponseDto::from
+        );
+    }
+
+    /**
+     *  작성자 : 전현서
+     *  작성일 : 2023-10-08
+     *  공개 프로필에서 해당 멤버에게 달린 레시피 후기를 날짜 내림차순으로 보여줌.
+     */
+    public ListResponse<RecipeReviewResponseDto> getRecipeReviewForProfile(Long memberId,
+                                                                   Pageable pageable){
+        Member member = getMember(memberId);
+        return ListResponse.from(
+                recipeReviewRepository.findByMemberOrderByCreatedAtDesc(member, pageable),
+                RecipeReviewResponseDto::from);
     }
 
     /**

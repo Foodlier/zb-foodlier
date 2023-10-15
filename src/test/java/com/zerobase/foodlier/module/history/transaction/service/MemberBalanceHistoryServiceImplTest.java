@@ -1,5 +1,6 @@
 package com.zerobase.foodlier.module.history.transaction.service;
 
+import com.zerobase.foodlier.common.response.ListResponse;
 import com.zerobase.foodlier.common.security.provider.dto.MemberAuthDto;
 import com.zerobase.foodlier.module.history.transaction.domain.model.MemberBalanceHistory;
 import com.zerobase.foodlier.module.history.transaction.dto.MemberBalanceHistoryDto;
@@ -132,7 +133,7 @@ class MemberBalanceHistoryServiceImplTest {
                 ))));
 
         //when
-        List<MemberBalanceHistoryDto> transactionHistoryList =
+        ListResponse<MemberBalanceHistoryDto> transactionHistoryList =
                 memberBalanceHistoryService.getTransactionHistory(MemberAuthDto.builder()
                         .id(1L)
                         .build(), PageRequest.of(0, 10));
@@ -140,26 +141,26 @@ class MemberBalanceHistoryServiceImplTest {
         //then
         assertAll(
                 () -> assertEquals(1000,
-                        transactionHistoryList.get(0).getChangePoint()),
+                        transactionHistoryList.getContent().get(0).getChangePoint()),
                 () -> assertEquals(0,
-                        transactionHistoryList.get(0).getCurrentPoint()),
+                        transactionHistoryList.getContent().get(0).getCurrentPoint()),
                 () -> assertEquals("chef member",
-                        transactionHistoryList.get(0).getSender()),
+                        transactionHistoryList.getContent().get(0).getSender()),
                 () -> assertEquals("포인트 출금",
-                        transactionHistoryList.get(0).getDescription()),
+                        transactionHistoryList.getContent().get(0).getDescription()),
                 () -> assertEquals(LocalDateTime.of(2023, 10, 9, 5, 30,30),
-                        transactionHistoryList.get(0).getTransactionAt()),
+                        transactionHistoryList.getContent().get(0).getTransactionAt()),
 
                 () -> assertEquals(1000,
-                        transactionHistoryList.get(1).getChangePoint()),
+                        transactionHistoryList.getContent().get(1).getChangePoint()),
                 () -> assertEquals(1000,
-                        transactionHistoryList.get(1).getCurrentPoint()),
+                        transactionHistoryList.getContent().get(1).getCurrentPoint()),
                 () -> assertEquals("member",
-                        transactionHistoryList.get(1).getSender()),
+                        transactionHistoryList.getContent().get(1).getSender()),
                 () -> assertEquals("포인트 입금",
-                        transactionHistoryList.get(1).getDescription()),
+                        transactionHistoryList.getContent().get(1).getDescription()),
                 () -> assertEquals(LocalDateTime.of(2023, 10, 9, 6, 40,15),
-                        transactionHistoryList.get(1).getTransactionAt())
+                        transactionHistoryList.getContent().get(1).getTransactionAt())
                 );
     }
 
