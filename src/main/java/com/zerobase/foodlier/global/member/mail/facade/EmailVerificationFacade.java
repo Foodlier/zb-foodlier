@@ -22,7 +22,7 @@ public class EmailVerificationFacade {
 
     public void sendMailAndCreateVerification(String email, LocalDateTime nowTime) {
         String verificationCode = randomCodeService
-                .createRandomCode();
+                .createIntegerRandomCode();
 
         emailVerificationService.createVerification(email, verificationCode,
                 nowTime);
