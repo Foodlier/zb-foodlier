@@ -29,6 +29,6 @@ public interface RecipeRepository extends JpaRepository<Recipe, Long>, RecipeRep
     Page<Recipe> findByIsPublicOrderByCommentCountDesc(Boolean isPublic,
                                                        Pageable pageable);
 
-    List<Recipe> findByIsPublicAndCreatedAtAfterOrderByHeartCountDesc(
+    List<Recipe> findTop5ByIsPublicAndCreatedAtAfterOrderByHeartCountDesc(
             Boolean isPublic, LocalDateTime createdAt);
 }

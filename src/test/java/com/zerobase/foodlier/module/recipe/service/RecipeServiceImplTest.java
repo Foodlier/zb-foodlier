@@ -4,7 +4,6 @@ import com.zerobase.foodlier.common.response.ListResponse;
 import com.zerobase.foodlier.common.security.provider.dto.MemberAuthDto;
 import com.zerobase.foodlier.module.heart.reposiotry.HeartRepository;
 import com.zerobase.foodlier.module.member.member.domain.model.Member;
-import com.zerobase.foodlier.module.member.member.exception.MemberErrorCode;
 import com.zerobase.foodlier.module.member.member.exception.MemberException;
 import com.zerobase.foodlier.module.member.member.repository.MemberRepository;
 import com.zerobase.foodlier.module.recipe.domain.document.RecipeDocument;
@@ -413,7 +412,7 @@ class RecipeServiceImplTest {
 
         @Test
         @DisplayName("레시피 검색 실패 - 검색 요청자가 회원이 아닌 경우")
-        void fail_search_recipe_member_not_found(){
+        void fail_search_recipe_member_not_found() {
 
             // given
             PageImpl<RecipeDocument> recipeDocumentPage = getRecipeDocumentByTitleAndCreateAt();
@@ -435,7 +434,7 @@ class RecipeServiceImplTest {
 
         @Test
         @DisplayName("레시피 검색 실패 - 검색된 레시피와 일치하는 레시피가 존재하지 않는 경우")
-        void fail_search_recipe_recipe_not_found(){
+        void fail_search_recipe_recipe_not_found() {
 
             // given
             Member member = Member.builder()
@@ -1515,7 +1514,7 @@ class RecipeServiceImplTest {
 
         given(memberRepository.findById(any()))
                 .willReturn(Optional.ofNullable(member));
-        given(recipeRepository.findTop3ByOrderByCreatedAtDesc())
+        given(recipeRepository.findTop3ByIsPublicOrderByCreatedAtDesc(any()))
                 .willReturn(List.of(
                         recipe1,
                         recipe2,
@@ -1624,7 +1623,7 @@ class RecipeServiceImplTest {
                 .willReturn(false);
         given(heartRepository.existsByRecipeAndMember(recipe3, member))
                 .willReturn(true);
-        given(recipeRepository.findByOrderByCreatedAtDesc(any()))
+        given(recipeRepository.findByIsPublicOrderByCreatedAtDesc(any(), any()))
                 .willReturn(new PageImpl<>(new ArrayList<>(List.of(
                         recipe1,
                         recipe2,
@@ -1713,7 +1712,7 @@ class RecipeServiceImplTest {
                 .willReturn(false);
         given(heartRepository.existsByRecipeAndMember(recipe3, member))
                 .willReturn(true);
-        given(recipeRepository.findByOrderByHeartCountDesc(any()))
+        given(recipeRepository.findByIsPublicOrderByHeartCountDesc(any(), any()))
                 .willReturn(new PageImpl<>(new ArrayList<>(List.of(
                         recipe1,
                         recipe2,
@@ -1807,7 +1806,7 @@ class RecipeServiceImplTest {
                 .willReturn(false);
         given(heartRepository.existsByRecipeAndMember(recipe3, member))
                 .willReturn(true);
-        given(recipeRepository.findByOrderByCommentCountDesc(any()))
+        given(recipeRepository.findByIsPublicOrderByCommentCountDesc(any(), any()))
                 .willReturn(new PageImpl<>(new ArrayList<>(List.of(
                         recipe1,
                         recipe2,
@@ -1959,7 +1958,7 @@ class RecipeServiceImplTest {
 
         given(memberRepository.findById(any()))
                 .willReturn(Optional.ofNullable(member));
-        given(recipeRepository.findTop5ByCreatedAtAfterOrderByHeartCountDesc(any()))
+        given(recipeRepository.findTop5ByIsPublicAndCreatedAtAfterOrderByHeartCountDesc(any(), any()))
                 .willReturn(Stream.of(
                                 recipe1,
                                 recipe2,
@@ -2041,7 +2040,7 @@ class RecipeServiceImplTest {
                 .heartCount(100)
                 .build();
 
-        given(recipeRepository.findByHeart(anyLong(), any()))
+        given(recipeRepository.findHeart(anyLong(), any()))
                 .willReturn(new PageImpl<>(List.of(recipe)));
 
         //when
