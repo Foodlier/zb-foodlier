@@ -77,7 +77,7 @@ public class RecipeReviewServiceImpl implements RecipeReviewService{
                                                                      Long recipeId,
                                                                      Pageable pageable){
         return ListResponse.from(
-                recipeReviewRepository.findByRecipe(recipeId, memberId, pageable),
+                recipeReviewRepository.findRecipe(recipeId, memberId, pageable),
                 RecipeReviewResponseDto::from
         );
     }

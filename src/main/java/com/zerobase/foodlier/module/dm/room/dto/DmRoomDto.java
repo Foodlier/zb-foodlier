@@ -9,12 +9,12 @@ import lombok.*;
 @Builder
 public class DmRoomDto {
 
-    private Long id;
+    private Long dmRoomId;
     private String nickname;
     private String profileUrl;
     private Long requestId;
     private Long expectedPrice;
-    private boolean isExit;
-    private boolean isSuggested;
+    private Boolean isExit;
+    private Boolean isSuggested;
     private String role;
 }

@@ -4,18 +4,15 @@ import com.zerobase.foodlier.common.response.ListResponse;
 import com.zerobase.foodlier.common.security.provider.JwtTokenProvider;
 import com.zerobase.foodlier.common.security.provider.dto.MemberAuthDto;
 import com.zerobase.foodlier.common.security.provider.dto.TokenDto;
-import com.zerobase.foodlier.module.member.member.dto.DefaultProfileDtoResponse;
-import com.zerobase.foodlier.module.member.member.dto.RequestedMemberDto;
-import com.zerobase.foodlier.module.member.member.dto.SignInForm;
-import com.zerobase.foodlier.module.member.member.profile.dto.MemberPrivateProfileResponse;
 import com.zerobase.foodlier.module.member.member.domain.model.Member;
 import com.zerobase.foodlier.module.member.member.domain.vo.Address;
-import com.zerobase.foodlier.module.member.member.dto.MemberRegisterDto;
-import com.zerobase.foodlier.module.member.member.dto.PasswordFindForm;
+import com.zerobase.foodlier.module.member.member.dto.*;
 import com.zerobase.foodlier.module.member.member.exception.MemberException;
+import com.zerobase.foodlier.module.member.member.profile.dto.MemberPrivateProfileResponse;
 import com.zerobase.foodlier.module.member.member.profile.dto.MemberUpdateDto;
 import com.zerobase.foodlier.module.member.member.profile.dto.PasswordChangeForm;
 import com.zerobase.foodlier.module.member.member.repository.MemberRepository;
+import com.zerobase.foodlier.module.member.member.social.dto.OAuthInfoResponse;
 import com.zerobase.foodlier.module.member.member.type.RequestedOrderingType;
 import com.zerobase.foodlier.module.member.member.type.RoleType;
 import lombok.RequiredArgsConstructor;
@@ -28,6 +25,7 @@ import javax.transaction.Transactional;
 import java.util.*;
 
 import static com.zerobase.foodlier.module.member.member.exception.MemberErrorCode.*;
+import static com.zerobase.foodlier.module.member.member.type.RegistrationType.DOMAIN;
 
 @Service
 @Transactional
@@ -35,13 +33,11 @@ import static com.zerobase.foodlier.module.member.member.exception.MemberErrorCo
 public class MemberServiceImpl implements MemberService {
 
     private static final Object NOT_CHEF_MEMBER = null;
+    private static final String SOCIAL_MEMBER = "소셜회원";
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider tokenProvider;
-
     private static final String DEL_PREFIX = "DEL";
-    private static final String RANDOM_CODE =
-            UUID.randomUUID().toString().replace("-", "");
 
     @Override
     public void register(MemberRegisterDto memberRegisterDto) {
@@ -129,7 +125,7 @@ public class MemberServiceImpl implements MemberService {
 
     /**
      * 작성자 : 이승현
-     * 작성일 : 2023-09-24(2023-09-25)
+     * 작성일 : 2023-09-24(2023-10-12)
      * 프로필 정보를 수정합니다.
      */
     @Override
@@ -141,6 +137,10 @@ public class MemberServiceImpl implements MemberService {
 
         if (StringUtils.hasText(memberUpdateDto.getPhoneNumber())) {
             member.setPhoneNumber(memberUpdateDto.getPhoneNumber());
+        }
+
+        if (member.getRegistrationType() != DOMAIN && member.isTemp()) {
+            member.setTemp(false);
         }
 
         member.setAddress(Address.builder()
@@ -174,24 +174,10 @@ public class MemberServiceImpl implements MemberService {
 
         validateGetRequestedMemberList(member);
 
-        switch (type) {
-            case PRICE:
-                return ListResponse.from(
-                        memberRepository.getRequestedMemberListOrderByPrice(
-                        member.getChefMember().getId(), member.getAddress().getLat(),
-                        member.getAddress().getLnt(),
-                        pageable
-                ));
-            case DISTANCE:
-                return ListResponse.from(
-                        memberRepository.getRequestedMemberListOrderByDistance(
-                        member.getChefMember().getId(), member.getAddress().getLat(),
-                        member.getAddress().getLnt(),
-                        pageable
-                ));
-
-        }
-        return new ListResponse<>();
+        return ListResponse.from(memberRepository
+                .getRequestedMemberListOrderByType(member.getChefMember().getId(),
+                        member.getAddress().getLat(),
+                        member.getAddress().getLnt(), pageable, type));
     }
 
     /**
@@ -242,9 +228,11 @@ public class MemberServiceImpl implements MemberService {
         Member member = memberRepository.findById(memberAuthDto.getId())
                 .orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
 
-        String delNickName = DEL_PREFIX + RANDOM_CODE;
-        String delEmail = DEL_PREFIX + RANDOM_CODE;
-        String delPhoneNumber = DEL_PREFIX + RANDOM_CODE;
+        String randomCode = generateRandomCode();
+
+        String delNickName = DEL_PREFIX + randomCode;
+        String delEmail = DEL_PREFIX + randomCode;
+        String delPhoneNumber = DEL_PREFIX + randomCode;
         member.setNickname(delNickName);
         member.setEmail(delEmail);
         member.setPhoneNumber(delPhoneNumber);
@@ -257,7 +245,7 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
-    public DefaultProfileDtoResponse getDefaultProfile(Long memberId){
+    public DefaultProfileDtoResponse getDefaultProfile(Long memberId) {
         return memberRepository.getDefaultProfile(memberId);
     }
 
@@ -265,6 +253,38 @@ public class MemberServiceImpl implements MemberService {
     public Member findByEmail(String email) {
         return memberRepository.findByEmail(email)
                 .orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
+    }
+
+    /**
+     * 작성자 : 황태원
+     * 작성일 : 2023-10-12
+     * 소셜로그인시 사용자 정보를 찾아 반환합니다. 사용자가 없을 시 임시가입을 진행합니다.
+     */
+    public Member findOrCreateMember(OAuthInfoResponse oAuthInfoResponse) {
+        return memberRepository.findByEmail(oAuthInfoResponse.getEmail())
+                .orElseGet(() -> registerSocialMember(oAuthInfoResponse));
+    }
+
+    private Member registerSocialMember(OAuthInfoResponse oAuthInfoResponse) {
+        String randomCode = generateRandomCode();
+        return memberRepository.save(
+                Member.builder()
+                        .nickname(SOCIAL_MEMBER + randomCode)
+                        .email(oAuthInfoResponse.getEmail())
+                        .password(passwordEncoder.encode(randomCode))
+                        .registrationType(oAuthInfoResponse.getRegistrationType())
+                        .address(Address.builder().build())
+                        .phoneNumber(randomCode)
+                        .profileUrl(randomCode)
+                        .isTemp(true)
+                        .roles(new ArrayList<>(
+                                List.of(RoleType.ROLE_USER.name())
+                        ))
+                        .build());
+    }
+
+    private String generateRandomCode() {
+        return UUID.randomUUID().toString().replace("-", "");
     }
 
     //======================= Validates =========================
