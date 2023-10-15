@@ -41,6 +41,7 @@ dependencies {
 	implementation 'org.webjars:stomp-websocket:2.3.4'
 	implementation 'org.springframework:spring-messaging'
 	implementation 'org.springframework.security:spring-security-messaging'
+	implementation 'org.apache.tika:tika-core:2.5.0'
 	compileOnly 'org.projectlombok:lombok'
 	runtimeOnly 'com.mysql:mysql-connector-j'
 	annotationProcessor 'org.projectlombok:lombok'
