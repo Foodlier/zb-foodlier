@@ -38,11 +38,11 @@ class EmailVerificationFacadeTest {
 
         //given
         String email = "test178295031875@test.com";
-        String verificationCode = "LzOXCMpEUo";
+        String verificationCode = "751432";
         LocalDateTime nowTime = LocalDateTime.of(2023, 9, 25, 9, 0, 0);
 
 
-        given(randomCodeService.createRandomCode())
+        given(randomCodeService.createIntegerRandomCode())
                 .willReturn(verificationCode);
 
         //when

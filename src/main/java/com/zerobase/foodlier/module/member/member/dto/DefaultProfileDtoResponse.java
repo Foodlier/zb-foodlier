@@ -12,8 +12,8 @@ public class DefaultProfileDtoResponse {
     private Long memberId;
     private String nickname;
     private String profileUrl;
-    private long receivedHeart;
+    private Integer receivedHeart;
     private Boolean isChef;
-    private Long ChefMemberId;
+    private Long chefMemberId;
 
 }

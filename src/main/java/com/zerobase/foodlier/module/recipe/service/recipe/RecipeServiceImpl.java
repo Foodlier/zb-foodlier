@@ -19,6 +19,7 @@ import com.zerobase.foodlier.module.recipe.exception.recipe.RecipeException;
 import com.zerobase.foodlier.module.recipe.repository.RecipeRepository;
 import com.zerobase.foodlier.module.recipe.repository.RecipeSearchRepository;
 import com.zerobase.foodlier.module.recipe.type.OrderType;
+import com.zerobase.foodlier.module.recipe.type.SortType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -31,14 +32,12 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static com.zerobase.foodlier.module.member.member.exception.MemberErrorCode.MEMBER_NOT_FOUND;
-import static com.zerobase.foodlier.module.recipe.exception.recipe.RecipeErrorCode.NO_SUCH_RECIPE;
-import static com.zerobase.foodlier.module.recipe.exception.recipe.RecipeErrorCode.NO_SUCH_RECIPE_DOCUMENT;
 import static com.zerobase.foodlier.module.recipe.exception.recipe.RecipeErrorCode.*;
 
 @Service
 @RequiredArgsConstructor
 public class RecipeServiceImpl implements RecipeService {
-
+    private static final String DELIMITER = " ";
     private final RecipeRepository recipeRepository;
     private final RecipeSearchRepository recipeSearchRepository;
     private final MemberRepository memberRepository;
@@ -75,11 +74,12 @@ public class RecipeServiceImpl implements RecipeService {
         recipeRepository.save(recipe);
         recipeSearchRepository.save(RecipeDocument.builder()
                 .id(recipe.getId())
+                .memberId(recipe.getMember().getId())
                 .title(recipe.getSummary().getTitle())
                 .writer(recipe.getMember().getNickname())
                 .ingredients(recipe.getRecipeIngredientList().stream()
                         .map(RecipeIngredient::getName)
-                        .collect(Collectors.toList()))
+                        .collect(Collectors.joining(DELIMITER)))
                 .numberOfHeart(recipe.getHeartList().size())
                 .numberOfComment(recipe.getCommentList().size())
                 .build());
@@ -120,7 +120,7 @@ public class RecipeServiceImpl implements RecipeService {
         recipeDocument.updateTitle(recipe.getSummary().getTitle());
         recipeDocument.updateIngredients(recipe.getRecipeIngredientList().stream()
                 .map(RecipeIngredient::getName)
-                .collect(Collectors.toList()));
+                .collect(Collectors.joining(DELIMITER)));
 
         recipeSearchRepository.save(recipeDocument);
     }
@@ -171,29 +171,73 @@ public class RecipeServiceImpl implements RecipeService {
         recipeSearchRepository.deleteById(id);
     }
 
-    /**
-     * - 작성자: 이종욱
-     * - 레시피 제목을 이용하여 유사한 제목을 갖는 레시피 목록 반환
-     * - 작성일자: 2023-09-27
-     */
+    private List<RecipeCardDto> searchBy(Page<RecipeDocument> recipeDocumentPage, Long memberId) {
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
 
-    @Override
-    public ListResponse<Recipe> getRecipeByTitle(String recipeTitle, Pageable pageable) {
-        Page<RecipeDocument> byTitle = recipeSearchRepository.findByTitle(recipeTitle, pageable);
-        List<Recipe> recipeList = new ArrayList<>();
-        for (RecipeDocument recipeDocument : byTitle.getContent()) {
+        List<RecipeCardDto> recipeListByWriter = new ArrayList<>();
+        for (RecipeDocument recipeDocument : recipeDocumentPage.getContent()) {
             Recipe recipe = recipeRepository.findById(recipeDocument.getId())
                     .orElseThrow(() -> new RecipeException(NO_SUCH_RECIPE));
-            recipeList.add(recipe);
+            recipeListByWriter.add(RecipeCardDto.builder()
+                    .id(recipe.getId())
+                    .nickName(recipe.getMember().getNickname())
+                    .content(recipe.getSummary().getContent())
+                    .title(recipe.getSummary().getTitle())
+                    .mainImageUrl(recipe.getMainImageUrl())
+                    .isHeart(heartRepository.existsByRecipeAndMember(recipe, member))
+                    .heartCount(recipe.getHeartCount())
+                    .build());
+        }
+        return recipeListByWriter;
+    }
+
+    /**
+     * - 작성자: 이종욱
+     * - 검색어와 정렬 타입을 이용하여 조건에 맞는 레시피 목록 반환
+     * - 작성일자: 2023-10-11
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public ListResponse<RecipeCardDto> getRecipeList(RecipeSearchRequest recipeSearchRequest) {
+        Page<RecipeDocument> findingResult;
+
+        if (!SortType.existsSortType(recipeSearchRequest.getSortType())) {
+            throw new RecipeException(SORT_TYPE_NOT_FOUND);
         }
 
-        return ListResponse.<Recipe>builder()
-                .totalElements(byTitle.getTotalElements())
-                .totalPages(byTitle.getTotalPages())
-                .hasNextPage(byTitle.hasNext())
-                .content(recipeList)
+        switch (recipeSearchRequest.getSearchType()) {
+
+            case TITLE: {
+                findingResult = recipeSearchRepository.findByTitle(recipeSearchRequest.getSearchText(),
+                        recipeSearchRequest.getPageable());
+                break;
+            }
+
+            case WRITER: {
+                findingResult = recipeSearchRepository.findByWriter(recipeSearchRequest.getSearchText(),
+                        recipeSearchRequest.getPageable());
+                break;
+            }
+
+            case INGREDIENTS: {
+                findingResult = recipeSearchRepository.findByIngredients(recipeSearchRequest.getSearchText(),
+                        recipeSearchRequest.getPageable());
+                break;
+            }
+
+            default:
+                throw new RecipeException(SEARCH_TYPE_NOT_FOUND);
+        }
+
+        return ListResponse.<RecipeCardDto>builder()
+                .totalElements(findingResult.getTotalElements())
+                .totalPages(findingResult.getTotalPages())
+                .hasNextPage(findingResult.hasNext())
+                .content(searchBy(findingResult, recipeSearchRequest.getMemberId()))
                 .build();
     }
+
 
     /**
      * 업데이트 시 기존의 이미지 반환
@@ -210,24 +254,29 @@ public class RecipeServiceImpl implements RecipeService {
                 .build();
     }
 
+    /**
+     * 작성자 : 전현서
+     * 작성일 : 2023-10-06
+     * 좋아요를 누른 레시피 목록을 반환함.
+     */
     @Override
     public ListResponse<RecipeDtoTopResponse> getRecipeForHeart(Long memberId,
-                                                        Pageable pageable){
+                                                                Pageable pageable) {
         return ListResponse.from(
-                recipeRepository.findByHeart(memberId, pageable),
+                recipeRepository.findHeart(memberId, pageable),
                 recipe -> RecipeDtoTopResponse.from(recipe, true));
 
     }
 
     /**
-     *  작성자 : 전현서
-     *  작성일 : 2023-10-06
-     *  해당 회원이 작성한 꿀조합 목록을 반환함.
+     * 작성자 : 전현서
+     * 작성일 : 2023-10-06
+     * 해당 회원이 작성한 꿀조합 목록을 반환함.
      */
     @Override
     public ListResponse<RecipeDtoTopResponse> getRecipeListByMemberId(Long memberId,
-                                                              Long targetMemberId,
-                                                              Pageable pageable){
+                                                                      Long targetMemberId,
+                                                                      Pageable pageable) {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
 
@@ -241,7 +290,7 @@ public class RecipeServiceImpl implements RecipeService {
                 recipe -> RecipeDtoTopResponse.from(recipe, getIsHeart(member, recipe)));
     }
 
-    private boolean getIsHeart(Member member, Recipe recipe){
+    private boolean getIsHeart(Member member, Recipe recipe) {
         return heartRepository.existsByRecipeAndMember(recipe, member);
     }
 
@@ -311,13 +360,13 @@ public class RecipeServiceImpl implements RecipeService {
      * 메인 페이지에서 생성된 순으로 3개를 조회해 옵니다.
      */
     @Override
-    public List<RecipeListDto> getMainPageRecipeList(MemberAuthDto memberAuthDto) {
+    public List<RecipeCardDto> getMainPageRecipeList(MemberAuthDto memberAuthDto) {
         Member member = memberRepository.findById(memberAuthDto.getId())
                 .orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
 
-        return recipeRepository.findTop3ByOrderByCreatedAtDesc()
+        return recipeRepository.findTop3ByIsPublicOrderByCreatedAtDesc(false)
                 .stream()
-                .map(r -> RecipeListDto.builder()
+                .map(r -> RecipeCardDto.builder()
                         .id(r.getId())
                         .nickName(r.getMember().getNickname())
                         .title(r.getSummary().getTitle())
@@ -334,7 +383,7 @@ public class RecipeServiceImpl implements RecipeService {
      * 레시피 페이지에서 레시피를 orderTpye에 따라서 조회해 옵니다.
      */
     @Override
-    public ListResponse<RecipeListDto> getRecipePageRecipeList(MemberAuthDto memberAuthDto,
+    public ListResponse<RecipeCardDto> getRecipePageRecipeList(MemberAuthDto memberAuthDto,
                                                                Pageable pageable,
                                                                OrderType orderType) {
         Member member = memberRepository.findById(memberAuthDto.getId())
@@ -347,19 +396,22 @@ public class RecipeServiceImpl implements RecipeService {
 
         switch (orderType) {
             case CREATED_AT:
-                recipePage = recipeRepository.findByOrderByCreatedAtDesc(pageable);
+                recipePage = recipeRepository.findByIsPublicOrderByCreatedAtDesc(
+                        false, pageable);
                 totalElements = recipePage.getTotalElements();
                 totalPages = recipePage.getTotalPages();
                 hasNext = recipePage.hasNext();
                 break;
             case HEART_COUNT:
-                recipePage = recipeRepository.findByOrderByHeartCountDesc(pageable);
+                recipePage = recipeRepository.findByIsPublicOrderByHeartCountDesc(
+                        false, pageable);
                 totalPages = recipePage.getTotalPages();
                 totalElements = recipePage.getTotalElements();
                 hasNext = recipePage.hasNext();
                 break;
             case COMMENT_COUNT:
-                recipePage = recipeRepository.findByOrderByCommentCountDesc(pageable);
+                recipePage = recipeRepository.findByIsPublicOrderByCommentCountDesc(
+                        false, pageable);
                 totalPages = recipePage.getTotalPages();
                 totalElements = recipePage.getTotalElements();
                 hasNext = recipePage.hasNext();
@@ -368,13 +420,13 @@ public class RecipeServiceImpl implements RecipeService {
                 throw new RecipeException(ORDER_TYPE_NOT_FOUND);
         }
 
-        return ListResponse.<RecipeListDto>builder()
+        return ListResponse.<RecipeCardDto>builder()
                 .totalPages(totalPages)
                 .hasNextPage(hasNext)
                 .totalElements(totalElements)
                 .content(
                         recipePage.stream()
-                                .map(r -> RecipeListDto.builder()
+                                .map(r -> RecipeCardDto.builder()
                                         .id(r.getId())
                                         .nickName(r.getMember().getNickname())
                                         .title(r.getSummary().getTitle())
@@ -392,14 +444,14 @@ public class RecipeServiceImpl implements RecipeService {
      * 오늘 생성된 레시피 중 좋아요 높은 순으로 5개를 조회해 옵니다.
      */
     @Override
-    public List<RecipeListDto> recommendedRecipe(MemberAuthDto memberAuthDto) {
+    public List<RecipeCardDto> recommendedRecipe(MemberAuthDto memberAuthDto) {
         Member member = memberRepository.findById(memberAuthDto.getId())
                 .orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
 
-        return recipeRepository.findTop5ByCreatedAtAfterOrderByHeartCountDesc(
-                        LocalDate.now().atStartOfDay())
+        return recipeRepository.findTop5ByIsPublicAndCreatedAtAfterOrderByHeartCountDesc(
+                        false, LocalDate.now().atStartOfDay())
                 .stream()
-                .map(r -> RecipeListDto.builder()
+                .map(r -> RecipeCardDto.builder()
                         .id(r.getId())
                         .nickName(r.getMember().getNickname())
                         .title(r.getSummary().getTitle())
