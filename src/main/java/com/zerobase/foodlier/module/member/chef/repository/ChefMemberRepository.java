@@ -22,7 +22,7 @@ public interface ChefMemberRepository extends JpaRepository<ChefMember, Long> {
                     "rq.id as requestId, IFNULL(rp.is_quotation, false) as isQuotation, rp.id as quotationId, rc.recipeCount as recipeCount,\n" +
                     "m.lat as lat, m.lnt as lnt\n" +
                     "FROM member rm\n" +
-                    "JOIN cook_request rq ON rq.member_id = rm.id AND rq.is_paid = false AND rq.dm_room_id is null\n" +
+                    "JOIN cook_request rq ON rq.member_id = rm.id AND rq.is_paid = false AND rq.dm_room_id is null AND rq.is_finished = false\n" +
                     "JOIN chef_member c ON c.id = rq.chef_member_id\n" +
                     "JOIN member m ON m.id = c.member_id AND m.is_deleted = false\n" +
                     "LEFT JOIN recipe rp ON rp.id = rq.recipe_id\n" +
@@ -38,7 +38,7 @@ public interface ChefMemberRepository extends JpaRepository<ChefMember, Long> {
                     "WHERE rm.id = :requester",
             countQuery = "SELECT count(*)\n" +
                     "FROM member rm\n" +
-                    "JOIN cook_request rq ON rq.member_id = rm.id AND rq.is_paid = false AND rq.dm_room_id is null\n" +
+                    "JOIN cook_request rq ON rq.member_id = rm.id AND rq.is_paid = false AND rq.dm_room_id is null AND rq.is_finished = false\n" +
                     "JOIN chef_member c ON c.id = rq.chef_member_id\n" +
                     "JOIN member m ON m.id = c.member_id AND m.is_deleted = false\n" +
                     "LEFT JOIN recipe rp ON rp.id = rq.recipe_id\n" +
@@ -82,7 +82,7 @@ public interface ChefMemberRepository extends JpaRepository<ChefMember, Long> {
             "(\n" +
             "\tSELECT c.id\n" +
             "\tFROM member rm\n" +
-            "\tJOIN cook_request rq ON rq.member_id = rm.id AND rq.is_paid = false AND rq.dm_room_id is null\n" +
+            "\tJOIN cook_request rq ON rq.member_id = rm.id AND rq.is_finished = false\n" +
             "\tJOIN chef_member c ON c.id = rq.chef_member_id\n" +
             "\twhere rm.id = :requester\n" +
             ")";
@@ -107,7 +107,7 @@ public interface ChefMemberRepository extends JpaRepository<ChefMember, Long> {
             "(\n" +
             "\tSELECT c.id\n" +
             "\tFROM member rm\n" +
-            "\tJOIN cook_request rq ON rq.member_id = rm.id AND rq.is_paid = false AND rq.dm_room_id is null\n" +
+            "\tJOIN cook_request rq ON rq.member_id = rm.id AND rq.is_finished = false\n" +
             "\tJOIN chef_member c ON c.id = rq.chef_member_id\n" +
             "\twhere rm.id = :requester\n" +
             ")";

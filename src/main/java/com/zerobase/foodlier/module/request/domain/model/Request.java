@@ -56,4 +56,7 @@ public class Request extends Audit {
     @ManyToOne
     @JoinColumn(name = "recipe_id")
     private Recipe recipe;
+
+    @Column(nullable = false)
+    private boolean isFinished;
 }
