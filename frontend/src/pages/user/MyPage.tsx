@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useRecoilState } from 'recoil'
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
@@ -7,9 +8,10 @@ import Header from '../../components/Header'
 import useIcon from '../../hooks/useIcon'
 import { palette } from '../../constants/Styles'
 import ModalWithTwoButton from '../../components/ui/ModalWithTwoButton'
-import axiosInstance from '../../utils/FetchCall'
+import axiosInstance, { reissueToken } from '../../utils/FetchCall'
 import { myInfoState } from '../../store/recoilState'
 import ModalWithoutButton from '../../components/ui/ModalWithoutButton'
+import defaultProfile from '../../../public/images/default_profile.png'
 
 interface MenuListInterface {
   title: string
@@ -30,12 +32,6 @@ const MyPage = () => {
   const [isWithdrawModal, setIsWithdrawModal] = useState(false)
 
   const MENU_LIST = [
-    {
-      title: '🧑🏻‍🍳 요리사 신청하기',
-      onClick: () => {
-        setIsChefModal(true)
-      },
-    },
     {
       title: '내가 작성한 글',
       navigate: '/my/recipe',
@@ -88,6 +84,7 @@ const MyPage = () => {
     console.log(response)
     if (response.status === 200) {
       setProfile(response.data)
+      localStorage.setItem('PROFILE', JSON.stringify(response.data))
     }
   }
 
@@ -103,8 +100,12 @@ const MyPage = () => {
       )
       console.log(response)
       setChefCompleteContent('요리사 등록이 완료되었습니다.')
+      // 요리사 등록 시 refresh token으로 토큰 재발급 후 새로운 토큰으로 저장해야 한다.
+      const NEW_TOKEN = reissueToken()
+      localStorage.setItem('TOKEN', JSON.stringify(NEW_TOKEN))
     } catch (error) {
-      setChefCompleteContent(error.response.data.message)
+      console.log(error)
+      setChefCompleteContent('작성한 게시물이 3개 이하입니다.')
     }
     setIsChefModal(false)
     setIsChefCompleteModal(true)
@@ -122,8 +123,9 @@ const MyPage = () => {
       <Header />
       <S.Container>
         <S.ProfileButton>
-          <S.ProfileImage src={profile?.profileUrl} />
+          <S.ProfileImage src={profile?.profileUrl || defaultProfile} />
           <S.PrifileInfo>
+            {profile?.isChef && <S.ChefBadge>요리사</S.ChefBadge>}
             <S.Nickname>{profile?.nickName}</S.Nickname>
             <S.Email>{profile?.email}</S.Email>
           </S.PrifileInfo>
@@ -140,6 +142,11 @@ const MyPage = () => {
           </S.PointChargeButton>
         </S.WrapMyPoint>
         <S.NavigateButtonList>
+          {!profile?.isChef && (
+            <S.NavigateButton onClick={() => setIsChefModal(true)}>
+              🧑🏻‍🍳 요리사 신청하기
+            </S.NavigateButton>
+          )}
           {MENU_LIST.map(item => (
             <S.NavigateButton
               key={item.title}
