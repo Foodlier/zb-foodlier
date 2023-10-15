@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react'
 import * as S from '../../../../styles/recipe/detail/comment/RecipeComment.styled'
-import axiosInstance from '../../../../utils/fetchCall'
+import axiosInstance from '../../../../utils/FetchCall'
 import CommonButton from '../../../ui/Button'
 import Dialog from '../../../ui/Dialog'
 

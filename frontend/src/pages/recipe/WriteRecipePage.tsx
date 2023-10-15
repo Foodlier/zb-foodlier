@@ -13,7 +13,7 @@ import {
   EMPTY_ORDER,
   INGREDIENT_LIST,
 } from '../../constants/Data'
-import axiosInstance from '../../utils/fetchCall'
+import axiosInstance from '../../utils/FetchCall'
 import ModalWithoutButton from '../../components/ui/ModalWithoutButton'
 import {
   RecipeIngredientDtoList,
