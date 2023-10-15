@@ -91,28 +91,12 @@ public class RecipeServiceImpl implements RecipeService {
      * 레시피 수정 시 레시피 검색을 위한 객체도 레시피 정보를 기반으로 수정
      * 작성일자: 2023-09-27
      */
-    @Transactional
     @Override
     public void updateRecipe(RecipeDtoRequest recipeDtoRequest, Long id) {
         Recipe recipe = recipeRepository.findById(id)
                 .orElseThrow(() -> new RecipeException(NO_SUCH_RECIPE));
 
-        recipe.setSummary(Summary.builder()
-                .title(recipeDtoRequest.getTitle())
-                .content(recipeDtoRequest.getContent())
-                .build());
-        recipe.setMainImageUrl(recipeDtoRequest.getMainImageUrl());
-        recipe.setExpectedTime(recipeDtoRequest.getExpectedTime());
-        recipe.setDifficulty(recipeDtoRequest.getDifficulty());
-        recipe.setRecipeDetailList(recipeDtoRequest.getRecipeDetailDtoList()
-                .stream()
-                .map(RecipeDetailDto::toEntity)
-                .collect(Collectors.toList()));
-        recipe.setRecipeIngredientList(recipeDtoRequest.getRecipeIngredientDtoList()
-                .stream()
-                .map(RecipeIngredientDto::toEntity)
-                .collect(Collectors.toList()));
-
+        recipe.updateRecipe(recipeDtoRequest);
         recipeRepository.save(recipe);
         RecipeDocument recipeDocument = recipeSearchRepository.findById(recipe.getId())
                 .orElseThrow(() -> new RecipeException(RecipeErrorCode.NO_SUCH_RECIPE_DOCUMENT));

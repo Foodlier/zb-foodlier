@@ -3,8 +3,10 @@ package com.zerobase.foodlier.module.member.member.domain.model;
 import com.zerobase.foodlier.common.jpa.audit.Audit;
 import com.zerobase.foodlier.module.member.chef.domain.model.ChefMember;
 import com.zerobase.foodlier.module.member.member.domain.vo.Address;
+import com.zerobase.foodlier.module.member.member.profile.dto.MemberUpdateDto;
 import com.zerobase.foodlier.module.member.member.type.RegistrationType;
 import lombok.*;
+import org.springframework.util.StringUtils;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -46,5 +48,44 @@ public class Member extends Audit {
 
     public void transaction(int point) {
         this.point += point;
+    }
+
+    public void updateNickname(String nickname) {
+        if (StringUtils.hasText(nickname)) {
+            this.nickname = nickname;
+        }
+    }
+
+    public void updatePhoneNumber(String phoneNumber) {
+        if (StringUtils.hasText(phoneNumber)) {
+            this.phoneNumber = phoneNumber;
+        }
+    }
+
+    public void updateAddress(MemberUpdateDto memberUpdateDto) {
+        this.address = Address.builder()
+                .roadAddress(memberUpdateDto.getRoadAddress())
+                .addressDetail(memberUpdateDto.getAddressDetail() != null ?
+                        memberUpdateDto.getAddressDetail() :
+                        this.address.getAddressDetail())
+                .lat(memberUpdateDto.getLat())
+                .lnt(memberUpdateDto.getLnt())
+                .build();
+    }
+
+    public void updateProfileUrl(String profileUrl) {
+        this.profileUrl = profileUrl;
+    }
+
+    public void updatePassword(String password) {
+        this.password = password;
+    }
+
+    public void updateEmail(String email) {
+        this.email = email;
+    }
+
+    public void deleteMember() {
+        this.isDeleted = true;
     }
 }
