@@ -4,6 +4,7 @@ import com.zerobase.foodlier.common.response.ListResponse;
 import com.zerobase.foodlier.common.security.provider.dto.MemberAuthDto;
 import com.zerobase.foodlier.module.heart.reposiotry.HeartRepository;
 import com.zerobase.foodlier.module.member.member.domain.model.Member;
+import com.zerobase.foodlier.module.member.member.exception.MemberErrorCode;
 import com.zerobase.foodlier.module.member.member.exception.MemberException;
 import com.zerobase.foodlier.module.member.member.repository.MemberRepository;
 import com.zerobase.foodlier.module.recipe.domain.document.RecipeDocument;
@@ -16,14 +17,16 @@ import com.zerobase.foodlier.module.recipe.exception.recipe.RecipeException;
 import com.zerobase.foodlier.module.recipe.repository.RecipeRepository;
 import com.zerobase.foodlier.module.recipe.repository.RecipeSearchRepository;
 import com.zerobase.foodlier.module.recipe.service.recipe.RecipeServiceImpl;
+import com.zerobase.foodlier.module.recipe.type.SearchType;
+import com.zerobase.foodlier.module.recipe.type.SortType;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 
@@ -404,96 +407,736 @@ class RecipeServiceImplTest {
         assertEquals(NO_SUCH_RECIPE, recipeException.getErrorCode());
     }
 
-    @Test
-    @DisplayName("레시피 제목으로 유사한 검색 성공")
-    void success_get_recipe_list_by_recipe_title() {
+    @Nested
+    @DisplayName("레시피 검색 테스트")
+    class RecipeSearchTest {
 
-        // given
-        Member member = getMember();
-        Summary summary = Summary.builder()
-                .title("김치제육볶음")
-                .content("맛있는 김치제육볶음을 만들어보자!")
-                .build();
-        Summary otherSummary = Summary.builder()
-                .title("치즈제육볶음")
-                .content("맛있는 치즈제육볶음을 만들어보자!")
-                .build();
+        @Test
+        @DisplayName("레시피 검색 실패 - 검색 요청자가 회원이 아닌 경우")
+        void fail_search_recipe_member_not_found(){
 
-        Recipe recipe = Recipe.builder()
-                .id(1L)
-                .summary(summary)
-                .build();
-        Recipe otherRecipe = Recipe.builder()
-                .id(2L)
-                .summary(otherSummary)
-                .build();
-        RecipeDocument recipeDocument = getDocument(member, "김치제육볶음");
-        RecipeDocument otherRecipeDocument = getDocument(member, "치즈제육볶음");
+            // given
+            PageImpl<RecipeDocument> recipeDocumentPage = getRecipeDocumentByTitleAndCreateAt();
+            RecipeSearchRequest recipeSearchRequest = getRecipeSearchRequest(SearchType.TITLE,
+                    SortType.CREATE_AT, "제육");
+            given(memberRepository.findById(any()))
+                    .willThrow(new MemberException(MEMBER_NOT_FOUND));
 
-        given(recipeSearchRepository.findByTitle(any(), any()))
-                .willReturn(new PageImpl<>(new ArrayList<>(Arrays.asList(recipeDocument, otherRecipeDocument))));
-        when(recipeRepository.findById(any()))
-                .thenReturn(Optional.of(recipe), Optional.of(otherRecipe));
+            // when
+            MemberException memberException = assertThrows(MemberException.class,
+                    () -> recipeService.getRecipeList(recipeSearchRequest));
 
-        // when
-        ListResponse<Recipe> recipeList = recipeService.getRecipeByTitle("제육볶음", PageRequest.of(0, 10));
-        List<String> titleList = recipeList.getContent()
-                .stream()
-                .map(Recipe::getSummary)
-                .map(Summary::getTitle)
-                .collect(Collectors.toList());
-        // then
-        verify(recipeSearchRepository, times(1)).findByTitle(any(), any());
-        verify(recipeRepository, times(2)).findById(any());
 
-        assertEquals(titleList.size(), 2);
-        assertEquals(titleList.get(0), recipeDocument.getTitle());
-        assertEquals(titleList.get(1), otherRecipeDocument.getTitle());
+            // then
+            assertEquals(memberException.getErrorCode(), MEMBER_NOT_FOUND);
+            assertEquals(memberException.getDescription(), MEMBER_NOT_FOUND.getDescription());
+
+        }
+
+        @Test
+        @DisplayName("레시피 검색 실패 - 검색된 레시피와 일치하는 레시피가 존재하지 않는 경우")
+        void fail_search_recipe_recipe_not_found(){
+
+            // given
+            Member member = Member.builder()
+                    .id(10L)
+                    .nickname("foodlier")
+                    .build();
+
+            PageImpl<RecipeDocument> recipeDocumentPage = getRecipeDocumentByTitleAndCreateAt();
+            RecipeSearchRequest recipeSearchRequest = getRecipeSearchRequest(SearchType.TITLE,
+                    SortType.CREATE_AT, "제육");
+
+            given(memberRepository.findById(any()))
+                    .willReturn(Optional.of(member));
+            given(recipeSearchRepository.findByTitle(any(), any()))
+                    .willReturn(recipeDocumentPage);
+            when(recipeRepository.findById(any())).thenThrow(new RecipeException(NO_SUCH_RECIPE));
+            // when
+            RecipeException recipeException = assertThrows(RecipeException.class, () -> recipeService.getRecipeList(recipeSearchRequest));
+
+            assertEquals(recipeException.getErrorCode(), NO_SUCH_RECIPE);
+            assertEquals(recipeException.getDescription(), NO_SUCH_RECIPE.getDescription());
+
+        }
+
+        @Nested
+        @DisplayName("제목으로 레시피 검색하기")
+        class RecipeSearchByTitle {
+            @Test
+            @DisplayName("레시피 검색 성공 - 최근 순")
+            void success_search_recipe_by_create_at() {
+
+                // given
+                Member member = Member.builder()
+                        .id(10L)
+                        .nickname("foodlier")
+                        .build();
+                Member writer = Member.builder()
+                        .nickname("세체요")
+                        .build();
+                Member writerTwo = Member.builder()
+                        .nickname("세체요가 되고 싶은 요리사")
+                        .build();
+
+                PageImpl<RecipeDocument> recipeDocumentPage = getRecipeDocumentByTitleAndCreateAt();
+                RecipeSearchRequest recipeSearchRequest = getRecipeSearchRequest(SearchType.TITLE,
+                        SortType.CREATE_AT, "제육");
+
+                ListResponse<RecipeCardDto> expectedRecipeList = getRecipeRecipeCardDtoByTitle();
+                given(memberRepository.findById(any()))
+                        .willReturn(Optional.of(member));
+                given(recipeSearchRepository.findByTitle(any(), any()))
+                        .willReturn(recipeDocumentPage);
+                when(recipeRepository.findById(any())).thenReturn(
+                        Optional.of(Recipe.builder()
+                                .id(3L)
+                                .member(writerTwo)
+                                .summary(Summary.builder()
+                                        .title("김치제육볶음")
+                                        .content("김치를 이용한 제육볶음 레시피")
+                                        .build())
+                                .mainImageUrl("mainImageUrl3")
+                                .heartCount(0)
+                                .build()),
+                        Optional.of(Recipe.builder()
+                                .id(2L)
+                                .member(writerTwo)
+                                .summary(Summary.builder()
+                                        .title("치즈제육볶음")
+                                        .content("치즈를 곁들인 제육볶음 레시피")
+                                        .build())
+                                .mainImageUrl("mainImageUrl2")
+                                .heartCount(0)
+                                .build()),
+                        Optional.of(Recipe.builder()
+                                .id(1L)
+                                .member(writer)
+                                .summary(Summary.builder()
+                                        .title("제육볶음")
+                                        .content("초간단 제육볶음 레시피")
+                                        .build())
+                                .mainImageUrl("mainImageUrl1")
+                                .heartCount(0)
+                                .build()));
+
+                // when
+                ListResponse<RecipeCardDto> recipeList = recipeService.getRecipeList(recipeSearchRequest);
+
+                // then
+                verify(recipeSearchRepository, times(1)).findByTitle(any(),
+                        any());
+                assertAll(
+                        () -> assertEquals(expectedRecipeList.getTotalPages(), recipeList.getTotalPages()),
+                        () -> assertEquals(expectedRecipeList.getTotalElements(), recipeList.getTotalElements()),
+                        () -> assertEquals(expectedRecipeList.isHasNextPage(), recipeList.isHasNextPage())
+                );
+                for (int i = 0; i < expectedRecipeList.getContent().size(); i++) {
+                    RecipeCardDto expected = expectedRecipeList.getContent().get(i);
+                    RecipeCardDto actual = recipeList.getContent().get(i);
+                    assertEquals(expected.getContent(), actual.getContent());
+                    assertEquals(expected.getTitle(), actual.getTitle());
+                    assertEquals(expected.getNickName(), actual.getNickName());
+                    assertEquals(expected.getId(), actual.getId());
+                }
+
+            }
+
+            @Test
+            @DisplayName("레시피 검색 성공 - 댓글 순")
+            void success_search_recipe_by_comment_count() {
+
+                // given
+                Member member = Member.builder()
+                        .id(10L)
+                        .nickname("foodlier")
+                        .build();
+                Member writer = Member.builder()
+                        .nickname("세체요")
+                        .build();
+                Member writerTwo = Member.builder()
+                        .nickname("세체요가 되고 싶은 요리사")
+                        .build();
+
+                PageImpl<RecipeDocument> recipeDocumentPage = getRecipeDocumentByTitleAndCommentCount();
+                RecipeSearchRequest recipeSearchRequest = getRecipeSearchRequest(SearchType.TITLE,
+                        SortType.COMMENT, "제육");
+
+                ListResponse<RecipeCardDto> expectedRecipeList = getRecipeRecipeCardDtoByTitle();
+                given(memberRepository.findById(any()))
+                        .willReturn(Optional.of(member));
+                given(recipeSearchRepository.findByTitle(any(), any()))
+                        .willReturn(recipeDocumentPage);
+                when(recipeRepository.findById(any())).thenReturn(
+                        Optional.of(Recipe.builder()
+                                .id(3L)
+                                .member(writerTwo)
+                                .summary(Summary.builder()
+                                        .title("김치제육볶음")
+                                        .content("김치를 이용한 제육볶음 레시피")
+                                        .build())
+                                .mainImageUrl("mainImageUrl3")
+                                .heartCount(0)
+                                .build()),
+                        Optional.of(Recipe.builder()
+                                .id(2L)
+                                .member(writerTwo)
+                                .summary(Summary.builder()
+                                        .title("치즈제육볶음")
+                                        .content("치즈를 곁들인 제육볶음 레시피")
+                                        .build())
+                                .mainImageUrl("mainImageUrl2")
+                                .heartCount(0)
+                                .build()),
+                        Optional.of(Recipe.builder()
+                                .id(1L)
+                                .member(writer)
+                                .summary(Summary.builder()
+                                        .title("제육볶음")
+                                        .content("초간단 제육볶음 레시피")
+                                        .build())
+                                .mainImageUrl("mainImageUrl1")
+                                .heartCount(0)
+                                .build()));
+
+                // when
+                ListResponse<RecipeCardDto> recipeList = recipeService.getRecipeList(recipeSearchRequest);
+
+                // then
+                verify(recipeSearchRepository, times(1)).findByTitle(any(),
+                        any());
+                assertAll(
+                        () -> assertEquals(expectedRecipeList.getTotalPages(), recipeList.getTotalPages()),
+                        () -> assertEquals(expectedRecipeList.getTotalElements(), recipeList.getTotalElements()),
+                        () -> assertEquals(expectedRecipeList.isHasNextPage(), recipeList.isHasNextPage())
+                );
+                for (int i = 0; i < expectedRecipeList.getContent().size(); i++) {
+                    RecipeCardDto expected = expectedRecipeList.getContent().get(i);
+                    RecipeCardDto actual = recipeList.getContent().get(i);
+                    assertEquals(expected.getContent(), actual.getContent());
+                    assertEquals(expected.getTitle(), actual.getTitle());
+                    assertEquals(expected.getNickName(), actual.getNickName());
+                    assertEquals(expected.getId(), actual.getId());
+                }
+
+            }
+
+            @Test
+            @DisplayName("레시피 검색 성공 - 좋아요 순")
+            void success_search_recipe_by_heart_count() {
+
+                // given
+                Member member = Member.builder()
+                        .id(10L)
+                        .nickname("foodlier")
+                        .build();
+                Member writer = Member.builder()
+                        .nickname("세체요")
+                        .build();
+                Member writerTwo = Member.builder()
+                        .nickname("세체요가 되고 싶은 요리사")
+                        .build();
+
+                PageImpl<RecipeDocument> recipeDocumentPage = getRecipeDocumentByTitleAndHeartCount();
+                RecipeSearchRequest recipeSearchRequest = getRecipeSearchRequest(SearchType.TITLE,
+                        SortType.HEART, "제육");
+
+                ListResponse<RecipeCardDto> expectedRecipeList = getRecipeRecipeCardDtoByTitle();
+                given(memberRepository.findById(any()))
+                        .willReturn(Optional.of(member));
+                given(recipeSearchRepository.findByTitle(any(), any()))
+                        .willReturn(recipeDocumentPage);
+                when(recipeRepository.findById(any())).thenReturn(
+                        Optional.of(Recipe.builder()
+                                .id(3L)
+                                .member(writerTwo)
+                                .summary(Summary.builder()
+                                        .title("김치제육볶음")
+                                        .content("김치를 이용한 제육볶음 레시피")
+                                        .build())
+                                .mainImageUrl("mainImageUrl3")
+                                .heartCount(6)
+                                .build()),
+                        Optional.of(Recipe.builder()
+                                .id(2L)
+                                .member(writerTwo)
+                                .summary(Summary.builder()
+                                        .title("치즈제육볶음")
+                                        .content("치즈를 곁들인 제육볶음 레시피")
+                                        .build())
+                                .mainImageUrl("mainImageUrl2")
+                                .heartCount(2)
+                                .build()),
+                        Optional.of(Recipe.builder()
+                                .id(1L)
+                                .member(writer)
+                                .summary(Summary.builder()
+                                        .title("제육볶음")
+                                        .content("초간단 제육볶음 레시피")
+                                        .build())
+                                .mainImageUrl("mainImageUrl1")
+                                .heartCount(0)
+                                .build()));
+
+                // when
+                ListResponse<RecipeCardDto> recipeList = recipeService.getRecipeList(recipeSearchRequest);
+
+                // then
+                verify(recipeSearchRepository, times(1)).findByTitle(any(),
+                        any());
+                assertAll(
+                        () -> assertEquals(expectedRecipeList.getTotalPages(), recipeList.getTotalPages()),
+                        () -> assertEquals(expectedRecipeList.getTotalElements(), recipeList.getTotalElements()),
+                        () -> assertEquals(expectedRecipeList.isHasNextPage(), recipeList.isHasNextPage())
+                );
+                for (int i = 0; i < expectedRecipeList.getContent().size(); i++) {
+                    RecipeCardDto expected = expectedRecipeList.getContent().get(i);
+                    RecipeCardDto actual = recipeList.getContent().get(i);
+                    assertEquals(expected.getContent(), actual.getContent());
+                    assertEquals(expected.getTitle(), actual.getTitle());
+                    assertEquals(expected.getNickName(), actual.getNickName());
+                    assertEquals(expected.getId(), actual.getId());
+                }
+
+            }
+        }
+
+        @Nested
+        @DisplayName("작성자 닉네임으로 레시피 검색하기")
+        class RecipeSearchByWriter {
+            @Test
+            @DisplayName("레시피 검색 성공 - 최신 순")
+            void success_search_recipe_by_created_at() {
+
+                // given
+                Member member = Member.builder()
+                        .id(10L)
+                        .nickname("foodlier")
+                        .build();
+
+                Member writerTwo = Member.builder()
+                        .nickname("세체요가 되고 싶은 요리사")
+                        .build();
+
+                PageImpl<RecipeDocument> recipeDocumentPage = getRecipeDocumentByWriterAndCreatedAt();
+                RecipeSearchRequest recipeSearchRequest = getRecipeSearchRequest(SearchType.WRITER,
+                        SortType.CREATE_AT, writerTwo.getNickname());
+
+                ListResponse<RecipeCardDto> expectedRecipeList = getRecipeRecipeCardDtoByWriter();
+
+                given(memberRepository.findById(any()))
+                        .willReturn(Optional.of(member));
+
+                given(recipeSearchRepository.findByWriter(any(), any()))
+                        .willReturn(recipeDocumentPage);
+
+                when(recipeRepository.findById(any())).thenReturn(
+                        Optional.of(Recipe.builder()
+                                .id(3L)
+                                .member(writerTwo)
+                                .summary(Summary.builder()
+                                        .title("김치제육볶음")
+                                        .content("김치를 이용한 제육볶음 레시피")
+                                        .build())
+                                .mainImageUrl("mainImageUrl3")
+                                .heartCount(0)
+                                .build()),
+                        Optional.of(Recipe.builder()
+                                .id(2L)
+                                .member(writerTwo)
+                                .summary(Summary.builder()
+                                        .title("치즈제육볶음")
+                                        .content("치즈를 곁들인 제육볶음 레시피")
+                                        .build())
+                                .mainImageUrl("mainImageUrl2")
+                                .heartCount(0)
+                                .build())
+                );
+
+                // when
+                ListResponse<RecipeCardDto> recipeList = recipeService.getRecipeList(recipeSearchRequest);
+
+                // then
+                verify(recipeSearchRepository, times(1)).findByWriter(any(), any());
+
+                assertAll(
+                        () -> assertEquals(expectedRecipeList.getTotalPages(), recipeList.getTotalPages()),
+                        () -> assertEquals(expectedRecipeList.getTotalElements(), recipeList.getTotalElements()),
+                        () -> assertEquals(expectedRecipeList.isHasNextPage(), recipeList.isHasNextPage())
+                );
+
+                for (int i = 0; i < expectedRecipeList.getContent().size(); i++) {
+                    RecipeCardDto expected = expectedRecipeList.getContent().get(i);
+                    RecipeCardDto actual = recipeList.getContent().get(i);
+                    assertEquals(expected.getContent(), actual.getContent());
+                    assertEquals(expected.getTitle(), actual.getTitle());
+                    assertEquals(expected.getNickName(), actual.getNickName());
+                    assertEquals(expected.getId(), actual.getId());
+                }
+            }
+
+            @Test
+            @DisplayName("레시피 검색 성공 - 댓글 순")
+            void success_search_recipe_by_comment_count() {
+
+                // given
+                Member member = Member.builder()
+                        .id(10L)
+                        .nickname("foodlier")
+                        .build();
+
+                Member writerTwo = Member.builder()
+                        .nickname("세체요가 되고 싶은 요리사")
+                        .build();
+
+                PageImpl<RecipeDocument> recipeDocumentPage = getRecipeDocumentByWriterAndCommentCount();
+                RecipeSearchRequest recipeSearchRequest = getRecipeSearchRequest(SearchType.WRITER,
+                        SortType.COMMENT, writerTwo.getNickname());
+
+                ListResponse<RecipeCardDto> expectedRecipeList = getRecipeRecipeCardDtoByWriter();
+
+                given(memberRepository.findById(any()))
+                        .willReturn(Optional.of(member));
+
+                given(recipeSearchRepository.findByWriter(any(), any()))
+                        .willReturn(recipeDocumentPage);
+
+                when(recipeRepository.findById(any())).thenReturn(
+                        Optional.of(Recipe.builder()
+                                .id(3L)
+                                .member(writerTwo)
+                                .summary(Summary.builder()
+                                        .title("김치제육볶음")
+                                        .content("김치를 이용한 제육볶음 레시피")
+                                        .build())
+                                .mainImageUrl("mainImageUrl3")
+                                .heartCount(0)
+                                .build()),
+                        Optional.of(Recipe.builder()
+                                .id(2L)
+                                .member(writerTwo)
+                                .summary(Summary.builder()
+                                        .title("치즈제육볶음")
+                                        .content("치즈를 곁들인 제육볶음 레시피")
+                                        .build())
+                                .mainImageUrl("mainImageUrl2")
+                                .heartCount(0)
+                                .build())
+                );
+
+                // when
+                ListResponse<RecipeCardDto> recipeList = recipeService.getRecipeList(recipeSearchRequest);
+
+                // then
+                verify(recipeSearchRepository, times(1)).findByWriter(any(), any());
+
+                assertAll(
+                        () -> assertEquals(expectedRecipeList.getTotalPages(), recipeList.getTotalPages()),
+                        () -> assertEquals(expectedRecipeList.getTotalElements(), recipeList.getTotalElements()),
+                        () -> assertEquals(expectedRecipeList.isHasNextPage(), recipeList.isHasNextPage())
+                );
+
+                for (int i = 0; i < expectedRecipeList.getContent().size(); i++) {
+                    RecipeCardDto expected = expectedRecipeList.getContent().get(i);
+                    RecipeCardDto actual = recipeList.getContent().get(i);
+                    assertEquals(expected.getContent(), actual.getContent());
+                    assertEquals(expected.getTitle(), actual.getTitle());
+                    assertEquals(expected.getNickName(), actual.getNickName());
+                    assertEquals(expected.getId(), actual.getId());
+                }
+            }
+
+            @Test
+            @DisplayName("레시피 검색 성공 - 좋아요 순")
+            void success_search_recipe_by_heart_count() {
+
+                // given
+                Member member = Member.builder()
+                        .id(10L)
+                        .nickname("foodlier")
+                        .build();
+
+                Member writerTwo = Member.builder()
+                        .nickname("세체요가 되고 싶은 요리사")
+                        .build();
+
+                PageImpl<RecipeDocument> recipeDocumentPage = getRecipeDocumentByWriterAndHeartCount();
+                RecipeSearchRequest recipeSearchRequest = getRecipeSearchRequest(SearchType.WRITER,
+                        SortType.HEART, writerTwo.getNickname());
+
+                ListResponse<RecipeCardDto> expectedRecipeList = getRecipeRecipeCardDtoByWriter();
+
+                given(memberRepository.findById(any()))
+                        .willReturn(Optional.of(member));
+
+                given(recipeSearchRepository.findByWriter(any(), any()))
+                        .willReturn(recipeDocumentPage);
+
+                when(recipeRepository.findById(any())).thenReturn(
+                        Optional.of(Recipe.builder()
+                                .id(3L)
+                                .member(writerTwo)
+                                .summary(Summary.builder()
+                                        .title("김치제육볶음")
+                                        .content("김치를 이용한 제육볶음 레시피")
+                                        .build())
+                                .mainImageUrl("mainImageUrl3")
+                                .heartCount(6)
+                                .build()),
+                        Optional.of(Recipe.builder()
+                                .id(2L)
+                                .member(writerTwo)
+                                .summary(Summary.builder()
+                                        .title("치즈제육볶음")
+                                        .content("치즈를 곁들인 제육볶음 레시피")
+                                        .build())
+                                .mainImageUrl("mainImageUrl2")
+                                .heartCount(2)
+                                .build())
+                );
+
+                // when
+                ListResponse<RecipeCardDto> recipeList = recipeService.getRecipeList(recipeSearchRequest);
+
+                // then
+                verify(recipeSearchRepository, times(1)).findByWriter(any(), any());
+
+                assertAll(
+                        () -> assertEquals(expectedRecipeList.getTotalPages(), recipeList.getTotalPages()),
+                        () -> assertEquals(expectedRecipeList.getTotalElements(), recipeList.getTotalElements()),
+                        () -> assertEquals(expectedRecipeList.isHasNextPage(), recipeList.isHasNextPage())
+                );
+
+                for (int i = 0; i < expectedRecipeList.getContent().size(); i++) {
+                    RecipeCardDto expected = expectedRecipeList.getContent().get(i);
+                    RecipeCardDto actual = recipeList.getContent().get(i);
+                    assertEquals(expected.getContent(), actual.getContent());
+                    assertEquals(expected.getTitle(), actual.getTitle());
+                    assertEquals(expected.getNickName(), actual.getNickName());
+                    assertEquals(expected.getId(), actual.getId());
+                }
+            }
+        }
+
+        @Nested
+        @DisplayName("레시피 재료로 레시피 검색하기")
+        class RecipeSearchByIngredients {
+            @Test
+            @DisplayName("레시피 검색 성공 - 최신 순")
+            void success_search_recipe_by_created_at() {
+
+                // given
+                Member member = Member.builder()
+                        .id(10L)
+                        .nickname("foodlier")
+                        .build();
+
+                Member writerTwo = Member.builder()
+                        .nickname("세체요가 되고 싶은 요리사")
+                        .build();
+
+
+                PageImpl<RecipeDocument> recipeDocumentPage = getRecipeDocumentByWriterAndCreatedAt();
+                RecipeSearchRequest recipeSearchRequest = getRecipeSearchRequest(SearchType.INGREDIENTS,
+                        SortType.CREATE_AT, writerTwo.getNickname());
+
+                ListResponse<RecipeCardDto> expectedRecipeList = getRecipeRecipeCardDtoByWriter();
+
+                given(memberRepository.findById(any()))
+                        .willReturn(Optional.of(member));
+
+                given(recipeSearchRepository.findByIngredients(any(), any()))
+                        .willReturn(recipeDocumentPage);
+
+                when(recipeRepository.findById(any())).thenReturn(
+                        Optional.of(Recipe.builder()
+                                .id(3L)
+                                .member(writerTwo)
+                                .summary(Summary.builder()
+                                        .title("김치제육볶음")
+                                        .content("김치를 이용한 제육볶음 레시피")
+                                        .build())
+                                .mainImageUrl("mainImageUrl3")
+                                .heartCount(0)
+                                .build()),
+                        Optional.of(Recipe.builder()
+                                .id(2L)
+                                .member(writerTwo)
+                                .summary(Summary.builder()
+                                        .title("치즈제육볶음")
+                                        .content("치즈를 곁들인 제육볶음 레시피")
+                                        .build())
+                                .mainImageUrl("mainImageUrl2")
+                                .heartCount(0)
+                                .build())
+                );
+
+                // when
+                ListResponse<RecipeCardDto> recipeList = recipeService.getRecipeList(recipeSearchRequest);
+
+                // then
+                verify(recipeSearchRepository, times(1)).findByIngredients(any(), any());
+
+                assertAll(
+                        () -> assertEquals(expectedRecipeList.getTotalPages(), recipeList.getTotalPages()),
+                        () -> assertEquals(expectedRecipeList.getTotalElements(), recipeList.getTotalElements()),
+                        () -> assertEquals(expectedRecipeList.isHasNextPage(), recipeList.isHasNextPage())
+                );
+
+                for (int i = 0; i < expectedRecipeList.getContent().size(); i++) {
+                    RecipeCardDto expected = expectedRecipeList.getContent().get(i);
+                    RecipeCardDto actual = recipeList.getContent().get(i);
+                    assertEquals(expected.getContent(), actual.getContent());
+                    assertEquals(expected.getTitle(), actual.getTitle());
+                    assertEquals(expected.getNickName(), actual.getNickName());
+                    assertEquals(expected.getId(), actual.getId());
+                }
+            }
+
+            @Test
+            @DisplayName("레시피 검색 성공 - 댓글 순")
+            void success_search_recipe_by_comment_count() {
+
+                // given
+                Member member = Member.builder()
+                        .id(10L)
+                        .nickname("foodlier")
+                        .build();
+
+                Member writerTwo = Member.builder()
+                        .nickname("세체요가 되고 싶은 요리사")
+                        .build();
+
+                PageImpl<RecipeDocument> recipeDocumentPage = getRecipeDocumentByWriterAndCommentCount();
+                RecipeSearchRequest recipeSearchRequest = getRecipeSearchRequest(SearchType.INGREDIENTS,
+                        SortType.COMMENT, writerTwo.getNickname());
+
+                ListResponse<RecipeCardDto> expectedRecipeList = getRecipeRecipeCardDtoByWriter();
+
+                given(memberRepository.findById(any()))
+                        .willReturn(Optional.of(member));
+
+                given(recipeSearchRepository.findByIngredients(any(), any()))
+                        .willReturn(recipeDocumentPage);
+
+                when(recipeRepository.findById(any())).thenReturn(
+                        Optional.of(Recipe.builder()
+                                .id(3L)
+                                .member(writerTwo)
+                                .summary(Summary.builder()
+                                        .title("김치제육볶음")
+                                        .content("김치를 이용한 제육볶음 레시피")
+                                        .build())
+                                .mainImageUrl("mainImageUrl3")
+                                .heartCount(0)
+                                .build()),
+                        Optional.of(Recipe.builder()
+                                .id(2L)
+                                .member(writerTwo)
+                                .summary(Summary.builder()
+                                        .title("치즈제육볶음")
+                                        .content("치즈를 곁들인 제육볶음 레시피")
+                                        .build())
+                                .mainImageUrl("mainImageUrl2")
+                                .heartCount(0)
+                                .build())
+                );
+
+                // when
+                ListResponse<RecipeCardDto> recipeList = recipeService.getRecipeList(recipeSearchRequest);
+
+                // then
+                verify(recipeSearchRepository, times(1)).findByIngredients(any(), any());
+
+                assertAll(
+                        () -> assertEquals(expectedRecipeList.getTotalPages(), recipeList.getTotalPages()),
+                        () -> assertEquals(expectedRecipeList.getTotalElements(), recipeList.getTotalElements()),
+                        () -> assertEquals(expectedRecipeList.isHasNextPage(), recipeList.isHasNextPage())
+                );
+
+                for (int i = 0; i < expectedRecipeList.getContent().size(); i++) {
+                    RecipeCardDto expected = expectedRecipeList.getContent().get(i);
+                    RecipeCardDto actual = recipeList.getContent().get(i);
+                    assertEquals(expected.getContent(), actual.getContent());
+                    assertEquals(expected.getTitle(), actual.getTitle());
+                    assertEquals(expected.getNickName(), actual.getNickName());
+                    assertEquals(expected.getId(), actual.getId());
+                }
+            }
+
+            @Test
+            @DisplayName("레시피 검색 성공 - 좋아요 순")
+            void success_search_recipe_by_heart_count() {
+
+                // given
+                Member member = Member.builder()
+                        .id(10L)
+                        .nickname("foodlier")
+                        .build();
+
+                Member writerTwo = Member.builder()
+                        .nickname("세체요가 되고 싶은 요리사")
+                        .build();
+
+                PageImpl<RecipeDocument> recipeDocumentPage = getRecipeDocumentByWriterAndHeartCount();
+                RecipeSearchRequest recipeSearchRequest = getRecipeSearchRequest(SearchType.INGREDIENTS,
+                        SortType.HEART, writerTwo.getNickname());
+
+                ListResponse<RecipeCardDto> expectedRecipeList = getRecipeRecipeCardDtoByWriter();
+
+                given(memberRepository.findById(any()))
+                        .willReturn(Optional.of(member));
+
+                given(recipeSearchRepository.findByIngredients(any(), any()))
+                        .willReturn(recipeDocumentPage);
+
+                when(recipeRepository.findById(any())).thenReturn(
+                        Optional.of(Recipe.builder()
+                                .id(3L)
+                                .member(writerTwo)
+                                .summary(Summary.builder()
+                                        .title("김치제육볶음")
+                                        .content("김치를 이용한 제육볶음 레시피")
+                                        .build())
+                                .mainImageUrl("mainImageUrl3")
+                                .heartCount(6)
+                                .build()),
+                        Optional.of(Recipe.builder()
+                                .id(2L)
+                                .member(writerTwo)
+                                .summary(Summary.builder()
+                                        .title("치즈제육볶음")
+                                        .content("치즈를 곁들인 제육볶음 레시피")
+                                        .build())
+                                .mainImageUrl("mainImageUrl2")
+                                .heartCount(2)
+                                .build())
+                );
+
+                // when
+                ListResponse<RecipeCardDto> recipeList = recipeService.getRecipeList(recipeSearchRequest);
+
+                // then
+                verify(recipeSearchRepository, times(1)).findByIngredients(any(), any());
+
+                assertAll(
+                        () -> assertEquals(expectedRecipeList.getTotalPages(), recipeList.getTotalPages()),
+                        () -> assertEquals(expectedRecipeList.getTotalElements(), recipeList.getTotalElements()),
+                        () -> assertEquals(expectedRecipeList.isHasNextPage(), recipeList.isHasNextPage())
+                );
+
+                for (int i = 0; i < expectedRecipeList.getContent().size(); i++) {
+                    RecipeCardDto expected = expectedRecipeList.getContent().get(i);
+                    RecipeCardDto actual = recipeList.getContent().get(i);
+                    assertEquals(expected.getContent(), actual.getContent());
+                    assertEquals(expected.getTitle(), actual.getTitle());
+                    assertEquals(expected.getNickName(), actual.getNickName());
+                    assertEquals(expected.getId(), actual.getId());
+                }
+            }
+        }
     }
 
-    @Test
-    @DisplayName("레시피 제목으로 유사한 레시피 검색 실패 - 검색 객체만 존재하는 경우")
-    void fail_find_recipes() {
-
-        // given
-        Member member = getMember();
-        RecipeDocument recipeDocument = getDocument(member, "김치제육볶음");
-        RecipeDocument otherRecipeDocument = getDocument(member, "치즈제육볶음");
-
-        given(recipeSearchRepository.findByTitle(any(), any()))
-                .willReturn(new PageImpl<>(new ArrayList<>(Arrays.asList(recipeDocument, otherRecipeDocument))));
-        given(recipeRepository.findById(any()))
-                .willThrow(new RecipeException(NO_SUCH_RECIPE));
-
-        // when
-        RecipeException recipeException = assertThrows(RecipeException.class,
-                () -> recipeService.getRecipeByTitle("제육볶음",
-                        PageRequest.of(0, 10)));
-
-        // then
-        assertEquals(recipeException.getErrorCode(), NO_SUCH_RECIPE);
-        assertEquals(recipeException.getDescription(), NO_SUCH_RECIPE.getDescription());
-
-    }
-
-    @Test
-    @DisplayName("레시피 제목으로 검색 성공 - 유사한 제목을 못찾은 경우")
-    void success_find_recipe_list_no_match() {
-
-        // given
-        given(recipeSearchRepository.findByTitle(any(), any()))
-                .willReturn(Page.empty());
-
-        // when
-        ListResponse<Recipe> recipeList = recipeService.getRecipeByTitle("숙주미나리볶음",
-                PageRequest.of(0, 10));
-
-        // then
-        verify(recipeSearchRepository, times(1)).findByTitle(any(), any());
-
-        assertEquals(recipeList.getContent().size(), 0);
-
-    }
 
     @Test
     @DisplayName("별점 추가 성공")
@@ -743,7 +1386,7 @@ class RecipeServiceImplTest {
         Recipe recipe = getExpectedRecipe(member);
         Recipe updatedRecipe = getCommentMinusRecipe(member);
 
-        RecipeDocument recipeDocument = getRecipeDocument(member);
+        RecipeDocument recipeDocument = getRecipeDocumentOneComment(member);
 
         RecipeDocument updatedRecipeDocument = RecipeDocument.builder()
                 .ingredients(recipeDocument.getIngredients())
@@ -886,7 +1529,7 @@ class RecipeServiceImplTest {
                 .willReturn(true);
 
         //when
-        List<RecipeListDto> mainPageRecipeList = recipeService.getMainPageRecipeList(MemberAuthDto.builder()
+        List<RecipeCardDto> mainPageRecipeList = recipeService.getMainPageRecipeList(MemberAuthDto.builder()
                 .id(1L)
                 .build());
 
@@ -989,7 +1632,7 @@ class RecipeServiceImplTest {
                 ))));
 
         //when
-        ListResponse<RecipeListDto> recipePageRecipeList = recipeService
+        ListResponse<RecipeCardDto> recipePageRecipeList = recipeService
                 .getRecipePageRecipeList(MemberAuthDto.builder()
                         .id(1L)
                         .build(), PageRequest.of(0, 10), CREATED_AT);
@@ -1080,7 +1723,7 @@ class RecipeServiceImplTest {
                         .collect(Collectors.toList())));
 
         //when
-        ListResponse<RecipeListDto> recipePageRecipeList = recipeService
+        ListResponse<RecipeCardDto> recipePageRecipeList = recipeService
                 .getRecipePageRecipeList(MemberAuthDto.builder()
                         .id(1L)
                         .build(), PageRequest.of(0, 10), HEART_COUNT);
@@ -1174,7 +1817,7 @@ class RecipeServiceImplTest {
                         .collect(Collectors.toList())));
 
         //when
-        ListResponse<RecipeListDto> recipePageRecipeList = recipeService
+        ListResponse<RecipeCardDto> recipePageRecipeList = recipeService
                 .getRecipePageRecipeList(MemberAuthDto.builder()
                         .id(1L)
                         .build(), PageRequest.of(0, 10), COMMENT_COUNT);
@@ -1338,7 +1981,7 @@ class RecipeServiceImplTest {
                 .willReturn(false);
 
         //when
-        List<RecipeListDto> recipeListDtoList = recipeService.recommendedRecipe(MemberAuthDto.builder()
+        List<RecipeCardDto> recipeListDtoList = recipeService.recommendedRecipe(MemberAuthDto.builder()
                 .id(1L)
                 .build());
 
@@ -1384,7 +2027,7 @@ class RecipeServiceImplTest {
 
     @Test
     @DisplayName("좋아요 누른 레시피 목록 가져오기 성공")
-    void success_getRecipeForHeart(){
+    void success_getRecipeForHeart() {
         //given
         Recipe recipe = Recipe.builder()
                 .id(1L)
@@ -1418,7 +2061,7 @@ class RecipeServiceImplTest {
 
     @Test
     @DisplayName("해당 회원이 작성한 꿀조합 목록 반환 성공")
-    void success_getRecipeListByMemberId(){
+    void success_getRecipeListByMemberId() {
         //given
         Recipe recipe = Recipe.builder()
                 .id(1L)
@@ -1461,7 +2104,7 @@ class RecipeServiceImplTest {
 
     @Test
     @DisplayName("해당 회원이 작성한 꿀조합 목록 반환 실패 - member를 찾을 수 없음")
-    void fail_getRecipeListByMemberId_member_not_found(){
+    void fail_getRecipeListByMemberId_member_not_found() {
         //given
         given(memberRepository.findById(1L))
                 .willReturn(Optional.empty());
@@ -1477,7 +2120,7 @@ class RecipeServiceImplTest {
 
     @Test
     @DisplayName("해당 회원이 작성한 꿀조합 목록 반환 실패 - target member를 찾을 수 없음")
-    void fail_getRecipeListByMemberId_target_member_not_found(){
+    void fail_getRecipeListByMemberId_target_member_not_found() {
         //given
         given(memberRepository.findById(1L))
                 .willReturn(Optional.of(Member.builder().id(1L).build()));
@@ -1563,8 +2206,17 @@ class RecipeServiceImplTest {
                 .title("title")
                 .writer(member.getNickname())
                 .numberOfComment(0L)
-                .ingredients(List.of("양파", "가지", "오이"))
-                .numberOfComment(0L)
+                .ingredients(String.join(" ", List.of("양파", "가지", "오이")))
+                .build();
+    }
+
+    private static RecipeDocument getRecipeDocumentOneComment(Member member) {
+        return RecipeDocument
+                .builder()
+                .title("title")
+                .writer(member.getNickname())
+                .numberOfComment(1L)
+                .ingredients(String.join(" ", List.of("양파", "가지", "오이")))
                 .build();
     }
 
@@ -1575,7 +2227,8 @@ class RecipeServiceImplTest {
                 .writer(member.getNickname())
                 .numberOfComment(0L)
                 .ingredients(updateRecipe.getRecipeIngredientDtoList().stream()
-                        .map(RecipeIngredientDto::getName).collect(Collectors.toList()))
+                        .map(RecipeIngredientDto::getName)
+                        .collect(Collectors.joining(" ")))
                 .numberOfComment(0L)
                 .build();
     }
@@ -1609,4 +2262,245 @@ class RecipeServiceImplTest {
                 .commentCount(2)
                 .build();
     }
+
+    private static PageImpl<RecipeDocument> getRecipeDocumentByTitleAndCreateAt() {
+        return new PageImpl<>(new ArrayList<>(Arrays.asList(
+                RecipeDocument.builder()
+                        .id(3L)
+                        .ingredients("양파 당근 돼지고기 김치")
+                        .title("김치제육볶음")
+                        .createAt(LocalDateTime.now())
+                        .numberOfHeart(0)
+                        .numberOfComment(0)
+                        .writer("세체요가 되고 싶은 요리사")
+                        .build(),
+                RecipeDocument.builder()
+                        .id(2L)
+                        .ingredients("양파 당근 돼지고기 치즈")
+                        .title("치즈제육볶음")
+                        .createAt(LocalDateTime.now())
+                        .numberOfHeart(0)
+                        .numberOfComment(0)
+                        .writer("세체요가 되고 싶은 요리사")
+                        .build(),
+                RecipeDocument.builder()
+                        .id(1L)
+                        .ingredients("양파 당근 돼지고기")
+                        .title("제육볶음")
+                        .createAt(LocalDateTime.now())
+                        .numberOfHeart(0)
+                        .numberOfComment(0)
+                        .writer("세체요")
+                        .build()
+        )));
+    }
+
+    private static PageImpl<RecipeDocument> getRecipeDocumentByTitleAndCommentCount() {
+        return new PageImpl<>(new ArrayList<>(Arrays.asList(
+                RecipeDocument.builder()
+                        .id(3L)
+                        .ingredients("양파 당근 돼지고기 김치")
+                        .title("김치제육볶음")
+                        .createAt(LocalDateTime.now())
+                        .numberOfHeart(0)
+                        .numberOfComment(6)
+                        .writer("세체요가 되고 싶은 요리사")
+                        .build(),
+                RecipeDocument.builder()
+                        .id(2L)
+                        .ingredients("양파 당근 돼지고기 치즈")
+                        .title("치즈제육볶음")
+                        .createAt(LocalDateTime.now())
+                        .numberOfHeart(0)
+                        .numberOfComment(2)
+                        .writer("세체요가 되고 싶은 요리사")
+                        .build(),
+                RecipeDocument.builder()
+                        .id(1L)
+                        .ingredients("양파 당근 돼지고기")
+                        .title("제육볶음")
+                        .createAt(LocalDateTime.now())
+                        .numberOfHeart(0)
+                        .numberOfComment(0)
+                        .writer("세체요")
+                        .build()
+        )));
+    }
+
+    private static PageImpl<RecipeDocument> getRecipeDocumentByTitleAndHeartCount() {
+        return new PageImpl<>(new ArrayList<>(Arrays.asList(
+                RecipeDocument.builder()
+                        .id(3L)
+                        .ingredients("양파 당근 돼지고기 김치")
+                        .title("김치제육볶음")
+                        .createAt(LocalDateTime.now())
+                        .numberOfHeart(6)
+                        .numberOfComment(6)
+                        .writer("세체요가 되고 싶은 요리사")
+                        .build(),
+                RecipeDocument.builder()
+                        .id(2L)
+                        .ingredients("양파 당근 돼지고기 치즈")
+                        .title("치즈제육볶음")
+                        .createAt(LocalDateTime.now())
+                        .numberOfHeart(2)
+                        .numberOfComment(2)
+                        .writer("세체요가 되고 싶은 요리사")
+                        .build(),
+                RecipeDocument.builder()
+                        .id(1L)
+                        .ingredients("양파 당근 돼지고기")
+                        .title("제육볶음")
+                        .createAt(LocalDateTime.now())
+                        .numberOfHeart(0)
+                        .numberOfComment(0)
+                        .writer("세체요")
+                        .build()
+        )));
+    }
+
+    private static ListResponse<RecipeCardDto> getRecipeRecipeCardDtoByTitle() {
+        return ListResponse.<RecipeCardDto>builder()
+                .hasNextPage(false)
+                .totalElements(3)
+                .totalPages(1)
+                .content(List.of(RecipeCardDto.builder()
+                                .id(3L)
+                                .nickName("세체요가 되고 싶은 요리사")
+                                .title("김치제육볶음")
+                                .content("김치를 이용한 제육볶음 레시피")
+                                .isHeart(false)
+                                .heartCount(0)
+                                .mainImageUrl("mainImageUrl3")
+                                .build(),
+                        RecipeCardDto.builder()
+                                .id(2L)
+                                .nickName("세체요가 되고 싶은 요리사")
+                                .title("치즈제육볶음")
+                                .content("치즈를 곁들인 제육볶음 레시피")
+                                .isHeart(false)
+                                .heartCount(0)
+                                .mainImageUrl("mainImageUrl2")
+                                .build(),
+                        RecipeCardDto.builder()
+                                .id(1L)
+                                .nickName("세체요")
+                                .title("제육볶음")
+                                .content("초간단 제육볶음 레시피")
+                                .isHeart(false)
+                                .heartCount(0)
+                                .mainImageUrl("mainImageUrl1")
+                                .build()))
+                .build();
+    }
+
+    private static PageImpl<RecipeDocument> getRecipeDocumentByWriterAndHeartCount() {
+        return new PageImpl<>(new ArrayList<>(Arrays.asList(
+                RecipeDocument.builder()
+                        .id(3L)
+                        .ingredients("양파 당근 돼지고기 김치")
+                        .title("김치제육볶음")
+                        .createAt(LocalDateTime.now())
+                        .numberOfHeart(6)
+                        .numberOfComment(0)
+                        .writer("세체요가 되고 싶은 요리사")
+                        .build(),
+                RecipeDocument.builder()
+                        .id(2L)
+                        .ingredients("양파 당근 돼지고기 치즈")
+                        .title("치즈제육볶음")
+                        .createAt(LocalDateTime.now())
+                        .numberOfHeart(2)
+                        .numberOfComment(0)
+                        .writer("세체요가 되고 싶은 요리사")
+                        .build()
+        )));
+    }
+
+    private static PageImpl<RecipeDocument> getRecipeDocumentByWriterAndCommentCount() {
+        return new PageImpl<>(new ArrayList<>(Arrays.asList(
+                RecipeDocument.builder()
+                        .id(3L)
+                        .ingredients("양파 당근 돼지고기 김치")
+                        .title("김치제육볶음")
+                        .createAt(LocalDateTime.now())
+                        .numberOfHeart(0)
+                        .numberOfComment(6)
+                        .writer("세체요가 되고 싶은 요리사")
+                        .build(),
+                RecipeDocument.builder()
+                        .id(2L)
+                        .ingredients("양파 당근 돼지고기 치즈")
+                        .title("치즈제육볶음")
+                        .createAt(LocalDateTime.now())
+                        .numberOfHeart(0)
+                        .numberOfComment(2)
+                        .writer("세체요가 되고 싶은 요리사")
+                        .build()
+        )));
+    }
+
+    private static PageImpl<RecipeDocument> getRecipeDocumentByWriterAndCreatedAt() {
+        return new PageImpl<>(new ArrayList<>(Arrays.asList(
+                RecipeDocument.builder()
+                        .id(3L)
+                        .ingredients("양파 당근 돼지고기 김치")
+                        .title("김치제육볶음")
+                        .createAt(LocalDateTime.now())
+                        .numberOfHeart(0)
+                        .numberOfComment(0)
+                        .writer("세체요가 되고 싶은 요리사")
+                        .build(),
+                RecipeDocument.builder()
+                        .id(2L)
+                        .ingredients("양파 당근 돼지고기 치즈")
+                        .title("치즈제육볶음")
+                        .createAt(LocalDateTime.now())
+                        .numberOfHeart(0)
+                        .numberOfComment(0)
+                        .writer("세체요가 되고 싶은 요리사")
+                        .build()
+        )));
+    }
+
+    private static ListResponse<RecipeCardDto> getRecipeRecipeCardDtoByWriter() {
+        return ListResponse.<RecipeCardDto>builder()
+                .hasNextPage(false)
+                .totalElements(2)
+                .totalPages(1)
+                .content(List.of(RecipeCardDto.builder()
+                                .id(3L)
+                                .nickName("세체요가 되고 싶은 요리사")
+                                .title("김치제육볶음")
+                                .content("김치를 이용한 제육볶음 레시피")
+                                .isHeart(false)
+                                .heartCount(0)
+                                .mainImageUrl("mainImageUrl3")
+                                .build(),
+                        RecipeCardDto.builder()
+                                .id(2L)
+                                .nickName("세체요가 되고 싶은 요리사")
+                                .title("치즈제육볶음")
+                                .content("치즈를 곁들인 제육볶음 레시피")
+                                .isHeart(false)
+                                .heartCount(0)
+                                .mainImageUrl("mainImageUrl2")
+                                .build()))
+                .build();
+    }
+
+    private static RecipeSearchRequest getRecipeSearchRequest(SearchType searchType,
+                                                              SortType sortType,
+                                                              String searchText) {
+
+        return RecipeSearchRequest.builder()
+                .memberId(1L)
+                .searchText(searchText)
+                .searchType(searchType)
+                .sortType(sortType)
+                .pageable(PageRequest.of(0, 10))
+                .build();
+
+    }
+
 }
