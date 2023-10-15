@@ -294,7 +294,7 @@ class RecipeReviewServiceImplTest {
             Recipe recipe = getRecipe();
             recipeReview.setMember(member);
             recipeReview.setRecipe(recipe);
-            given(recipeReviewRepository.findByRecipe(anyLong(), anyLong(), any()))
+            given(recipeReviewRepository.findRecipe(anyLong(), anyLong(), any()))
                     .willReturn(
                             new PageImpl<>(
                                     new ArrayList<>(

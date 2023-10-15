@@ -55,7 +55,7 @@ public class HeartServiceImpl implements HeartService {
     @RedissonLock(group = "heart", key = "#recipeId")
     @Override
     public void deleteHeart(MemberAuthDto memberAuthDto, Long recipeId) {
-        Heart heart = heartRepository.findByRecipeIdAndMemberId(recipeId, memberAuthDto.getId())
+        Heart heart = heartRepository.findHeart(recipeId, memberAuthDto.getId())
                 .orElseThrow(() -> new HeartException(HEART_NOT_FOUND));
         heart.getRecipe().minusHeart();
 

@@ -1,21 +1,30 @@
 package com.zerobase.foodlier.module.member.chef.dto;
 
-public interface AroundChefDto {
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
+@Getter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+public class AroundChefDto {
 
     //chefMember
-    Long getChefId();
-    String getIntroduce();
-    double getStarAvg();
-    int getReviewCount();
+    Long chefId;
+    String introduce;
+    Double starAvg;
+    Integer reviewCount;
 
     //member
-    String getProfileUrl();
-    String getNickname();
-    double getLat();
-    double getLnt();
+    String profileUrl;
+    String nickname;
+    Double lat;
+    Double lnt;
 
     //etc
-    double getDistance();
-    int getRecipeCount();
+    Double distance;
+    Long recipeCount;
 
 }

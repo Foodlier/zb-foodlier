@@ -263,7 +263,7 @@ public class RecipeServiceImpl implements RecipeService {
     public ListResponse<RecipeDtoTopResponse> getRecipeForHeart(Long memberId,
                                                                 Pageable pageable) {
         return ListResponse.from(
-                recipeRepository.findByHeart(memberId, pageable),
+                recipeRepository.findHeart(memberId, pageable),
                 recipe -> RecipeDtoTopResponse.from(recipe, true));
 
     }
@@ -448,7 +448,7 @@ public class RecipeServiceImpl implements RecipeService {
         Member member = memberRepository.findById(memberAuthDto.getId())
                 .orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
 
-        return recipeRepository.findByIsPublicAndCreatedAtAfterOrderByHeartCountDesc(
+        return recipeRepository.findTop5ByIsPublicAndCreatedAtAfterOrderByHeartCountDesc(
                         false, LocalDate.now().atStartOfDay())
                 .stream()
                 .map(r -> RecipeCardDto.builder()

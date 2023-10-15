@@ -4,7 +4,6 @@ import com.zerobase.foodlier.common.response.ListResponse;
 import com.zerobase.foodlier.common.security.provider.JwtTokenProvider;
 import com.zerobase.foodlier.common.security.provider.dto.MemberAuthDto;
 import com.zerobase.foodlier.common.security.provider.dto.TokenDto;
-import com.zerobase.foodlier.module.member.member.social.dto.OAuthInfoResponse;
 import com.zerobase.foodlier.module.member.member.domain.model.Member;
 import com.zerobase.foodlier.module.member.member.domain.vo.Address;
 import com.zerobase.foodlier.module.member.member.dto.*;
@@ -13,6 +12,7 @@ import com.zerobase.foodlier.module.member.member.profile.dto.MemberPrivateProfi
 import com.zerobase.foodlier.module.member.member.profile.dto.MemberUpdateDto;
 import com.zerobase.foodlier.module.member.member.profile.dto.PasswordChangeForm;
 import com.zerobase.foodlier.module.member.member.repository.MemberRepository;
+import com.zerobase.foodlier.module.member.member.social.dto.OAuthInfoResponse;
 import com.zerobase.foodlier.module.member.member.type.RequestedOrderingType;
 import com.zerobase.foodlier.module.member.member.type.RoleType;
 import lombok.RequiredArgsConstructor;
@@ -174,24 +174,10 @@ public class MemberServiceImpl implements MemberService {
 
         validateGetRequestedMemberList(member);
 
-        switch (type) {
-            case PRICE:
-                return ListResponse.from(
-                        memberRepository.getRequestedMemberListOrderByPrice(
-                                member.getChefMember().getId(), member.getAddress().getLat(),
-                                member.getAddress().getLnt(),
-                                pageable
-                        ));
-            case DISTANCE:
-                return ListResponse.from(
-                        memberRepository.getRequestedMemberListOrderByDistance(
-                                member.getChefMember().getId(), member.getAddress().getLat(),
-                                member.getAddress().getLnt(),
-                                pageable
-                        ));
-
-        }
-        return new ListResponse<>();
+        return ListResponse.from(memberRepository
+                .getRequestedMemberListOrderByType(member.getChefMember().getId(),
+                        member.getAddress().getLat(),
+                        member.getAddress().getLnt(), pageable, type));
     }
 
     /**

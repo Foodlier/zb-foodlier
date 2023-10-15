@@ -520,8 +520,8 @@ class MemberServiceImplTest {
         RequestedMemberDto memberOne = getMemberDtoOne();
         RequestedMemberDto memberTwo = getMemberDtoTwo();
 
-        given(memberRepository.getRequestedMemberListOrderByDistance(
-                any(), anyDouble(), anyDouble(), any()
+        given(memberRepository.getRequestedMemberListOrderByType(
+                any(), anyDouble(), anyDouble(), any(), any()
         )).willReturn(
                 new PageImpl<>(
                         new ArrayList<>(
@@ -582,8 +582,8 @@ class MemberServiceImplTest {
         RequestedMemberDto memberOne = getMemberDtoOne();
         RequestedMemberDto memberTwo = getMemberDtoTwo();
 
-        given(memberRepository.getRequestedMemberListOrderByPrice(
-                any(), anyDouble(), anyDouble(), any()
+        given(memberRepository.getRequestedMemberListOrderByType(
+                any(), anyDouble(), anyDouble(), any(), any()
         )).willReturn(
                 new PageImpl<>(
                         new ArrayList<>(
@@ -668,121 +668,35 @@ class MemberServiceImplTest {
 
     // 테스트에 사용될 객체 정의
     private RequestedMemberDto getMemberDtoOne() {
-        return new RequestedMemberDto() {
-            @Override
-            public Long getMemberId() {
-                return 1L;
-            }
-
-            @Override
-            public String getProfileUrl() {
-                return "https://s3.test.com/image1.png";
-            }
-
-            @Override
-            public String getNickname() {
-                return "person1";
-            }
-
-            @Override
-            public double getDistance() {
-                return 0.5;
-            }
-
-            @Override
-            public double getLat() {
-                return 37.1;
-            }
-
-            @Override
-            public double getLnt() {
-                return 127.1;
-            }
-
-            @Override
-            public Long getRequestId() {
-                return 1L;
-            }
-
-            @Override
-            public Long getExpectedPrice() {
-                return 12000L;
-            }
-
-            @Override
-            public String getTitle() {
-                return "살려주세요";
-            }
-
-            @Override
-            public String getContent() {
-                return "야호";
-            }
-
-            @Override
-            public String getMainImageUrl() {
-                return "https://s3.test.com/main1.png";
-            }
-        };
+        return RequestedMemberDto.builder()
+                .memberId(1L)
+                .profileUrl("https://s3.test.com/image1.png")
+                .nickname("person1")
+                .distance(0.5)
+                .lat(37.1)
+                .lnt(127.1)
+                .requestId(1L)
+                .expectedPrice(12000L)
+                .title("살려주세요")
+                .content("야호")
+                .mainImageUrl("https://s3.test.com/main1.png")
+                .build();
     }
 
     private RequestedMemberDto getMemberDtoTwo() {
-        return new RequestedMemberDto() {
-            @Override
-            public Long getMemberId() {
-                return 2L;
-            }
-
-            @Override
-            public String getProfileUrl() {
-                return "https://s3.test.com/image2.png";
-            }
-
-            @Override
-            public String getNickname() {
-                return "person2";
-            }
-
-            @Override
-            public double getDistance() {
-                return 0.1;
-            }
-
-            @Override
-            public double getLat() {
-                return 37.2;
-            }
-
-            @Override
-            public double getLnt() {
-                return 127.2;
-            }
-
-            @Override
-            public Long getRequestId() {
-                return 2L;
-            }
-
-            @Override
-            public Long getExpectedPrice() {
-                return 30000L;
-            }
-
-            @Override
-            public String getTitle() {
-                return "살려주세요?";
-            }
-
-            @Override
-            public String getContent() {
-                return "야호";
-            }
-
-            @Override
-            public String getMainImageUrl() {
-                return "https://s3.test.com/main2.png";
-            }
-        };
+        return RequestedMemberDto.builder()
+                .memberId(2L)
+                .profileUrl("https://s3.test.com/image2.png")
+                .nickname("person2")
+                .distance(0.1)
+                .lat(37.2)
+                .lnt(127.2)
+                .requestId(2L)
+                .expectedPrice(30000L)
+                .title("살려주세요?")
+                .content("야호")
+                .mainImageUrl("https://s3.test.com/main2.png")
+                .build();
     }
 
 
@@ -944,7 +858,7 @@ class MemberServiceImplTest {
 
     @Test
     @DisplayName("접속 토큰 재발급 성공")
-    void success_reissue(){
+    void success_reissue() {
 
         // given
 
@@ -967,13 +881,13 @@ class MemberServiceImplTest {
         // then
         verify(tokenProvider, times(1)).getEmail(anyString());
         verify(memberRepository, times(1)).findByEmail(anyString());
-        verify(tokenProvider, times(1)).reissue(anyString(),any(), any());
+        verify(tokenProvider, times(1)).reissue(anyString(), any(), any());
         assertEquals(reissuedAccessToken, expectedAccessToken);
     }
 
     @Test
     @DisplayName("접속 토큰 재발급 실패 - 올바르지 않은 토큰인 경우")
-    void fail_reissue_invalid_token(){
+    void fail_reissue_invalid_token() {
 
         // given
 
@@ -992,7 +906,7 @@ class MemberServiceImplTest {
 
     @Test
     @DisplayName("접속 토큰 재발급 실패 - 존재하지 않는 회원인 경우")
-    void fail_reissue_no_such_member(){
+    void fail_reissue_no_such_member() {
 
         // given
 
@@ -1014,7 +928,7 @@ class MemberServiceImplTest {
 
     @Test
     @DisplayName("접속 토큰 재발급 실패 - 재발급 토큰이 redis 저장소에 존재하지 않는 경우")
-    void fail_reissue_refresh_token_not_found(){
+    void fail_reissue_refresh_token_not_found() {
 
         // given
 
@@ -1039,14 +953,14 @@ class MemberServiceImplTest {
         // then
         verify(tokenProvider, times(1)).getEmail(anyString());
         verify(memberRepository, times(1)).findByEmail(anyString());
-        verify(tokenProvider, times(1)).reissue(anyString(),any(), any());
+        verify(tokenProvider, times(1)).reissue(anyString(), any(), any());
         assertEquals(jwtException.getErrorCode(), REFRESH_TOKEN_NOT_FOUND);
         assertEquals(jwtException.getDescription(), REFRESH_TOKEN_NOT_FOUND.getDescription());
     }
 
     @Test
     @DisplayName("기본 공개 프로필 가져오기 성공")
-    void success_getDefaultProfile(){
+    void success_getDefaultProfile() {
 
         //given
         DefaultProfileDtoResponse defaultProfileDtoResponse =
@@ -1054,7 +968,7 @@ class MemberServiceImplTest {
                         .memberId(1L)
                         .nickname("요리의신")
                         .profileUrl("http://s3.test.com")
-                        .receivedHeart(300L)
+                        .receivedHeart(300)
                         .isChef(true)
                         .chefMemberId(1L)
                         .build();
@@ -1076,7 +990,6 @@ class MemberServiceImplTest {
         );
 
     }
-
 
 
 }
