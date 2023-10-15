@@ -123,19 +123,23 @@ export const RejectButton = styled.button`
   height: 36px;
   line-height: 36px;
   text-align: center;
-  background-color: ${palette.divider};
-  color: ${palette.textPrimary};
+  background-color: ${palette.white};
+  color: ${palette.main};
+  border: 1px solid ${palette.main};
   font-weight: 600;
   border-radius: 5px;
 `
 
-export const AcceptButton = styled.button`
+export const AcceptButton = styled.button<{ $isActive: boolean }>`
   width: 120px;
   height: 36px;
   line-height: 36px;
   text-align: center;
-  background-color: ${palette.main};
-  color: ${palette.white};
+  background-color: ${props =>
+    props.$isActive ? palette.main : palette.divider};
+  color: ${props =>
+    props.$isActive ? palette.white : palette.textDisablePlace};
+
   font-weight: 600;
   border-radius: 5px;
 `
@@ -145,4 +149,23 @@ export const SpacingDiv = styled.div`
   ${breakpoints.large} {
     height: 20px;
   }
+`
+
+export const WrapQuotation = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+`
+
+export const QuotationText = styled.span``
+
+export const QuotationButton = styled.button`
+  background-color: red;
+`
+
+export const ErrorMessage = styled.span`
+  margin-top: 1rem;
+  color: ${palette.main};
+  font-size: 1.4rem;
+  font-weight: 800;
 `
