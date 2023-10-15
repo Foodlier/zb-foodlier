@@ -148,17 +148,12 @@ public class RequestFormServiceImpl implements RequestFormService {
                 .orElseThrow(() -> new RequestFormException(REQUEST_FORM_NOT_FOUND));
         checkPermission(id, requestForm.getMember().getId());
 
-        requestForm.setTitle(requestFormDto.getTitle());
-        requestForm.setContent(requestFormDto.getContent());
-        requestForm.setExpectedPrice(requestFormDto.getExpectedPrice());
-        requestForm.setExpectedAt(requestFormDto.getExpectedAt());
-        requestForm.setIngredientList(requestFormDto.getIngredientList()
-                .stream()
-                .map(ingredient -> Ingredient.builder()
-                        .ingredientName(ingredient)
-                        .build())
-                .collect(Collectors.toList()));
-        requestForm.setRecipe(recipe);
+        requestForm.updateTitle(requestFormDto.getTitle());
+        requestForm.updateContent(requestFormDto.getContent());
+        requestForm.updateExpectedPrice(requestFormDto.getExpectedPrice());
+        requestForm.updateExpectedAt(requestFormDto.getExpectedAt());
+        requestForm.updateIngredientList(requestFormDto.getIngredientList());
+        requestForm.updateRecipe(recipe);
 
         requestFormRepository.save(requestForm);
     }

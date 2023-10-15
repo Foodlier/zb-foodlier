@@ -131,29 +131,12 @@ public class MemberServiceImpl implements MemberService {
     @Override
     public void updatePrivateProfile(MemberUpdateDto memberUpdateDto, Member member) {
         validateUpdateProfile(memberUpdateDto);
-        if (StringUtils.hasText(memberUpdateDto.getNickName())) {
-            member.setNickname(memberUpdateDto.getNickName());
-        }
 
-        if (StringUtils.hasText(memberUpdateDto.getPhoneNumber())) {
-            member.setPhoneNumber(memberUpdateDto.getPhoneNumber());
-        }
-
-        if (member.getRegistrationType() != DOMAIN && member.isTemp()) {
-            member.setTemp(false);
-        }
-
-        member.setAddress(Address.builder()
-                .roadAddress(memberUpdateDto.getRoadAddress())
-                .addressDetail(memberUpdateDto.getAddressDetail() != null ?
-                        memberUpdateDto.getAddressDetail() :
-                        member.getAddress().getAddressDetail())
-                .lat(memberUpdateDto.getLat())
-                .lnt(memberUpdateDto.getLnt())
-                .build());
-
-
-        member.setProfileUrl(memberUpdateDto.getProfileUrl());
+        member.updateNickname(memberUpdateDto.getNickName());
+        member.updatePhoneNumber(memberUpdateDto.getPhoneNumber());
+        member.updateTemp();
+        member.updateAddress(memberUpdateDto);
+        member.updateProfileUrl(memberUpdateDto.getProfileUrl());
 
         memberRepository.save(member);
     }

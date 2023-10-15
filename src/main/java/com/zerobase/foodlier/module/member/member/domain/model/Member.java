@@ -12,6 +12,8 @@ import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.zerobase.foodlier.module.member.member.type.RegistrationType.DOMAIN;
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -89,5 +91,11 @@ public class Member extends Audit {
 
     public void deleteMember() {
         this.isDeleted = true;
+    }
+
+    public void updateTemp() {
+        if (this.registrationType != DOMAIN && this.isTemp()) {
+            this.isTemp = false;
+        }
     }
 }
