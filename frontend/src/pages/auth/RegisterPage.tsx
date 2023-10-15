@@ -74,6 +74,7 @@ const Register = () => {
   /*
     폼 유효성 검사 결과에 따른 버튼 활성화 상태
     정규식은 개발 단계이므로 간단하게 작성하였습니다.
+    TODO : 정규식 별도 파일로 분리, useCallback
   */
   const [isFormValid, setIsFormValid] = useState(false)
 
