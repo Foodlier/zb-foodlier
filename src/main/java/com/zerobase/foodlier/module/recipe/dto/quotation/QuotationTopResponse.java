@@ -14,6 +14,6 @@ public class QuotationTopResponse {
     private String title;
     private String content;
     private Difficulty difficulty;
-    private int expectedTime;
+    private Integer expectedTime;
 
 }

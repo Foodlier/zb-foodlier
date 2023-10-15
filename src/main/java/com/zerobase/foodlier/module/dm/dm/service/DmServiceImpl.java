@@ -35,7 +35,7 @@ public class DmServiceImpl implements DmService {
     private final DmRepository dmRepository;
     private final DmRoomRepository dmRoomRepository;
     private static final int ZERO = 0;
-    private static final int PAGE_SIZE = 10;
+    private static final int PAGE_SIZE = 30;
     private static final String SORT_BY_CREATED_AT = "createdAt";
     private static final Long BEFORE_LAST_DM = 1L;
 

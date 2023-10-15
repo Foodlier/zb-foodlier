@@ -77,6 +77,7 @@ public class SecurityConfig {
                         "/**/auth/verify",
                         "/**/auth/verification/**",
                         "/**/auth/signin",
+                        "/**/auth/oauth2/**",
                         "/**/success/**",
                         "/**/fail/**",
                         "/pub/**",
