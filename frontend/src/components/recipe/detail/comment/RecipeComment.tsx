@@ -13,10 +13,10 @@ interface CommentItem {
   profileUrl: string
 }
 const RecipeComment = () => {
-  const [recipeId, setRecipeId] = useState(10)
+  const [recipeId] = useState(10)
   const [commentValue, setCommentValue] = useState('')
   const [commentList, setCommentList] = useState<CommentItem[]>([])
-  const [comment, setComment] = useState({})
+  // const [comment, setComment] = useState({})
   const [commentId, setCommentId] = useState(0)
   const [pageIdx, setPageIdx] = useState(0)
   const pageSize = useRef(5)
@@ -97,6 +97,7 @@ const RecipeComment = () => {
     setIsEditing(true)
   }
 
+
   // 수정 -> 확인 버튼 누르면
   const handleConfirmEdit = async () => {
     try {
@@ -105,9 +106,10 @@ const RecipeComment = () => {
       }
       const res = await axiosInstance.put(`/comment/${commentId}`, body)
       if (res.status === 200) {
-        console.log('댓글 업데이트 완료')
-        setIsEditing(false)
-        setEditValue('')
+        console.log(editValue)
+        
+        // setIsEditing(false)
+        // setEditValue('')
       }
     } catch (error) {
       console.error('댓글 업데이트 실패', error)
@@ -197,7 +199,8 @@ const RecipeComment = () => {
                     <CommonButton
                       size="small"
                       color="divider"
-                      onClick={() => handleEditComment(commentItem.id)} // 함수를 호출하여 수정 모드로 전환
+                      onClick={() => handleEditComment(commentItem.id)} 
+                      // 함수를 호출하여 수정 모드로 전환
                     >
                       수정
                     </CommonButton>
