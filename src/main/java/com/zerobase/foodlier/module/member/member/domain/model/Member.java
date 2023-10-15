@@ -42,6 +42,8 @@ public class Member extends Audit {
     private RegistrationType registrationType;
     @Builder.Default
     private boolean isDeleted = false;
+    @Builder.Default
+    private boolean isTemp = false;
     @ElementCollection
     @Builder.Default
     private List<String> roles = new ArrayList<>();

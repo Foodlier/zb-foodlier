@@ -4,12 +4,16 @@ import com.zerobase.foodlier.common.redis.service.EmailVerificationService;
 import com.zerobase.foodlier.common.security.provider.dto.MemberAuthDto;
 import com.zerobase.foodlier.common.security.provider.dto.TokenDto;
 import com.zerobase.foodlier.global.member.mail.facade.EmailVerificationFacade;
+import com.zerobase.foodlier.global.member.oAuth.facade.OAuthFacade;
 import com.zerobase.foodlier.global.member.password.facade.PasswordFindFacade;
 import com.zerobase.foodlier.global.member.regiser.facade.MemberRegisterFacade;
 import com.zerobase.foodlier.module.member.member.dto.MemberInputDto;
 import com.zerobase.foodlier.module.member.member.dto.PasswordFindForm;
 import com.zerobase.foodlier.module.member.member.dto.SignInForm;
 import com.zerobase.foodlier.module.member.member.service.MemberService;
+import com.zerobase.foodlier.module.member.member.social.dto.KakaoLoginParams;
+import com.zerobase.foodlier.module.member.member.social.dto.NaverLoginParams;
+import com.zerobase.foodlier.module.member.member.social.dto.SocialLoginResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -30,6 +34,7 @@ public class AuthController {
     private final MemberRegisterFacade memberRegisterFacade;
     private final MemberService memberService;
     private final PasswordFindFacade passwordFindFacade;
+    private final OAuthFacade oAuthFacade;
 
     @PostMapping("/verification/send/{email}")
     public ResponseEntity<String> sendVerificationCode(
@@ -82,13 +87,25 @@ public class AuthController {
     }
 
     @PostMapping("/reissue")
-    public ResponseEntity<String> reissue(@RequestHeader(REFRESH_HEADER) final String refreshToken){
+    public ResponseEntity<String> reissue(@RequestHeader(REFRESH_HEADER) final String refreshToken) {
         return ResponseEntity.ok(memberService.reissue(refreshToken.substring(TOKEN_PREFIX.length())));
     }
+
     @DeleteMapping("/withdraw")
     public ResponseEntity<String> withdraw(
             @AuthenticationPrincipal MemberAuthDto memberAuthDto
     ) {
         return ResponseEntity.ok(memberService.withdraw(memberAuthDto));
     }
+
+    @PostMapping("/oauth2/kakao")
+    public ResponseEntity<SocialLoginResponse> loginKakao(@RequestBody KakaoLoginParams params) {
+        return ResponseEntity.ok(oAuthFacade.login(params));
+    }
+
+    @PostMapping("/oauth2/naver")
+    public ResponseEntity<SocialLoginResponse> loginNaver(@RequestBody NaverLoginParams params) {
+        return ResponseEntity.ok(oAuthFacade.login(params));
+    }
+
 }
