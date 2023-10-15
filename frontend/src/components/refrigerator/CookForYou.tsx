@@ -1,98 +1,92 @@
-import { useState } from 'react'
+/* eslint-disable react-hooks/exhaustive-deps */
+import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import * as S from '../../styles/refrigerator/CookForYou.styled'
+import axiosInstance from '../../utils/FetchCall'
+import CustomSelect from '../ui/CustomSelect'
+import { Requester } from '../../constants/Interfaces'
+import EmptyView from '../ui/EmptyView'
+import { REQUEST_OPTION_MENU_LIST } from '../../constants/Data'
+import defaultProfile from '../../../public/images/default_profile.png'
 
-const CookForYou = () => {
+const CookForYou = ({
+  setMapMarkerList,
+}: {
+  setMapMarkerList: (e: any) => void
+}) => {
   const navigate = useNavigate()
-  const [optionToggle, setOptionToggle] = useState(false)
-  const [option, setOption] = useState<string | null>('거리 순')
-  const optionHandler = (e: React.MouseEvent) => {
-    const target = e.target as HTMLButtonElement
-    setOption(target.textContent)
-    setOptionToggle(!optionToggle)
+
+  const [list, setList] = useState<Requester[]>([])
+  const [currentSelectValue, setCurrentSelectValue] = useState(
+    REQUEST_OPTION_MENU_LIST[0]
+  )
+
+  // 요청서 detail page로 이동
+  const goToRequestDetail = (id: number) => {
+    navigate(`/refrigerator/request/detail/${id}`)
   }
 
-  const OPTION_MENU_LIST = ['거리 순']
+  // 주위 요청서 조회 API
+  const getRequest = async () => {
+    const pageIdx = 0
+    const pageSize = 10
+    const res = await axiosInstance.get(
+      `/refrigerator/requester/${pageIdx}/${pageSize}`,
+      { params: { type: currentSelectValue.value } }
+    )
+    console.log(res)
+    setList(res.data.content)
+    setMapMarkerList(res.data.content)
+  }
 
-  const CHEF_LIST_EXAMPLE = [
-    {
-      nickName: '나는 사용자',
-      description: '호랑이 구이 만들어주세요',
-      distance: 400,
-      reviewCount: 15,
-    },
-    {
-      nickName: '나는 사용자2',
-      description: '코끼리 간장 구이 만들어주세요',
-      distance: 100,
-      reviewCount: 15,
-    },
-    {
-      nickName: '나는 사용자3',
-      description: '맷비둘기 구이 만들어주세요ㅇdddd',
-      distance: 300,
-      reviewCount: 15,
-    },
-    {
-      nickName: '나는 사용자4',
-      description: '고라니 구이 만들어주세요',
-      distance: 180,
-      reviewCount: 15,
-    },
-  ]
+  useEffect(() => {
+    getRequest()
+  }, [currentSelectValue])
 
   return (
     <>
       <S.ChefListContainer>
         <S.Info>
           <S.SubTitle>내 주변 요청</S.SubTitle>
-          <S.SelectBox>
-            <S.SelectedBox>
-              <S.OptionButton
-                onClick={() => {
-                  setOptionToggle(!optionToggle)
-                }}
-              >
-                <div>{option}</div>
-                <div>▽</div>
-              </S.OptionButton>
-              <S.OptionList $toggle={optionToggle}>
-                {OPTION_MENU_LIST.map(el => (
-                  <S.Option key={el}>
-                    <S.OptionButton type="button" onClick={optionHandler}>
-                      {el}
-                    </S.OptionButton>
-                  </S.Option>
-                ))}
-              </S.OptionList>
-            </S.SelectedBox>
-          </S.SelectBox>
+          <CustomSelect
+            data={REQUEST_OPTION_MENU_LIST}
+            currentSelectValue={currentSelectValue}
+            setCurrentSelectValue={setCurrentSelectValue}
+          />
         </S.Info>
         <S.CardList>
-          {CHEF_LIST_EXAMPLE.map(el => (
-            <S.Card key={el.nickName}>
-              <S.CardInfo className="card-info">
-                <S.MainImg src="" alt="대표 사진" className="mainImg" />
-                <S.ChefInfo className="chef-info">
-                  <S.ChefTopInfo className="top-info">
-                    <span className="nickName">{el.nickName}</span>
-                  </S.ChefTopInfo>
-                  <S.ChefBottomInfo className="bottom-info">
-                    {el.description}
-                  </S.ChefBottomInfo>
-                </S.ChefInfo>
-              </S.CardInfo>
-              <S.ElseInfo>
-                <span>{el.distance}m</span>
-                <S.RequestButton
-                  type="button"
-                  onClick={() => navigate('/refrigerator/request/detail')}
-                >
-                  요청서 보기
-                </S.RequestButton>
-              </S.ElseInfo>
-            </S.Card>
-          ))}
+          {list.length > 0 ? (
+            list.map(item => (
+              <S.Card key={item.memberId}>
+                <S.CardInfo className="card-info">
+                  <S.MainImg
+                    src={defaultProfile}
+                    alt="대표 사진"
+                    className="mainImg"
+                  />
+                  <S.ChefInfo className="chef-info">
+                    <S.ChefTopInfo className="top-info">
+                      <span className="nickName">{item.nickname}</span>
+                    </S.ChefTopInfo>
+                    <S.ChefBottomInfo className="bottom-info">
+                      {/* {item.description} */}
+                    </S.ChefBottomInfo>
+                  </S.ChefInfo>
+                </S.CardInfo>
+                <S.ElseInfo>
+                  <span>{item.distance}m</span>
+                  <S.RequestButton
+                    type="button"
+                    onClick={() => goToRequestDetail(item.requestId)}
+                  >
+                    요청서 보기
+                  </S.RequestButton>
+                </S.ElseInfo>
+              </S.Card>
+            ))
+          ) : (
+            <EmptyView content="요청서가 존재하지 않습니다." />
+          )}
         </S.CardList>
       </S.ChefListContainer>
       <S.SpaceDiv />
