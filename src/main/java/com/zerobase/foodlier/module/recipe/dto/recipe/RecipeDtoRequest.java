@@ -6,6 +6,7 @@ import com.zerobase.foodlier.module.recipe.domain.type.Difficulty;
 import com.zerobase.foodlier.module.recipe.domain.vo.RecipeStatistics;
 import com.zerobase.foodlier.module.recipe.domain.vo.Summary;
 import lombok.*;
+import org.hibernate.validator.constraints.URL;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Min;
@@ -31,6 +32,7 @@ public class RecipeDtoRequest {
     private String content;
 
     @NotBlank(message = "메인 요리 이미지 주소를 입력해주세요.")
+    @URL(message = "메인 요리 이미지 주소 형식이 올바르지 않습니다.")
     private String mainImageUrl;
 
     @Valid
