@@ -38,4 +38,8 @@ public interface MemberService {
     Member findByEmail(String email);
 
     String reissue(String refreshToken);
+
+    void checkNickname(String nickname);
+    void checkPhoneNumber(String phoneNumber);
+    void checkEmail(String email);
 }

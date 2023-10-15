@@ -263,6 +263,28 @@ public class MemberServiceImpl implements MemberService {
                 .orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
     }
 
+    @Override
+    public void checkNickname(String nickname){
+        if(memberRepository.existsByNickname(nickname)){
+            throw new MemberException(NICKNAME_IS_ALREADY_EXIST);
+        }
+    }
+
+    @Override
+    public void checkPhoneNumber(String phoneNumber){
+        if(memberRepository.existsByPhoneNumber(phoneNumber)){
+            throw new MemberException(PHONE_NUMBER_IS_ALREADY_EXIST);
+        }
+    }
+
+    @Override
+    public void checkEmail(String email){
+        if(memberRepository.existsByEmail(email)){
+            throw new MemberException(EMAIL_IS_ALREADY_EXIST);
+        }
+    }
+
+
     //======================= Validates =========================
 
     private void validateRegister(MemberRegisterDto memberRegisterDto) {

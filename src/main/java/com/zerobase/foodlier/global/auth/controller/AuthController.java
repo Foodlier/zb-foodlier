@@ -92,4 +92,34 @@ public class AuthController {
     ) {
         return ResponseEntity.ok(memberService.withdraw(memberAuthDto));
     }
+
+    @GetMapping("/check/nickname")
+    public ResponseEntity<String> checkNickname(
+            @RequestParam String nickname
+    ){
+        memberService.checkNickname(nickname);
+        return ResponseEntity.ok(
+                "사용가능한 닉네임 입니다."
+        );
+    }
+
+    @GetMapping("/check/phone")
+    public ResponseEntity<String> checkPhoneNumber(
+            @RequestParam String phoneNumber
+    ){
+        memberService.checkPhoneNumber(phoneNumber);
+        return ResponseEntity.ok(
+                "사용가능한 전화번호 입니다."
+        );
+    }
+
+    @GetMapping("/check/email")
+    public ResponseEntity<String> checkEmail(
+            @RequestParam String email
+    ){
+        memberService.checkEmail(email);
+        return ResponseEntity.ok(
+                "사용가능한 이메일 입니다."
+        );
+    }
 }
