@@ -59,7 +59,7 @@ const Register = () => {
   })
 
   const [isCodeInput, setIsCodeInput] = useState<boolean>(false)
-  const [verificationCode, setVerificationCode] = useState<string>('')
+  // const [verificationCode, setVerificationCode] = useState<string>('')
 
   // TODO : 인증번호 전송 API 호출 후 로딩바 또는 로딩 텍스트 표시
   const sendVerificationEmail = async () => {
@@ -67,7 +67,7 @@ const Register = () => {
     // API : 인증번호 전송 요청
     axios.post(`/api/auth/verification/send/${formData.email}`).then(res => {
       alert('인증번호가 전송되었습니다.')
-      // console.log(res)
+      console.log(res)
     })
   }
 
