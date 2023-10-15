@@ -174,24 +174,10 @@ public class MemberServiceImpl implements MemberService {
 
         validateGetRequestedMemberList(member);
 
-        switch (type) {
-            case PRICE:
-                return ListResponse.from(
-                        memberRepository.getRequestedMemberListOrderByPrice(
-                                member.getChefMember().getId(), member.getAddress().getLat(),
-                                member.getAddress().getLnt(),
-                                pageable
-                        ));
-            case DISTANCE:
-                return ListResponse.from(
-                        memberRepository.getRequestedMemberListOrderByDistance(
-                                member.getChefMember().getId(), member.getAddress().getLat(),
-                                member.getAddress().getLnt(),
-                                pageable
-                        ));
-
-        }
-        return new ListResponse<>();
+        return ListResponse.from(memberRepository
+                .getRequestedMemberListOrderByType(member.getChefMember().getId(),
+                        member.getAddress().getLat(),
+                        member.getAddress().getLnt(), pageable, type));
     }
 
     /**

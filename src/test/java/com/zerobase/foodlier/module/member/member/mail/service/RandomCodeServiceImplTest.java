@@ -17,4 +17,14 @@ class RandomCodeServiceImplTest {
         );
     }
 
+    @Test
+    void success_createIntegerRandomCode(){
+        String verificationCode = new RandomCodeServiceImpl().createIntegerRandomCode();
+
+        assertAll(
+                () -> assertEquals(6, verificationCode.length()),
+                () -> assertTrue(verificationCode.matches(".*[0-9].*"))
+        );
+    }
+
 }
