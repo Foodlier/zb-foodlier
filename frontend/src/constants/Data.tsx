@@ -50,3 +50,17 @@ export const EMPTY_ORDER = {
   cookingOrderImageUrl: '',
   cookingOrder: '',
 }
+
+// 냉장고를 부탁해 요리사 조회 시 option list
+export const OPTION_MENU_LIST = [
+  { value: 'DISTANCE', text: '거리 순' },
+  { value: 'RECIPE', text: '레시피 많은 순' },
+  { value: 'REVIEW', text: '리뷰 많은 순' },
+  { value: 'STAR', text: '별점 높은 순' },
+]
+
+// 냉장고를 부탁해 요청 조회 시 option list
+export const REQUEST_OPTION_MENU_LIST = [
+  { value: 'DISTANCE', text: '거리 순' },
+  { value: 'PRICE', text: '가격 순' },
+]
