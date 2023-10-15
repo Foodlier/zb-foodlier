@@ -4,15 +4,11 @@ import com.zerobase.foodlier.common.response.ListResponse;
 import com.zerobase.foodlier.common.security.provider.JwtTokenProvider;
 import com.zerobase.foodlier.common.security.provider.dto.MemberAuthDto;
 import com.zerobase.foodlier.common.security.provider.dto.TokenDto;
-import com.zerobase.foodlier.module.member.member.dto.DefaultProfileDtoResponse;
-import com.zerobase.foodlier.module.member.member.dto.RequestedMemberDto;
-import com.zerobase.foodlier.module.member.member.dto.SignInForm;
-import com.zerobase.foodlier.module.member.member.profile.dto.MemberPrivateProfileResponse;
 import com.zerobase.foodlier.module.member.member.domain.model.Member;
 import com.zerobase.foodlier.module.member.member.domain.vo.Address;
-import com.zerobase.foodlier.module.member.member.dto.MemberRegisterDto;
-import com.zerobase.foodlier.module.member.member.dto.PasswordFindForm;
+import com.zerobase.foodlier.module.member.member.dto.*;
 import com.zerobase.foodlier.module.member.member.exception.MemberException;
+import com.zerobase.foodlier.module.member.member.profile.dto.MemberPrivateProfileResponse;
 import com.zerobase.foodlier.module.member.member.profile.dto.MemberUpdateDto;
 import com.zerobase.foodlier.module.member.member.profile.dto.PasswordChangeForm;
 import com.zerobase.foodlier.module.member.member.repository.MemberRepository;
@@ -75,7 +71,7 @@ public class MemberServiceImpl implements MemberService {
      * 이메일과 비밀번호를 받아와서 access token과 refresh token값을 반환해줍니다.
      */
     @Override
-    public TokenDto signIn(SignInForm form) {
+    public TokenDto signIn(SignInForm form, Date nowDateTime) {
         Member member = memberRepository.findByEmail(form.getEmail()).stream()
                 .filter(m -> passwordEncoder.matches(form.getPassword(), m.getPassword()))
                 .findFirst()
@@ -86,7 +82,7 @@ public class MemberServiceImpl implements MemberService {
                         .email(member.getEmail())
                         .roles(member.getRoles())
                         .build(),
-                form.getCurrentDate());
+                nowDateTime);
     }
 
     /**

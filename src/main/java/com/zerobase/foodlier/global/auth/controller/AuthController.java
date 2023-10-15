@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.time.LocalDateTime;
+import java.util.Date;
 
 import static com.zerobase.foodlier.common.security.constants.AuthorizationConstants.REFRESH_HEADER;
 import static com.zerobase.foodlier.common.security.constants.AuthorizationConstants.TOKEN_PREFIX;
@@ -61,7 +62,7 @@ public class AuthController {
     public ResponseEntity<TokenDto> signIn(
             @RequestBody @Valid SignInForm form
     ) {
-        return ResponseEntity.ok(memberService.signIn(form));
+        return ResponseEntity.ok(memberService.signIn(form, new Date()));
     }
 
     @PostMapping("/signout")

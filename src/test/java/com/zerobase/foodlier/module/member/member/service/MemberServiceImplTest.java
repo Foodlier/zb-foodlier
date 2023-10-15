@@ -31,7 +31,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import java.time.LocalDateTime;
 import java.util.*;
 
 import static com.zerobase.foodlier.common.security.exception.JwtErrorCode.MALFORMED_JWT_REQUEST;
@@ -219,8 +218,7 @@ class MemberServiceImplTest {
         TokenDto tokenDto = memberService.signIn(SignInForm.builder()
                 .email("test@test.com")
                 .password("password")
-                .currentDate(LocalDateTime.now())
-                .build());
+                .build(), new Date());
 
         //then
         assertAll(
@@ -243,8 +241,7 @@ class MemberServiceImplTest {
                 () -> memberService.signIn(SignInForm.builder()
                         .email("test2@test.com")
                         .password("password")
-                        .currentDate(LocalDateTime.now())
-                        .build()));
+                        .build(), new Date()));
 
 
         //then
@@ -281,8 +278,7 @@ class MemberServiceImplTest {
                 () -> memberService.signIn(SignInForm.builder()
                         .email("test@test.com")
                         .password("password1")
-                        .currentDate(LocalDateTime.now())
-                        .build()));
+                        .build(), new Date()));
 
         //then
         assertEquals(MEMBER_NOT_FOUND, passwordWrong.getErrorCode());
