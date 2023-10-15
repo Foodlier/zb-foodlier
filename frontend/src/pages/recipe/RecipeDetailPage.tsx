@@ -50,7 +50,7 @@ const RecipeDetailPage = () => {
         <DetailMainItem recipe={recipeData} />
         <DetailIngredients ingredients={recipeData?.recipeIngredientDtoList} />
         <DetailProcedure detail={recipeData?.recipeDetailDtoList} />
-        <RecipeComment recipeId={recipeData?.recipeId} />
+        <RecipeComment />
         <RecipeReviewList />
       </DetailContainer>
 

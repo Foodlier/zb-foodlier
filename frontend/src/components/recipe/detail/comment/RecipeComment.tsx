@@ -13,14 +13,16 @@ interface CommentItem {
   profileUrl: string
 }
 
-const RecipeComment = recipeId => {
+const RecipeComment = () => {
+  const [recipeId, setRecipeId] = useState(10)
   const [commentValue, setCommentValue] = useState('')
   const [commentList, setCommentList] = useState<CommentItem[]>([])
+  const [comment, setComment] = useState({})
+  const [commentId, setCommentId] = useState(0)
   const [pageIdx, setPageIdx] = useState(0)
   const pageSize = useRef(5)
   const endOfList = useRef(false)
   const [editValue, setEditValue] = useState('')
-  const [commentId, setCommentId] = useState(0)
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
   const [isEditing, setIsEditing] = useState(false)
 
@@ -34,11 +36,11 @@ const RecipeComment = recipeId => {
 
     const body = {
       message: commentValue,
-      recipeId: 1,
+      recipeId,
     }
 
     try {
-      const res = await axiosInstance.post(`/comment/10`, body)
+      const res = await axiosInstance.post(`/comment/${recipeId}`, body)
       if (res.status === 200) {
         console.log('작성한다', res.config.data)
         setCommentValue('')
@@ -52,34 +54,32 @@ const RecipeComment = recipeId => {
   // get
   const getComment = useCallback(async () => {
     const res = await axiosInstance.get(
-      `/comment/10/${pageIdx}/${pageSize.current}`
+      `/comment/${recipeId}/${pageIdx}/${pageSize.current}`
     )
-    console.log('뭘 받아오지?', res)
-    if (res.status === 200) {
-      const comment = res.data.content
-      res.data.content.forEach((comment: CommentItem) => {
-        // commentId는 comment.id
-        const commentId = comment.id
-        console.log('댓글 ID:', commentId)
-        setCommentId(commentId)
-      })
 
-      // message 값만 나오게 parse
-      const messages = comment.map((commentItem: CommentItem) => {
-        const parsedComment = JSON.parse(commentItem.message)
-        return parsedComment || commentItem
+    if (res.status === 200) {
+      const commentData = res.data.content
+      const messages = commentData.map((commentItem: CommentItem) => {
+        try {
+          const parsedComment = JSON.parse(commentItem.message)
+          if (parsedComment) {
+            return parsedComment
+          }
+          return commentItem.message
+        } catch (error) {
+          return commentItem.message
+        }
       })
 
       if (messages.length === -1) {
         endOfList.current = true
       } else if (pageIdx === 0) {
         setCommentList(messages)
-        // console.log('메세지는?', messages)
       } else {
         setCommentList(prevCommentList => [...prevCommentList, ...messages])
       }
     }
-  }, [pageIdx])
+  }, [recipeId, pageIdx])
 
   useEffect(() => {
     getComment()
@@ -92,24 +92,26 @@ const RecipeComment = recipeId => {
   }
 
   // 수정 버튼 누르면
-  const handleEditComment = (commentId: number) => {
-    console.log('댓글 ID:', commentId)
+  const handleEditComment = (commentIdParams: number) => {
+    console.log('댓글 ID:', commentIdParams)
+    setCommentId(commentIdParams)
     setIsEditing(true)
-    setCommentId(commentId)
   }
 
   // 수정 -> 확인 버튼 누르면
   const handleConfirmEdit = async () => {
     try {
       const body = {
-        message: editValue,
+        modifiedMessage: editValue,
       }
-      const res = await axiosInstance.put(`/comment/10/${commentId}`, body)
+      const res = await axiosInstance.put(`/comment/${commentId}`, body)
       if (res.status === 200) {
-        console.log('업데이트 하였습니다.')
+        console.log('댓글 업데이트 완료')
+        setIsEditing(false)
+        setEditValue('')
       }
     } catch (error) {
-      console.error('업데이트 실패', error)
+      console.error('댓글 업데이트 실패', error)
     }
   }
 
@@ -120,14 +122,14 @@ const RecipeComment = recipeId => {
   }
 
   // 삭제 버튼 누르면
-  const handleDeleteComment = () => {
+  const handleDeleteComment = (commentIdParams: number) => {
     setIsDeleteModalOpen(true)
-    console.log('삭제버튼 누름')
+    console.log('삭제버튼 누름', commentIdParams)
   }
 
   // 댓글을 삭제하시겠습니까? 확인 버튼
-  const handleConfirmDelete = async (index: number, commentId: number) => {
-    const res = await axiosInstance.delete(`/comment/10/${commentId}`)
+  const handleConfirmDelete = async () => {
+    const res = await axiosInstance.delete(`/comment/${recipeId}/${commentId}`)
     try {
       if (res.status === 200) {
         console.log('댓글을 삭제하였습니다.')
@@ -138,6 +140,7 @@ const RecipeComment = recipeId => {
       setIsDeleteModalOpen(false)
     }
   }
+
   return (
     <S.CommentContainer>
       <S.CommentTit>댓글</S.CommentTit>
@@ -151,8 +154,8 @@ const RecipeComment = recipeId => {
         <S.CommentSubmit onClick={onSubmit}>등록</S.CommentSubmit>
       </S.CommentForm>
       <S.CommentList>
-        {commentList.map((commentItem, index) => (
-          <div key={commentItem.id || index}>
+        {commentList.map((commentItem, idx) => (
+          <div key={commentItem.id || idx}>
             <S.CommentItemWrapper>
               <S.CommentHeader>
                 <S.CommentUserInfo>
@@ -169,20 +172,20 @@ const RecipeComment = recipeId => {
                 <S.CommentEdit>
                   <S.CommentEditInput
                     value={editValue}
-                    onChange={e => setEditValue(e.target.value)}
+                    onChange={e => setEditValue(e.target.value)} // setEditValue를 사용하여 editValue를 업데이트
                   />
                   <S.CommentButtonWrap>
                     <CommonButton
                       size="small"
                       color="divider"
-                      onClick={() => handleConfirmEdit()}
+                      onClick={handleConfirmEdit} // 함수를 호출하여 수정 내용을 서버에 업데이트
                     >
                       확인
                     </CommonButton>
                     <CommonButton
                       size="small"
                       color="divider"
-                      onClick={handleCancelEdit}
+                      onClick={handleCancelEdit} // 함수를 호출하여 수정을 취소
                     >
                       취소
                     </CommonButton>
@@ -195,14 +198,14 @@ const RecipeComment = recipeId => {
                     <CommonButton
                       size="small"
                       color="divider"
-                      onClick={() => handleEditComment(commentItem.id)}
+                      onClick={() => handleEditComment(commentItem.id)} // 함수를 호출하여 수정 모드로 전환
                     >
                       수정
                     </CommonButton>
                     <CommonButton
                       size="small"
                       color="divider"
-                      onClick={() => handleDeleteComment()}
+                      onClick={() => handleDeleteComment(commentItem.id)} // 함수를 호출하여 모달 오픈
                     >
                       삭제
                     </CommonButton>
@@ -227,8 +230,8 @@ const RecipeComment = recipeId => {
           title="댓글 삭제 확인"
           confirmText="확인"
           cancelText="취소"
-          onConfirm={handleConfirmDelete}
-          onCancel={() => setIsDeleteModalOpen(false)}
+          onConfirm={handleConfirmDelete} // 모달에서 삭제 확인
+          onCancel={() => setIsDeleteModalOpen(false)} // 모달 close
           visible={isDeleteModalOpen}
         >
           댓글을 삭제하시겠습니까?
