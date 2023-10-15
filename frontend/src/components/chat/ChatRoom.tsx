@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, KeyboardEvent } from 'react'
 import SockJS from 'sockjs-client'
 import StompJs from 'stompjs'
 import { palette } from '../../constants/Styles'
@@ -25,22 +25,24 @@ const ChatRoom = ({
   roomInfo: RoomInfoInterface | undefined
 }) => {
   const { IcImgBoxLight } = useIcon()
-
   const [isProposalModalOpen, setIsProposalModalOpen] = useState(false)
   const [isExitModalOpen, setIsExitModalOpen] = useState(false)
   const [dmMessageList, setDmMessageList] = useState<DmMessage[]>([])
   const [message, setMessage] = useState('')
   const [stompClientstate, setStompClientstate] = useState<StompJs.Client>()
-
   // 옵저버 관찰 대상
   const observerEl = useRef<HTMLDivElement>(null!)
 
+  const nowNickname = '김도빈테스트'
+
   // 로그인 구현시 TOKEN 따로 받아와야 함
   const TOKEN =
-    'Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJybGFlaHFAZ21haWwuY29tIiwianRpIjoiMSIsInJvbGVzIjpbIlJPTEVfVVNFUiIsIlJPTEVfQ0hFRiJdLCJpYXQiOjE3Mjg1NDU4MDAsImV4cCI6MTcyODU4OTAwMH0.5g-pdCpmfNhuj3eY8I6eV1UJbuNlXm__X_vh9zrAUaAzwiicQP_8E-bpwnLJLL15AKS729AP5X6OrwRDqkwkyQ'
+    'Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJybGFlaHFAZ21haWwuY29tIiwianRpIjoiMSIsInJvbGVzIjpbIlJPTEVfVVNFUiIsIlJPTEVfQ0hFRiJdLCJpYXQiOjE3Mjg4NTkwMTUsImV4cCI6MTcyODkwMjIxNX0.tPx-ZNgpczdQQuxHiT7t691IeGGAQSCgPMggSSRorFyHvzMu-yIboEAbKGm9YfBK7fHMyv3TD-dMCbnkMqmO5g'
+
+  console.log(roomInfo)
 
   useEffect(() => {
-    // 채팅 환결설정
+    // 채팅 환경설정
     const socket = new SockJS('http://localhost:8080/ws')
     const stompClient = StompJs.over(socket)
     setStompClientstate(stompClient)
@@ -63,45 +65,52 @@ const ChatRoom = ({
           `/dm/message?roomId=${roomInfo?.id}&dmId=${lastDmNum}`
         )
         if (res.status === 200) {
-          lastDmNum = res.data.messageList[9].dmId
-          // setDmMessageList(res.data.messageList)
           setDmMessageList(prevMessages =>
             prevMessages.concat(res.data.messageList)
           )
+          lastDmNum = res.data.messageList[res.data.messageList.length - 1].dmId
+          console.log(lastDmNum)
         }
       } catch (error) {
         console.log(error)
       }
     }
+
     getDmMessage()
 
     // 무한 스크롤 옵저버
     const observer = new IntersectionObserver(
       entries => {
         if (entries[0].isIntersecting) {
-          getDmMessage()
+          setTimeout(() => {
+            getDmMessage()
+          }, 500)
         }
       },
       { threshold: 1 }
     )
 
-    // 관찰 대상 지정
+    // // 관찰 대상 지정
     observer.observe(observerEl.current)
 
     const obeserveElCopy = observerEl.current
 
     return () => {
+      // 소켓 리셋
       socket.close()
+      // 옵저버 리셋
       observer.unobserve(obeserveElCopy)
+      // 디엠방 리셋
+      setDmMessageList([])
     }
   }, [roomInfo])
 
-  // 메시지 전송 로직
+  // 메시지 전송
   const sendMessage = () => {
     const roomNum = roomInfo?.id
     const newMessage = {
       content: message,
-      sender: '김도빈테스트',
+      sender: nowNickname,
     }
     if (stompClientstate && message !== '') {
       stompClientstate.send(
@@ -111,6 +120,7 @@ const ChatRoom = ({
           roomId: roomNum,
           message: newMessage.content,
           writer: newMessage.sender,
+          // 정형화
           messageType: 'CHAT',
         })
       )
@@ -118,12 +128,12 @@ const ChatRoom = ({
     setMessage('')
   }
 
-  // 가격 제안 로직
+  // 가격 제안
   const sendSuggestion = (price: number) => {
     const roomNum = roomInfo?.id
     const newMessage = {
       content: price,
-      sender: '김도빈테스트',
+      sender: nowNickname,
     }
     if (stompClientstate) {
       stompClientstate.send(
@@ -136,6 +146,25 @@ const ChatRoom = ({
           messageType: 'SUGGESTION',
         })
       )
+    }
+  }
+
+  // 채팅방 나가기
+  const leaveRoom = async () => {
+    try {
+      const res = await axiosInstance.put(`/dm/room/exit/${roomInfo?.id}`)
+      if (res.status === 200) {
+        console.log(res)
+      }
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  // 엔터로 메세지 보내기
+  const handleKeyUp = (e: KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      sendMessage()
     }
   }
 
@@ -156,32 +185,38 @@ const ChatRoom = ({
         </S.FlexAlignCenter>
       </S.ChattingHeader>
       <S.ChattingMessage>
+        {roomInfo?.exit && (
+          <S.ExitMessage>
+            상대방이 존재하지 않아 채팅이 불가합니다.
+          </S.ExitMessage>
+        )}
         {dmMessageList.map(item => (
-          <S.WrapMessage key={item.dmId} $isMe={item.writer === '김도빈테스트'}>
+          <S.WrapMessage key={item.dmId} $isMe={item.writer === nowNickname}>
             {item.messageType === 'CHAT' ? (
               <S.Wrap>
-                {!(item.writer === '김도빈테스트') && (
+                {!(item.writer === nowNickname) && (
                   <S.ProfileImage src={roomInfo?.profileUrl} $size={3} />
                 )}
-                <S.Message $isMe={item.writer === '김도빈테스트'}>
+                <S.Message $isMe={item.writer === nowNickname}>
                   {item.message}
+                  <S.FocusInput type="text" />
                 </S.Message>
               </S.Wrap>
             ) : (
               <S.Wrap>
-                {!(item.writer === '김도빈테스트') && (
+                {!(item.writer === nowNickname) && (
                   <S.ProfileImage src={roomInfo?.profileUrl} $size={3} />
                 )}
-                {item.writer === '김도빈테스트' && (
-                  <S.Suggestion $isMe={item.writer === '김도빈테스트'}>
+                {item.writer === nowNickname && (
+                  <S.Suggestion $isMe={item.writer === nowNickname}>
                     <S.SuggestionTitle>
                       {item.message}원을 제안하셨습니다.
                     </S.SuggestionTitle>
                     <p>상대방이 수락 혹은 거절할 수 있어요!</p>
                   </S.Suggestion>
                 )}
-                {item.writer !== '김도빈테스트' && (
-                  <S.Suggestion $isMe={item.writer !== '김도빈테스트'}>
+                {item.writer !== nowNickname && (
+                  <S.Suggestion $isMe={item.writer !== nowNickname}>
                     <S.SuggestionTitle>
                       {item.message}원을 제안하셨습니다.
                     </S.SuggestionTitle>
@@ -198,13 +233,20 @@ const ChatRoom = ({
             <S.MessageTime>{getTime(item.createdAt)}</S.MessageTime>
           </S.WrapMessage>
         ))}
-        <S.WrapDate>2023.09.02</S.WrapDate>
-        <div ref={observerEl} />
+        {/* <S.WrapDate>2023.09.02</S.WrapDate> */}
+        <S.ObserverDiv ref={observerEl} />
       </S.ChattingMessage>
       <S.WrapInput>
         <IcImgBoxLight size={3.5} color={palette.textPrimary} />
-        <S.Input value={message} onChange={e => setMessage(e.target.value)} />
-        <S.Button onClick={sendMessage}>전송</S.Button>
+        <S.Input
+          value={message}
+          onChange={e => setMessage(e.target.value)}
+          onKeyUp={e => handleKeyUp(e)}
+          disabled={roomInfo?.exit}
+        />
+        <S.Button onClick={sendMessage} disabled={roomInfo?.exit}>
+          전송
+        </S.Button>
       </S.WrapInput>
       {isProposalModalOpen && (
         <ProposalModal
@@ -217,7 +259,8 @@ const ChatRoom = ({
           content="채팅방을 나가시겠습니까?"
           setIsModalFalse={() => setIsExitModalOpen(false)}
           modalEvent={() => {
-            console.log('채팅방 나가기')
+            leaveRoom()
+            setIsExitModalOpen(false)
           }}
         />
       )}

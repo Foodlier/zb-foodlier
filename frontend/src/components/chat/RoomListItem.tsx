@@ -7,6 +7,9 @@ export interface RoomInfoInterface {
   profileUrl: string
   requestId: number
   expectedPrice: string
+  exit: boolean
+  role: string
+  suggested: boolean
 }
 
 const RoomListItem = ({ roomInfo }: { roomInfo: RoomInfoInterface }) => {

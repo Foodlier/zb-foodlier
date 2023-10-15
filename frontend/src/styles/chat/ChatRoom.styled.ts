@@ -84,6 +84,14 @@ export const Message = styled.div<{ $isMe: boolean }>`
   }
 `
 
+export const FocusInput = styled.input`
+  position: absolute;
+  width: 0;
+  height: 0;
+  bottom: 0;
+  left: 0;
+`
+
 export const Suggestion = styled.div<{ $isMe: boolean }>`
   max-width: 25rem;
   border: 2px solid ${palette.yellow};
@@ -214,4 +222,20 @@ export const ExitButton = styled.button`
     font-size: 1.4rem;
     padding: 0.8rem 1.4rem;
   }
+`
+
+export const ObserverDiv = styled.div`
+  width: 50px;
+  height: 50px;
+  background-color: white;
+  opacity: 0;
+`
+
+export const ExitMessage = styled.p`
+  background-color: yellowgreen;
+  padding: 1% 2%;
+  border-radius: 10px;
+  background-color: ${palette.textDisablePlace};
+  color: ${palette.white};
+  margin-bottom: 10px;
 `
