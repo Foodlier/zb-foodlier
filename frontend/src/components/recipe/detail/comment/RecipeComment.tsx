@@ -12,7 +12,6 @@ interface CommentItem {
   createdAt: string
   profileUrl: string
 }
-
 const RecipeComment = () => {
   const [recipeId, setRecipeId] = useState(10)
   const [commentValue, setCommentValue] = useState('')
