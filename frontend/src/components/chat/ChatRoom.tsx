@@ -33,6 +33,9 @@ const ChatRoom = ({
   // 옵저버 관찰 대상
   const observerEl = useRef<HTMLDivElement>(null!)
 
+  // 가장 마지막 채팅 Ref
+  const lastDmRef = useRef<HTMLInputElement>(null!)
+
   const nowNickname = '김도빈테스트'
 
   // 로그인 구현시 TOKEN 따로 받아와야 함
@@ -40,6 +43,7 @@ const ChatRoom = ({
     'Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJybGFlaHFAZ21haWwuY29tIiwianRpIjoiMSIsInJvbGVzIjpbIlJPTEVfVVNFUiIsIlJPTEVfQ0hFRiJdLCJpYXQiOjE3Mjg4NTkwMTUsImV4cCI6MTcyODkwMjIxNX0.tPx-ZNgpczdQQuxHiT7t691IeGGAQSCgPMggSSRorFyHvzMu-yIboEAbKGm9YfBK7fHMyv3TD-dMCbnkMqmO5g'
 
   console.log(roomInfo)
+  console.log(dmMessageList)
 
   useEffect(() => {
     // 채팅 환경설정
@@ -104,6 +108,12 @@ const ChatRoom = ({
       setDmMessageList([])
     }
   }, [roomInfo])
+
+  useEffect(() => {
+    if (dmMessageList.length > 0 && lastDmRef.current) {
+      lastDmRef.current.focus()
+    }
+  }, [dmMessageList])
 
   // 메시지 전송
   const sendMessage = () => {
@@ -190,7 +200,7 @@ const ChatRoom = ({
             상대방이 존재하지 않아 채팅이 불가합니다.
           </S.ExitMessage>
         )}
-        {dmMessageList.map(item => (
+        {dmMessageList.map((item, index) => (
           <S.WrapMessage key={item.dmId} $isMe={item.writer === nowNickname}>
             {item.messageType === 'CHAT' ? (
               <S.Wrap>
@@ -199,7 +209,10 @@ const ChatRoom = ({
                 )}
                 <S.Message $isMe={item.writer === nowNickname}>
                   {item.message}
-                  <S.FocusInput type="text" />
+                  <S.FocusInput
+                    ref={index === 0 ? lastDmRef : null}
+                    type="text"
+                  />
                 </S.Message>
               </S.Wrap>
             ) : (

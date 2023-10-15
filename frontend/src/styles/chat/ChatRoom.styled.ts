@@ -71,6 +71,7 @@ export const WrapMessage = styled.div<{ $isMe: boolean }>`
 `
 
 export const Message = styled.div<{ $isMe: boolean }>`
+  position: relative;
   max-width: 25rem;
   background-color: ${props => (props.$isMe ? palette.main : palette.white)};
   color: ${props => (props.$isMe ? palette.white : palette.textPrimary)};
@@ -86,10 +87,10 @@ export const Message = styled.div<{ $isMe: boolean }>`
 
 export const FocusInput = styled.input`
   position: absolute;
-  width: 0;
-  height: 0;
   bottom: 0;
-  left: 0;
+  width: 0px;
+  height: 0px;
+  opacity: 0;
 `
 
 export const Suggestion = styled.div<{ $isMe: boolean }>`
