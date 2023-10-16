@@ -24,13 +24,3 @@ export interface RecipeIngredientDtoList {
   unit: string
   [key: string]: string | number
 }
-
-export interface CommentItem {
-  id: number
-  commentId: string
-  modifiedAt: string
-  profileUrl: string
-  createdAt: string
-  message: string
-  nickname: string
-}

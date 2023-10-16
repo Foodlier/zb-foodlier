@@ -48,7 +48,6 @@ function App() {
           element={<WriteReviewPage />}
         />
         <Route path="/chat" element={<ChattingPage />} />
-        {/* <Route path="/a" element={<Ab />} /> */}
       </Routes>
     </div>
   )

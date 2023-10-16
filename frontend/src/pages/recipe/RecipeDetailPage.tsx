@@ -27,6 +27,7 @@ const RecipeDetailPage = () => {
 
       if (res.status === 200) {
         setRecipeData(res.data)
+        console.log('ss', recipeData)
         setIsLoading(false)
       }
     } catch (error) {
