@@ -6,6 +6,8 @@ import com.zerobase.foodlier.module.notification.domain.model.Notification;
 import com.zerobase.foodlier.module.notification.domain.type.NotificationType;
 import com.zerobase.foodlier.module.notification.dto.NotificationDto;
 import com.zerobase.foodlier.module.notification.repository.notification.NotificationRepository;
+import com.zerobase.foodlier.module.notification.util.MessageBuilder;
+import com.zerobase.foodlier.module.notification.util.UrlBuilder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -17,8 +19,8 @@ public class NotificationServiceImpl implements NotificationService {
     private final NotificationRepository notificationRepository;
 
     @Override
-    public Notification create(Member receiver, NotificationType notificationType, String content, String url) {
-        return notificationRepository.save(createNotification(receiver, notificationType, content, url));
+    public Notification create(Member receiver, NotificationType notificationType, MessageBuilder messageBuilder, UrlBuilder url) {
+        return notificationRepository.save(createNotification(receiver, notificationType, messageBuilder.getMessage(), url.getUrl()));
     }
 
     @Override
