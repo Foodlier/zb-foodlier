@@ -28,7 +28,7 @@ public class DmRoomRepositoryCustomImpl implements DmRoomRepositoryCustom {
         QRequest request = QRequest.request;
 
         List<DmRoomDto> content = queryFactory.select(Projections.constructor(DmRoomDto.class,
-                        dmRoom.id,
+                        dmRoom.id.as("roomId"),
                         new CaseBuilder().when(request.chefMember.member.id.ne(memberId))
                                 .then(request.chefMember.member.nickname)
                                 .otherwise(request.member.nickname),
