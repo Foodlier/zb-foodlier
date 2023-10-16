@@ -36,11 +36,11 @@ const ChatRoom = ({
   // 가장 마지막 채팅 Ref
   const lastDmRef = useRef<HTMLInputElement>(null!)
 
-  const nowNickname = '김도빈테스트'
+  const nowNickname = '요리사계정1'
 
   // 로그인 구현시 TOKEN 따로 받아와야 함
   const TOKEN =
-    'Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJybGFlaHFAZ21haWwuY29tIiwianRpIjoiMSIsInJvbGVzIjpbIlJPTEVfVVNFUiIsIlJPTEVfQ0hFRiJdLCJpYXQiOjE3Mjg4NTkwMTUsImV4cCI6MTcyODkwMjIxNX0.tPx-ZNgpczdQQuxHiT7t691IeGGAQSCgPMggSSRorFyHvzMu-yIboEAbKGm9YfBK7fHMyv3TD-dMCbnkMqmO5g'
+    'Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJybGFlaHFAZ21haWwuY29tIiwianRpIjoiMSIsInJvbGVzIjpbIlJPTEVfQ0hFRiJdLCJ0eXBlIjoiQVQiLCJpYXQiOjE3MjkwMzMwMjQsImV4cCI6MTcyOTA3NjIyNH0.H1nMVZGcjlcMwkSmjkSghz3EImVR5quDtwrRhXfSxZmASkDkR4ZHyQn6ZZN5LYWRM4Ent30WSaploceO2mb-Yg'
 
   console.log(roomInfo)
   console.log(dmMessageList)
@@ -52,7 +52,7 @@ const ChatRoom = ({
     setStompClientstate(stompClient)
     stompClient.connect({ Authorization: TOKEN }, () => {
       // 채팅방 번호 설정
-      const roomNum = roomInfo?.id
+      const roomNum = roomInfo?.dmRoomId
       stompClient.subscribe(`/sub/message/${roomNum}`, comeMessage => {
         // 새로운 메시지 도착 시 호출될 콜백 함수
         const newMessage = JSON.parse(comeMessage.body)
@@ -66,8 +66,10 @@ const ChatRoom = ({
     const getDmMessage = async () => {
       try {
         const res = await axiosInstance.get(
-          `/dm/message?roomId=${roomInfo?.id}&dmId=${lastDmNum}`
+          `/dm/message?roomId=${roomInfo?.dmRoomId}&dmId=${lastDmNum}`
         )
+        console.log(res)
+
         if (res.status === 200) {
           setDmMessageList(prevMessages =>
             prevMessages.concat(res.data.messageList)
@@ -117,7 +119,7 @@ const ChatRoom = ({
 
   // 메시지 전송
   const sendMessage = () => {
-    const roomNum = roomInfo?.id
+    const roomNum = roomInfo?.dmRoomId
     const newMessage = {
       content: message,
       sender: nowNickname,
@@ -140,7 +142,7 @@ const ChatRoom = ({
 
   // 가격 제안
   const sendSuggestion = (price: number) => {
-    const roomNum = roomInfo?.id
+    const roomNum = roomInfo?.dmRoomId
     const newMessage = {
       content: price,
       sender: nowNickname,
@@ -162,7 +164,7 @@ const ChatRoom = ({
   // 채팅방 나가기
   const leaveRoom = async () => {
     try {
-      const res = await axiosInstance.put(`/dm/room/exit/${roomInfo?.id}`)
+      const res = await axiosInstance.put(`/dm/room/exit/${roomInfo?.dmRoomId}`)
       if (res.status === 200) {
         console.log(res)
       }

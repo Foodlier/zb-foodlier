@@ -19,9 +19,7 @@ const ChattingPage = () => {
     try {
       const res = await axiosInstance.get('/dm/room/0/10')
       if (res.status === 200) {
-        console.log('여기 맞지?', res.data)
-        setDmRoomList(res.data)
-        setIsLoading(true)
+        setDmRoomList(res.data.content)
       }
     } catch (error) {
       console.log(error)
@@ -33,6 +31,9 @@ const ChattingPage = () => {
   }, [])
 
   useEffect(() => {
+    if (dmRoomList.length > 0) {
+      setIsLoading(true)
+    }
     if (dmRoomList.length > 0 && firstDmRoomRef.current) {
       firstDmRoomRef.current.click()
     }
@@ -41,28 +42,37 @@ const ChattingPage = () => {
   return (
     <>
       <Header />
-      <S.Container>
-        <S.WrapChatList>
-          {isLoading &&
-            dmRoomList.map((item, index) => (
-              <S.Wrap key={item.id}>
-                <S.ReqireButton>요청서 보기</S.ReqireButton>
-                <S.RoomListButton
-                  ref={index === 0 ? firstDmRoomRef : null}
-                  onClick={() => setCurrentChat(item.id)}
-                  $isActive={currentChat === item.id}
-                >
-                  <RoomListItem roomInfo={item} />
-                </S.RoomListButton>
-              </S.Wrap>
-            ))}
-        </S.WrapChatList>
-        {isLoading && (
-          <ChatRoom
-            roomInfo={dmRoomList.find(item => item.id === currentChat)}
-          />
-        )}
-      </S.Container>
+      {isLoading && (
+        <S.Container>
+          {dmRoomList.length > 0 ? (
+            <>
+              <S.WrapChatList>
+                {dmRoomList.map((item, index) => (
+                  <S.Wrap key={item.dmRoomId}>
+                    <S.ReqireButton>요청서 보기</S.ReqireButton>
+                    <S.RoomListButton
+                      ref={index === 0 ? firstDmRoomRef : null}
+                      onClick={() => setCurrentChat(item.dmRoomId)}
+                      $isActive={currentChat === item.dmRoomId}
+                    >
+                      <RoomListItem roomInfo={item} />
+                    </S.RoomListButton>
+                  </S.Wrap>
+                ))}
+              </S.WrapChatList>
+
+              <ChatRoom
+                roomInfo={dmRoomList.find(
+                  item => item.dmRoomId === currentChat
+                )}
+              />
+            </>
+          ) : (
+            <S.NoRoom>현재 생성된 채팅방이 없습니다</S.NoRoom>
+          )}
+        </S.Container>
+      )}
+
       <DmTest2 />
       <BottomNavigation />
     </>

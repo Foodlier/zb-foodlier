@@ -18,7 +18,7 @@ const DmTest2 = () => {
   const [stompClientstate, setStompClientstate] = useState<StompJs.Client>()
 
   const TOKEN =
-    'Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJlaHFsczgxOEBuYXZlci5jb20iLCJqdGkiOiIyIiwicm9sZXMiOlsiUk9MRV9VU0VSIl0sImlhdCI6MTcyODg1NTUzMiwiZXhwIjoxNzI4ODk4NzMyfQ.fB8-6erXP1zQ7yq8TFaTJ97BFaGKhh8XQ3tzU61YhSQQmSFf7kKgHn9__ggUg3UmCfBj0_JWnbJazV0r7wCYcg'
+    'Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ0ZXh0Y29va2VyMTAxNEBnbWFpbC5jb20iLCJqdGkiOiIzIiwicm9sZXMiOltdLCJ0eXBlIjoiQVQiLCJpYXQiOjE3MjkwMzMwMjQsImV4cCI6MTcyOTA3NjIyNH0.Hv5VzvxJN9UWnj4NQ9Ssil8kHr3BeeJHgkfDpncRRrRAq-M9dHXe_uId4d-AEjgXpyATdAenVmMHNDJG-zXTQQ'
 
   useEffect(() => {
     // SockJS 및 STOMP 클라이언트 연결 설정
@@ -45,7 +45,7 @@ const DmTest2 = () => {
     const roomNum = 2
     const newMessage = {
       content: input,
-      sender: '테스트김도빈',
+      sender: '요청계정2',
     }
     if (stompClientstate) {
       stompClientstate.send(
@@ -66,7 +66,7 @@ const DmTest2 = () => {
   const leaveRoom = async () => {
     try {
       sendMessage('상대방이 채팅방을 퇴장하셨습니다.')
-      const res = await axiosInstance.put(`/dm/room/exit/4`)
+      const res = await axiosInstance.put(`/dm/room/exit/1`)
       if (res.status === 200) {
         console.log(res)
       }

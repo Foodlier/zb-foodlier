@@ -2,7 +2,7 @@ import * as S from '../../styles/chat/RoomListItem.styled'
 import returnPriceWithComma from '../../utils/returnPriceWithComma'
 
 export interface RoomInfoInterface {
-  id: number
+  dmRoomId: number
   nickname: string
   profileUrl: string
   requestId: number

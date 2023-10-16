@@ -2,6 +2,7 @@ import styled from 'styled-components'
 import { breakpoints, palette } from '../../constants/Styles'
 
 export const Container = styled.div`
+  position: relative;
   height: calc(100vh - 9rem);
   display: flex;
   flex-direction: column;
@@ -67,4 +68,19 @@ export const Wrap = styled.div`
   position: relative;
   display: flex;
   flex-direction: column;
+`
+
+export const NoRoom = styled.div`
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, calc(-50% - 50px));
+  padding: 1%;
+  border-radius: 10px;
+  background-color: ${palette.divider};
+  min-width: 220px;
+  text-align: center;
+  ${breakpoints.large} {
+    transform: translate(-50%, -50%);
+  }
 `
