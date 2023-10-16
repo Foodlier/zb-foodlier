@@ -397,21 +397,21 @@ public class RecipeServiceImpl implements RecipeService {
         switch (orderType) {
             case CREATED_AT:
                 recipePage = recipeRepository.findByIsPublicOrderByCreatedAtDesc(
-                        false, pageable);
+                        true, pageable);
                 totalElements = recipePage.getTotalElements();
                 totalPages = recipePage.getTotalPages();
                 hasNext = recipePage.hasNext();
                 break;
             case HEART_COUNT:
                 recipePage = recipeRepository.findByIsPublicOrderByHeartCountDesc(
-                        false, pageable);
+                        true, pageable);
                 totalPages = recipePage.getTotalPages();
                 totalElements = recipePage.getTotalElements();
                 hasNext = recipePage.hasNext();
                 break;
             case COMMENT_COUNT:
                 recipePage = recipeRepository.findByIsPublicOrderByCommentCountDesc(
-                        false, pageable);
+                        true, pageable);
                 totalPages = recipePage.getTotalPages();
                 totalElements = recipePage.getTotalElements();
                 hasNext = recipePage.hasNext();
