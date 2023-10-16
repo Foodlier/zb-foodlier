@@ -20,7 +20,6 @@ export const CardInfo = styled.div`
   .mainImg {
     width: 90px;
     height: 90px;
-    background-color: ${palette.divider};
     border-radius: 10px;
   }
 `
@@ -62,12 +61,22 @@ export const RequestButton = styled.button`
   color: ${palette.white};
   border-radius: 5px;
 `
-export const RequestedButton = styled.button`
+export const RequestedButton = styled.button<{ $isActive: boolean }>`
   width: 146px;
   height: 44px;
   line-height: 44px;
   text-align: center;
-  background-color: ${palette.divider};
-  color: ${palette.white};
+  background-color: ${props =>
+    props.$isActive ? palette.white : palette.white};
+  color: ${props =>
+    props.$isActive ? palette.main : palette.textDisablePlace};
+  border: 1px solid
+    ${props => (props.$isActive ? palette.main : palette.textDisablePlace)};
   border-radius: 5px;
+  margin-left: 1rem;
+`
+
+export const FlexWrap = styled.div`
+  display: flex;
+  align-items: center;
 `

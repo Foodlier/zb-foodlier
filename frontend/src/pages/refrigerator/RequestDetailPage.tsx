@@ -1,21 +1,103 @@
+/* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable no-nested-ternary */
+import { useEffect, useState } from 'react'
+import { useNavigate, useParams } from 'react-router-dom'
 import Header from '../../components/Header'
 import BottomNavigation from '../../components/BottomNavigation'
 import * as S from '../../styles/refrigerator/RequestDetailPage.styled'
+import axiosInstance from '../../utils/FetchCall'
+import { RequestDetail } from '../../constants/Interfaces'
+import RecipeItem from '../../components/recipe/RecipeItem'
+import EmptyRecipeItem from '../../components/recipe/EmptyRecipeItem'
+import ListModal from '../../components/refrigerator/ListModal'
 
 const RequestDetailPage = () => {
-  const REQUEST_EXAM = {
-    title: '치킨마요밥 먹고 싶어요',
-    content: '치킨마요밥 만들어 주세요',
-    ingredients: ['치킨', '마요네즈', '밥'],
-    expectedPrice: '5000',
-    expectedAt: '18시 30분',
+  const { id } = useParams()
+  const navigate = useNavigate()
+
+  const [requestValue, setRequestValue] = useState<RequestDetail>()
+  const [isQuotationListModal, setIsQuotationListModal] = useState(false)
+  const [isSelectedRequestId, setIsSelectedRequestId] = useState(0)
+  const [quotationErrorMessage, setQuotationErrorMessage] = useState('')
+
+  const REQUEST_DATA = [
+    {
+      title: '제목',
+      value: requestValue?.title,
+    },
+    {
+      title: '요청자',
+      value: requestValue?.requesterNickname,
+    },
+    {
+      title: '요청 가격',
+      value: requestValue?.expectedPrice,
+    },
+    {
+      title: '요청 지역',
+      value: `${requestValue?.address} ${requestValue?.addressDetail}`,
+    },
+    {
+      title: '요청 시간',
+      value: requestValue?.expectedAt,
+    },
+    {
+      title: '요청 내용',
+      value: requestValue?.content,
+    },
+  ]
+
+  // 요청서 상세 조회
+  const getRequestDetail = async () => {
+    try {
+      const { data, status } = await axiosInstance.get(
+        `/refrigerator/request/${id}`
+      )
+      console.log(data)
+      if (status === 200) {
+        setRequestValue(data)
+      }
+    } catch (error) {
+      console.log(error)
+    }
   }
 
-  const TAGGED_EXAM = {
-    title: '마크정식',
-    like: '100',
-    description: '편의점 떡볶이, 소세지와 스트링치즈만 있으면 마크정식 완성!',
+  // 요청서 수락
+  const approveRequest = () => {
+    const res = axiosInstance.post(`/refrigerator/chef/approve/${id}`)
+    console.log(res)
   }
+
+  // 요청서 거절
+  const rejectRequest = () => {
+    const res = axiosInstance.patch(`/refrigerator/reject/${id}`)
+    console.log(res)
+  }
+
+  // 견적서 보내기
+  const sendQuotation = () => {
+    if (!isSelectedRequestId) {
+      setQuotationErrorMessage('견적서를 선택해주세요.')
+      return
+    }
+
+    try {
+      const response = axiosInstance.post(
+        `/quotation/send?quotationId=${isSelectedRequestId}&requestId=${requestValue?.requestId}`
+      )
+      console.log(response)
+      navigate(-1)
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  useEffect(() => {
+    getRequestDetail()
+  }, [])
+
+  if (!requestValue) return null
+
   return (
     <>
       <Header />
@@ -23,68 +105,85 @@ const RequestDetailPage = () => {
         <S.RequestHeader>요청서 상세</S.RequestHeader>
         <S.RequestForm action="">
           <S.RequestFormList>
-            <S.RequestFormEl>
-              <S.ElementTitle>제목</S.ElementTitle>
-              <S.ElementContents>{REQUEST_EXAM.title}</S.ElementContents>
-            </S.RequestFormEl>
-            <S.RequestFormEl>
-              <S.ElementTitle>요청자</S.ElementTitle>
-              <S.ElementContents>나는 사용자</S.ElementContents>
-            </S.RequestFormEl>
+            {REQUEST_DATA.map(item => (
+              <S.RequestFormEl key={item.title}>
+                <S.ElementTitle>{item.title}</S.ElementTitle>
+                <S.ElementContents>{item.value}</S.ElementContents>
+              </S.RequestFormEl>
+            ))}
+
             <S.RequestFormEl>
               <S.ElementTitle>보유 재료</S.ElementTitle>
-              {REQUEST_EXAM.ingredients.map(el => (
+              {requestValue?.ingredientList.map(el => (
                 <S.ElementContents key={el}>{el}</S.ElementContents>
               ))}
             </S.RequestFormEl>
-            <S.RequestFormEl>
-              <S.ElementTitle>요청가격</S.ElementTitle>
-              <S.ElementContents>
-                {REQUEST_EXAM.expectedPrice}원
-              </S.ElementContents>
-            </S.RequestFormEl>
-            <S.RequestFormEl>
-              <S.ElementTitle>요청지역</S.ElementTitle>
-              <S.ElementContents>강원도 양구군 박수근로 137</S.ElementContents>
-            </S.RequestFormEl>
-            <S.RequestFormEl>
-              <S.ElementTitle>요청시간</S.ElementTitle>
-              <S.ElementContents>{REQUEST_EXAM.expectedAt}</S.ElementContents>
-            </S.RequestFormEl>
-            <S.RequestFormEl>
-              <S.ElementTitle>요청내용</S.ElementTitle>
-              <S.ElementContents>{REQUEST_EXAM.content}</S.ElementContents>
-            </S.RequestFormEl>
+
             <S.RequestFormEl>
               <S.ElementTitle>태그된 레시피</S.ElementTitle>
-              {TAGGED_EXAM ? (
-                <S.TaggedRecipe>
-                  <S.TaggedImg src="" alt="메인 사진" />
-                  <S.TaggedInfo>
-                    <S.TaggedTopInfo>
-                      <S.TaggedTitle>{TAGGED_EXAM.title}</S.TaggedTitle>
-                      <S.TaggedLike>
-                        <img src="" alt="핫뚜" />
-                        <span>{TAGGED_EXAM.like}</span>
-                      </S.TaggedLike>
-                    </S.TaggedTopInfo>
-                    <S.TaggedBottomInfo>
-                      {TAGGED_EXAM.description}
-                    </S.TaggedBottomInfo>
-                  </S.TaggedInfo>
-                </S.TaggedRecipe>
+
+              {requestValue?.mainImageUrl ? (
+                <RecipeItem
+                  recipeItem={{
+                    id: 0, // 레시피 ID 필요
+                    title: requestValue?.recipeTitle,
+                    mainImageUrl: requestValue?.mainImageUrl,
+                    content: requestValue?.recipeContent,
+                    heartCount: requestValue?.heartCount,
+                    heart: true,
+                  }}
+                  onClick={() => console.log('레시피 클릭')}
+                />
+              ) : isSelectedRequestId ? (
+                <div>{isSelectedRequestId}</div>
               ) : (
-                <S.ElementContents>태그된 레시피가 없습니다</S.ElementContents>
+                <S.WrapQuotation>
+                  <EmptyRecipeItem
+                    onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
+                      e.preventDefault()
+                      setIsQuotationListModal(true)
+                    }}
+                  />
+                  <S.ErrorMessage>{quotationErrorMessage}</S.ErrorMessage>
+                </S.WrapQuotation>
               )}
             </S.RequestFormEl>
           </S.RequestFormList>
           <S.ButtonList>
-            <S.RejectButton type="button">거절하기</S.RejectButton>
-            <S.AcceptButton type="button">수락하기</S.AcceptButton>
+            <S.RejectButton type="button" onClick={rejectRequest}>
+              거절하기
+            </S.RejectButton>
+            {requestValue?.mainImageUrl ? (
+              <S.AcceptButton
+                type="button"
+                onClick={approveRequest}
+                $isActive={Boolean(requestValue.mainImageUrl)}
+              >
+                수락하기
+              </S.AcceptButton>
+            ) : (
+              <S.AcceptButton
+                type="button"
+                onClick={sendQuotation}
+                $isActive={Boolean(isSelectedRequestId)}
+              >
+                견적서 보내기
+              </S.AcceptButton>
+            )}
           </S.ButtonList>
         </S.RequestForm>
+
         <S.SpacingDiv />
       </S.RequestContainer>
+
+      {/* 견적서 목록 Modal */}
+      {isQuotationListModal && (
+        <ListModal
+          setModalOpen={setIsQuotationListModal}
+          modalType="quotation"
+          setIsSelectedRequestId={setIsSelectedRequestId}
+        />
+      )}
       <BottomNavigation />
     </>
   )

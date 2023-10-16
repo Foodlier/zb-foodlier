@@ -8,7 +8,7 @@ import DetailProcedure from '../../components/recipe/detail/DetailProcedure'
 import RecipeCommentList from '../../components/recipe/detail/comment/RecipeCommentList'
 import RecipeReviewList from '../../components/recipe/detail/review/RecipeReviewList'
 import axiosInstance from '../../utils/FetchCall'
-import { Recipe } from '../../constants/Interfacs'
+import { Recipe } from '../../constants/Interfaces'
 
 export const DetailContainer = styled.div`
   width: 100%;

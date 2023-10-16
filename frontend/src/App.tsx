@@ -13,6 +13,7 @@ import WriteRecipePage from './pages/recipe/WriteRecipePage'
 import RecipeDetailPage from './pages/recipe/RecipeDetailPage'
 import WriteReviewPage from './pages/recipe/WriteReviewPage'
 import ChattingPage from './pages/chat/ChattingPage'
+import MyPage from './pages/user/MyPage'
 
 function App() {
   return (
@@ -27,7 +28,7 @@ function App() {
           element={<WriteRequestPage />}
         />
         <Route
-          path="/refrigerator/request/detail"
+          path="/refrigerator/request/detail/:id"
           element={<RequestDetailPage />}
         />
         <Route
@@ -35,7 +36,7 @@ function App() {
           element={<WriteQuotationPage />}
         />
         <Route
-          path="/refrigerator/quotation/detail"
+          path="/refrigerator/quotation/detail/:id"
           element={<QuotationDetailPage />}
         />
         <Route path="/refrigerator/" element={<RefrigeratorPage />} />
@@ -47,6 +48,7 @@ function App() {
           element={<WriteReviewPage />}
         />
         <Route path="/chat" element={<ChattingPage />} />
+        <Route path="/my" element={<MyPage />} />
       </Routes>
     </div>
   )

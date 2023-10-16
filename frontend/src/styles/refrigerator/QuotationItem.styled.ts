@@ -14,7 +14,7 @@ export const GreyBackground = styled.div`
   z-index: ${zindex.modal};
 `
 
-export const ModalContainer = styled.div`
+export const ModalScreen = styled.div`
   position: fixed;
   display: flex;
   flex-direction: column;
@@ -35,7 +35,7 @@ export const ModalContainer = styled.div`
   }
 `
 
-export const ModalHeader = styled.div`
+export const ModalTop = styled.div`
   display: flex;
   justify-content: space-between;
   margin-bottom: 20px;
@@ -45,14 +45,6 @@ export const ModalHeader = styled.div`
     font-weight: bold;
   }
 `
-
-export const ModalTitle = styled.span`
-  font-size: 2rem;
-  font-weight: bold;
-`
-
-export const CloseButton = styled.button``
-
 export const ElContainer = styled.ul`
   display: flex;
   flex: 1;
