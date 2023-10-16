@@ -71,7 +71,7 @@ public class MemberServiceImpl implements MemberService {
      * 이메일과 비밀번호를 받아와서 access token과 refresh token값을 반환해줍니다.
      */
     @Override
-    public TokenDto signIn(SignInForm form) {
+    public TokenDto signIn(SignInForm form, Date nowDateTime) {
         Member member = memberRepository.findByEmail(form.getEmail()).stream()
                 .filter(m -> passwordEncoder.matches(form.getPassword(), m.getPassword()))
                 .findFirst()
@@ -82,7 +82,7 @@ public class MemberServiceImpl implements MemberService {
                         .email(member.getEmail())
                         .roles(member.getRoles())
                         .build(),
-                form.getCurrentDate());
+                nowDateTime);
     }
 
     /**
@@ -286,6 +286,28 @@ public class MemberServiceImpl implements MemberService {
     private String generateRandomCode() {
         return UUID.randomUUID().toString().replace("-", "");
     }
+
+    @Override
+    public void checkNickname(String nickname){
+        if(memberRepository.existsByNickname(nickname)){
+            throw new MemberException(NICKNAME_IS_ALREADY_EXIST);
+        }
+    }
+
+    @Override
+    public void checkPhoneNumber(String phoneNumber){
+        if(memberRepository.existsByPhoneNumber(phoneNumber)){
+            throw new MemberException(PHONE_NUMBER_IS_ALREADY_EXIST);
+        }
+    }
+
+    @Override
+    public void checkEmail(String email){
+        if(memberRepository.existsByEmail(email)){
+            throw new MemberException(EMAIL_IS_ALREADY_EXIST);
+        }
+    }
+
 
     //======================= Validates =========================
 

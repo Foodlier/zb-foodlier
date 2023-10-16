@@ -27,6 +27,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -77,7 +78,7 @@ public class ProfileController {
     @PutMapping(value = "/private")
     public ResponseEntity<String> updatePrivateProfile(
             @AuthenticationPrincipal MemberAuthDto memberAuthDto,
-            @ModelAttribute MemberPrivateProfileForm form
+            @ModelAttribute @Valid MemberPrivateProfileForm form
     ) {
         profileFacade.deleteProfileUrlAndGetAddressUpdateProfile(
                 memberAuthDto.getEmail(), form);
@@ -168,7 +169,7 @@ public class ProfileController {
     @PutMapping("/private/password")
     public ResponseEntity<String> updatePassword(
             @AuthenticationPrincipal MemberAuthDto memberAuthDto,
-            @RequestBody PasswordChangeForm form
+            @RequestBody @Valid PasswordChangeForm form
     ) {
         return ResponseEntity.ok(memberService.updatePassword(memberAuthDto, form));
     }

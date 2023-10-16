@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.time.LocalDateTime;
+import java.util.Date;
 
 import static com.zerobase.foodlier.common.security.constants.AuthorizationConstants.REFRESH_HEADER;
 import static com.zerobase.foodlier.common.security.constants.AuthorizationConstants.TOKEN_PREFIX;
@@ -66,7 +67,7 @@ public class AuthController {
     public ResponseEntity<TokenDto> signIn(
             @RequestBody @Valid SignInForm form
     ) {
-        return ResponseEntity.ok(memberService.signIn(form));
+        return ResponseEntity.ok(memberService.signIn(form, new Date()));
     }
 
     @PostMapping("/signout")
@@ -108,4 +109,34 @@ public class AuthController {
         return ResponseEntity.ok(oAuthFacade.login(params));
     }
 
+
+    @GetMapping("/check/nickname")
+    public ResponseEntity<String> checkNickname(
+            @RequestParam String nickname
+    ){
+        memberService.checkNickname(nickname);
+        return ResponseEntity.ok(
+                "사용가능한 닉네임 입니다."
+        );
+    }
+
+    @GetMapping("/check/phone")
+    public ResponseEntity<String> checkPhoneNumber(
+            @RequestParam String phoneNumber
+    ){
+        memberService.checkPhoneNumber(phoneNumber);
+        return ResponseEntity.ok(
+                "사용가능한 전화번호 입니다."
+        );
+    }
+
+    @GetMapping("/check/email")
+    public ResponseEntity<String> checkEmail(
+            @RequestParam String email
+    ){
+        memberService.checkEmail(email);
+        return ResponseEntity.ok(
+                "사용가능한 이메일 입니다."
+        );
+    }
 }
