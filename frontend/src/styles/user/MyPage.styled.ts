@@ -35,7 +35,7 @@ export const PrifileInfo = styled.div`
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  margin-left: 1rem;
+  margin-left: 2rem;
 `
 export const Nickname = styled.span`
   font-size: 1.6rem;
@@ -119,13 +119,22 @@ export const PointIcon = styled.div`
   }
 `
 
+export const ChefBadge = styled.div`
+  background-color: ${palette.main};
+  color: ${palette.white};
+  padding: 0 1rem;
+  margin-bottom: 0.5rem;
+  border-radius: 1rem;
+  font-size: 1.2rem;
+`
+
 export const NavigateButtonList = styled.div`
   display: flex;
   flex-direction: column;
   align-items: flex-start;
 `
 
-export const NavigateButton = styled.button<{ $isMargin: boolean }>`
+export const NavigateButton = styled.button<{ $isMargin?: boolean }>`
   margin-bottom: ${props => (props.$isMargin ? 3 : 1.5)}rem;
   font-size: 1.4rem;
 

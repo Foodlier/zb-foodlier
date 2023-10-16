@@ -30,7 +30,7 @@ function App() {
           element={<WriteRequestPage />}
         />
         <Route
-          path="/refrigerator/request/detail"
+          path="/refrigerator/request/detail/:id"
           element={<RequestDetailPage />}
         />
         <Route
@@ -38,7 +38,7 @@ function App() {
           element={<WriteQuotationPage />}
         />
         <Route
-          path="/refrigerator/quotation/detail"
+          path="/refrigerator/quotation/detail/:id"
           element={<QuotationDetailPage />}
         />
         <Route path="/refrigerator/" element={<RefrigeratorPage />} />

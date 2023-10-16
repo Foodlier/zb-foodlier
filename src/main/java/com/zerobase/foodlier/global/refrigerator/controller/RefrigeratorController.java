@@ -23,6 +23,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/refrigerator")
@@ -84,7 +86,7 @@ public class RefrigeratorController {
     @PostMapping
     public ResponseEntity<String> createRequestForm(
             @AuthenticationPrincipal MemberAuthDto memberAuthDto,
-            @RequestBody RequestFormDto requestFormDto
+            @RequestBody @Valid RequestFormDto requestFormDto
     ) {
         requestFormService.createRequestForm(memberAuthDto.getId(), requestFormDto);
         return ResponseEntity.ok("요청서 작성이 완료되었습니다.");
@@ -122,7 +124,7 @@ public class RefrigeratorController {
     @PutMapping("{requestFormId}")
     public ResponseEntity<String> updateRequestForm(
             @AuthenticationPrincipal MemberAuthDto memberAuthDto,
-            @RequestBody RequestFormDto requestFormDto,
+            @RequestBody @Valid RequestFormDto requestFormDto,
             @PathVariable Long requestFormId
     ) {
         requestFormService.updateRequestForm(

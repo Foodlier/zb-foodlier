@@ -51,11 +51,11 @@ public class DmRoomServiceImplTest {
         int pageSize = 2;
         List<DmRoomDto> expectDmRoomDtoList = new ArrayList<>(
                 List.of(DmRoomDto.builder()
-                                .id(1L)
+                                .roomId(1L)
                                 .nickname("nickname1")
                                 .build(),
                         DmRoomDto.builder()
-                                .id(2L)
+                                .roomId(2L)
                                 .nickname("nickname2")
                                 .build())
         );
@@ -74,12 +74,12 @@ public class DmRoomServiceImplTest {
         assertAll(
                 () -> assertEquals(expectDmRoomDtoList.get(0).getNickname(),
                         dmRoomDtoList.getContent().get(0).getNickname()),
-                () -> assertEquals(expectDmRoomDtoList.get(0).getId(),
-                        dmRoomDtoList.getContent().get(0).getId()),
+                () -> assertEquals(expectDmRoomDtoList.get(0).getRoomId(),
+                        dmRoomDtoList.getContent().get(0).getRoomId()),
                 () -> assertEquals(expectDmRoomDtoList.get(1).getNickname(),
                         dmRoomDtoList.getContent().get(1).getNickname()),
-                () -> assertEquals(expectDmRoomDtoList.get(1).getId(),
-                        dmRoomDtoList.getContent().get(1).getId())
+                () -> assertEquals(expectDmRoomDtoList.get(1).getRoomId(),
+                        dmRoomDtoList.getContent().get(1).getRoomId())
         );
     }
 

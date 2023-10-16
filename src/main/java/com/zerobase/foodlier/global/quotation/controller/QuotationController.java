@@ -14,6 +14,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
+
 @RestController
 @RequestMapping("/quotation")
 @RequiredArgsConstructor
@@ -25,7 +27,7 @@ public class QuotationController {
     @PostMapping
     public ResponseEntity<String> createQuotation(
             @AuthenticationPrincipal MemberAuthDto memberAuthDto,
-            @RequestBody QuotationDtoRequest request
+            @RequestBody @Valid QuotationDtoRequest request
     ){
         quotationService.createQuotation(memberAuthDto.getId(), request);
         return ResponseEntity.ok("견적서가 작성되었습니다.");
@@ -79,7 +81,7 @@ public class QuotationController {
     public ResponseEntity<String> updateQuotation(
             @AuthenticationPrincipal MemberAuthDto memberAuthDto,
             @PathVariable Long quotationId,
-            @RequestBody QuotationDtoRequest request
+            @RequestBody @Valid QuotationDtoRequest request
     ){
         quotationService.updateQuotation(memberAuthDto.getId(), quotationId, request);
         return ResponseEntity.ok(
@@ -96,7 +98,7 @@ public class QuotationController {
     public ResponseEntity<String> recipifyQuotation(
             @AuthenticationPrincipal MemberAuthDto memberAuthDto,
             @PathVariable Long quotationId,
-            @RequestBody RecipeDtoRequest request
+            @RequestBody @Valid RecipeDtoRequest request
             ){
         quotationService.convertToRecipe(memberAuthDto.getId(), quotationId, request);
         return ResponseEntity.ok(

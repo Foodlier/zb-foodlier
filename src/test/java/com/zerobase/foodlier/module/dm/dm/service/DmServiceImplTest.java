@@ -179,7 +179,7 @@ public class DmServiceImplTest {
                 .build();
 
         int pageIdx = 0;
-        int pageSize = 10;
+        int pageSize = 30;
         Pageable pageable = PageRequest.of(pageIdx, pageSize,
                 Sort.by("createdAt").descending());
 
@@ -231,7 +231,7 @@ public class DmServiceImplTest {
                 .build();
 
         int pageIdx = 0;
-        int pageSize = 10;
+        int pageSize = 30;
         Pageable pageable = PageRequest.of(pageIdx, pageSize,
                 Sort.by("createdAt").descending());
 

@@ -18,7 +18,7 @@ import ModalWithoutButton from '../../components/ui/ModalWithoutButton'
 import {
   RecipeIngredientDtoList,
   RecipeDetailDtoList,
-} from '../../constants/Interfacs'
+} from '../../constants/Interfaces'
 
 interface Recipe {
   title: string

@@ -2,6 +2,7 @@ package com.zerobase.foodlier.global.recipe.controller;
 
 import com.zerobase.foodlier.common.response.ListResponse;
 import com.zerobase.foodlier.common.security.provider.dto.MemberAuthDto;
+import com.zerobase.foodlier.common.validator.image.ImageFile;
 import com.zerobase.foodlier.global.recipe.facade.RecipeFacade;
 import com.zerobase.foodlier.module.heart.service.HeartService;
 import com.zerobase.foodlier.module.recipe.dto.recipe.*;
@@ -13,14 +14,17 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
 @RequestMapping("/recipe")
 @RequiredArgsConstructor
+@Validated
 public class RecipeController {
 
     private final RecipeFacade recipeFacade;
@@ -29,16 +33,17 @@ public class RecipeController {
 
     @PostMapping("/image")
     public ResponseEntity<RecipeImageResponse> uploadRecipeImage(
-            @RequestPart MultipartFile mainImage,
-            @RequestPart List<MultipartFile> cookingOrderImageList) {
+            @Valid @ImageFile @RequestPart MultipartFile mainImage,
+            @Valid @ImageFile @RequestPart List<MultipartFile> cookingOrderImageList) {
+
         return ResponseEntity.ok(recipeFacade.uploadRecipeImage(mainImage, cookingOrderImageList));
     }
 
     @PutMapping("/image/{recipeId}")
     public ResponseEntity<RecipeImageResponse> updateRecipeImage(
             @AuthenticationPrincipal MemberAuthDto memberAuthDto,
-            @RequestPart MultipartFile mainImage,
-            @RequestPart List<MultipartFile> cookingOrderImageList,
+            @Valid @ImageFile @RequestPart MultipartFile mainImage,
+            @Valid @ImageFile @RequestPart List<MultipartFile> cookingOrderImageList,
             @PathVariable(name = "recipeId") Long id) {
         return ResponseEntity.ok(recipeFacade.updateRecipeImage(memberAuthDto.getEmail(),
                 mainImage, cookingOrderImageList, id));
@@ -46,14 +51,14 @@ public class RecipeController {
 
     @PostMapping
     public ResponseEntity<String> createRecipe(@AuthenticationPrincipal MemberAuthDto memberAuthDto,
-                                               @RequestBody RecipeDtoRequest recipeDto) {
+                                               @RequestBody @Valid RecipeDtoRequest recipeDto) {
         recipeFacade.createRecipe(memberAuthDto.getEmail(), recipeDto);
         return ResponseEntity.ok("게시글 작성을 성공했습니다.");
     }
 
     @PutMapping("/{recipeId}")
     public ResponseEntity<String> updateRecipe(@AuthenticationPrincipal MemberAuthDto memberAuthDto,
-                                               @RequestBody RecipeDtoRequest recipeDto,
+                                               @RequestBody @Valid RecipeDtoRequest recipeDto,
                                                @PathVariable(name = "recipeId") Long id) {
         recipeFacade.updateRecipe(memberAuthDto.getEmail(), recipeDto, id);
         return ResponseEntity.ok("게시글 수정을 성공했습니다.");

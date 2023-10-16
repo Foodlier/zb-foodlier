@@ -1,6 +1,7 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import { BrowserRouter } from 'react-router-dom'
+import { RecoilRoot } from 'recoil'
 import App from './App'
 import './reset.css'
 // import { worker } from './mocks/browsers'
@@ -10,7 +11,11 @@ import './reset.css'
 // }
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
-  <BrowserRouter>
-    <App />
-  </BrowserRouter>
+  <React.StrictMode>
+    <BrowserRouter>
+      <RecoilRoot>
+        <App />
+      </RecoilRoot>
+    </BrowserRouter>
+  </React.StrictMode>
 )
