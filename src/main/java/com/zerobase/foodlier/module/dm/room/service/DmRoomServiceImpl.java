@@ -1,7 +1,6 @@
 package com.zerobase.foodlier.module.dm.room.service;
 
 import com.zerobase.foodlier.common.response.ListResponse;
-import com.zerobase.foodlier.module.dm.dm.domain.model.Dm;
 import com.zerobase.foodlier.module.dm.dm.repository.DmRepository;
 import com.zerobase.foodlier.module.dm.room.domain.model.DmRoom;
 import com.zerobase.foodlier.module.dm.room.domain.vo.Suggestion;
@@ -17,7 +16,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.util.List;
 
 import static com.zerobase.foodlier.module.dm.room.exception.DmRoomErrorCode.DM_ROOM_NOT_FOUND;
 
@@ -72,22 +70,16 @@ public class DmRoomServiceImpl implements DmRoomService {
         DmRoom dmRoom = dmRoomRepository.findById(roomId)
                 .orElseThrow(() -> new DmRoomException(DM_ROOM_NOT_FOUND));
         if (id.equals(dmRoom.getRequest().getMember().getId())) {
-            dmRoom.setMemberExit(true);
+            dmRoom.updateMemberExit();
         } else {
-            dmRoom.setChefExit(true);
+            dmRoom.updateChefExit();
         }
 
         if (dmRoom.isMemberExit() && dmRoom.isChefExit()) {
-            List<Dm> dmList = dmRepository.findByDmroom(dmRoom);
-            dmRepository.deleteAll(dmList);
-
             Request request = dmRoom.getRequest();
-            request.setDmRoom(null);
+            request.exitDmRoom();
             requestRepository.save(request);
-
-            dmRoomRepository.delete(dmRoom);
-        } else {
-            dmRoomRepository.save(dmRoom);
         }
+        dmRoomRepository.save(dmRoom);
     }
 }
