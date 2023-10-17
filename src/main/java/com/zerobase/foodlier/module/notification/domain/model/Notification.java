@@ -27,7 +27,6 @@ public class Notification {
     private String content;
     @Enumerated(EnumType.STRING)
     private NotificationType notificationType;
-    private String url;
     private boolean isRead;
     @CreatedDate
     private LocalDateTime sendAt;
