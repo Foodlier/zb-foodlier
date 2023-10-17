@@ -14,8 +14,10 @@ export const GreyBackground = styled.div`
   z-index: ${zindex.modal};
 `
 
-export const ModalScreen = styled.div`
+export const ModalContainer = styled.div`
   position: fixed;
+  display: flex;
+  flex-direction: column;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
@@ -26,13 +28,14 @@ export const ModalScreen = styled.div`
   padding: 5%;
   border-radius: 10px;
   z-index: ${zindex.modal};
+  overflow-y: auto;
   ${breakpoints.large} {
     padding: 3%;
     width: 70%;
   }
 `
 
-export const ModalTop = styled.div`
+export const ModalHeader = styled.div`
   display: flex;
   justify-content: space-between;
   margin-bottom: 20px;
@@ -42,8 +45,17 @@ export const ModalTop = styled.div`
     font-weight: bold;
   }
 `
+
+export const ModalTitle = styled.span`
+  font-size: 2rem;
+  font-weight: bold;
+`
+
+export const CloseButton = styled.button``
+
 export const ElContainer = styled.ul`
   display: flex;
+  flex: 1;
   flex-direction: column;
   gap: 20px;
   padding-left: 0;
@@ -126,4 +138,16 @@ export const MoreButton = styled.button`
   ${breakpoints.large} {
     width: 100%;
   }
+`
+
+export const EmptyView = styled.div`
+  display: flex;
+  flex: 1;
+  align-items: center;
+  justify-content: center;
+  color: ${palette.textDisablePlace};
+`
+
+export const AddListButton = styled.button`
+  align-self: flex-end;
 `

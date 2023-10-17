@@ -147,7 +147,7 @@ class HeartServiceImplTest {
                 .member(member)
                 .build();
 
-        given(heartRepository.findByRecipeIdAndMemberId(anyLong(), anyLong()))
+        given(heartRepository.findHeart(anyLong(), anyLong()))
                 .willReturn(Optional.ofNullable(heart));
 
         //when
@@ -163,7 +163,7 @@ class HeartServiceImplTest {
     @DisplayName("좋아요 삭제 실패 - 좋아요를 찾을 수 없음")
     void fail_deleteHeart_heartNotFound() {
         //given
-        given(heartRepository.findByRecipeIdAndMemberId(anyLong(), anyLong()))
+        given(heartRepository.findHeart(anyLong(), anyLong()))
                 .willReturn(Optional.empty());
 
         //when

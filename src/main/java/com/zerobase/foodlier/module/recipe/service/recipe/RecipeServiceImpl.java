@@ -89,30 +89,14 @@ public class RecipeServiceImpl implements RecipeService {
      * 작성자: 황태원(이종욱)
      * 레시피 수정 정보를 받아 레시피를 수정
      * 레시피 수정 시 레시피 검색을 위한 객체도 레시피 정보를 기반으로 수정
-     * 작성일자: 2023-09-27
+     * 작성일자: 2023-09-27(2023-10-15)
      */
-    @Transactional
     @Override
     public void updateRecipe(RecipeDtoRequest recipeDtoRequest, Long id) {
         Recipe recipe = recipeRepository.findById(id)
                 .orElseThrow(() -> new RecipeException(NO_SUCH_RECIPE));
 
-        recipe.setSummary(Summary.builder()
-                .title(recipeDtoRequest.getTitle())
-                .content(recipeDtoRequest.getContent())
-                .build());
-        recipe.setMainImageUrl(recipeDtoRequest.getMainImageUrl());
-        recipe.setExpectedTime(recipeDtoRequest.getExpectedTime());
-        recipe.setDifficulty(recipeDtoRequest.getDifficulty());
-        recipe.setRecipeDetailList(recipeDtoRequest.getRecipeDetailDtoList()
-                .stream()
-                .map(RecipeDetailDto::toEntity)
-                .collect(Collectors.toList()));
-        recipe.setRecipeIngredientList(recipeDtoRequest.getRecipeIngredientDtoList()
-                .stream()
-                .map(RecipeIngredientDto::toEntity)
-                .collect(Collectors.toList()));
-
+        recipe.updateRecipe(recipeDtoRequest);
         recipeRepository.save(recipe);
         RecipeDocument recipeDocument = recipeSearchRepository.findById(recipe.getId())
                 .orElseThrow(() -> new RecipeException(RecipeErrorCode.NO_SUCH_RECIPE_DOCUMENT));
@@ -255,15 +239,15 @@ public class RecipeServiceImpl implements RecipeService {
     }
 
     /**
-     *  작성자 : 전현서
-     *  작성일 : 2023-10-06
-     *  좋아요를 누른 레시피 목록을 반환함.
+     * 작성자 : 전현서
+     * 작성일 : 2023-10-06
+     * 좋아요를 누른 레시피 목록을 반환함.
      */
     @Override
     public ListResponse<RecipeDtoTopResponse> getRecipeForHeart(Long memberId,
                                                                 Pageable pageable) {
         return ListResponse.from(
-                recipeRepository.findByHeart(memberId, pageable),
+                recipeRepository.findHeart(memberId, pageable),
                 recipe -> RecipeDtoTopResponse.from(recipe, true));
 
     }
@@ -364,7 +348,7 @@ public class RecipeServiceImpl implements RecipeService {
         Member member = memberRepository.findById(memberAuthDto.getId())
                 .orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
 
-        return recipeRepository.findTop3ByOrderByCreatedAtDesc()
+        return recipeRepository.findTop3ByIsPublicOrderByCreatedAtDesc(false)
                 .stream()
                 .map(r -> RecipeCardDto.builder()
                         .id(r.getId())
@@ -396,19 +380,22 @@ public class RecipeServiceImpl implements RecipeService {
 
         switch (orderType) {
             case CREATED_AT:
-                recipePage = recipeRepository.findByOrderByCreatedAtDesc(pageable);
+                recipePage = recipeRepository.findByIsPublicOrderByCreatedAtDesc(
+                        false, pageable);
                 totalElements = recipePage.getTotalElements();
                 totalPages = recipePage.getTotalPages();
                 hasNext = recipePage.hasNext();
                 break;
             case HEART_COUNT:
-                recipePage = recipeRepository.findByOrderByHeartCountDesc(pageable);
+                recipePage = recipeRepository.findByIsPublicOrderByHeartCountDesc(
+                        false, pageable);
                 totalPages = recipePage.getTotalPages();
                 totalElements = recipePage.getTotalElements();
                 hasNext = recipePage.hasNext();
                 break;
             case COMMENT_COUNT:
-                recipePage = recipeRepository.findByOrderByCommentCountDesc(pageable);
+                recipePage = recipeRepository.findByIsPublicOrderByCommentCountDesc(
+                        false, pageable);
                 totalPages = recipePage.getTotalPages();
                 totalElements = recipePage.getTotalElements();
                 hasNext = recipePage.hasNext();
@@ -445,8 +432,8 @@ public class RecipeServiceImpl implements RecipeService {
         Member member = memberRepository.findById(memberAuthDto.getId())
                 .orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
 
-        return recipeRepository.findTop5ByCreatedAtAfterOrderByHeartCountDesc(
-                        LocalDate.now().atStartOfDay())
+        return recipeRepository.findTop5ByIsPublicAndCreatedAtAfterOrderByHeartCountDesc(
+                        false, LocalDate.now().atStartOfDay())
                 .stream()
                 .map(r -> RecipeCardDto.builder()
                         .id(r.getId())

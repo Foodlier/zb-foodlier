@@ -13,6 +13,8 @@ export const Map = styled.div`
 `
 
 export const ChefListContainer = styled.div`
+  display: flex;
+  flex-direction: column;
   padding: 20px 20px 0 20px;
 `
 export const Info = styled.div`
@@ -67,11 +69,14 @@ export const OptionButton = styled.button`
   padding: 0 4px;
 `
 export const CardList = styled.ul`
+  display: flex;
+  flex-direction: column;
   width: 100%;
   height: 500px;
   overflow: auto;
   padding-left: 0;
   border-bottom: 1px solid ${palette.divider};
+
   &::-webkit-scrollbar {
     display: none;
   }
@@ -98,7 +103,6 @@ export const CardInfo = styled.div`
 export const MainImg = styled.img`
   min-width: 90px;
   height: 90px;
-  background-color: ${palette.divider};
   border-radius: 10px;
 `
 

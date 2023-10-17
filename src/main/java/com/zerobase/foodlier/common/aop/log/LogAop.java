@@ -29,7 +29,7 @@ public class LogAop {
             log.info("no parameter");
         }
         for (Object arg : args) {
-            log.info("parameter tpye = {}", arg.getClass().getSimpleName());
+            log.info("parameter type = {}", arg.getClass().getSimpleName());
         }
     }
 

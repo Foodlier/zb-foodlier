@@ -1,4 +1,4 @@
-import { RecipeDetailDtoList } from '../../../constants/Interfacs'
+import { RecipeDetailDtoList } from '../../../constants/Interfaces'
 import * as S from '../../../styles/recipe/detail/DetailProcedure.styled'
 
 interface DetailProcedureProps {
