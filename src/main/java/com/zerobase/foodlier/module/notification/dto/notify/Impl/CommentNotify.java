@@ -1,7 +1,6 @@
-package com.zerobase.foodlier.module.notification.dto.notify.impl;
+package com.zerobase.foodlier.module.notification.dto.notify.Impl;
 
 import com.zerobase.foodlier.module.comment.comment.domain.model.Comment;
-import com.zerobase.foodlier.module.comment.reply.domain.model.Reply;
 import com.zerobase.foodlier.module.member.member.domain.model.Member;
 import com.zerobase.foodlier.module.notification.domain.type.NotificationType;
 import com.zerobase.foodlier.module.notification.dto.notify.Notify;
@@ -13,27 +12,25 @@ import lombok.NoArgsConstructor;
 
 import java.util.List;
 
-import static com.zerobase.foodlier.module.notification.constant.MessageConstant.DELIMITER;
-import static com.zerobase.foodlier.module.notification.constant.MessageConstant.HONORIFIC_TITLE;
+import static com.zerobase.foodlier.module.notification.constant.MessageConstant.*;
 
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class ReplyNotify implements Notify {
-
+public class CommentNotify implements Notify {
     private Member receiver;
     private String performerNickname;
     private Long targetSubjectId;
     private String targetTitle;
     private NotifyInfoDto notifyInfoDto;
 
-    public static ReplyNotify from(Reply reply, NotifyInfoDto notifyInfoDto){
-        return ReplyNotify.builder()
-                .receiver(reply.getComment().getRecipe().getMember())
-                .performerNickname(reply.getMember().getNickname())
-                .targetSubjectId(reply.getComment().getRecipe().getId())
-                .targetTitle(reply.getComment().getRecipe().getSummary().getTitle())
+    public static CommentNotify from(Comment comment, NotifyInfoDto notifyInfoDto){
+        return CommentNotify.builder()
+                .receiver(comment.getRecipe().getMember())
+                .performerNickname(comment.getMember().getNickname())
+                .targetSubjectId(comment.getRecipe().getId())
+                .targetTitle(comment.getRecipe().getSummary().getTitle())
                 .notifyInfoDto(notifyInfoDto)
                 .build();
     }
@@ -45,11 +42,6 @@ public class ReplyNotify implements Notify {
         return String.join(DELIMITER, messageComponent);
     }
 
-
-    @Override
-    public Member getReceiver() {
-        return this.receiver;
-    }
 
     @Override
     public NotificationType getNotificationType() {

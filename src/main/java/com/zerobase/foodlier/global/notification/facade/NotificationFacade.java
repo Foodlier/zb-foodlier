@@ -8,7 +8,6 @@ import com.zerobase.foodlier.module.notification.dto.notify.Notify;
 import com.zerobase.foodlier.module.notification.service.notification.NotificationService;
 import com.zerobase.foodlier.module.notification.service.emitter.EmitterService;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
@@ -26,12 +25,12 @@ public class NotificationFacade {
     private final EmitterService emitterService;
 
     public SseEmitter subscribe(MemberAuthDto memberAuthDto) {
-        String emitterId = emitterService.makeTimeIncludeId(memberAuthDto.getEmail());
+        String emitterId = emitterService.makeUUIDIncludeId(memberAuthDto.getEmail());
         SseEmitter emitter = emitterService.createEmitter(memberAuthDto.getEmail());
         emitter.onCompletion(() -> emitterService.deleteEmitter(emitterId));
         emitter.onTimeout(() -> emitterService.deleteEmitter(emitterId));
 
-        String eventId = emitterService.makeTimeIncludeId(memberAuthDto.getEmail());
+        String eventId = emitterService.makeUUIDIncludeId(memberAuthDto.getEmail());
         Long unReadNotification = notificationService.countUnreadNotification(memberAuthDto.getId());
 
         NotificationDto notificationDto = NotificationDto.builder()

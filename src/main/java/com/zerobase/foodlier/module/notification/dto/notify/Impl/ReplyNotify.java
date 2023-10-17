@@ -1,10 +1,10 @@
-package com.zerobase.foodlier.module.notification.dto.notify.impl;
+package com.zerobase.foodlier.module.notification.dto.notify.Impl;
 
+import com.zerobase.foodlier.module.comment.reply.domain.model.Reply;
 import com.zerobase.foodlier.module.member.member.domain.model.Member;
 import com.zerobase.foodlier.module.notification.domain.type.NotificationType;
 import com.zerobase.foodlier.module.notification.dto.notify.Notify;
 import com.zerobase.foodlier.module.notification.dto.notify.NotifyInfoDto;
-import com.zerobase.foodlier.module.request.domain.model.Request;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -12,29 +12,30 @@ import lombok.NoArgsConstructor;
 
 import java.util.List;
 
-import static com.zerobase.foodlier.module.notification.constant.MessageConstant.*;
+import static com.zerobase.foodlier.module.notification.constant.MessageConstant.DELIMITER;
+import static com.zerobase.foodlier.module.notification.constant.MessageConstant.HONORIFIC_TITLE;
 
 @Getter
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 @Builder
-public class ChefNotify implements Notify {
+public class ReplyNotify implements Notify {
+
     private Member receiver;
     private String performerNickname;
     private Long targetSubjectId;
     private String targetTitle;
     private NotifyInfoDto notifyInfoDto;
 
-    public static ChefNotify from(Request request, NotifyInfoDto notifyInfoDto){
-        return ChefNotify.builder()
-                .receiver(request.getChefMember().getMember())
-                .performerNickname(request.getMember().getNickname())
-                .targetSubjectId(request.getId())
-                .targetTitle(request.getTitle())
+    public static ReplyNotify from(Reply reply, NotifyInfoDto notifyInfoDto){
+        return ReplyNotify.builder()
+                .receiver(reply.getComment().getRecipe().getMember())
+                .performerNickname(reply.getMember().getNickname())
+                .targetSubjectId(reply.getComment().getRecipe().getId())
+                .targetTitle(reply.getComment().getRecipe().getSummary().getTitle())
                 .notifyInfoDto(notifyInfoDto)
                 .build();
     }
-
 
     @Override
     public String getMessage() {
@@ -45,8 +46,13 @@ public class ChefNotify implements Notify {
 
 
     @Override
+    public Member getReceiver() {
+        return this.receiver;
+    }
+
+    @Override
     public NotificationType getNotificationType() {
-        return notifyInfoDto.getNotificationType();
+        return this.notifyInfoDto.getNotificationType();
     }
 
     @Override

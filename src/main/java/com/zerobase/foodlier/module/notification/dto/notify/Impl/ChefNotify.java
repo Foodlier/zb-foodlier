@@ -1,4 +1,4 @@
-package com.zerobase.foodlier.module.notification.dto.notify.impl;
+package com.zerobase.foodlier.module.notification.dto.notify.Impl;
 
 import com.zerobase.foodlier.module.member.member.domain.model.Member;
 import com.zerobase.foodlier.module.notification.domain.type.NotificationType;
@@ -12,30 +12,29 @@ import lombok.NoArgsConstructor;
 
 import java.util.List;
 
-import static com.zerobase.foodlier.module.notification.constant.MessageConstant.DELIMITER;
-import static com.zerobase.foodlier.module.notification.constant.MessageConstant.HONORIFIC_TITLE;
+import static com.zerobase.foodlier.module.notification.constant.MessageConstant.*;
 
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class RequesterNotify implements Notify {
-
+public class ChefNotify implements Notify {
     private Member receiver;
     private String performerNickname;
     private Long targetSubjectId;
     private String targetTitle;
     private NotifyInfoDto notifyInfoDto;
 
-    public static RequesterNotify from(Request request, NotifyInfoDto notifyInfoDto){
-        return RequesterNotify.builder()
-                .receiver(request.getMember())
-                .performerNickname(request.getChefMember().getMember().getNickname())
+    public static ChefNotify from(Request request, NotifyInfoDto notifyInfoDto){
+        return ChefNotify.builder()
+                .receiver(request.getChefMember().getMember())
+                .performerNickname(request.getMember().getNickname())
                 .targetSubjectId(request.getId())
                 .targetTitle(request.getTitle())
                 .notifyInfoDto(notifyInfoDto)
                 .build();
     }
+
 
     @Override
     public String getMessage() {
