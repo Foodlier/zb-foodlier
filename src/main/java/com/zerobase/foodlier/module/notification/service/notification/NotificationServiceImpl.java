@@ -1,13 +1,10 @@
 package com.zerobase.foodlier.module.notification.service.notification;
 
 import com.zerobase.foodlier.common.response.ListResponse;
-import com.zerobase.foodlier.module.member.member.domain.model.Member;
 import com.zerobase.foodlier.module.notification.domain.model.Notification;
-import com.zerobase.foodlier.module.notification.domain.type.NotificationType;
 import com.zerobase.foodlier.module.notification.dto.NotificationDto;
+import com.zerobase.foodlier.module.notification.dto.notify.Notify;
 import com.zerobase.foodlier.module.notification.repository.notification.NotificationRepository;
-import com.zerobase.foodlier.module.notification.util.MessageBuilder;
-import com.zerobase.foodlier.module.notification.util.UrlBuilder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -19,8 +16,13 @@ public class NotificationServiceImpl implements NotificationService {
     private final NotificationRepository notificationRepository;
 
     @Override
-    public Notification create(Member receiver, NotificationType notificationType, MessageBuilder messageBuilder, UrlBuilder url) {
-        return notificationRepository.save(createNotification(receiver, notificationType, messageBuilder.getMessage(), url.getUrl()));
+    public Notification create(Notify notify) {
+        return notificationRepository.save(Notification.builder()
+                .member(notify.getReceiver())
+                .notificationType(notify.getNotificationType())
+                .content(notify.getMessage())
+                .isRead(false)
+                .build());
     }
 
     @Override
@@ -29,13 +31,8 @@ public class NotificationServiceImpl implements NotificationService {
                 notificationRepository.findNotificationBy(memberId, pageable));
     }
 
-    private Notification createNotification(Member receiver, NotificationType notificationType, String content, String url) {
-        return Notification.builder()
-                .member(receiver)
-                .notificationType(notificationType)
-                .content(content)
-                .url(url)
-                .isRead(false)
-                .build();
+    @Override
+    public Long countUnreadNotification(Long memberId) {
+        return notificationRepository.countUnreadNotification(memberId);
     }
 }

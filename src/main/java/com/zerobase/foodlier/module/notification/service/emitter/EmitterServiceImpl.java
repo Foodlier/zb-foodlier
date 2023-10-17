@@ -1,6 +1,5 @@
 package com.zerobase.foodlier.module.notification.service.emitter;
 
-import com.zerobase.foodlier.module.notification.domain.model.Notification;
 import com.zerobase.foodlier.module.notification.repository.sse.EmitterRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -8,6 +7,7 @@ import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.io.IOException;
 import java.util.Map;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -42,18 +42,8 @@ public class EmitterServiceImpl implements EmitterService {
     }
 
     @Override
-    public Map<String, Object> findEventCaches(String userEmail) {
-        return emitterRepository.findAllEventCacheStartWithByMemberId(String.valueOf(userEmail));
-    }
-
-    @Override
     public String makeTimeIncludeId(String email) {
-        return email + DELIMITER + System.currentTimeMillis();
-    }
-
-    @Override
-    public void createEventCache(String emitterId, Notification notification) {
-        emitterRepository.saveEventCache(emitterId, notification);
+        return email + DELIMITER + UUID.randomUUID();
     }
 
     @Override
@@ -64,9 +54,5 @@ public class EmitterServiceImpl implements EmitterService {
     @Override
     public boolean isEmitterExists(Map<String, SseEmitter> emitterMap){
         return !emitterMap.isEmpty();
-    }
-    @Override
-    public boolean hasLostData(String lastEventId) {
-        return !lastEventId.isEmpty();
     }
 }
