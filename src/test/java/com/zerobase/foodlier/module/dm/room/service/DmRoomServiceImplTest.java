@@ -136,23 +136,16 @@ public class DmRoomServiceImplTest {
                 .isMemberExit(false)
                 .isChefExit(true)
                 .build();
-        List<Dm> dmList = new ArrayList<>(List.of(Dm.builder()
-                .text("채팅")
-                .build()));
 
         given(dmRoomRepository.findById(roomId))
                 .willReturn(Optional.ofNullable(dmRoom));
-        given(dmRepository.findByDmroom(dmRoom))
-                .willReturn(dmList);
 
         //when
         dmRoomService.exitDmRoom(id, roomId);
 
         //then
-        verify(dmRepository, times(1)).deleteAll(dmList);
         verify(requestRepository, times(1)).save(dmRoom.getRequest());
-        verify(dmRoomRepository, times(1)).delete(dmRoom);
-        verify(dmRoomRepository, times(1)).delete(dmRoom);
+        verify(dmRoomRepository, times(1)).save(dmRoom);
     }
 
     @Test
