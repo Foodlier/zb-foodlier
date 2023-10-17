@@ -10,7 +10,7 @@ import com.zerobase.foodlier.global.recipe.facade.RecipeFacade;
 import com.zerobase.foodlier.module.heart.service.HeartService;
 import com.zerobase.foodlier.module.notification.domain.type.NotificationType;
 import com.zerobase.foodlier.module.notification.dto.notify.NotifyInfoDto;
-import com.zerobase.foodlier.module.notification.dto.notify.impl.HeartNotify;
+import com.zerobase.foodlier.module.notification.dto.notify.Impl.HeartNotify;
 import com.zerobase.foodlier.module.recipe.dto.recipe.*;
 import com.zerobase.foodlier.module.recipe.service.recipe.RecipeService;
 import com.zerobase.foodlier.module.recipe.type.OrderType;

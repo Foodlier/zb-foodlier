@@ -7,6 +7,6 @@ import java.util.Map;
 public interface EmitterRepository {
 
     SseEmitter save(String emitterId, SseEmitter sseEmitter);
-    Map<String, SseEmitter> findAllEmitterStartWithByMemberId(String memberId);
+    Map<String, SseEmitter> findAllEmitterStartWithByEmail(String memberId);
     void deleteById(String id);
 }

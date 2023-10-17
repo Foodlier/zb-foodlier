@@ -8,7 +8,7 @@ import com.zerobase.foodlier.global.notification.facade.NotificationFacade;
 import com.zerobase.foodlier.global.quotation.facade.QuotationFacade;
 import com.zerobase.foodlier.module.notification.domain.type.NotificationType;
 import com.zerobase.foodlier.module.notification.dto.notify.NotifyInfoDto;
-import com.zerobase.foodlier.module.notification.dto.notify.impl.RequesterNotify;
+import com.zerobase.foodlier.module.notification.dto.notify.Impl.RequesterNotify;
 import com.zerobase.foodlier.module.recipe.dto.quotation.QuotationDetailResponse;
 import com.zerobase.foodlier.module.recipe.dto.quotation.QuotationDtoRequest;
 import com.zerobase.foodlier.module.recipe.dto.quotation.QuotationTopResponse;

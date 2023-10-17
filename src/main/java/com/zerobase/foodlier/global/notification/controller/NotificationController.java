@@ -34,4 +34,10 @@ public class NotificationController {
         return ResponseEntity.ok(notificationFacade.subscribe(memberAuthDto));
     }
 
+    @PatchMapping(value = "/read/{notificationId}")
+    public ResponseEntity<String> changeReadStatus(@AuthenticationPrincipal MemberAuthDto memberAuthDto,
+                                                   @PathVariable Long notificationId) {
+        notificationService.updateNotificationStatus(memberAuthDto.getId(),notificationId);
+        return ResponseEntity.ok("알림을 읽었습니다");
+    }
 }

@@ -19,7 +19,7 @@ public class EmitterRepositoryImpl implements EmitterRepository{
     }
 
     @Override
-    public Map<String, SseEmitter> findAllEmitterStartWithByMemberId(String memberId) {
+    public Map<String, SseEmitter> findAllEmitterStartWithByEmail(String memberId) {
         return emitters.entrySet().stream()
                 .filter(entry -> entry.getKey().startsWith(memberId))
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));

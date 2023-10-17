@@ -1,4 +1,4 @@
-package com.zerobase.foodlier.module.notification.dto.notify.impl;
+package com.zerobase.foodlier.module.notification.dto.notify.Impl;
 
 import com.zerobase.foodlier.module.heart.domain.model.Heart;
 import com.zerobase.foodlier.module.member.member.domain.model.Member;
