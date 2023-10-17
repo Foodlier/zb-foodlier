@@ -84,7 +84,8 @@ public class SecurityConfig {
                         "/sub/**",
                         "/ws/**",
                         "/env/**",
-                        "/actuator/health"
+                        "/actuator/health",
+                        "/actuator/prometheus"
                 );
     }
 
