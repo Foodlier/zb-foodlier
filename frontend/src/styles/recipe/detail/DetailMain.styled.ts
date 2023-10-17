@@ -62,7 +62,6 @@ export const Profile = styled.div`
 export const ProfileImg = styled.img`
   width: 5rem;
   height: 5rem;
-  border: 1px solid ${palette.main};
   border-radius: 100%;
   padding: 0.5rem;
   margin-right: 1rem;

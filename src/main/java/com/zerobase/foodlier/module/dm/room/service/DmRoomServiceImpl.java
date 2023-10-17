@@ -1,7 +1,6 @@
 package com.zerobase.foodlier.module.dm.room.service;
 
 import com.zerobase.foodlier.common.response.ListResponse;
-import com.zerobase.foodlier.module.dm.dm.domain.model.Dm;
 import com.zerobase.foodlier.module.dm.dm.repository.DmRepository;
 import com.zerobase.foodlier.module.dm.room.domain.model.DmRoom;
 import com.zerobase.foodlier.module.dm.room.domain.vo.Suggestion;
@@ -17,7 +16,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.util.List;
 
 import static com.zerobase.foodlier.module.dm.room.exception.DmRoomErrorCode.DM_ROOM_NOT_FOUND;
 
@@ -62,8 +60,8 @@ public class DmRoomServiceImpl implements DmRoomService {
     }
 
     /**
-     * 작성자 : 황태원
-     * 작성일 : 2023-10-02(2023-10-09)
+     * 작성자 : 황태원 (전현서)
+     * 작성일 : 2023-10-02 (2023-10-14)
      * 해당 채팅방에서 나갑니다.
      */
     @Override
@@ -72,22 +70,20 @@ public class DmRoomServiceImpl implements DmRoomService {
         DmRoom dmRoom = dmRoomRepository.findById(roomId)
                 .orElseThrow(() -> new DmRoomException(DM_ROOM_NOT_FOUND));
         if (id.equals(dmRoom.getRequest().getMember().getId())) {
-            dmRoom.setMemberExit(true);
+            dmRoom.updateMemberExit();
         } else {
-            dmRoom.setChefExit(true);
+            dmRoom.updateChefExit();
         }
+
+        Request request = dmRoom.getRequest();
 
         if (dmRoom.isMemberExit() && dmRoom.isChefExit()) {
-            List<Dm> dmList = dmRepository.findByDmroom(dmRoom);
-            dmRepository.deleteAll(dmList);
-
-            Request request = dmRoom.getRequest();
-            request.setDmRoom(null);
-            requestRepository.save(request);
-
-            dmRoomRepository.delete(dmRoom);
-        } else {
-            dmRoomRepository.save(dmRoom);
+            request.exitDmRoom();
         }
+
+        request.enableFinishState();
+
+        requestRepository.save(request);
+        dmRoomRepository.save(dmRoom);
     }
 }

@@ -4,12 +4,16 @@ import com.zerobase.foodlier.common.redis.service.EmailVerificationService;
 import com.zerobase.foodlier.common.security.provider.dto.MemberAuthDto;
 import com.zerobase.foodlier.common.security.provider.dto.TokenDto;
 import com.zerobase.foodlier.global.member.mail.facade.EmailVerificationFacade;
+import com.zerobase.foodlier.global.member.oAuth.facade.OAuthFacade;
 import com.zerobase.foodlier.global.member.password.facade.PasswordFindFacade;
 import com.zerobase.foodlier.global.member.regiser.facade.MemberRegisterFacade;
 import com.zerobase.foodlier.module.member.member.dto.MemberInputDto;
 import com.zerobase.foodlier.module.member.member.dto.PasswordFindForm;
 import com.zerobase.foodlier.module.member.member.dto.SignInForm;
 import com.zerobase.foodlier.module.member.member.service.MemberService;
+import com.zerobase.foodlier.module.member.member.social.dto.KakaoLoginParams;
+import com.zerobase.foodlier.module.member.member.social.dto.NaverLoginParams;
+import com.zerobase.foodlier.module.member.member.social.dto.SocialLoginResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -17,6 +21,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.time.LocalDateTime;
+import java.util.Date;
 
 import static com.zerobase.foodlier.common.security.constants.AuthorizationConstants.REFRESH_HEADER;
 import static com.zerobase.foodlier.common.security.constants.AuthorizationConstants.TOKEN_PREFIX;
@@ -30,6 +35,7 @@ public class AuthController {
     private final MemberRegisterFacade memberRegisterFacade;
     private final MemberService memberService;
     private final PasswordFindFacade passwordFindFacade;
+    private final OAuthFacade oAuthFacade;
 
     @PostMapping("/verification/send/{email}")
     public ResponseEntity<String> sendVerificationCode(
@@ -61,7 +67,7 @@ public class AuthController {
     public ResponseEntity<TokenDto> signIn(
             @RequestBody @Valid SignInForm form
     ) {
-        return ResponseEntity.ok(memberService.signIn(form));
+        return ResponseEntity.ok(memberService.signIn(form, new Date()));
     }
 
     @PostMapping("/signout")
@@ -82,13 +88,55 @@ public class AuthController {
     }
 
     @PostMapping("/reissue")
-    public ResponseEntity<String> reissue(@RequestHeader(REFRESH_HEADER) final String refreshToken){
+    public ResponseEntity<String> reissue(@RequestHeader(REFRESH_HEADER) final String refreshToken) {
         return ResponseEntity.ok(memberService.reissue(refreshToken.substring(TOKEN_PREFIX.length())));
     }
+
     @DeleteMapping("/withdraw")
     public ResponseEntity<String> withdraw(
             @AuthenticationPrincipal MemberAuthDto memberAuthDto
     ) {
         return ResponseEntity.ok(memberService.withdraw(memberAuthDto));
+    }
+
+    @PostMapping("/oauth2/kakao")
+    public ResponseEntity<SocialLoginResponse> loginKakao(@RequestBody KakaoLoginParams params) {
+        return ResponseEntity.ok(oAuthFacade.login(params));
+    }
+
+    @PostMapping("/oauth2/naver")
+    public ResponseEntity<SocialLoginResponse> loginNaver(@RequestBody NaverLoginParams params) {
+        return ResponseEntity.ok(oAuthFacade.login(params));
+    }
+
+
+    @GetMapping("/check/nickname")
+    public ResponseEntity<String> checkNickname(
+            @RequestParam String nickname
+    ){
+        memberService.checkNickname(nickname);
+        return ResponseEntity.ok(
+                "사용가능한 닉네임 입니다."
+        );
+    }
+
+    @GetMapping("/check/phone")
+    public ResponseEntity<String> checkPhoneNumber(
+            @RequestParam String phoneNumber
+    ){
+        memberService.checkPhoneNumber(phoneNumber);
+        return ResponseEntity.ok(
+                "사용가능한 전화번호 입니다."
+        );
+    }
+
+    @GetMapping("/check/email")
+    public ResponseEntity<String> checkEmail(
+            @RequestParam String email
+    ){
+        memberService.checkEmail(email);
+        return ResponseEntity.ok(
+                "사용가능한 이메일 입니다."
+        );
     }
 }

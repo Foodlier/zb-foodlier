@@ -1,4 +1,5 @@
 import { useNavigate } from 'react-router-dom'
+import { useEffect, useState } from 'react'
 import * as S from '../styles/MainPage.styled'
 import SlickSlider from '../components/slider/Slider'
 import { slides } from '../components/slider/Slide'
@@ -11,10 +12,14 @@ import RecipeItem from '../components/recipe/RecipeItem'
 import ChefItem from '../components/chef/ChefItem'
 import ChefData from '../components/chef/ChefData'
 import { SearchResult } from '../components/search/SearchBar'
+import axiosInstance from '../utils/FetchCall'
+import { RecipeListItem } from '../constants/Interfaces'
 
 const MainPage = () => {
   const { IcAddLight } = useIcon()
   const navigate = useNavigate()
+
+  const [recipeList, setRecipeList] = useState<RecipeListItem[]>([])
 
   const handleSearch = (results: SearchResult[]) => {
     console.log(`WebSearch에서 검색 결과:`, results)
@@ -22,6 +27,20 @@ const MainPage = () => {
   const navigateToRecipeDetail = () => {
     navigate('/recipe/detail')
   }
+
+  const getRecipe = async () => {
+    try {
+      const { data } = await axiosInstance.get('/recipe/main')
+      setRecipeList(data)
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  useEffect(() => {
+    getRecipe()
+  }, [])
+
   return (
     <>
       {/* Header */}
@@ -47,9 +66,13 @@ const MainPage = () => {
           <IcAddLight size={4} color={palette.textPrimary} />
         </S.RecipeTit>
         <S.RecipeList>
-          <RecipeItem onClick={navigateToRecipeDetail} />
-          <RecipeItem onClick={navigateToRecipeDetail} />
-          <RecipeItem onClick={navigateToRecipeDetail} />
+          {recipeList.map(recipeItem => (
+            <RecipeItem
+              key={recipeItem.id}
+              recipeItem={recipeItem}
+              onClick={navigateToRecipeDetail}
+            />
+          ))}
         </S.RecipeList>
       </S.RecipeContainer>
 

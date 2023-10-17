@@ -56,4 +56,15 @@ public class Request extends Audit {
     @ManyToOne
     @JoinColumn(name = "recipe_id")
     private Recipe recipe;
+
+    public void exitDmRoom() {
+        this.dmRoom = null;
+    }
+
+    @Column(nullable = false)
+    private boolean isFinished;
+
+    public void enableFinishState(){
+        this.isFinished = true;
+    }
 }

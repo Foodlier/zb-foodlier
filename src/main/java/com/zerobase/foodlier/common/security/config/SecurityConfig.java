@@ -77,13 +77,16 @@ public class SecurityConfig {
                         "/**/auth/verify",
                         "/**/auth/verification/**",
                         "/**/auth/signin",
+                        "/**/auth/oauth2/**",
                         "/**/success/**",
                         "/**/fail/**",
                         "/pub/**",
                         "/sub/**",
                         "/ws/**",
                         "/env/**",
-                        "/actuator/health"
+                        "/actuator/health",
+                        "/**/auth/check/**",
+                        "/actuator/prometheus"
                 );
     }
 

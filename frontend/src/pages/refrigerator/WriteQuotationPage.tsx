@@ -1,45 +1,48 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react/no-array-index-key */
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
+import { useLocation, useNavigate } from 'react-router-dom'
 import Header from '../../components/Header'
 import BottomNavigation from '../../components/BottomNavigation'
 import * as S from '../../styles/refrigerator/WriteQuotationPage.styled'
 import useIcon from '../../hooks/useIcon'
-import ListModal from '../../components/refrigerator/ListModal'
 import { palette } from '../../constants/Styles'
 import {
   DIFFICULTY_LIST,
   EMPTY_INGREDIENT,
-  EMPTY_ORDER,
   INGREDIENT_LIST,
 } from '../../constants/Data'
-import {
-  RecipeIngredientDtoList,
-  RecipeDetailDtoList,
-} from '../../constants/Interfacs'
+import { RecipeIngredientDtoList } from '../../constants/Interfaces'
+import axiosInstance from '../../utils/FetchCall'
+import ModalWithoutButton from '../../components/ui/ModalWithoutButton'
 
 interface Recipe {
   title: string
   content: string
   recipeIngredientDtoList: RecipeIngredientDtoList[]
   difficulty: string
-  recipeDetailDtoList: RecipeDetailDtoList[]
+  recipeDetailDtoList: string[]
   expectedTime: string
 }
 
 const WriteQuotationPage = () => {
-  const [modalOpen, setModalOpen] = useState(false)
-  const showRequest = () => {
-    setModalOpen(true)
-  }
+  const navigate = useNavigate()
+  const { state } = useLocation()
+  const quotationId = state?.quotationId
 
-  const { IcAddRound, IcFileDockLight } = useIcon()
+  const isEdit = Boolean(quotationId)
 
+  const { IcAddRound } = useIcon()
+
+  const [completeModalContent, setCompleteModalContent] = useState('')
+  const [isCompleteModal, setIsCompleteModal] = useState(false)
   const [recipeValue, setRecipeValue] = useState<Recipe>({
     title: '',
     content: '',
     recipeIngredientDtoList: [{ ...EMPTY_INGREDIENT }],
+    // 재료 제거
     difficulty: '',
-    recipeDetailDtoList: [{ ...EMPTY_ORDER }],
+    recipeDetailDtoList: [''],
     expectedTime: '',
   })
 
@@ -57,10 +60,7 @@ const WriteQuotationPage = () => {
         recipeIngredientDtoList: [...updateValue],
       })
     } else {
-      const updateValue = [
-        ...recipeValue.recipeDetailDtoList,
-        { ...EMPTY_ORDER },
-      ]
+      const updateValue = [...recipeValue.recipeDetailDtoList, '']
       setRecipeValue({
         ...recipeValue,
         recipeDetailDtoList: [...updateValue],
@@ -94,7 +94,7 @@ const WriteQuotationPage = () => {
   ) => {
     const updatedValue = [...recipeValue.recipeDetailDtoList]
 
-    updatedValue[index].cookingOrder = e.target.value
+    updatedValue[index] = e.target.value
 
     setRecipeValue(prevRecipeValue => ({
       ...prevRecipeValue,
@@ -102,24 +102,78 @@ const WriteQuotationPage = () => {
     }))
   }
 
+  const getQuotation = async () => {
+    try {
+      const { data, status } = await axiosInstance.get(
+        `/quotation/${quotationId}`
+      )
+      if (status === 200) {
+        setRecipeValue({
+          ...recipeValue,
+          title: data.title,
+          content: data.content,
+          recipeIngredientDtoList: data.recipeIngredientDtoList,
+          difficulty: data.difficulty,
+          recipeDetailDtoList: data.recipeDetailDtoList,
+          expectedTime: data.expectedTime,
+        })
+      }
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  const editQuotation = async () => {
+    try {
+      const { status } = await axiosInstance.put(
+        `/quotation/${quotationId}`,
+        recipeValue
+      )
+      if (status === 200) {
+        setCompleteModalContent('견적서 수정이 완료되었습니다.')
+      }
+    } catch (error) {
+      setCompleteModalContent('견적서 수정에 실패하였습니다.')
+    }
+    setIsCompleteModal(true)
+    setTimeout(() => {
+      setIsCompleteModal(false)
+      navigate(-1)
+    }, 1500)
+  }
+
+  const postQuotation = async () => {
+    try {
+      const { status } = await axiosInstance.post('/quotation', recipeValue)
+      if (status === 200) {
+        setCompleteModalContent('견적서 작성이 완료되었습니다.')
+      }
+    } catch (error) {
+      setCompleteModalContent('견적서 작성에 실패하였습니다.')
+    }
+    setIsCompleteModal(true)
+    setTimeout(() => {
+      setIsCompleteModal(false)
+      navigate(-1)
+      // delay props로 넘겨주어 설정 가능하도록 수정
+    }, 1500)
+  }
+
+  useEffect(() => {
+    if (isEdit) {
+      getQuotation()
+    }
+  }, [])
+
   return (
     <>
-      {modalOpen && (
-        <ListModal setModalOpen={setModalOpen} modalType="estimate" />
-      )}
       <Header />
       <S.Container>
-        <S.WrapQuitation>
-          <IcFileDockLight size={2} color={palette.textPrimary} />
-          <S.QuotationButton onClick={showRequest}>
-            견적서 목록 불러오기
-          </S.QuotationButton>
-        </S.WrapQuitation>
-
         <S.WrapForm>
           <S.Title>제목</S.Title>
           <S.Input
             placeholder="제목을 입력해주세요"
+            value={recipeValue.title}
             onChange={e =>
               setRecipeValue({ ...recipeValue, title: e.target.value })
             }
@@ -130,6 +184,7 @@ const WriteQuotationPage = () => {
           <S.Title>설명</S.Title>
           <S.Input
             placeholder="설명을 입력해주세요"
+            value={recipeValue.content}
             onChange={e =>
               setRecipeValue({ ...recipeValue, content: e.target.value })
             }
@@ -186,6 +241,7 @@ const WriteQuotationPage = () => {
               onChange={e =>
                 setRecipeValue({ ...recipeValue, expectedTime: e.target.value })
               }
+              value={recipeValue.expectedTime}
               $width={30}
               $marginRi={0.6}
             />
@@ -195,11 +251,12 @@ const WriteQuotationPage = () => {
 
         <S.WrapForm>
           <S.Title>예상 조리순서</S.Title>
-          {recipeValue.recipeDetailDtoList.map((_, index) => (
+          {recipeValue.recipeDetailDtoList.map((item, index) => (
             <S.WrapOrder key={`key]${index}`}>
               <S.Input
                 onChange={e => updateOrder(e, index)}
                 placeholder="조리 순서를 입력해주세요."
+                value={item}
                 $width={70}
               />
             </S.WrapOrder>
@@ -211,8 +268,19 @@ const WriteQuotationPage = () => {
           </S.AddButton>
         </S.WrapForm>
 
-        <S.RequestButton>레시피 등록하기</S.RequestButton>
+        <S.RequestButton onClick={isEdit ? editQuotation : postQuotation}>
+          {isEdit ? '수정하기' : '등록하기'}
+        </S.RequestButton>
       </S.Container>
+
+      {isCompleteModal && (
+        <ModalWithoutButton
+          content={completeModalContent}
+          setIsModalFalse={() => {
+            setIsCompleteModal(false)
+          }}
+        />
+      )}
 
       <BottomNavigation />
     </>

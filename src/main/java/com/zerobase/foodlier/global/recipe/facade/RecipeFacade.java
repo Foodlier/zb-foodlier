@@ -74,6 +74,7 @@ public class RecipeFacade {
      * 황태원
      * 꿀조합 게시글 수정
      */
+    @Transactional
     public void updateRecipe(String email, RecipeDtoRequest recipeDtoRequest, Long id) {
         checkPermission(email, id);
         ImageUrlDto imageUrlDto = recipeService.getBeforeImageUrl(id);
