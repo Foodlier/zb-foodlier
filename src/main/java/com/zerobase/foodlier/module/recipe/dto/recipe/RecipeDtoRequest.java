@@ -48,27 +48,4 @@ public class RecipeDtoRequest {
     @Min(value = 1, message = "예상조리시간은 최소 1분이상으로 입력해주세요.")
     private int expectedTime;
 
-    public Recipe toEntity(Member member) {
-        return Recipe.builder()
-                .summary(Summary.builder()
-                        .title(title)
-                        .content(content)
-                        .build())
-                .mainImageUrl(mainImageUrl)
-                .expectedTime(expectedTime)
-                .recipeStatistics(new RecipeStatistics())
-                .difficulty(difficulty)
-                .isPublic(true)
-                .member(member)
-                .recipeIngredientList(recipeIngredientDtoList
-                        .stream()
-                        .map(RecipeIngredientDto::toEntity)
-                        .collect(Collectors.toList()))
-                .recipeDetailList(recipeDetailDtoList
-                        .stream()
-                        .map(RecipeDetailDto::toEntity)
-                        .collect(Collectors.toList()))
-                .build();
-    }
-
 }

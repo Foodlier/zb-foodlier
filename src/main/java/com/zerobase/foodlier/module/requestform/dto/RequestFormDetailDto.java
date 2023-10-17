@@ -1,8 +1,10 @@
 package com.zerobase.foodlier.module.requestform.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.zerobase.foodlier.module.recipe.domain.model.Recipe;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 import java.util.List;

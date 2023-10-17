@@ -3,8 +3,10 @@ package com.zerobase.foodlier.module.dm.dm.domain.model;
 import com.zerobase.foodlier.common.jpa.audit.Audit;
 import com.zerobase.foodlier.module.dm.dm.type.MessageType;
 import com.zerobase.foodlier.module.dm.room.domain.model.DmRoom;
-import com.zerobase.foodlier.module.member.chef.type.GradeType;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 
