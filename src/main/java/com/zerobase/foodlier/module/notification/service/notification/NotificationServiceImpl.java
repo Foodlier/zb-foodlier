@@ -4,6 +4,8 @@ import com.zerobase.foodlier.common.response.ListResponse;
 import com.zerobase.foodlier.module.notification.domain.model.Notification;
 import com.zerobase.foodlier.module.notification.dto.NotificationDto;
 import com.zerobase.foodlier.module.notification.dto.notify.Notify;
+import com.zerobase.foodlier.module.notification.exception.NotificationErrorCode;
+import com.zerobase.foodlier.module.notification.exception.NotificationException;
 import com.zerobase.foodlier.module.notification.repository.notification.NotificationRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
@@ -35,4 +37,13 @@ public class NotificationServiceImpl implements NotificationService {
     public Long countUnreadNotification(Long memberId) {
         return notificationRepository.countUnreadNotification(memberId);
     }
+
+    public void updateNotificationStatus(Long memberId, Long notificationId){
+
+        Notification notification = notificationRepository.findNotification(memberId, notificationId)
+                .orElseThrow(() -> new NotificationException(NotificationErrorCode.NOTIFICATION_NOT_FOUND));
+        notification.updateReadState();
+        notificationRepository.save(notification);
+    }
+
 }

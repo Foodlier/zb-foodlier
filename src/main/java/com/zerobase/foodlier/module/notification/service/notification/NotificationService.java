@@ -9,7 +9,7 @@ import org.springframework.data.domain.Pageable;
 public interface NotificationService {
     Notification create(Notify notify);
     ListResponse<NotificationDto> getNotificationBy(Long id, Pageable pageable);
-
     Long countUnreadNotification(Long memberId);
+    void updateNotificationStatus(Long memberId, Long notificationId);
 
 }

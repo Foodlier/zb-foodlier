@@ -1,10 +1,9 @@
 package com.zerobase.foodlier.module.notification.repository.notification;
 
 import com.querydsl.core.types.Projections;
-import com.querydsl.core.types.dsl.Wildcard;
-import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.zerobase.foodlier.module.member.member.domain.model.QMember;
+import com.zerobase.foodlier.module.notification.domain.model.Notification;
 import com.zerobase.foodlier.module.notification.domain.model.QNotification;
 import com.zerobase.foodlier.module.notification.dto.NotificationDto;
 import lombok.RequiredArgsConstructor;
@@ -14,10 +13,11 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 @RequiredArgsConstructor
-public class NotificationRepositoryImpl implements NotificationRepositoryCustom{
+public class NotificationRepositoryCustomImpl implements NotificationRepositoryCustom{
     private static final boolean NOT_READ = false;
     private final JPAQueryFactory jpaQueryFactory;
     @Override
@@ -50,5 +50,16 @@ public class NotificationRepositoryImpl implements NotificationRepositoryCustom{
                 .on(notification.member.id.eq(memberId))
                 .where(notification.isRead.eq(NOT_READ))
                 .fetchFirst();
+    }
+
+    @Override
+    public Optional<Notification> findNotification(Long memberId, Long notificationId) {
+
+        QNotification notification = QNotification.notification;
+
+        return Optional.ofNullable(jpaQueryFactory.selectFrom(notification)
+                .where(notification.member.id.eq(memberId)
+                        .and(notification.id.eq(notificationId)))
+                .fetchOne());
     }
 }
