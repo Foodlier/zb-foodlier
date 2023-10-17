@@ -20,6 +20,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class NotificationFacade {
     private final static String INITIAL_MESSAGE = "개의 미열람 알림이 있습니다.";
+    private final static Long INITIAL_NOTIFICATION_ID = -1L;
     private final static String DELIMITER = "_";
     private final NotificationService notificationService;
     private final EmitterService emitterService;
@@ -34,7 +35,7 @@ public class NotificationFacade {
         Long unReadNotification = notificationService.countUnreadNotification(memberAuthDto.getId());
 
         NotificationDto notificationDto = NotificationDto.builder()
-                .id(0L)
+                .id(INITIAL_NOTIFICATION_ID)
                 .sentAt(LocalDateTime.now())
                 .notificationType(NotificationType.INITIAL)
                 .content(unReadNotification + INITIAL_MESSAGE)
