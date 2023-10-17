@@ -1,8 +1,14 @@
 package com.zerobase.foodlier.global.quotation.controller;
 
+import com.zerobase.foodlier.module.notification.domain.type.ActionType;
+import com.zerobase.foodlier.module.notification.domain.type.PerformerType;
 import com.zerobase.foodlier.common.response.ListResponse;
 import com.zerobase.foodlier.common.security.provider.dto.MemberAuthDto;
+import com.zerobase.foodlier.global.notification.facade.NotificationFacade;
 import com.zerobase.foodlier.global.quotation.facade.QuotationFacade;
+import com.zerobase.foodlier.module.notification.domain.type.NotificationType;
+import com.zerobase.foodlier.module.notification.dto.notify.NotifyInfoDto;
+import com.zerobase.foodlier.module.notification.dto.notify.impl.RequesterNotify;
 import com.zerobase.foodlier.module.recipe.dto.quotation.QuotationDetailResponse;
 import com.zerobase.foodlier.module.recipe.dto.quotation.QuotationDtoRequest;
 import com.zerobase.foodlier.module.recipe.dto.quotation.QuotationTopResponse;
@@ -23,7 +29,7 @@ public class QuotationController {
 
     private final QuotationService quotationService;
     private final QuotationFacade quotationFacade;
-
+    private final NotificationFacade notificationFacade;
     @PostMapping
     public ResponseEntity<String> createQuotation(
             @AuthenticationPrincipal MemberAuthDto memberAuthDto,
@@ -39,7 +45,15 @@ public class QuotationController {
             @RequestParam Long quotationId,
             @RequestParam Long requestId
     ){
-        quotationFacade.sendQuotation(memberAuthDto.getId(), quotationId, requestId);
+        RequesterNotify requesterNotify = RequesterNotify.from(
+                quotationFacade.sendQuotation(memberAuthDto.getId(), quotationId, requestId),
+                NotifyInfoDto.builder()
+                        .performerType(PerformerType.CHEF)
+                        .actionType(ActionType.SEND_QUOTATION)
+                        .notificationType(NotificationType.REQUEST)
+                        .build()
+        );
+        notificationFacade.send(requesterNotify);
         return ResponseEntity.ok(
                 "견적서를 보냈습니다."
         );

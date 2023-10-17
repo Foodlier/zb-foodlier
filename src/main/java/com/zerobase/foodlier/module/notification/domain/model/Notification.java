@@ -18,6 +18,7 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "notification")
 public class Notification {
+    private static final boolean UNREAD_STATUS = false;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -27,8 +28,13 @@ public class Notification {
     private String content;
     @Enumerated(EnumType.STRING)
     private NotificationType notificationType;
-    private String url;
     private boolean isRead;
     @CreatedDate
     private LocalDateTime sendAt;
+
+    public void updateReadState(){
+        if(this.isRead == UNREAD_STATUS){
+            this.isRead = true;
+        }
+    }
 }

@@ -7,7 +7,7 @@ import org.springframework.data.domain.PageRequest;
 
 public interface ReplyService {
 
-    void createReply(Reply reply);
+    Reply createReply(Reply reply);
 
     void updateReply(Long memberId, Long replyId, String modifiedMessage);
 

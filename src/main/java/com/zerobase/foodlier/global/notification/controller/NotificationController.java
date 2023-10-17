@@ -6,6 +6,7 @@ import com.zerobase.foodlier.global.notification.facade.NotificationFacade;
 import com.zerobase.foodlier.module.notification.dto.NotificationDto;
 import com.zerobase.foodlier.module.notification.service.notification.NotificationService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -20,18 +21,17 @@ public class NotificationController {
     private final NotificationService notificationService;
 
     @GetMapping("/{pageIdx}/{pageSize}")
-    public ResponseEntity<ListResponse<NotificationDto>> getSimpleNotificationList(@AuthenticationPrincipal MemberAuthDto principal,
+    public ResponseEntity<ListResponse<NotificationDto>> getSimpleNotificationList(@AuthenticationPrincipal MemberAuthDto memberAuthDto,
                                                                                    @PathVariable int pageIdx,
                                                                                    @PathVariable int pageSize)
     {
-        return ResponseEntity.ok(notificationService.getNotificationBy(principal.getId(),
+        return ResponseEntity.ok(notificationService.getNotificationBy(memberAuthDto.getId(),
                 PageRequest.of(pageIdx, pageSize)));
     }
 
     @GetMapping(value = "/subscribe", produces = "text/event-stream")
-    public ResponseEntity<SseEmitter> subscribe(@AuthenticationPrincipal MemberAuthDto principal,
-                                                @RequestHeader(value = "Last-Event-ID", required = false, defaultValue = "") String lastEventId) {
-        return ResponseEntity.ok(notificationFacade.subscribe(principal.getEmail(), lastEventId));
+    public ResponseEntity<SseEmitter> subscribe(@AuthenticationPrincipal MemberAuthDto memberAuthDto) {
+        return ResponseEntity.ok(notificationFacade.subscribe(memberAuthDto));
     }
 
 }
