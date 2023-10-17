@@ -1,13 +1,20 @@
 package com.zerobase.foodlier.global.comment.controller;
 
+import com.zerobase.foodlier.module.notification.domain.type.ActionType;
+import com.zerobase.foodlier.module.notification.domain.type.PerformerType;
 import com.zerobase.foodlier.common.response.ListResponse;
 import com.zerobase.foodlier.common.security.provider.dto.MemberAuthDto;
 import com.zerobase.foodlier.global.comment.facade.comment.CommentFacade;
 import com.zerobase.foodlier.global.comment.facade.reply.ReplyFacade;
+import com.zerobase.foodlier.global.notification.facade.NotificationFacade;
 import com.zerobase.foodlier.module.comment.comment.dto.CommentDto;
 import com.zerobase.foodlier.module.comment.comment.service.CommentServiceImpl;
 import com.zerobase.foodlier.module.comment.reply.dto.ReplyDto;
 import com.zerobase.foodlier.module.comment.reply.servcie.ReplyService;
+import com.zerobase.foodlier.module.notification.domain.type.NotificationType;
+import com.zerobase.foodlier.module.notification.dto.notify.NotifyInfoDto;
+import com.zerobase.foodlier.module.notification.dto.notify.Impl.CommentNotify;
+import com.zerobase.foodlier.module.notification.dto.notify.Impl.ReplyNotify;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
@@ -23,14 +30,21 @@ public class CommentController {
     private final CommentServiceImpl commentService;
     private final ReplyFacade replyFacade;
     private final ReplyService replyService;
+    private final NotificationFacade notificationFacade;
 
     // ======================== 댓글 api ======================================
     @PostMapping("/{recipeId}")
     public ResponseEntity<String> createComment(@AuthenticationPrincipal MemberAuthDto memberAuthDto,
                                                 @PathVariable Long recipeId,
-                                                @RequestBody String message)
+                                                @RequestParam String message)
     {
-        commentFacade.createComment(recipeId, memberAuthDto.getEmail(), message);
+        CommentNotify commentNotify = CommentNotify.from(commentFacade.createComment(recipeId, memberAuthDto.getEmail(), message),
+                NotifyInfoDto.builder()
+                        .performerType(PerformerType.COMMENTER)
+                        .actionType(ActionType.COMMENT)
+                        .notificationType(NotificationType.COMMENT)
+                        .build());
+        notificationFacade.send(commentNotify);
         return ResponseEntity.ok("댓글 작성이 완료되었습니다.");
     }
 
@@ -66,9 +80,16 @@ public class CommentController {
     public ResponseEntity<String> createReply(@AuthenticationPrincipal MemberAuthDto memberAuthDto,
                                               @PathVariable Long recipeId,
                                               @PathVariable Long commentId,
-                                              @RequestBody String message)
+                                              @RequestParam String message)
     {
-        replyFacade.createReply(commentId, recipeId, memberAuthDto.getEmail(), message);
+        ReplyNotify replyNotify = ReplyNotify.from(replyFacade.createReply(commentId, recipeId, memberAuthDto.getEmail(), message),
+                NotifyInfoDto.builder()
+                        .notificationType(NotificationType.RE_COMMENT)
+                        .actionType(ActionType.REPLY)
+                        .performerType(PerformerType.COMMENTER)
+                        .build()
+        );
+        notificationFacade.send(replyNotify);
         return ResponseEntity.ok("답글 작성이 완료되었습니다.");
     }
 

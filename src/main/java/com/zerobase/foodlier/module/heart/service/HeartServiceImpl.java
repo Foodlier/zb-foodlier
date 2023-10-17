@@ -3,6 +3,7 @@ package com.zerobase.foodlier.module.heart.service;
 import com.zerobase.foodlier.common.aop.RedissonLock;
 import com.zerobase.foodlier.common.security.provider.dto.MemberAuthDto;
 import com.zerobase.foodlier.module.heart.domain.model.Heart;
+import com.zerobase.foodlier.module.heart.exception.HeartErrorCode;
 import com.zerobase.foodlier.module.heart.exception.HeartException;
 import com.zerobase.foodlier.module.heart.reposiotry.HeartRepository;
 import com.zerobase.foodlier.module.member.member.domain.model.Member;
@@ -24,7 +25,6 @@ public class HeartServiceImpl implements HeartService {
     private final HeartRepository heartRepository;
     private final RecipeRepository recipeRepository;
     private final MemberRepository memberRepository;
-
     /**
      * 작성자 : 이승현
      * 작성일 : 2023-10-03
@@ -32,19 +32,21 @@ public class HeartServiceImpl implements HeartService {
      */
     @RedissonLock(group = "heart", key = "#recipeId")
     @Override
-    public void createHeart(MemberAuthDto memberAuthDto, Long recipeId) {
+    public Heart createHeart(MemberAuthDto memberAuthDto, Long recipeId) {
         Recipe recipe = recipeRepository.findById(recipeId)
                 .orElseThrow(() -> new RecipeException(NO_SUCH_RECIPE));
         Member member = memberRepository.findById(memberAuthDto.getId())
                 .orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
 
-        if (!heartRepository.existsByRecipeAndMember(recipe, member)) {
-            recipe.plusHeart();
-            heartRepository.save(Heart.builder()
-                    .recipe(recipe)
-                    .member(member)
-                    .build());
+        if (heartRepository.existsByRecipeAndMember(recipe, member)) {
+           throw new HeartException(HeartErrorCode.ALREADY_PUSH_HEART);
         }
+
+        recipe.plusHeart();
+        return heartRepository.save(Heart.builder()
+                .recipe(recipe)
+                .member(member)
+                .build());
     }
 
     /**

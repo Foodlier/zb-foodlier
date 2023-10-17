@@ -21,13 +21,13 @@ public class CommentFacade {
     private final MemberService memberService;
     @Transactional
     @RedissonLock(group = "comment", key = "#recipeId")
-    public void createComment(Long recipeId, String userEmail, String message) {
+    public Comment createComment(Long recipeId, String userEmail, String message) {
 
         Member member = memberService.findByEmail(userEmail);
 
         Recipe recipe = recipeService.plusCommentCount(recipeId);
 
-        commentService.createComment(Comment.builder()
+        return commentService.createComment(Comment.builder()
                 .message(message)
                 .isDeleted(false)
                 .recipe(recipe)
