@@ -11,9 +11,9 @@ import './reset.css'
 // }
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
-    <BrowserRouter>
-      <RecoilRoot>
-        <App />
-      </RecoilRoot>
-    </BrowserRouter>
+  <BrowserRouter>
+    <RecoilRoot>
+      <App />
+    </RecoilRoot>
+  </BrowserRouter>
 )

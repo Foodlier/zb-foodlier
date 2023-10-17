@@ -38,8 +38,6 @@ const DealModal: React.FC<Price> = ({ price, setIsDealModalOpen }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [point])
 
-  console.log('충전 필요?', isNeedMore)
-
   let need = false
   if (point < price) {
     need = true
