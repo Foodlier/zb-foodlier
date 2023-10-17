@@ -1,9 +1,7 @@
 package com.zerobase.foodlier.module.comment.comment.domain.model;
 
-import com.zerobase.foodlier.common.aop.notification.dto.Notify;
 import com.zerobase.foodlier.common.jpa.audit.Audit;
 import com.zerobase.foodlier.module.member.member.domain.model.Member;
-import com.zerobase.foodlier.module.notification.domain.type.NotificationType;
 import com.zerobase.foodlier.module.recipe.domain.model.Recipe;
 import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
