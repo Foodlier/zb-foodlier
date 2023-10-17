@@ -59,4 +59,8 @@ public class Request extends Audit {
 
     @Column(nullable = false)
     private boolean isFinished;
+
+    public void enableFinishState(){
+        this.isFinished = true;
+    }
 }

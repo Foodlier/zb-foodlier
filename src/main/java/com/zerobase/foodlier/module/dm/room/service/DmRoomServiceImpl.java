@@ -89,7 +89,7 @@ public class DmRoomServiceImpl implements DmRoomService {
         } else {
 
             Request request = dmRoom.getRequest();
-            request.setFinished(true);
+            request.enableFinishState();
             requestRepository.save(request);
             dmRoomRepository.save(dmRoom);
         }
