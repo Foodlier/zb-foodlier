@@ -20,7 +20,7 @@ public class EmitterServiceImpl implements EmitterService {
 
     @Override
     public SseEmitter createEmitter(String userEmail) {
-        String emitterId = makeTimeIncludeId(userEmail);
+        String emitterId = makeUUIDIncludeId(userEmail);
         return emitterRepository.save(emitterId, new SseEmitter(DEFAULT_TIMEOUT));
     }
 
@@ -42,13 +42,13 @@ public class EmitterServiceImpl implements EmitterService {
     }
 
     @Override
-    public String makeTimeIncludeId(String email) {
+    public String makeUUIDIncludeId(String email) {
         return email + DELIMITER + UUID.randomUUID();
     }
 
     @Override
     public Map<String, SseEmitter> findAllEmitter(String receiverEmail) {
-        return emitterRepository.findAllEmitterStartWithByMemberId(receiverEmail);
+        return emitterRepository.findAllEmitterStartWithByEmail(receiverEmail);
     }
 
     @Override

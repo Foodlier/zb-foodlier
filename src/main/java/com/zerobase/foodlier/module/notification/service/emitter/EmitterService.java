@@ -6,7 +6,7 @@ import java.util.Map;
 
 
 public interface EmitterService {
-    String makeTimeIncludeId(String email);
+    String makeUUIDIncludeId(String email);
     SseEmitter createEmitter(String userEmail);
     void deleteEmitter(String emitterId);
     void send(SseEmitter emitter, String eventId, String emitterId, Object data);
