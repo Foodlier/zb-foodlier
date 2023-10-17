@@ -1,11 +1,10 @@
 package com.zerobase.foodlier.module.recipe.dto.recipe;
 
-import com.zerobase.foodlier.module.member.member.domain.model.Member;
-import com.zerobase.foodlier.module.recipe.domain.model.Recipe;
 import com.zerobase.foodlier.module.recipe.domain.type.Difficulty;
-import com.zerobase.foodlier.module.recipe.domain.vo.RecipeStatistics;
-import com.zerobase.foodlier.module.recipe.domain.vo.Summary;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.hibernate.validator.constraints.URL;
 
 import javax.validation.Valid;
@@ -14,7 +13,6 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Getter
 @NoArgsConstructor
