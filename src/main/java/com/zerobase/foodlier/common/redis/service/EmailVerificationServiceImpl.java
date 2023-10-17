@@ -57,7 +57,7 @@ public class EmailVerificationServiceImpl implements EmailVerificationService{
 
         validateVerify(emailVerification, verificationCode, nowTime);
 
-        emailVerification.setAuthorized(true);
+        emailVerification.updateAuthorized();
         emailVerificationRepository.save(emailVerification);
     }
 

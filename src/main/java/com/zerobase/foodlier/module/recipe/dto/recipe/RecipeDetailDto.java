@@ -7,7 +7,6 @@ import org.hibernate.validator.constraints.URL;
 import javax.validation.constraints.NotBlank;
 
 @Getter
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder

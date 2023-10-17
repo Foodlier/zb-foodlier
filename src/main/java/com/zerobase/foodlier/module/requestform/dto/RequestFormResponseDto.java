@@ -4,7 +4,6 @@ import com.zerobase.foodlier.module.requestform.domain.model.RequestForm;
 import lombok.*;
 
 @Getter
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder

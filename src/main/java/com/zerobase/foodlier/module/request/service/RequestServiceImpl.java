@@ -45,7 +45,7 @@ public class RequestServiceImpl implements RequestService {
      */
     @Override
     public void setDmRoom(Request request, DmRoom dmRoom){
-        request.setDmRoom(dmRoom);
+        request.updateDmRoom(dmRoom);
         requestRepository.save(request);
     }
 
@@ -92,7 +92,7 @@ public class RequestServiceImpl implements RequestService {
             throw new RequestException(ALREADY_SETTED_QUOTATION);
         }
 
-        request.setRecipe(quotation);
+        request.updateQuotation(quotation);
         requestRepository.save(request);
     }
 

@@ -12,7 +12,6 @@ import lombok.experimental.SuperBuilder;
 import javax.persistence.*;
 
 @Getter
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @SuperBuilder
