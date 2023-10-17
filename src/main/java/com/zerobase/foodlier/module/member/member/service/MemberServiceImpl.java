@@ -71,7 +71,7 @@ public class MemberServiceImpl implements MemberService {
      * 이메일과 비밀번호를 받아와서 access token과 refresh token값을 반환해줍니다.
      */
     @Override
-    public TokenDto signIn(SignInForm form) {
+    public TokenDto signIn(SignInForm form, Date nowDateTime) {
         Member member = memberRepository.findByEmail(form.getEmail()).stream()
                 .filter(m -> passwordEncoder.matches(form.getPassword(), m.getPassword()))
                 .findFirst()
@@ -82,7 +82,7 @@ public class MemberServiceImpl implements MemberService {
                         .email(member.getEmail())
                         .roles(member.getRoles())
                         .build(),
-                form.getCurrentDate());
+                nowDateTime);
     }
 
     /**
@@ -124,36 +124,19 @@ public class MemberServiceImpl implements MemberService {
     }
 
     /**
-     * 작성자 : 이승현
-     * 작성일 : 2023-09-24(2023-10-12)
+     * 작성자 : 이승현(황태원)
+     * 작성일 : 2023-09-24(2023-10-15)
      * 프로필 정보를 수정합니다.
      */
     @Override
     public void updatePrivateProfile(MemberUpdateDto memberUpdateDto, Member member) {
         validateUpdateProfile(memberUpdateDto);
-        if (StringUtils.hasText(memberUpdateDto.getNickName())) {
-            member.setNickname(memberUpdateDto.getNickName());
-        }
 
-        if (StringUtils.hasText(memberUpdateDto.getPhoneNumber())) {
-            member.setPhoneNumber(memberUpdateDto.getPhoneNumber());
-        }
-
-        if (member.getRegistrationType() != DOMAIN && member.isTemp()) {
-            member.setTemp(false);
-        }
-
-        member.setAddress(Address.builder()
-                .roadAddress(memberUpdateDto.getRoadAddress())
-                .addressDetail(memberUpdateDto.getAddressDetail() != null ?
-                        memberUpdateDto.getAddressDetail() :
-                        member.getAddress().getAddressDetail())
-                .lat(memberUpdateDto.getLat())
-                .lnt(memberUpdateDto.getLnt())
-                .build());
-
-
-        member.setProfileUrl(memberUpdateDto.getProfileUrl());
+        member.updateNickname(memberUpdateDto.getNickName());
+        member.updatePhoneNumber(memberUpdateDto.getPhoneNumber());
+        member.updateTemp();
+        member.updateAddress(memberUpdateDto);
+        member.updateProfileUrl(memberUpdateDto.getProfileUrl());
 
         memberRepository.save(member);
     }
@@ -195,7 +178,7 @@ public class MemberServiceImpl implements MemberService {
                 .findFirst()
                 .orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
 
-        member.setPassword(passwordEncoder.encode(form.getNewPassword()));
+        member.updatePassword(passwordEncoder.encode(form.getNewPassword()));
         memberRepository.save(member);
 
         tokenProvider.deleteRefreshToken(member.getEmail());
@@ -210,7 +193,7 @@ public class MemberServiceImpl implements MemberService {
                 .findFirst()
                 .orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
 
-        member.setPassword(passwordEncoder.encode(newPassword));
+        member.updatePassword(passwordEncoder.encode(newPassword));
         memberRepository.save(member);
 
         return "비밀번호 재설정 완료.";
@@ -233,10 +216,10 @@ public class MemberServiceImpl implements MemberService {
         String delNickName = DEL_PREFIX + randomCode;
         String delEmail = DEL_PREFIX + randomCode;
         String delPhoneNumber = DEL_PREFIX + randomCode;
-        member.setNickname(delNickName);
-        member.setEmail(delEmail);
-        member.setPhoneNumber(delPhoneNumber);
-        member.setDeleted(true);
+        member.updateNickname(delNickName);
+        member.updateEmail(delEmail);
+        member.updatePhoneNumber(delPhoneNumber);
+        member.deleteMember();
         memberRepository.save(member);
 
         tokenProvider.deleteRefreshToken(member.getEmail());
@@ -286,6 +269,28 @@ public class MemberServiceImpl implements MemberService {
     private String generateRandomCode() {
         return UUID.randomUUID().toString().replace("-", "");
     }
+
+    @Override
+    public void checkNickname(String nickname){
+        if(memberRepository.existsByNickname(nickname)){
+            throw new MemberException(NICKNAME_IS_ALREADY_EXIST);
+        }
+    }
+
+    @Override
+    public void checkPhoneNumber(String phoneNumber){
+        if(memberRepository.existsByPhoneNumber(phoneNumber)){
+            throw new MemberException(PHONE_NUMBER_IS_ALREADY_EXIST);
+        }
+    }
+
+    @Override
+    public void checkEmail(String email){
+        if(memberRepository.existsByEmail(email)){
+            throw new MemberException(EMAIL_IS_ALREADY_EXIST);
+        }
+    }
+
 
     //======================= Validates =========================
 

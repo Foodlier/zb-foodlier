@@ -2,7 +2,8 @@ import { useNavigate } from 'react-router-dom'
 import * as S from '../../../styles/recipe/detail/DetailMain.styled'
 import { palette } from '../../../constants/Styles'
 import useIcon from '../../../hooks/useIcon'
-import { Recipe } from '../../../constants/Interfacs'
+import { Recipe } from '../../../constants/Interfaces'
+import profile from '../../../../public/images/default_profile.png'
 
 interface DetailMainProps {
   recipe: Recipe | undefined
@@ -29,7 +30,10 @@ const DetailMainItem = ({ recipe }: DetailMainProps) => {
           </S.MainImgWrap>
           <S.ProfileWrap onClick={goToProfile}>
             <S.Profile>
-              <S.ProfileImg src={recipe.profileUrl} alt={recipe.nickname} />
+              <S.ProfileImg
+                src={recipe.profileUrl || profile}
+                alt={recipe.nickname}
+              />
               <S.ProfileId>{recipe.nickname}</S.ProfileId>
             </S.Profile>
             <IcExpandRight size={2.5} color={palette.textSecondary} />

@@ -9,7 +9,7 @@ import lombok.*;
 @Builder
 public class DmRoomDto {
 
-    private Long dmRoomId;
+    private Long roomId;
     private String nickname;
     private String profileUrl;
     private Long requestId;
