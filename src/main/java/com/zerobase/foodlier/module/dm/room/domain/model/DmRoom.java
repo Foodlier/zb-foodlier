@@ -37,4 +37,11 @@ public class DmRoom extends Audit {
     @Embedded
     private Suggestion suggestion;
 
+    public void updateMemberExit() {
+        this.isMemberExit = true;
+    }
+
+    public void updateChefExit() {
+        this.isChefExit = true;
+    }
 }

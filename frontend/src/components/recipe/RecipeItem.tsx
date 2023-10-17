@@ -2,27 +2,18 @@ import { useState } from 'react'
 import * as S from '../../styles/recipe/RecipeItem.styled'
 import { palette } from '../../constants/Styles'
 import useIcon from '../../hooks/useIcon'
+import { RecipeListItem } from '../../constants/Interfaces'
 
 interface RecipeItemProps {
+  recipeItem: RecipeListItem
   onClick: () => void
 }
 
-function RecipeItem({ onClick }: RecipeItemProps) {
+function RecipeItem({ recipeItem, onClick }: RecipeItemProps) {
   const { IcFavorite, IcFavoriteFill } = useIcon()
 
-  const dummyData = {
-    id: 1,
-    title: '마크정식',
-    nickname: '닉네임입니다',
-    introduce:
-      '마크정식 어쩌구 저쩌구마크정식 어쩌구 저쩌구마크정식 어쩌구 저쩌구마크정식 어쩌구 저쩌구마크정식 어쩌구 저쩌구',
-    imagePath: '',
-    likeCount: 150,
-    isLike: true,
-  }
-
-  const [isLike, setIsLike] = useState(dummyData.isLike)
-  const [likeCount, setLikeCount] = useState(dummyData.likeCount)
+  const [isLike, setIsLike] = useState(recipeItem.heart)
+  const [likeCount, setLikeCount] = useState(recipeItem.heartCount)
 
   const onClickLikeButton = () => {
     setIsLike(!isLike)
@@ -31,12 +22,14 @@ function RecipeItem({ onClick }: RecipeItemProps) {
 
   return (
     <S.Container onClick={onClick}>
-      <S.Image />
+      <S.Image
+        src={recipeItem.mainImageUrl}
+        alt={`${recipeItem.title} 미리보기 이미지`}
+      />
       <S.WrapContent>
         <S.FlexRowJustiBet>
           <S.FlexRow>
-            <S.Title>{dummyData.title}</S.Title>
-            <S.Nickname>{dummyData.nickname}</S.Nickname>
+            <S.Title>{recipeItem.title}</S.Title>
           </S.FlexRow>
           <S.LikeButton onClick={onClickLikeButton}>
             {isLike ? (
@@ -47,7 +40,7 @@ function RecipeItem({ onClick }: RecipeItemProps) {
             <S.LikeCount>{likeCount}</S.LikeCount>
           </S.LikeButton>
         </S.FlexRowJustiBet>
-        <S.Introduce>{dummyData.introduce}</S.Introduce>
+        <S.Introduce>{recipeItem.content}</S.Introduce>
       </S.WrapContent>
     </S.Container>
   )

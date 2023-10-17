@@ -1,74 +1,138 @@
-import React from 'react'
+/* eslint-disable react/no-array-index-key */
+/* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable react/require-default-props */
+import React, { useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { useRecoilState } from 'recoil'
 import * as S from '../../styles/refrigerator/ListModal.styled'
+import axiosInstance from '../../utils/FetchCall'
+import { Quotation, RequestForm } from '../../constants/Interfaces'
+import { requireChefIdState } from '../../store/recoilState'
+import useIcon from '../../hooks/useIcon'
+import QuotationItem from './QuotationItem'
+import { palette } from '../../constants/Styles'
+import RequestItem from './RequestItem'
 
 interface ModalProps {
   setModalOpen: React.Dispatch<React.SetStateAction<boolean>>
-  modalType: string
+  modalType: 'request' | 'quotation'
+  setIsSelectedRequestId?: (id: number) => void
+  postRequest?: (id: number) => void
 }
 
-const ListModal: React.FC<ModalProps> = ({ setModalOpen, modalType }) => {
-  const closeModal = () => {
-    setModalOpen(false)
+const ListModal: React.FC<ModalProps> = ({
+  setModalOpen,
+  modalType,
+  setIsSelectedRequestId,
+  postRequest,
+}) => {
+  const { IcAddRoundDuotone, IcCloseRound } = useIcon()
+  const navigate = useNavigate()
+
+  const MODAL_OPTION = {
+    type: modalType === 'quotation' ? '견적서' : '요청서',
   }
 
-  const modalOPtion = {
-    type: '',
-    button: '',
+  const [requireChefId] = useRecoilState(requireChefIdState)
+
+  const [list, setList] = useState<RequestForm[] | Quotation[]>([])
+  const [isRefresh, setIsRefresh] = useState(false)
+
+  // 요청서 목록 조회 API
+  const getRequireList = async () => {
+    const pageIdx = 0
+    const pageSize = 10
+
+    try {
+      const res = await axiosInstance.get(
+        `/refrigerator/${pageIdx}/${pageSize}`
+      )
+      console.log(res)
+      setList(res.data.content)
+    } catch (error) {
+      console.log(error)
+    }
   }
 
-  if (modalType === 'estimate') {
-    modalOPtion.type = '견적서'
-    modalOPtion.button = '선택하기'
-  } else {
-    modalOPtion.type = '요청서'
-    modalOPtion.button = '요청하기'
+  // 견적서 목록 조회 API
+  const getQuotateList = async () => {
+    const pageIdx = 0
+    const pageSize = 10
+
+    try {
+      const res = await axiosInstance.get(`/quotation/${pageIdx}/${pageSize}`)
+      console.log(res)
+      setList(res.data.content)
+    } catch (error) {
+      console.log(error)
+    }
   }
 
-  const REQUEST_LIST_EXAMPLE = [
-    {
-      title: '남아버린 치킨을 되살릴 수 있을까요?',
-      contents: '도와주세요, 집에 치킨이랑 마요네즈 정도만 있어요',
-    },
-    {
-      title: '남아버린 치킨을 되살릴 수 있을까요?',
-      contents: '높은 하늘을 다시 날 수 있도록 도와주세요..!',
-    },
-  ]
+  const onClickSelectButton = (id: number) => {
+    if (setIsSelectedRequestId) {
+      setIsSelectedRequestId(id)
+      setModalOpen(false)
+    }
+  }
+
+  const goToAddList = () => {
+    if (modalType === 'quotation') {
+      navigate('/refrigerator/quotation/write')
+    } else {
+      navigate('/refrigerator/request/write')
+    }
+  }
+
+  const refresh = () => {
+    setIsRefresh(!isRefresh)
+  }
+
+  useEffect(() => {
+    if (modalType === 'quotation') {
+      getQuotateList()
+    } else {
+      getRequireList()
+    }
+  }, [isRefresh])
 
   return (
     <>
       <S.GreyBackground />
-      <S.ModalScreen>
-        <S.ModalTop>
-          <span>나의 {modalOPtion.type} 목록</span>
-          <button type="button" onClick={closeModal}>
-            X
-          </button>
-        </S.ModalTop>
-        <div>
-          <S.ElContainer>
-            {REQUEST_LIST_EXAMPLE.map(el => (
-              // key 값 뭘로 해야하지?
-              <S.El key={el.contents}>
-                {/* <S.ElImg src="" alt="" /> */}
-                <div>
-                  <S.ElTitle>{el.title}</S.ElTitle>
-                  <S.ElContents>{el.contents}</S.ElContents>
-                </div>
-                <S.ButtonContainer>
-                  <S.RequestButton type="button">
-                    {modalOPtion.button}
-                  </S.RequestButton>
-                  <S.MoreButtonContainer>
-                    <S.MoreButton type="button">수정</S.MoreButton>
-                    <S.MoreButton type="button">삭제</S.MoreButton>
-                  </S.MoreButtonContainer>
-                </S.ButtonContainer>
-              </S.El>
-            ))}
-          </S.ElContainer>
-        </div>
-      </S.ModalScreen>
+      <S.ModalContainer>
+        <S.ModalHeader>
+          <S.ModalTitle> {`나의 ${MODAL_OPTION.type} 목록`}</S.ModalTitle>
+          <S.CloseButton type="button" onClick={() => setModalOpen(false)}>
+            <IcCloseRound size={3} color={palette.textPrimary} />
+          </S.CloseButton>
+        </S.ModalHeader>
+        <S.ElContainer>
+          {list.length > 0 ? (
+            list.map((item, index) => (
+              <React.Fragment key={`key-${index}`}>
+                {modalType === 'quotation' ? (
+                  <QuotationItem
+                    item={item}
+                    onClickSelectButton={onClickSelectButton}
+                    refresh={refresh}
+                  />
+                ) : (
+                  <RequestItem
+                    item={item}
+                    postRequest={postRequest}
+                    isVisibleSelectButton={Boolean(requireChefId)}
+                    refresh={refresh}
+                  />
+                )}
+              </React.Fragment>
+            ))
+          ) : (
+            <S.EmptyView>{`${MODAL_OPTION.type}가 존재하지 않습니다.`}</S.EmptyView>
+          )}
+          <S.AddListButton onClick={goToAddList}>
+            <IcAddRoundDuotone size={5} />
+          </S.AddListButton>
+        </S.ElContainer>
+      </S.ModalContainer>
     </>
   )
 }

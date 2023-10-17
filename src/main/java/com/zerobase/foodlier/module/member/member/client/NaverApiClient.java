@@ -20,6 +20,7 @@ import java.util.Objects;
 import static com.zerobase.foodlier.common.security.constants.AuthorizationConstants.TOKEN_HEADER;
 import static com.zerobase.foodlier.common.security.constants.AuthorizationConstants.TOKEN_PREFIX;
 import static com.zerobase.foodlier.module.member.member.exception.OAuthErrorCode.FAILED_AUTH;
+import static com.zerobase.foodlier.module.member.member.exception.OAuthErrorCode.INVALID_TOKEN;
 import static com.zerobase.foodlier.module.member.member.type.RegistrationType.NAVER;
 
 @Component
@@ -86,7 +87,7 @@ public class NaverApiClient implements OAuthApiClient {
         try {
             return restTemplate.postForObject(url, request, NaverInfoResponse.class);
         } catch (Exception e) {
-            throw new OAuthException(FAILED_AUTH);
+            throw new OAuthException(INVALID_TOKEN);
         }
     }
 }

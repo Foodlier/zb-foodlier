@@ -20,6 +20,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/point")
@@ -34,7 +36,7 @@ public class PointController {
     @PostMapping("/charge")
     public ResponseEntity<PaymentResponse> requestPayments(
             @AuthenticationPrincipal MemberAuthDto memberAuthDto,
-            @RequestBody PaymentRequest paymentRequest
+            @RequestBody @Valid PaymentRequest paymentRequest
     ) {
         return ResponseEntity.ok(paymentService.requestPayments(paymentRequest, memberAuthDto));
     }
@@ -73,7 +75,7 @@ public class PointController {
     @PostMapping("/suggest/{dmRoomId}")
     public ResponseEntity<String> suggestPrice(
             @AuthenticationPrincipal MemberAuthDto memberAuthDto,
-            @RequestBody SuggestionForm form,
+            @RequestBody @Valid SuggestionForm form,
             @PathVariable(name = "dmRoomId") Long dmRoomId
     ) {
         return ResponseEntity.ok(transactionService
