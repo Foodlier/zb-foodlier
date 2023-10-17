@@ -19,8 +19,8 @@ public class ReplyServiceImpl implements ReplyService{
     private final ReplyRepository replyRepository;
 
     @Override
-    public void createReply(Reply reply) {
-        replyRepository.save(reply);
+    public Reply createReply(Reply reply) {
+        return replyRepository.save(reply);
     }
 
     @Override
