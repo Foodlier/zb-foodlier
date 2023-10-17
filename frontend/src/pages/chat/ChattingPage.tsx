@@ -19,6 +19,8 @@ const ChattingPage = () => {
     try {
       const res = await axiosInstance.get('/dm/room/0/10')
       if (res.status === 200) {
+        console.log(res.data.content)
+
         setDmRoomList(res.data.content)
       }
     } catch (error) {
@@ -48,12 +50,12 @@ const ChattingPage = () => {
             <>
               <S.WrapChatList>
                 {dmRoomList.map((item, index) => (
-                  <S.Wrap key={item.dmRoomId}>
+                  <S.Wrap key={item.roomId}>
                     <S.ReqireButton>요청서 보기</S.ReqireButton>
                     <S.RoomListButton
                       ref={index === 0 ? firstDmRoomRef : null}
-                      onClick={() => setCurrentChat(item.dmRoomId)}
-                      $isActive={currentChat === item.dmRoomId}
+                      onClick={() => setCurrentChat(item.roomId)}
+                      $isActive={currentChat === item.roomId}
                     >
                       <RoomListItem roomInfo={item} />
                     </S.RoomListButton>
@@ -62,9 +64,9 @@ const ChattingPage = () => {
               </S.WrapChatList>
 
               <ChatRoom
-                roomInfo={dmRoomList.find(
-                  item => item.dmRoomId === currentChat
-                )}
+                roomNum={
+                  dmRoomList.find(item => item.roomId === currentChat)?.roomId
+                }
               />
             </>
           ) : (

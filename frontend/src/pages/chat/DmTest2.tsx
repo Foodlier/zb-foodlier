@@ -55,7 +55,7 @@ const DmTest2 = () => {
           roomId: roomNum,
           message: newMessage.content,
           writer: newMessage.sender,
-          messageType: 'CHAT',
+          messageType: 'SUGGESTION',
         })
       )
     }

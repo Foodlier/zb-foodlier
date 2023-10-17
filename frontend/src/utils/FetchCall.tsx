@@ -10,6 +10,8 @@ const API_TOKEN =
 // 요청계정2
 // 'eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ0ZXh0Y29va2VyMTAxNEBnbWFpbC5jb20iLCJqdGkiOiIzIiwicm9sZXMiOltdLCJ0eXBlIjoiQVQiLCJpYXQiOjE3MjkwMzMwMjQsImV4cCI6MTcyOTA3NjIyNH0.Hv5VzvxJN9UWnj4NQ9Ssil8kHr3BeeJHgkfDpncRRrRAq-M9dHXe_uId4d-AEjgXpyATdAenVmMHNDJG-zXTQQ'
 
+const REFRESH_TOKEN = ''
+
 const axiosInstance = axios.create({
   baseURL: API_BASE_URL,
   headers: {

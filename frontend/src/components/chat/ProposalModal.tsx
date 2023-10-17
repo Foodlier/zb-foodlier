@@ -1,14 +1,19 @@
 import { useState } from 'react'
 import * as S from '../../styles/chat/ProposalModal.styled'
+import axiosInstance from '../../utils/FetchCall'
 
 interface ProposalModalProps {
   setIsProposalModalOpen: React.Dispatch<React.SetStateAction<boolean>>
+  setIsSuggested: React.Dispatch<React.SetStateAction<boolean | undefined>>
   sendSuggestion: (price: number) => void
+  roomId: number | undefined
 }
 
 const ProposalModal = ({
   setIsProposalModalOpen,
+  setIsSuggested,
   sendSuggestion,
+  roomId,
 }: ProposalModalProps) => {
   const [price, setPrice] = useState(0)
 
@@ -17,6 +22,19 @@ const ProposalModal = ({
     // value의 값이 숫자가 아닐경우 빈문자열로 replace 해버림.
     const onlyNumber = Number(value.replace(/[^0-9]/g, ''))
     setPrice(onlyNumber)
+  }
+
+  const body = {
+    suggestedPrice: price,
+  }
+
+  const suggest = async () => {
+    try {
+      const res = await axiosInstance.post(`/point/suggest/${roomId}`, body)
+      console.log('제안 요청에 대한 반응 : ', res)
+    } catch (error) {
+      console.log('제안 요청에 대한 반응 : ', error)
+    }
   }
 
   return (
@@ -30,6 +48,8 @@ const ProposalModal = ({
           onClick={() => {
             sendSuggestion(price)
             setIsProposalModalOpen(false)
+            setIsSuggested(true)
+            suggest()
           }}
         >
           제안하기

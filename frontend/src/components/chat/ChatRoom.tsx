@@ -9,6 +9,7 @@ import { RoomInfoInterface } from './RoomListItem'
 import ModalWithTwoButton from '../ui/ModalWithTwoButton'
 import getTime from '../../utils/getTime'
 import axiosInstance from '../../utils/FetchCall'
+import DealModal from '../point/DealModal'
 
 interface DmMessage {
   roomId: number
@@ -19,31 +20,45 @@ interface DmMessage {
   createdAt: string
 }
 
-const ChatRoom = ({
-  roomInfo,
-}: {
-  roomInfo: RoomInfoInterface | undefined
-}) => {
+const ChatRoom = ({ roomNum }: { roomNum: number | undefined }) => {
   const { IcImgBoxLight } = useIcon()
   const [isProposalModalOpen, setIsProposalModalOpen] = useState(false)
+  const [isDealModalOpen, setIsDealModalOpen] = useState(false)
   const [isExitModalOpen, setIsExitModalOpen] = useState(false)
   const [dmMessageList, setDmMessageList] = useState<DmMessage[]>([])
   const [message, setMessage] = useState('')
   const [stompClientstate, setStompClientstate] = useState<StompJs.Client>()
+  const [roomInfo, setRoomInfo] = useState<RoomInfoInterface>()
+  const [isSuggested, setIsSuggested] = useState(roomInfo?.suggested)
   // 옵저버 관찰 대상
   const observerEl = useRef<HTMLDivElement>(null!)
-
   // 가장 마지막 채팅 Ref
   const lastDmRef = useRef<HTMLInputElement>(null!)
-
-  const nowNickname = '요리사계정1'
+  // 거래 금액 저장
+  const priceRef = useRef(0)
 
   // 로그인 구현시 TOKEN 따로 받아와야 함
+  const nowNickname = '요리사계정1'
   const TOKEN =
     'Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJybGFlaHFAZ21haWwuY29tIiwianRpIjoiMSIsInJvbGVzIjpbIlJPTEVfQ0hFRiJdLCJ0eXBlIjoiQVQiLCJpYXQiOjE3MjkwMzMwMjQsImV4cCI6MTcyOTA3NjIyNH0.H1nMVZGcjlcMwkSmjkSghz3EImVR5quDtwrRhXfSxZmASkDkR4ZHyQn6ZZN5LYWRM4Ent30WSaploceO2mb-Yg'
 
-  console.log(roomInfo)
-  console.log(dmMessageList)
+  useEffect(() => {
+    // 방 정보 새로 가져오기
+    const getRoomInfo = async () => {
+      try {
+        const res = await axiosInstance.get('/dm/room/0/10')
+        if (res.status === 200) {
+          const newRoomInfo = res.data.content.find(
+            (item: RoomInfoInterface) => item.roomId === roomNum
+          )
+          setRoomInfo(newRoomInfo)
+        }
+      } catch (error) {
+        console.log(error)
+      }
+    }
+    getRoomInfo()
+  }, [roomNum, isSuggested])
 
   useEffect(() => {
     // 채팅 환경설정
@@ -52,7 +67,7 @@ const ChatRoom = ({
     setStompClientstate(stompClient)
     stompClient.connect({ Authorization: TOKEN }, () => {
       // 채팅방 번호 설정
-      const roomNum = roomInfo?.dmRoomId
+      const roomNum = roomInfo?.roomId
       stompClient.subscribe(`/sub/message/${roomNum}`, comeMessage => {
         // 새로운 메시지 도착 시 호출될 콜백 함수
         const newMessage = JSON.parse(comeMessage.body)
@@ -66,7 +81,7 @@ const ChatRoom = ({
     const getDmMessage = async () => {
       try {
         const res = await axiosInstance.get(
-          `/dm/message?roomId=${roomInfo?.dmRoomId}&dmId=${lastDmNum}`
+          `/dm/message?roomId=${roomInfo?.roomId}&dmId=${lastDmNum}`
         )
         console.log(res)
 
@@ -111,6 +126,7 @@ const ChatRoom = ({
     }
   }, [roomInfo])
 
+  // 채팅방 입장시 첫 번째 채팅방 선택되어 있게끔 만들기
   useEffect(() => {
     if (dmMessageList.length > 0 && lastDmRef.current) {
       lastDmRef.current.focus()
@@ -119,7 +135,7 @@ const ChatRoom = ({
 
   // 메시지 전송
   const sendMessage = () => {
-    const roomNum = roomInfo?.dmRoomId
+    const roomNum = roomInfo?.roomId
     const newMessage = {
       content: message,
       sender: nowNickname,
@@ -142,7 +158,7 @@ const ChatRoom = ({
 
   // 가격 제안
   const sendSuggestion = (price: number) => {
-    const roomNum = roomInfo?.dmRoomId
+    const roomNum = roomInfo?.roomId
     const newMessage = {
       content: price,
       sender: nowNickname,
@@ -164,7 +180,7 @@ const ChatRoom = ({
   // 채팅방 나가기
   const leaveRoom = async () => {
     try {
-      const res = await axiosInstance.put(`/dm/room/exit/${roomInfo?.dmRoomId}`)
+      const res = await axiosInstance.put(`/dm/room/exit/${roomInfo?.roomId}`)
       if (res.status === 200) {
         console.log(res)
       }
@@ -179,6 +195,30 @@ const ChatRoom = ({
       sendMessage()
     }
   }
+
+  // 거래창 모달 띄우기 및 금액 전달
+  const deal = (price: string) => {
+    priceRef.current = Number(price)
+    setIsDealModalOpen(true)
+  }
+
+  // 거래 제안 취소하기
+  const dealCancel = async () => {
+    try {
+      const res = await axiosInstance.post(
+        `/point/suggest/cancel/${roomInfo?.roomId}`
+      )
+      if (res.status === 200) {
+        setIsSuggested(false)
+        console.log('거래 취소에 대한 응답 : ', res)
+      }
+    } catch (error) {
+      console.log('거래 취소에 대한 에러 : ', error)
+    }
+  }
+
+  console.log('룸 정보 : ', roomInfo)
+  console.log('룸 suggest 정보 : ', isSuggested)
 
   return (
     <S.Container>
@@ -228,6 +268,9 @@ const ChatRoom = ({
                       {item.message}원을 제안하셨습니다.
                     </S.SuggestionTitle>
                     <p>상대방이 수락 혹은 거절할 수 있어요!</p>
+                    <button type="button" onClick={dealCancel}>
+                      취소하기
+                    </button>
                   </S.Suggestion>
                 )}
                 {item.writer !== nowNickname && (
@@ -235,11 +278,15 @@ const ChatRoom = ({
                     <S.SuggestionTitle>
                       {item.message}원을 제안하셨습니다.
                     </S.SuggestionTitle>
-                    <S.SuggestionButton type="button" $isAccept>
-                      수락
-                    </S.SuggestionButton>
                     <S.SuggestionButton type="button" $isAccept={false}>
                       거절
+                    </S.SuggestionButton>
+                    <S.SuggestionButton
+                      type="button"
+                      $isAccept
+                      onClick={() => deal(item.message)}
+                    >
+                      수락
                     </S.SuggestionButton>
                   </S.Suggestion>
                 )}
@@ -267,6 +314,8 @@ const ChatRoom = ({
         <ProposalModal
           setIsProposalModalOpen={setIsProposalModalOpen}
           sendSuggestion={sendSuggestion}
+          roomId={roomInfo?.roomId}
+          setIsSuggested={setIsSuggested}
         />
       )}
       {isExitModalOpen && (
@@ -277,6 +326,12 @@ const ChatRoom = ({
             leaveRoom()
             setIsExitModalOpen(false)
           }}
+        />
+      )}
+      {isDealModalOpen && (
+        <DealModal
+          price={priceRef.current}
+          setIsDealModalOpen={setIsDealModalOpen}
         />
       )}
     </S.Container>
