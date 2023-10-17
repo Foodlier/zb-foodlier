@@ -348,12 +348,13 @@ public class RecipeServiceImpl implements RecipeService {
         Member member = memberRepository.findById(memberAuthDto.getId())
                 .orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
 
-        return recipeRepository.findTop3ByIsPublicOrderByCreatedAtDesc(false)
+        return recipeRepository.findTop3ByIsPublicIsTrueOrderByCreatedAtDesc()
                 .stream()
                 .map(r -> RecipeCardDto.builder()
                         .id(r.getId())
                         .nickName(r.getMember().getNickname())
                         .title(r.getSummary().getTitle())
+                        .mainImageUrl(r.getMainImageUrl())
                         .content(r.getSummary().getContent())
                         .heartCount(r.getHeartCount())
                         .isHeart(heartRepository.existsByRecipeAndMember(r, member))
@@ -413,6 +414,7 @@ public class RecipeServiceImpl implements RecipeService {
                                 .map(r -> RecipeCardDto.builder()
                                         .id(r.getId())
                                         .nickName(r.getMember().getNickname())
+                                        .mainImageUrl(r.getMainImageUrl())
                                         .title(r.getSummary().getTitle())
                                         .content(r.getSummary().getContent())
                                         .heartCount(r.getHeartCount())
@@ -432,13 +434,14 @@ public class RecipeServiceImpl implements RecipeService {
         Member member = memberRepository.findById(memberAuthDto.getId())
                 .orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
 
-        return recipeRepository.findTop5ByIsPublicAndCreatedAtAfterOrderByHeartCountDesc(
-                        false, LocalDate.now().atStartOfDay())
+        return recipeRepository.findTop5ByIsPublicIsTrueAndCreatedAtAfterOrderByHeartCountDesc(
+                        LocalDate.now().atStartOfDay())
                 .stream()
                 .map(r -> RecipeCardDto.builder()
                         .id(r.getId())
                         .nickName(r.getMember().getNickname())
                         .title(r.getSummary().getTitle())
+                        .mainImageUrl(r.getMainImageUrl())
                         .content(r.getSummary().getContent())
                         .heartCount(r.getHeartCount())
                         .isHeart(heartRepository.existsByRecipeAndMember(r, member))
