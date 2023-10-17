@@ -222,7 +222,7 @@ public class RequestServiceImpl implements RequestService {
         if(Objects.equals(member.getId(), chefMember.getMember().getId())){
             throw new RequestException(CANNOT_REQUEST_TO_ME);
         }
-        if(requestRepository.existsByMemberAndChefMemberAndIsPaidFalse(
+        if(requestRepository.existsByMemberAndChefMemberAndIsFinishedFalse(
                 member, chefMember
         )){
             throw new RequestException(ALREADY_REQUESTED_CHEF);

@@ -60,8 +60,8 @@ public class DmRoomServiceImpl implements DmRoomService {
     }
 
     /**
-     * 작성자 : 황태원
-     * 작성일 : 2023-10-02(2023-10-09)
+     * 작성자 : 황태원 (전현서)
+     * 작성일 : 2023-10-02 (2023-10-14)
      * 해당 채팅방에서 나갑니다.
      */
     @Override
@@ -75,11 +75,15 @@ public class DmRoomServiceImpl implements DmRoomService {
             dmRoom.updateChefExit();
         }
 
+        Request request = dmRoom.getRequest();
+
         if (dmRoom.isMemberExit() && dmRoom.isChefExit()) {
-            Request request = dmRoom.getRequest();
             request.exitDmRoom();
-            requestRepository.save(request);
         }
+
+        request.enableFinishState();
+
+        requestRepository.save(request);
         dmRoomRepository.save(dmRoom);
     }
 }

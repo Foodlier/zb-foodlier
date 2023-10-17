@@ -12,19 +12,19 @@ import lombok.NoArgsConstructor;
 public class AroundChefDto {
 
     //chefMember
-    Long chefId;
-    String introduce;
-    Double starAvg;
-    Integer reviewCount;
+    private Long chefId;
+    private String introduce;
+    private Double starAvg;
+    private Integer reviewCount;
 
     //member
-    String profileUrl;
-    String nickname;
-    Double lat;
-    Double lnt;
+    private String profileUrl;
+    private String nickname;
+    private Double lat;
+    private Double lnt;
 
     //etc
-    Double distance;
-    Long recipeCount;
+    private Double distance;
+    private Long recipeCount;
 
 }

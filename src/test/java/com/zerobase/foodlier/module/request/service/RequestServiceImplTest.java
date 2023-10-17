@@ -478,7 +478,7 @@ class RequestServiceImplTest {
             given(chefMemberRepository.findById(anyLong()))
                     .willReturn(Optional.of(chefMember));
 
-            given(requestRepository.existsByMemberAndChefMemberAndIsPaidFalse(requester, chefMember))
+            given(requestRepository.existsByMemberAndChefMemberAndIsFinishedFalse(requester, chefMember))
                     .willReturn(true);
 
             //when

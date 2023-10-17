@@ -60,4 +60,11 @@ public class Request extends Audit {
     public void exitDmRoom() {
         this.dmRoom = null;
     }
+
+    @Column(nullable = false)
+    private boolean isFinished;
+
+    public void enableFinishState(){
+        this.isFinished = true;
+    }
 }

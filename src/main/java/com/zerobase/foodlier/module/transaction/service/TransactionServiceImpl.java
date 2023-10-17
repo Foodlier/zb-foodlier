@@ -72,8 +72,8 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     /**
-     * 작성자 : 이승현
-     * 작성일 : 2023-10-04
+     * 작성자 : 이승현 (전현서)
+     * 작성일 : 2023-10-04 (2023-10-14)
      * 요청자가 제안을 수락합니다.
      */
     @Override
@@ -92,6 +92,7 @@ public class TransactionServiceImpl implements TransactionService {
         dmRoom.getRequest().getChefMember().getMember().transaction(suggestedPrice);
         dmRoom.getSuggestion().setIsAccept(true);
         dmRoom.getRequest().setPaid(true);
+        dmRoom.getRequest().setFinished(true);
         dmRoomRepository.save(dmRoom);
 
         return TransactionDto.builder()
