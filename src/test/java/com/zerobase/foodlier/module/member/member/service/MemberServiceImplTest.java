@@ -1,17 +1,23 @@
 package com.zerobase.foodlier.module.member.member.service;
 
+import com.zerobase.foodlier.common.response.ListResponse;
+import com.zerobase.foodlier.common.security.exception.JwtException;
 import com.zerobase.foodlier.common.security.provider.JwtTokenProvider;
+import com.zerobase.foodlier.common.security.provider.dto.MemberAuthDto;
 import com.zerobase.foodlier.common.security.provider.dto.TokenDto;
+import com.zerobase.foodlier.module.member.chef.domain.model.ChefMember;
 import com.zerobase.foodlier.module.member.member.domain.model.Member;
 import com.zerobase.foodlier.module.member.member.domain.vo.Address;
-import com.zerobase.foodlier.module.member.member.dto.MemberRegisterDto;
-import com.zerobase.foodlier.module.member.member.dto.SignInForm;
+import com.zerobase.foodlier.module.member.member.dto.*;
 import com.zerobase.foodlier.module.member.member.exception.MemberException;
 import com.zerobase.foodlier.module.member.member.profile.dto.MemberPrivateProfileResponse;
 import com.zerobase.foodlier.module.member.member.profile.dto.MemberUpdateDto;
+import com.zerobase.foodlier.module.member.member.profile.dto.PasswordChangeForm;
 import com.zerobase.foodlier.module.member.member.repository.MemberRepository;
 import com.zerobase.foodlier.module.member.member.type.RegistrationType;
+import com.zerobase.foodlier.module.member.member.type.RequestedOrderingType;
 import com.zerobase.foodlier.module.member.member.type.RoleType;
+import io.jsonwebtoken.MalformedJwtException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -20,17 +26,18 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
+import static com.zerobase.foodlier.common.security.exception.JwtErrorCode.MALFORMED_JWT_REQUEST;
+import static com.zerobase.foodlier.common.security.exception.JwtErrorCode.REFRESH_TOKEN_NOT_FOUND;
 import static com.zerobase.foodlier.module.member.member.exception.MemberErrorCode.*;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -211,8 +218,7 @@ class MemberServiceImplTest {
         TokenDto tokenDto = memberService.signIn(SignInForm.builder()
                 .email("test@test.com")
                 .password("password")
-                .currentDate(LocalDateTime.now())
-                .build());
+                .build(), new Date());
 
         //then
         assertAll(
@@ -235,8 +241,7 @@ class MemberServiceImplTest {
                 () -> memberService.signIn(SignInForm.builder()
                         .email("test2@test.com")
                         .password("password")
-                        .currentDate(LocalDateTime.now())
-                        .build()));
+                        .build(), new Date()));
 
 
         //then
@@ -273,8 +278,7 @@ class MemberServiceImplTest {
                 () -> memberService.signIn(SignInForm.builder()
                         .email("test@test.com")
                         .password("password1")
-                        .currentDate(LocalDateTime.now())
-                        .build()));
+                        .build(), new Date()));
 
         //then
         assertEquals(MEMBER_NOT_FOUND, passwordWrong.getErrorCode());
@@ -303,6 +307,7 @@ class MemberServiceImplTest {
                 .willReturn(Optional.ofNullable(Member.builder()
                         .nickname("test")
                         .email("test@test.com")
+                        .point(1000)
                         .password(password)
                         .phoneNumber("010-1234-5678")
                         .profileUrl("/image/default.png")
@@ -326,6 +331,10 @@ class MemberServiceImplTest {
         assertAll(
                 () -> assertEquals("test",
                         privateProfile.getNickName()),
+                () -> assertEquals(1000,
+                        privateProfile.getPoint()),
+                () -> assertEquals(false,
+                        privateProfile.getIsChef()),
                 () -> assertEquals("test@test.com",
                         privateProfile.getEmail()),
                 () -> assertEquals("010-1234-5678",
@@ -488,4 +497,495 @@ class MemberServiceImplTest {
         assertEquals(PHONE_NUMBER_IS_ALREADY_EXIST,
                 memberException.getErrorCode());
     }
+
+    @Test
+    @DisplayName("주변 요청자 조회 성공 - 가까운 거리순 정렬")
+    void success_getRequestedMemberList_order_by_distance() {
+        //given
+        ChefMember chefMember = ChefMember.builder().build();
+        given(memberRepository.findById(anyLong()))
+                .willReturn(Optional.of(Member.builder()
+                        .id(3L)
+                        .chefMember(chefMember)
+                        .address(Address.builder()
+                                .lat(37.5)
+                                .lnt(127.5)
+                                .build())
+                        .build()));
+
+        RequestedMemberDto memberOne = getMemberDtoOne();
+        RequestedMemberDto memberTwo = getMemberDtoTwo();
+
+        given(memberRepository.getRequestedMemberListOrderByType(
+                any(), anyDouble(), anyDouble(), any(), any()
+        )).willReturn(
+                new PageImpl<>(
+                        new ArrayList<>(
+                                Arrays.asList(
+                                        memberTwo,
+                                        memberOne
+                                )
+                        )
+                )
+        );
+
+        //when
+        ListResponse<RequestedMemberDto> responseList = memberService
+                .getRequestedMemberList(3L,
+                        RequestedOrderingType.DISTANCE, PageRequest.of(0, 10));
+
+        //then
+        assertAll(
+                () -> assertEquals(memberTwo.getMemberId(), responseList.getContent().get(0).getMemberId()),
+                () -> assertEquals(memberTwo.getProfileUrl(), responseList.getContent().get(0).getProfileUrl()),
+                () -> assertEquals(memberTwo.getNickname(), responseList.getContent().get(0).getNickname()),
+                () -> assertEquals(memberTwo.getDistance(), responseList.getContent().get(0).getDistance()),
+                () -> assertEquals(memberTwo.getLat(), responseList.getContent().get(0).getLat()),
+                () -> assertEquals(memberTwo.getLnt(), responseList.getContent().get(0).getLnt()),
+                () -> assertEquals(memberTwo.getRequestId(), responseList.getContent().get(0).getRequestId()),
+                () -> assertEquals(memberTwo.getTitle(), responseList.getContent().get(0).getTitle()),
+                () -> assertEquals(memberTwo.getContent(), responseList.getContent().get(0).getContent()),
+                () -> assertEquals(memberTwo.getMainImageUrl(), responseList.getContent().get(0).getMainImageUrl()),
+
+                () -> assertEquals(memberOne.getMemberId(), responseList.getContent().get(1).getMemberId()),
+                () -> assertEquals(memberOne.getProfileUrl(), responseList.getContent().get(1).getProfileUrl()),
+                () -> assertEquals(memberOne.getNickname(), responseList.getContent().get(1).getNickname()),
+                () -> assertEquals(memberOne.getDistance(), responseList.getContent().get(1).getDistance()),
+                () -> assertEquals(memberOne.getLat(), responseList.getContent().get(1).getLat()),
+                () -> assertEquals(memberOne.getLnt(), responseList.getContent().get(1).getLnt()),
+                () -> assertEquals(memberOne.getRequestId(), responseList.getContent().get(1).getRequestId()),
+                () -> assertEquals(memberOne.getTitle(), responseList.getContent().get(1).getTitle()),
+                () -> assertEquals(memberOne.getContent(), responseList.getContent().get(1).getContent()),
+                () -> assertEquals(memberOne.getMainImageUrl(), responseList.getContent().get(1).getMainImageUrl())
+        );
+    }
+
+    @Test
+    @DisplayName("주변 요청자 조회 성공 - 적은 희망가격순 정렬")
+    void success_getRequestedMemberList_order_by_expected_price() {
+        //given
+        ChefMember chefMember = ChefMember.builder().build();
+        given(memberRepository.findById(anyLong()))
+                .willReturn(Optional.of(Member.builder()
+                        .id(3L)
+                        .chefMember(chefMember)
+                        .address(Address.builder()
+                                .lat(37.5)
+                                .lnt(127.5)
+                                .build())
+                        .build()));
+
+        RequestedMemberDto memberOne = getMemberDtoOne();
+        RequestedMemberDto memberTwo = getMemberDtoTwo();
+
+        given(memberRepository.getRequestedMemberListOrderByType(
+                any(), anyDouble(), anyDouble(), any(), any()
+        )).willReturn(
+                new PageImpl<>(
+                        new ArrayList<>(
+                                Arrays.asList(
+                                        memberOne,
+                                        memberTwo
+                                )
+                        )
+                )
+        );
+
+        //when
+        ListResponse<RequestedMemberDto> responseList = memberService
+                .getRequestedMemberList(3L,
+                        RequestedOrderingType.PRICE, PageRequest.of(0, 10));
+
+        //then
+        assertAll(
+                () -> assertEquals(memberOne.getMemberId(), responseList.getContent().get(0).getMemberId()),
+                () -> assertEquals(memberOne.getProfileUrl(), responseList.getContent().get(0).getProfileUrl()),
+                () -> assertEquals(memberOne.getNickname(), responseList.getContent().get(0).getNickname()),
+                () -> assertEquals(memberOne.getDistance(), responseList.getContent().get(0).getDistance()),
+                () -> assertEquals(memberOne.getLat(), responseList.getContent().get(0).getLat()),
+                () -> assertEquals(memberOne.getLnt(), responseList.getContent().get(0).getLnt()),
+                () -> assertEquals(memberOne.getRequestId(), responseList.getContent().get(0).getRequestId()),
+                () -> assertEquals(memberOne.getTitle(), responseList.getContent().get(0).getTitle()),
+                () -> assertEquals(memberTwo.getContent(), responseList.getContent().get(0).getContent()),
+                () -> assertEquals(memberOne.getMainImageUrl(), responseList.getContent().get(0).getMainImageUrl()),
+
+                () -> assertEquals(memberTwo.getMemberId(), responseList.getContent().get(1).getMemberId()),
+                () -> assertEquals(memberTwo.getProfileUrl(), responseList.getContent().get(1).getProfileUrl()),
+                () -> assertEquals(memberTwo.getNickname(), responseList.getContent().get(1).getNickname()),
+                () -> assertEquals(memberTwo.getDistance(), responseList.getContent().get(1).getDistance()),
+                () -> assertEquals(memberTwo.getLat(), responseList.getContent().get(1).getLat()),
+                () -> assertEquals(memberTwo.getLnt(), responseList.getContent().get(1).getLnt()),
+                () -> assertEquals(memberTwo.getRequestId(), responseList.getContent().get(1).getRequestId()),
+                () -> assertEquals(memberTwo.getTitle(), responseList.getContent().get(1).getTitle()),
+                () -> assertEquals(memberOne.getContent(), responseList.getContent().get(1).getContent()),
+                () -> assertEquals(memberTwo.getMainImageUrl(), responseList.getContent().get(1).getMainImageUrl())
+        );
+    }
+
+    @Test
+    @DisplayName("주변 요청자 조회 실패 - 회원 X")
+    void fail_getRequestedMemberList_member_not_found() {
+        //given
+        given(memberRepository.findById(anyLong()))
+                .willReturn(Optional.empty());
+
+        //when
+        MemberException exception = assertThrows(MemberException.class,
+                () -> memberService
+                        .getRequestedMemberList(3L,
+                                RequestedOrderingType.PRICE,
+                                PageRequest.of(0, 10)));
+        //then
+        assertEquals(MEMBER_NOT_FOUND, exception.getErrorCode());
+    }
+
+    @Test
+    @DisplayName("주변 요청자 조회 실패 - 요리사가 아님")
+    void fail_getRequestedMemberList_member_is_not_chef() {
+        //given
+        given(memberRepository.findById(anyLong()))
+                .willReturn(Optional.of(Member.builder()
+                        .id(3L)
+                        .address(Address.builder()
+                                .lat(37.5)
+                                .lnt(127.5)
+                                .build())
+                        .build()));
+
+        //when
+        MemberException exception = assertThrows(MemberException.class,
+                () -> memberService
+                        .getRequestedMemberList(3L,
+                                RequestedOrderingType.PRICE,
+                                PageRequest.of(0, 10)));
+        //then
+        assertEquals(MEMBER_IS_NOT_CHEF, exception.getErrorCode());
+    }
+
+    // 테스트에 사용될 객체 정의
+    private RequestedMemberDto getMemberDtoOne() {
+        return RequestedMemberDto.builder()
+                .memberId(1L)
+                .profileUrl("https://s3.test.com/image1.png")
+                .nickname("person1")
+                .distance(0.5)
+                .lat(37.1)
+                .lnt(127.1)
+                .requestId(1L)
+                .expectedPrice(12000L)
+                .title("살려주세요")
+                .content("야호")
+                .mainImageUrl("https://s3.test.com/main1.png")
+                .build();
+    }
+
+    private RequestedMemberDto getMemberDtoTwo() {
+        return RequestedMemberDto.builder()
+                .memberId(2L)
+                .profileUrl("https://s3.test.com/image2.png")
+                .nickname("person2")
+                .distance(0.1)
+                .lat(37.2)
+                .lnt(127.2)
+                .requestId(2L)
+                .expectedPrice(30000L)
+                .title("살려주세요?")
+                .content("야호")
+                .mainImageUrl("https://s3.test.com/main2.png")
+                .build();
+    }
+
+
+    @Test
+    @DisplayName("비밀번호 변경 성공")
+    void success_updatePassword() {
+        //given
+        given(memberRepository.findById(anyLong()))
+                .willReturn(Optional.ofNullable(Member.builder()
+                        .id(1L)
+                        .email("test@test.com")
+                        .password(passwordEncoder.encode("1"))
+                        .build()));
+
+        ArgumentCaptor<Member> captor = ArgumentCaptor.forClass(Member.class);
+
+        //when
+        memberService.updatePassword(MemberAuthDto.builder()
+                .id(1L)
+                .email("test@test.com")
+                .build(), PasswordChangeForm.builder()
+                .currentPassword("1")
+                .newPassword("123")
+                .build());
+
+        //then
+        verify(tokenProvider, times(1))
+                .deleteRefreshToken("test@test.com");
+        verify(memberRepository, times(1))
+                .save(captor.capture());
+
+        assertTrue(passwordEncoder
+                .matches("123", captor.getValue().getPassword()));
+    }
+
+    @Test
+    @DisplayName("비밀번호 변경 실패 - 회원을 찾을 수 없음")
+    void fail_updatePassword_memberNotFound() {
+        //given
+        given(memberRepository.findById(anyLong()))
+                .willReturn(Optional.empty());
+
+        //when
+        MemberException memberException = assertThrows(MemberException.class,
+                () -> memberService.updatePassword(MemberAuthDto.builder()
+                        .id(1L)
+                        .email("test@test.com")
+                        .build(), PasswordChangeForm.builder()
+                        .currentPassword("1")
+                        .newPassword("123")
+                        .build()));
+
+        //then
+        assertEquals(MEMBER_NOT_FOUND, memberException.getErrorCode());
+    }
+
+    @Test
+    @DisplayName("비밀번호 재설정 성공")
+    void success_updateRandomPassword() {
+        //given
+        given(memberRepository.findByEmail(anyString()))
+                .willReturn(Optional.ofNullable(Member.builder()
+                        .id(1L)
+                        .email("test@test.com")
+                        .phoneNumber("01012345678")
+                        .build()));
+
+        ArgumentCaptor<Member> captor = ArgumentCaptor.forClass(Member.class);
+
+        //when
+        memberService.updateRandomPassword(PasswordFindForm.builder()
+                .email("test@test.com")
+                .phoneNumber("01012345678")
+                .build(), "newPassword");
+
+        //then
+        verify(memberRepository, times(1))
+                .save(captor.capture());
+
+        assertTrue(passwordEncoder.matches("newPassword",
+                captor.getValue().getPassword()));
+    }
+
+    @Test
+    @DisplayName("비밀번호 재설정 실패 - 회원을 찾을 수 없음")
+    void fail_updateRandomPassword_memberNotFound() {
+        //given
+        given(memberRepository.findByEmail(anyString()))
+                .willReturn(Optional.empty());
+
+        //when
+        MemberException memberException = assertThrows(MemberException.class,
+                () -> memberService.updateRandomPassword(PasswordFindForm.builder()
+                        .email("test@test.com")
+                        .phoneNumber("01012345678")
+                        .build(), "newPassword"));
+
+        //then
+        assertEquals(MEMBER_NOT_FOUND, memberException.getErrorCode());
+    }
+
+    @Test
+    @DisplayName("회원 탈퇴 성공")
+    void success_withdraw() {
+        //given
+        Member member = Member.builder()
+                .id(1L)
+                .nickname("test")
+                .phoneNumber("01012345678")
+                .email("test@test.com")
+                .isDeleted(false)
+                .build();
+        String delPreFix = "DEL";
+
+        given(memberRepository.findById(anyLong()))
+                .willReturn(Optional.ofNullable(member));
+
+        ArgumentCaptor<Member> captor = ArgumentCaptor.forClass(Member.class);
+
+        //when
+        memberService.withdraw(MemberAuthDto.builder()
+                .id(1L)
+                .email("test@test.com")
+                .build());
+
+        //then
+        verify(memberRepository, times(1))
+                .save(captor.capture());
+        verify(tokenProvider, times(1))
+                .deleteRefreshToken(Objects.requireNonNull(member).getEmail());
+
+        Member value = captor.getValue();
+        assertAll(
+                () -> assertEquals(1L, value.getId()),
+                () -> assertTrue(value.getEmail().startsWith(delPreFix)),
+                () -> assertTrue(value.getNickname().startsWith(delPreFix)),
+                () -> assertTrue(value.getPhoneNumber().startsWith(delPreFix)),
+                () -> assertTrue(value.isDeleted())
+        );
+    }
+
+    @Test
+    @DisplayName("회원 탈퇴 실패 - 회원을 찾을 수 없음")
+    void fail_withdraw_memberNotFound() {
+        //given
+        given(memberRepository.findById(anyLong()))
+                .willReturn(Optional.empty());
+
+        //when
+        MemberException memberException = assertThrows(MemberException.class,
+                () -> memberService.withdraw(MemberAuthDto.builder()
+                        .id(1L)
+                        .email("test@test.com")
+                        .build()));
+
+        //then
+        assertEquals(MEMBER_NOT_FOUND, memberException.getErrorCode());
+    }
+
+    @Test
+    @DisplayName("접속 토큰 재발급 성공")
+    void success_reissue() {
+
+        // given
+
+        Member member = Member.builder()
+                .id(1L)
+                .email("test@gmail.com")
+                .roles(List.of(RoleType.ROLE_USER.toString()))
+                .build();
+        String expectedAccessToken = "expectedAccessToken";
+        String refreshToken = "refreshToken";
+        given(tokenProvider.getEmail(anyString()))
+                .willReturn(member.getEmail());
+        given(memberRepository.findByEmail(anyString()))
+                .willReturn(Optional.of(member));
+        given(tokenProvider.reissue(anyString(), any(), any()))
+                .willReturn(expectedAccessToken);
+        // when
+        String reissuedAccessToken = memberService.reissue(refreshToken);
+
+        // then
+        verify(tokenProvider, times(1)).getEmail(anyString());
+        verify(memberRepository, times(1)).findByEmail(anyString());
+        verify(tokenProvider, times(1)).reissue(anyString(), any(), any());
+        assertEquals(reissuedAccessToken, expectedAccessToken);
+    }
+
+    @Test
+    @DisplayName("접속 토큰 재발급 실패 - 올바르지 않은 토큰인 경우")
+    void fail_reissue_invalid_token() {
+
+        // given
+
+        String refreshToken = "refreshToken";
+        given(tokenProvider.getEmail(anyString()))
+                .willThrow(new MalformedJwtException(MALFORMED_JWT_REQUEST.getDescription()));
+
+        // when
+        MalformedJwtException malformedJwtException = assertThrows(MalformedJwtException.class,
+                () -> memberService.reissue(refreshToken));
+
+        // then
+        verify(tokenProvider, times(1)).getEmail(anyString());
+        assertEquals(malformedJwtException.getMessage(), MALFORMED_JWT_REQUEST.getDescription());
+    }
+
+    @Test
+    @DisplayName("접속 토큰 재발급 실패 - 존재하지 않는 회원인 경우")
+    void fail_reissue_no_such_member() {
+
+        // given
+
+        String refreshToken = "refreshToken";
+        given(tokenProvider.getEmail(anyString()))
+                .willReturn("test@gmail.com");
+        given(memberRepository.findByEmail(anyString()))
+                .willThrow(new MemberException(MEMBER_NOT_FOUND));
+        // when
+        MemberException memberException = assertThrows(MemberException.class,
+                () -> memberService.reissue(refreshToken));
+
+        // then
+        verify(tokenProvider, times(1)).getEmail(anyString());
+        verify(memberRepository, times(1)).findByEmail(anyString());
+        assertEquals(memberException.getErrorCode(), MEMBER_NOT_FOUND);
+        assertEquals(memberException.getDescription(), MEMBER_NOT_FOUND.getDescription());
+    }
+
+    @Test
+    @DisplayName("접속 토큰 재발급 실패 - 재발급 토큰이 redis 저장소에 존재하지 않는 경우")
+    void fail_reissue_refresh_token_not_found() {
+
+        // given
+
+        Member member = Member.builder()
+                .id(1L)
+                .email("test@gmail.com")
+                .roles(List.of(RoleType.ROLE_USER.toString()))
+                .build();
+
+        String refreshToken = "refreshToken";
+        given(tokenProvider.getEmail(anyString()))
+                .willReturn(member.getEmail());
+        given(memberRepository.findByEmail(anyString()))
+                .willReturn(Optional.of(member));
+        given(tokenProvider.reissue(anyString(), any(), any()))
+                .willThrow(new JwtException(REFRESH_TOKEN_NOT_FOUND));
+
+        // when
+        JwtException jwtException = assertThrows(JwtException.class,
+                () -> memberService.reissue(refreshToken));
+
+        // then
+        verify(tokenProvider, times(1)).getEmail(anyString());
+        verify(memberRepository, times(1)).findByEmail(anyString());
+        verify(tokenProvider, times(1)).reissue(anyString(), any(), any());
+        assertEquals(jwtException.getErrorCode(), REFRESH_TOKEN_NOT_FOUND);
+        assertEquals(jwtException.getDescription(), REFRESH_TOKEN_NOT_FOUND.getDescription());
+    }
+
+    @Test
+    @DisplayName("기본 공개 프로필 가져오기 성공")
+    void success_getDefaultProfile() {
+
+        //given
+        DefaultProfileDtoResponse defaultProfileDtoResponse =
+                DefaultProfileDtoResponse.builder()
+                        .memberId(1L)
+                        .nickname("요리의신")
+                        .profileUrl("http://s3.test.com")
+                        .receivedHeart(300)
+                        .isChef(true)
+                        .chefMemberId(1L)
+                        .build();
+
+        given(memberRepository.getDefaultProfile(anyLong()))
+                .willReturn(defaultProfileDtoResponse);
+
+        //when
+        DefaultProfileDtoResponse response = memberService.getDefaultProfile(1L);
+
+        //then
+        assertAll(
+                () -> assertEquals(defaultProfileDtoResponse.getMemberId(), response.getMemberId()),
+                () -> assertEquals(defaultProfileDtoResponse.getNickname(), response.getNickname()),
+                () -> assertEquals(defaultProfileDtoResponse.getProfileUrl(), response.getProfileUrl()),
+                () -> assertEquals(defaultProfileDtoResponse.getReceivedHeart(), response.getReceivedHeart()),
+                () -> assertEquals(defaultProfileDtoResponse.getIsChef(), response.getIsChef()),
+                () -> assertEquals(defaultProfileDtoResponse.getChefMemberId(), response.getChefMemberId())
+        );
+
+    }
+
+
 }

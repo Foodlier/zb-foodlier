@@ -1,5 +1,6 @@
 package com.zerobase.foodlier.module.requestform.service;
 
+import com.zerobase.foodlier.common.response.ListResponse;
 import com.zerobase.foodlier.module.member.member.domain.model.Member;
 import com.zerobase.foodlier.module.member.member.exception.MemberException;
 import com.zerobase.foodlier.module.member.member.repository.MemberRepository;
@@ -78,14 +79,17 @@ public class RequestFormServiceImpl implements RequestFormService {
      * 작성한 요청서 반환
      */
     @Override
-    public Page<RequestFormResponseDto> getMyRequestForm(
+    public ListResponse<RequestFormResponseDto> getMyRequestForm(
             Long id, int pageIdx, int pageSize) {
         PageRequest pageRequest = PageRequest.of(pageIdx, pageSize);
         Member member = memberRepository.findById(id)
                 .orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
         Page<RequestForm> requestFormPage = requestFormRepository
                 .findAllByMemberOrderByCreatedAtDesc(member, pageRequest);
-        return requestFormPage.map(RequestFormResponseDto::fromEntity);
+        return ListResponse.from(
+                requestFormPage,
+                RequestFormResponseDto::fromEntity
+        );
     }
 
     /**
@@ -122,7 +126,7 @@ public class RequestFormServiceImpl implements RequestFormService {
     }
 
     /**
-     * 작성일 : 2023-09-29
+     * 작성일 : 2023-09-29(2023-10-15)
      * 작성자 : 황태원
      * 요청서 업데이트, 태그된 레시피 또한 업데이트, 변경 시 권한 검증
      */
@@ -144,17 +148,12 @@ public class RequestFormServiceImpl implements RequestFormService {
                 .orElseThrow(() -> new RequestFormException(REQUEST_FORM_NOT_FOUND));
         checkPermission(id, requestForm.getMember().getId());
 
-        requestForm.setTitle(requestFormDto.getTitle());
-        requestForm.setContent(requestFormDto.getContent());
-        requestForm.setExpectedPrice(requestFormDto.getExpectedPrice());
-        requestForm.setExpectedAt(requestFormDto.getExpectedAt());
-        requestForm.setIngredientList(requestFormDto.getIngredientList()
-                .stream()
-                .map(ingredient -> Ingredient.builder()
-                        .ingredientName(ingredient)
-                        .build())
-                .collect(Collectors.toList()));
-        requestForm.setRecipe(recipe);
+        requestForm.updateTitle(requestFormDto.getTitle());
+        requestForm.updateContent(requestFormDto.getContent());
+        requestForm.updateExpectedPrice(requestFormDto.getExpectedPrice());
+        requestForm.updateExpectedAt(requestFormDto.getExpectedAt());
+        requestForm.updateIngredientList(requestFormDto.getIngredientList());
+        requestForm.updateRecipe(recipe);
 
         requestFormRepository.save(requestForm);
     }

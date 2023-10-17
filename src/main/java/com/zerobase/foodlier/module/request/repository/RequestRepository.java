@@ -12,7 +12,7 @@ public interface RequestRepository extends JpaRepository<Request, Long> {
 
 
     /**
-     *  Member가 ChefMember에게 요청한 이력이 있는지 확인함.
+     * Member가 ChefMember에게 요청한 이력이 있는지 확인함.
      */
     boolean existsByMemberAndChefMemberAndIsPaidFalse(
             Member member, ChefMember chefMember
@@ -20,5 +20,5 @@ public interface RequestRepository extends JpaRepository<Request, Long> {
 
     boolean existsByRecipe(Recipe recipe);
 
-    Optional<Request> findByMemberAndChefMember(Member member,ChefMember chefMember);
+    Optional<Request> findByIdAndMember(Long requestId, Member member);
 }

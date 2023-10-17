@@ -1,5 +1,5 @@
 import * as S from '../../styles/search/MoSearch.styled'
-import SearchBar, { SearchResult } from './SearchBar' // 올바른 경로로 가져오기
+import SearchBar, { SearchResult } from './SearchBar'
 import useIcon from '../../hooks/useIcon'
 import { palette } from '../../constants/Styles'
 

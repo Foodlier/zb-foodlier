@@ -5,11 +5,14 @@ import com.zerobase.foodlier.module.member.chef.domain.model.ChefMember;
 import com.zerobase.foodlier.module.member.chef.exception.ChefMemberException;
 import com.zerobase.foodlier.module.member.chef.repository.ChefMemberRepository;
 import com.zerobase.foodlier.module.member.member.domain.model.Member;
+import com.zerobase.foodlier.module.member.member.domain.vo.Address;
 import com.zerobase.foodlier.module.member.member.exception.MemberException;
 import com.zerobase.foodlier.module.member.member.repository.MemberRepository;
 import com.zerobase.foodlier.module.recipe.domain.model.Recipe;
+import com.zerobase.foodlier.module.recipe.domain.vo.Summary;
 import com.zerobase.foodlier.module.request.domain.model.Request;
 import com.zerobase.foodlier.module.request.domain.vo.Ingredient;
+import com.zerobase.foodlier.module.request.dto.RequestDetailDto;
 import com.zerobase.foodlier.module.request.exception.RequestException;
 import com.zerobase.foodlier.module.request.repository.RequestRepository;
 import com.zerobase.foodlier.module.requestform.domain.model.RequestForm;
@@ -61,7 +64,8 @@ class RequestServiceImplTest {
             //given
             DmRoom dmRoom = DmRoom.builder()
                     .id(1L)
-                    .isExist(false)
+                    .isChefExit(false)
+                    .isMemberExit(false)
                     .build();
 
             Request request = Request.builder()
@@ -77,6 +81,178 @@ class RequestServiceImplTest {
             verify(requestRepository, times(1)).save(captor.capture());
 
             assertEquals(dmRoom, captor.getValue().getDmRoom());
+
+        }
+
+    }
+
+    @Nested
+    @DisplayName("getRequestDetail() 테스트")
+    class getRequestDetailTest{
+
+        @Test
+        @DisplayName("요청 상세 조회 성공")
+        void success_getRequestDetail(){
+            //given
+            Member requester = Member.builder()
+                    .id(1L)
+                    .nickname("요청자")
+                    .address(
+                            Address.builder()
+                                    .roadAddress("주소")
+                                    .addressDetail("상세 주소")
+                                    .build()
+                    )
+                    .build();
+
+            Member chef = Member.builder()
+                    .id(2L)
+                    .build();
+
+            ChefMember chefMember = ChefMember.builder()
+                    .id(1L)
+                    .build();
+
+            chef.setChefMember(chefMember);
+            chefMember.setMember(chef);
+
+            Recipe recipe = Recipe.builder()
+                    .id(1L)
+                    .mainImageUrl("https://s3.test.com/image1.png")
+                    .summary(
+                            Summary.builder()
+                                    .title("제육볶음")
+                                    .content("제육볶음 이렇게 만들어보세요!")
+                                    .build()
+                    )
+                    .heartCount(100)
+                    .build();
+
+            Request request = Request.builder()
+                    .id(1L)
+                    .member(requester)
+                    .chefMember(chefMember)
+                    .title("요청합니다")
+                    .content("요청합니다 요리사님")
+                    .ingredientList(List.of(Ingredient.builder()
+                            .ingredientName("삼겹살").build()))
+                    .expectedPrice(10000L)
+                    .expectedAt(LocalDateTime.now())
+                    .recipe(
+                            recipe
+                    )
+                    .build();
+
+            given(requestRepository.findById(anyLong()))
+                    .willReturn(Optional.of(request));
+
+            given(memberRepository.findById(anyLong()))
+                    .willReturn(Optional.of(chef));
+
+            //when
+            RequestDetailDto response = requestService.getRequestDetail(1L, 1L);
+
+            //then
+            assertAll(
+                    () -> assertEquals(request.getId(), response.getRequestId()),
+                    () -> assertEquals(requester.getNickname(), response.getRequesterNickname()),
+                    () -> assertEquals(request.getTitle(), response.getTitle()),
+                    () -> assertEquals(request.getContent(), response.getContent()),
+                    () -> assertEquals(request.getIngredientList().get(0).getIngredientName(),
+                            response.getIngredientList().get(0)),
+                    () -> assertEquals(request.getExpectedPrice(), response.getExpectedPrice()),
+                    () -> assertEquals(request.getExpectedAt(), response.getExpectedAt()),
+                    () -> assertEquals(requester.getAddress().getRoadAddress(), response.getAddress()),
+                    () -> assertEquals(requester.getAddress().getAddressDetail(), response.getAddressDetail()),
+                    () -> assertEquals(requester.getAddress().getAddressDetail(), response.getAddressDetail()),
+                    () -> assertEquals(recipe.getMainImageUrl(), response.getMainImageUrl()),
+                    () -> assertEquals(recipe.getSummary().getTitle(), response.getRecipeTitle()),
+                    () -> assertEquals(recipe.getSummary().getContent(), response.getRecipeContent()),
+                    () -> assertEquals(recipe.getHeartCount(), response.getHeartCount())
+            );
+        }
+
+        @Test
+        @DisplayName("요청 상세 조회 실패 - 요청 X")
+        void fail_getRequestDetail_request_not_found(){
+            //given
+            given(requestRepository.findById(anyLong()))
+                    .willReturn(Optional.empty());
+
+            //when
+            RequestException exception = assertThrows(RequestException.class,
+                    () -> requestService.getRequestDetail(1L, 1L));
+
+            //then
+            assertEquals(REQUEST_NOT_FOUND, exception.getErrorCode());
+        }
+
+        @Test
+        @DisplayName("요청 상세 조회 실패 - 회원 X")
+        void fail_getRequestDetail_member_not_found(){
+            //given
+            Request request = Request.builder()
+                    .id(1L)
+                    .build();
+
+            given(requestRepository.findById(anyLong()))
+                    .willReturn(Optional.of(request));
+
+            given(memberRepository.findById(anyLong()))
+                    .willReturn(Optional.empty());
+
+            //when
+            MemberException exception = assertThrows(MemberException.class,
+                    () -> requestService.getRequestDetail(1L, 1L));
+
+            //then
+            assertEquals(MEMBER_NOT_FOUND, exception.getErrorCode());
+        }
+
+        @Test
+        @DisplayName("요청 상세 조회 실패 - 접근 권한 X")
+        void fail_getRequestDetail_cannot_access_request(){
+            //given
+            Member requester = Member.builder()
+                    .id(1L)
+                    .build();
+
+            Member chef = Member.builder()
+                    .id(2L)
+                    .build();
+            ChefMember chefMember = ChefMember.builder()
+                    .id(1L)
+                    .build();
+            chef.setChefMember(chefMember);
+            chefMember.setMember(chef);
+
+            Member otherChef = Member.builder()
+                    .id(3L)
+                    .build();
+            ChefMember otherChefMember = ChefMember.builder()
+                    .id(2L)
+                    .build();
+            otherChef.setChefMember(otherChefMember);
+            otherChefMember.setMember(chef);
+
+            Request request = Request.builder()
+                    .id(1L)
+                    .member(requester)
+                    .chefMember(chefMember)
+                    .build();
+
+            given(requestRepository.findById(anyLong()))
+                    .willReturn(Optional.of(request));
+
+            given(memberRepository.findById(anyLong()))
+                    .willReturn(Optional.of(otherChef));
+
+            //when
+            RequestException exception = assertThrows(RequestException.class,
+                    () -> requestService.getRequestDetail(1L, 1L));
+
+            //then
+            assertEquals(CANNOT_ACCESS_REQUEST, exception.getErrorCode());
 
         }
 

@@ -1,11 +1,10 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import { BrowserRouter } from 'react-router-dom'
-import { worker } from './mocks/worker'
-
+import { RecoilRoot } from 'recoil'
 import App from './App'
-// import './index.css'
 import './reset.css'
+import { worker } from './mocks/browsers'
 
 if (process.env.NODE_ENV === 'development') {
   worker.start()
@@ -14,7 +13,9 @@ if (process.env.NODE_ENV === 'development') {
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <BrowserRouter>
-      <App />
+      <RecoilRoot>
+        <App />
+      </RecoilRoot>
     </BrowserRouter>
   </React.StrictMode>
 )

@@ -1,29 +1,34 @@
-/* eslint-disable import/no-extraneous-dependencies */
 /* eslint-disable import/prefer-default-export */
-// import { rest } from 'msw'
-// import people from './dummy.json'
+import { rest } from 'msw'
 
-// async function sleep(timeout: number) {
-//   return new Promise(resolve => {
-//     setTimeout(resolve, timeout)
-//   })
-// }
+const mockData = ['test1', 'test2', 'test3']
+const tempEmail = 'bos3321@gmail.com'
 
-const handlers: never[] = [
-  // rest.get('/', async (req, res, ctx) => {
-  //   await sleep(200)
-  //   return res(ctx.status(200), ctx.json(people))
-  // }),
-  // rest.post('/people', async (req, res, ctx) => {
-  //   await sleep(200)
-  //   people.push({
-  //     id: '345',
-  //     name: 'son',
-  //     country: 'asia',
-  //     lang: 'php',
-  //   })
-  //   return res(ctx.status(201), ctx.json(people))
-  // }),
+const emailAPI = {
+  sendVerificationEmail: `/auth/verification/send/${tempEmail}`,
+}
+
+export const handlers = [
+  rest.get('/test', (_req, res, ctx) => {
+    // 가짜 응답 데이터 생성 (원하는대로 수정 가능)
+    return res(ctx.status(200), ctx.json(mockData))
+  }),
+
+  rest.post('/auth/signup', (_req, res, ctx) => {
+    // 가짜 응답 데이터 생성 (원하는대로 수정 가능)
+    return res(ctx.status(201))
+  }),
+
+  rest.post(emailAPI.sendVerificationEmail, (_req, res, ctx) => {
+    const randomCode = Math.floor(Math.random() * 1000000) + 100000
+    randomCode.toString()
+    return res(
+      ctx.status(200),
+      ctx.json({
+        message: 'Verification email sent successfully',
+        email: tempEmail,
+        code: randomCode,
+      })
+    )
+  }),
 ]
-
-export default handlers

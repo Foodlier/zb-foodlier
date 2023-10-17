@@ -18,9 +18,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
 
-import static com.zerobase.foodlier.module.member.member.constants.ProfileUrlConstants.PROFILE_DEFAULT_URL;
-import static org.junit.jupiter.api.Assertions.assertAll;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.times;
@@ -129,7 +127,7 @@ class MemberRegisterFacadeTest {
 
         assertAll(
                 () -> assertEquals(memberInputDto.getNickname(), memberRegisterDto.getNickname()),
-                () -> assertEquals(PROFILE_DEFAULT_URL, memberRegisterDto.getProfileUrl()),
+                () -> assertNull(memberRegisterDto.getProfileUrl()),
                 () -> assertEquals(memberInputDto.getEmail(), memberRegisterDto.getEmail()),
                 () -> assertEquals(memberInputDto.getPassword(), memberRegisterDto.getPassword()),
                 () -> assertEquals(memberInputDto.getPhoneNumber(), memberRegisterDto.getPhoneNumber()),

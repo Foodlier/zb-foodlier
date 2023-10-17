@@ -37,6 +37,8 @@ public class RecipeDtoResponse {
 
     private List<RecipeIngredientDto> recipeIngredientDtoList;
 
+    private boolean isHeart;
+
     public static RecipeDtoResponse fromEntity(Recipe recipe) {
         return RecipeDtoResponse.builder()
                 .recipeId(recipe.getId())

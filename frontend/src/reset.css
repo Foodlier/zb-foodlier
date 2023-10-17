@@ -43,6 +43,18 @@
   font-display: swap;
 }
 
+:root {
+  font-family: 'Pretendard-Regular', sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-text-size-adjust: 100%;
+}
+
 *,
 :after,
 :before {
@@ -54,6 +66,10 @@
 }
 body,
 html {
+  width: 124rem;
+  max-width: 100%;
+  margin-left: auto;
+  margin-right: auto;
   height: 100%;
   width: 124rem;
   max-width: 100%;
@@ -108,6 +124,15 @@ body {
   font-size: 1.6rem;
 }
 
+button, input, select, textarea {
+  vertical-align: middle;
+  border: none;
+  border-radius: 0;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+}
+
 button {
   background: inherit;
   border: none;
@@ -121,7 +146,9 @@ button {
 button:visited {
   color: inherit;
 }
-
+a {
+  text-decoration: none;
+}
 a:visited {
   color: inherit;
 }

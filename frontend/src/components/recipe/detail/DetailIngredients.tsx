@@ -1,16 +1,13 @@
+import { RecipeIngredientDtoList } from '../../../constants/Interfaces'
 import * as S from '../../../styles/recipe/detail/DetailIngredients.styled'
 
-interface Ingredient {
-  name: string
-  count: number
-  unit: string
-}
-
 interface DetailIngredientsProps {
-  ingredients: Ingredient[]
+  ingredients: RecipeIngredientDtoList[] | undefined
 }
 
-function DetailIngredients({ ingredients }: DetailIngredientsProps) {
+const DetailIngredients = ({ ingredients }: DetailIngredientsProps) => {
+  if (!ingredients) return null
+
   return (
     <S.IngredientsContainer>
       <S.MainTit>재료</S.MainTit>

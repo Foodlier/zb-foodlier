@@ -29,4 +29,27 @@ public class ChefMember extends Audit {
     private int starSum;
     private int reviewCount;
 
+    public void plusExp(int exp){
+        this.exp += exp;
+        setGrade();
+    }
+
+    public void plusStar(int star){
+        this.starSum += star;
+        this.reviewCount++;
+        this.calcAvg();
+    }
+
+    private void calcAvg(){
+        if(this.reviewCount == 0){
+            this.starAvg = 0;
+            return;
+        }
+        this.starAvg = (double) this.starSum / this.reviewCount;
+    }
+
+    private void setGrade(){
+        this.gradeType = GradeType.getGrade(this.exp);
+    }
+
 }

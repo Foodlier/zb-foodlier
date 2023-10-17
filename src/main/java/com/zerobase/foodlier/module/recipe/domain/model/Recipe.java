@@ -10,21 +10,26 @@ import com.zerobase.foodlier.module.recipe.domain.vo.RecipeDetail;
 import com.zerobase.foodlier.module.recipe.domain.vo.RecipeIngredient;
 import com.zerobase.foodlier.module.recipe.domain.vo.RecipeStatistics;
 import com.zerobase.foodlier.module.recipe.domain.vo.Summary;
+import com.zerobase.foodlier.module.recipe.dto.recipe.RecipeDetailDto;
+import com.zerobase.foodlier.module.recipe.dto.recipe.RecipeDtoRequest;
+import com.zerobase.foodlier.module.recipe.dto.recipe.RecipeIngredientDto;
 import com.zerobase.foodlier.module.review.recipe.domain.model.RecipeReview;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Entity
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
+@SuperBuilder
 public class Recipe extends Audit {
-
+    private final static int ZERO = 0;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -37,7 +42,7 @@ public class Recipe extends Audit {
     private int expectedTime;
 
     private int heartCount;
-
+    private int commentCount;
     @Embedded
     private RecipeStatistics recipeStatistics;
 
@@ -83,8 +88,34 @@ public class Recipe extends Audit {
     }
 
     public void minusHeart() {
-        if (heartCount > 0) {
+        if (heartCount > ZERO) {
             this.heartCount--;
         }
+    }
+
+    public void plusCommentCount(){
+        ++this.commentCount;
+    }
+
+    public void minusCommentCount(){
+        this.commentCount = Math.max(ZERO, --this.commentCount);
+    }
+
+    public void updateRecipe(RecipeDtoRequest recipeDtoRequest) {
+        this.summary = Summary.builder()
+                .title(recipeDtoRequest.getTitle())
+                .content(recipeDtoRequest.getContent())
+                .build();
+        this.mainImageUrl = recipeDtoRequest.getMainImageUrl();
+        this.expectedTime = recipeDtoRequest.getExpectedTime();
+        this.difficulty = recipeDtoRequest.getDifficulty();
+        this.recipeDetailList = recipeDtoRequest.getRecipeDetailDtoList()
+                .stream()
+                .map(RecipeDetailDto::toEntity)
+                .collect(Collectors.toList());
+        this.recipeIngredientList = recipeDtoRequest.getRecipeIngredientDtoList()
+                .stream()
+                .map(RecipeIngredientDto::toEntity)
+                .collect(Collectors.toList());
     }
 }

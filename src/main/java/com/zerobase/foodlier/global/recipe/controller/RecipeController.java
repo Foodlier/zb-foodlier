@@ -1,25 +1,30 @@
 package com.zerobase.foodlier.global.recipe.controller;
 
+import com.zerobase.foodlier.common.response.ListResponse;
 import com.zerobase.foodlier.common.security.provider.dto.MemberAuthDto;
-import com.zerobase.foodlier.module.heart.service.HeartService;
-import com.zerobase.foodlier.module.recipe.dto.recipe.RecipeImageResponse;
+import com.zerobase.foodlier.common.validator.image.ImageFile;
 import com.zerobase.foodlier.global.recipe.facade.RecipeFacade;
-import com.zerobase.foodlier.module.recipe.domain.model.Recipe;
-import com.zerobase.foodlier.module.recipe.dto.recipe.RecipeDtoRequest;
-import com.zerobase.foodlier.module.recipe.dto.recipe.RecipeDtoResponse;
+import com.zerobase.foodlier.module.heart.service.HeartService;
+import com.zerobase.foodlier.module.recipe.dto.recipe.*;
 import com.zerobase.foodlier.module.recipe.service.recipe.RecipeService;
+import com.zerobase.foodlier.module.recipe.type.OrderType;
+import com.zerobase.foodlier.module.recipe.type.SearchType;
+import com.zerobase.foodlier.module.recipe.type.SortType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
 @RequestMapping("/recipe")
 @RequiredArgsConstructor
+@Validated
 public class RecipeController {
 
     private final RecipeFacade recipeFacade;
@@ -28,16 +33,17 @@ public class RecipeController {
 
     @PostMapping("/image")
     public ResponseEntity<RecipeImageResponse> uploadRecipeImage(
-            @RequestPart MultipartFile mainImage,
-            @RequestPart List<MultipartFile> cookingOrderImageList) {
+            @Valid @ImageFile @RequestPart MultipartFile mainImage,
+            @Valid @ImageFile @RequestPart List<MultipartFile> cookingOrderImageList) {
+
         return ResponseEntity.ok(recipeFacade.uploadRecipeImage(mainImage, cookingOrderImageList));
     }
 
     @PutMapping("/image/{recipeId}")
     public ResponseEntity<RecipeImageResponse> updateRecipeImage(
             @AuthenticationPrincipal MemberAuthDto memberAuthDto,
-            @RequestPart MultipartFile mainImage,
-            @RequestPart List<MultipartFile> cookingOrderImageList,
+            @Valid @ImageFile @RequestPart MultipartFile mainImage,
+            @Valid @ImageFile @RequestPart List<MultipartFile> cookingOrderImageList,
             @PathVariable(name = "recipeId") Long id) {
         return ResponseEntity.ok(recipeFacade.updateRecipeImage(memberAuthDto.getEmail(),
                 mainImage, cookingOrderImageList, id));
@@ -45,22 +51,25 @@ public class RecipeController {
 
     @PostMapping
     public ResponseEntity<String> createRecipe(@AuthenticationPrincipal MemberAuthDto memberAuthDto,
-                                               @RequestBody RecipeDtoRequest recipeDto) {
+                                               @RequestBody @Valid RecipeDtoRequest recipeDto) {
         recipeFacade.createRecipe(memberAuthDto.getEmail(), recipeDto);
         return ResponseEntity.ok("게시글 작성을 성공했습니다.");
     }
 
     @PutMapping("/{recipeId}")
     public ResponseEntity<String> updateRecipe(@AuthenticationPrincipal MemberAuthDto memberAuthDto,
-                                               @RequestBody RecipeDtoRequest recipeDto,
+                                               @RequestBody @Valid RecipeDtoRequest recipeDto,
                                                @PathVariable(name = "recipeId") Long id) {
         recipeFacade.updateRecipe(memberAuthDto.getEmail(), recipeDto, id);
         return ResponseEntity.ok("게시글 수정을 성공했습니다.");
     }
 
     @GetMapping("/{recipeId}")
-    public ResponseEntity<RecipeDtoResponse> getRecipe(@PathVariable(name = "recipeId") Long id) {
-        return ResponseEntity.ok(recipeService.getRecipeDetail(id));
+    public ResponseEntity<RecipeDtoResponse> getRecipe(
+            @AuthenticationPrincipal MemberAuthDto memberAuthDto,
+            @PathVariable(name = "recipeId") Long id
+    ) {
+        return ResponseEntity.ok(recipeService.getRecipeDetail(memberAuthDto,id));
     }
 
     @DeleteMapping("/{recipeId}")
@@ -77,20 +86,44 @@ public class RecipeController {
         return ResponseEntity.ok("레시피 접근 가능합니다.");
     }
 
-    @GetMapping("/{pageIdx}/{pageSize}")
-    public ResponseEntity<List<Recipe>> getRecipeListByTitle(@AuthenticationPrincipal MemberAuthDto memberAuthDto,
-                                                             @PathVariable int pageIdx,
-                                                             @PathVariable int pageSize,
-                                                             @RequestParam String recipeTitle){
-        return ResponseEntity.ok(recipeService.getRecipeByTitle(recipeTitle, PageRequest.of(pageIdx, pageSize)));
+    @GetMapping("search/{searchType}/{pageIdx}/{pageSize}")
+    public ResponseEntity<ListResponse<RecipeCardDto>> getRecipeList(@AuthenticationPrincipal MemberAuthDto memberAuthDto,
+                                                                     @PathVariable SearchType searchType,
+                                                                     @PathVariable int pageIdx,
+                                                                     @PathVariable int pageSize,
+                                                                     @RequestParam String searchText) {
+        return ResponseEntity.ok(recipeService.getRecipeList(RecipeSearchRequest.builder()
+                .searchType(searchType)
+                .searchText(searchText)
+                .memberId(memberAuthDto.getId())
+                .pageable(PageRequest.of(pageIdx, pageSize))
+                .build())
+        );
+    }
+
+    @GetMapping("search/{searchType}/{sortType}/{pageIdx}/{pageSize}")
+    public ResponseEntity<ListResponse<RecipeCardDto>> getFilteredRecipeList(@AuthenticationPrincipal MemberAuthDto memberAuthDto,
+                                                                             @PathVariable SearchType searchType,
+                                                                             @PathVariable int pageIdx,
+                                                                             @PathVariable int pageSize,
+                                                                             @PathVariable SortType sortType,
+                                                                             @RequestParam String searchText) {
+        return ResponseEntity.ok(recipeService.getRecipeList(RecipeSearchRequest.builder()
+                .searchType(searchType)
+                .searchText(searchText)
+                .memberId(memberAuthDto.getId())
+                .pageable(PageRequest.of(pageIdx, pageSize))
+                .sortType(sortType)
+                .build())
+        );
     }
 
     @PostMapping("/heart/{recipeId}")
     public ResponseEntity<String> createHeart(
             @AuthenticationPrincipal MemberAuthDto memberAuthDto,
             @PathVariable Long recipeId
-    ){
-        heartService.createHeart(memberAuthDto,recipeId);
+    ) {
+        heartService.createHeart(memberAuthDto, recipeId);
         return ResponseEntity.ok("좋아요를 눌렀습니다");
     }
 
@@ -98,8 +131,35 @@ public class RecipeController {
     public ResponseEntity<String> deleteHeart(
             @AuthenticationPrincipal MemberAuthDto memberAuthDto,
             @PathVariable Long recipeId
-    ){
-        heartService.deleteHeart(memberAuthDto,recipeId);
+    ) {
+        heartService.deleteHeart(memberAuthDto, recipeId);
         return ResponseEntity.ok("좋아요를 취소하였습니다.");
+    }
+
+    @GetMapping("/main")
+    public ResponseEntity<List<RecipeCardDto>> getMainPageRecipeList(
+            @AuthenticationPrincipal MemberAuthDto memberAuthDto
+    ) {
+        return ResponseEntity.ok(recipeService.
+                getMainPageRecipeList(memberAuthDto));
+    }
+
+    @GetMapping("/default/{pageIdx}/{pageSize}")
+    public ResponseEntity<ListResponse<RecipeCardDto>> getRecipePageRecipeList(
+            @AuthenticationPrincipal MemberAuthDto memberAuthDto,
+            @PathVariable int pageIdx,
+            @PathVariable int pageSize,
+            @RequestParam OrderType orderType
+    ) {
+        return ResponseEntity.ok(recipeService
+                .getRecipePageRecipeList(memberAuthDto,
+                        PageRequest.of(pageIdx, pageSize), orderType));
+    }
+
+    @GetMapping("/recommended")
+    public ResponseEntity<List<RecipeCardDto>> getRecommendedRecipeList(
+            @AuthenticationPrincipal MemberAuthDto memberAuthDto
+    ) {
+        return ResponseEntity.ok(recipeService.recommendedRecipe(memberAuthDto));
     }
 }

@@ -4,12 +4,13 @@ import com.zerobase.foodlier.common.exception.dto.ErrorResponse;
 import com.zerobase.foodlier.common.exception.exception.BaseException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindException;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import java.net.BindException;
+import javax.validation.ConstraintViolationException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -34,6 +35,16 @@ public class GlobalExceptionHandler {
                         .errorCode(e.getErrorCode().name())
                         .description(e.getDescription())
                         .build());
+    }
+
+    @ExceptionHandler({ConstraintViolationException.class})
+    public ResponseEntity<List<ErrorResponse>> constraintViolationExceptionHandler(ConstraintViolationException e) {
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(e.getConstraintViolations()
+                        .stream()
+                        .map(x -> new ErrorResponse(x.getPropertyPath().toString(), x.getMessage()))
+                        .collect(Collectors.toList()));
     }
 
 }

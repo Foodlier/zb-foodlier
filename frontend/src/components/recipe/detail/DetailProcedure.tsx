@@ -1,15 +1,13 @@
+import { RecipeDetailDtoList } from '../../../constants/Interfaces'
 import * as S from '../../../styles/recipe/detail/DetailProcedure.styled'
 
-interface ProcedureStep {
-  cookingOrderImageUrl: string
-  cookingOrder: string
-}
-
 interface DetailProcedureProps {
-  detail: ProcedureStep[]
+  detail: RecipeDetailDtoList[] | undefined
 }
 
-function DetailProcedure({ detail }: DetailProcedureProps) {
+const DetailProcedure = ({ detail }: DetailProcedureProps) => {
+  if (!detail) return null
+
   return (
     <S.ProcedureContainer>
       <S.MainTit>조리 순서</S.MainTit>

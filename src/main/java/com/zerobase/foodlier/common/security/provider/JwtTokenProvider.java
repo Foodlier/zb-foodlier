@@ -14,17 +14,21 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.zerobase.foodlier.common.security.constants.AuthorizationConstants.TOKEN_PREFIX;
 import static com.zerobase.foodlier.common.security.exception.JwtErrorCode.*;
 
 @Component
 public class JwtTokenProvider {
 
     private static final String KEY_ROLES = "roles";
-
+    private static final String TOKEN_TYPE = "type";
+    private static final String ACCESS_TOKEN = "AT";
+    private static final String REFRESH_TOKEN = "RT";
     private final TokenExpiredConstant tokenExpiredConstant;
     private final RefreshTokenService refreshTokenService;
     private final String accessSecretKey;
@@ -46,7 +50,7 @@ public class JwtTokenProvider {
         Claims claims = Jwts.claims().setSubject(memberAuthDto.getEmail());
         claims.setId(String.valueOf(memberAuthDto.getId()));
         claims.put(KEY_ROLES, memberAuthDto.getRoles());
-
+        claims.put(TOKEN_TYPE, ACCESS_TOKEN);
         return Jwts.builder()
                 .setClaims(claims)
                 .setIssuedAt(date)
@@ -63,7 +67,7 @@ public class JwtTokenProvider {
     public String createRefreshToken(MemberAuthDto memberAuthDto, Date date) {
         Claims claims = Jwts.claims().setSubject(memberAuthDto.getEmail());
         claims.setId(String.valueOf(memberAuthDto.getId()));
-
+        claims.put(TOKEN_TYPE, REFRESH_TOKEN);
         return Jwts.builder()
                 .setClaims(claims)
                 .setIssuedAt(date)
@@ -96,11 +100,11 @@ public class JwtTokenProvider {
      * 작성일: 2023-09-26
      * 접근 토큰 만료 시 재발급 토큰이 유효할 경우 새로운 접근 토큰 발급
      */
-    public String reissue(String accessToken, Date date) {
-        Claims accessTokenClaims = this.parseClaims(accessToken);
-        String userEmail = accessTokenClaims.getSubject();
-        Long userId = Long.parseLong(accessTokenClaims.getId());
-        List<String> roles = getRoles(accessToken);
+    public String reissue(String refreshToken, List<String> roles, Date date) {
+
+        Claims refreshTokenClaims = this.parseClaims(refreshToken);
+        String userEmail = refreshTokenClaims.getSubject();
+        Long userId = Long.parseLong(refreshTokenClaims.getId());
         if (!refreshTokenService.isRefreshTokenExisted(userEmail)) {
             throw new JwtException(REFRESH_TOKEN_NOT_FOUND);
         }
@@ -137,6 +141,11 @@ public class JwtTokenProvider {
                 memberAuthDto, token, grantedAuthorities);
     }
 
+    public String getEmail(String token){
+        return this.parseClaims(token).getSubject();
+    }
+
+
     /**
      * 작성자: 이종욱
      * 작성일: 2023-09-26
@@ -144,9 +153,14 @@ public class JwtTokenProvider {
      */
     private List<String> getRoles(String token) {
         Claims claims = parseClaims(token);
-        List<?> list = claims.get(KEY_ROLES, List.class);
 
-        return list.stream()
+        if(claims.get(TOKEN_TYPE).equals(REFRESH_TOKEN)) {
+            return new ArrayList<>();
+        }
+
+        List<?> roles = claims.get(KEY_ROLES, List.class);
+
+        return roles.stream()
                 .map(String::valueOf)
                 .collect(Collectors.toList());
     }

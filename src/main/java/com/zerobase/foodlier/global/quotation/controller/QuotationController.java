@@ -1,5 +1,6 @@
 package com.zerobase.foodlier.global.quotation.controller;
 
+import com.zerobase.foodlier.common.response.ListResponse;
 import com.zerobase.foodlier.common.security.provider.dto.MemberAuthDto;
 import com.zerobase.foodlier.global.quotation.facade.QuotationFacade;
 import com.zerobase.foodlier.module.recipe.dto.quotation.QuotationDetailResponse;
@@ -13,7 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
+import javax.validation.Valid;
 
 @RestController
 @RequestMapping("/quotation")
@@ -26,7 +27,7 @@ public class QuotationController {
     @PostMapping
     public ResponseEntity<String> createQuotation(
             @AuthenticationPrincipal MemberAuthDto memberAuthDto,
-            @RequestBody QuotationDtoRequest request
+            @RequestBody @Valid QuotationDtoRequest request
     ){
         quotationService.createQuotation(memberAuthDto.getId(), request);
         return ResponseEntity.ok("견적서가 작성되었습니다.");
@@ -45,7 +46,7 @@ public class QuotationController {
     }
 
     @GetMapping("/{pageIdx}/{pageSize}")
-    public ResponseEntity<List<QuotationTopResponse>> getQuotationListForRefrigerator(
+    public ResponseEntity<ListResponse<QuotationTopResponse>> getQuotationListForRefrigerator(
             @AuthenticationPrincipal MemberAuthDto memberAuthDto,
             @PathVariable int pageIdx,
             @PathVariable int pageSize
@@ -56,7 +57,7 @@ public class QuotationController {
     }
 
     @GetMapping("/recipe/{pageIdx}/{pageSize}")
-    public ResponseEntity<List<QuotationTopResponse>> getQuotationListForRecipe(
+    public ResponseEntity<ListResponse<QuotationTopResponse>> getQuotationListForRecipe(
             @AuthenticationPrincipal MemberAuthDto memberAuthDto,
             @PathVariable int pageIdx,
             @PathVariable int pageSize
@@ -80,7 +81,7 @@ public class QuotationController {
     public ResponseEntity<String> updateQuotation(
             @AuthenticationPrincipal MemberAuthDto memberAuthDto,
             @PathVariable Long quotationId,
-            @RequestBody QuotationDtoRequest request
+            @RequestBody @Valid QuotationDtoRequest request
     ){
         quotationService.updateQuotation(memberAuthDto.getId(), quotationId, request);
         return ResponseEntity.ok(
@@ -97,7 +98,7 @@ public class QuotationController {
     public ResponseEntity<String> recipifyQuotation(
             @AuthenticationPrincipal MemberAuthDto memberAuthDto,
             @PathVariable Long quotationId,
-            @RequestBody RecipeDtoRequest request
+            @RequestBody @Valid RecipeDtoRequest request
             ){
         quotationService.convertToRecipe(memberAuthDto.getId(), quotationId, request);
         return ResponseEntity.ok(
