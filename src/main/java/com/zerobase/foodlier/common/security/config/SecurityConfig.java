@@ -85,7 +85,8 @@ public class SecurityConfig {
                         "/ws/**",
                         "/env/**",
                         "/actuator/health",
-                        "/**/auth/check/**"
+                        "/**/auth/check/**",
+                        "/actuator/prometheus"
                 );
     }
 
