@@ -6,4 +6,5 @@ import org.springframework.data.domain.Pageable;
 
 public interface NotificationRepositoryCustom {
     Page<NotificationDto> findNotificationBy(Long memberId, Pageable pageable);
+    Long countUnreadNotification(Long memberId);
 }
