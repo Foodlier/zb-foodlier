@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Getter
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -58,5 +57,9 @@ public class RecipeDtoResponse {
                         .map(RecipeIngredientDto::fromEntity)
                         .collect(Collectors.toList()))
                 .build();
+    }
+
+    public void updateHeart(boolean value) {
+        this.isHeart = value;
     }
 }

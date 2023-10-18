@@ -7,7 +7,10 @@ import com.zerobase.foodlier.module.member.member.domain.model.Member;
 import com.zerobase.foodlier.module.recipe.domain.model.Recipe;
 import com.zerobase.foodlier.module.request.domain.vo.Ingredient;
 import com.zerobase.foodlier.module.review.chef.domain.model.ChefReview;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -15,7 +18,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Getter
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -64,7 +66,24 @@ public class Request extends Audit {
     @Column(nullable = false)
     private boolean isFinished;
 
-    public void enableFinishState(){
+    public void enableFinishState() {
         this.isFinished = true;
     }
+
+    public void updateDmRoom(DmRoom dmRoom) {
+        this.dmRoom = dmRoom;
+    }
+
+    public void updateQuotation(Recipe quotation) {
+        this.recipe = quotation;
+    }
+
+    public void updatePaid(boolean value) {
+        this.isPaid = value;
+    }
+
+    public void updateFinished(boolean value) {
+        this.isFinished = value;
+    }
+
 }

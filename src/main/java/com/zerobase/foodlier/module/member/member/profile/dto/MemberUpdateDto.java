@@ -4,7 +4,6 @@ import com.zerobase.foodlier.module.member.member.local.dto.CoordinateResponseDt
 import lombok.*;
 
 @Getter
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder

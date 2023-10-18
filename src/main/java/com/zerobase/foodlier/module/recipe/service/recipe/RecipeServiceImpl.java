@@ -131,7 +131,7 @@ public class RecipeServiceImpl implements RecipeService {
         RecipeDtoResponse recipeDtoResponse =
                 RecipeDtoResponse.fromEntity(recipe);
 
-        recipeDtoResponse.setHeart(heartRepository
+        recipeDtoResponse.updateHeart(heartRepository
                 .existsByRecipeAndMember(recipe, member));
 
         return recipeDtoResponse;

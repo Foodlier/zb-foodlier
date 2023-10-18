@@ -4,7 +4,6 @@ import com.zerobase.foodlier.module.recipe.domain.type.Difficulty;
 import lombok.*;
 
 @Getter
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
