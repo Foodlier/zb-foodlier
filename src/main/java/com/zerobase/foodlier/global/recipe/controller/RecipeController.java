@@ -1,10 +1,16 @@
 package com.zerobase.foodlier.global.recipe.controller;
 
+import com.zerobase.foodlier.module.notification.domain.type.ActionType;
+import com.zerobase.foodlier.module.notification.domain.type.PerformerType;
 import com.zerobase.foodlier.common.response.ListResponse;
 import com.zerobase.foodlier.common.security.provider.dto.MemberAuthDto;
 import com.zerobase.foodlier.common.validator.image.ImageFile;
+import com.zerobase.foodlier.global.notification.facade.NotificationFacade;
 import com.zerobase.foodlier.global.recipe.facade.RecipeFacade;
 import com.zerobase.foodlier.module.heart.service.HeartService;
+import com.zerobase.foodlier.module.notification.domain.type.NotificationType;
+import com.zerobase.foodlier.module.notification.dto.notify.NotifyInfoDto;
+import com.zerobase.foodlier.module.notification.dto.notify.Impl.HeartNotify;
 import com.zerobase.foodlier.module.recipe.dto.recipe.*;
 import com.zerobase.foodlier.module.recipe.service.recipe.RecipeService;
 import com.zerobase.foodlier.module.recipe.type.OrderType;
@@ -30,7 +36,7 @@ public class RecipeController {
     private final RecipeFacade recipeFacade;
     private final RecipeService recipeService;
     private final HeartService heartService;
-
+    private final NotificationFacade notificationFacade;
     @PostMapping("/image")
     public ResponseEntity<RecipeImageResponse> uploadRecipeImage(
             @Valid @ImageFile @RequestPart MultipartFile mainImage,
@@ -123,7 +129,14 @@ public class RecipeController {
             @AuthenticationPrincipal MemberAuthDto memberAuthDto,
             @PathVariable Long recipeId
     ) {
-        heartService.createHeart(memberAuthDto, recipeId);
+        HeartNotify heartNotify = HeartNotify.from(heartService.createHeart(memberAuthDto, recipeId),
+                NotifyInfoDto.builder()
+                        .notificationType(NotificationType.HEART)
+                        .actionType(ActionType.HEART)
+                        .performerType(PerformerType.PUSH_HEART)
+                        .build()
+        );
+        notificationFacade.send(heartNotify);
         return ResponseEntity.ok("좋아요를 눌렀습니다");
     }
 

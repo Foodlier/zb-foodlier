@@ -113,6 +113,7 @@ public class MemberServiceImpl implements MemberService {
         Member member = findByEmail(email);
 
         return MemberPrivateProfileResponse.builder()
+                .myMemberId(member.getId())
                 .nickName(member.getNickname())
                 .point(member.getPoint())
                 .isChef(!Objects.isNull(member.getChefMember()))
@@ -243,6 +244,7 @@ public class MemberServiceImpl implements MemberService {
      * 작성일 : 2023-10-12
      * 소셜로그인시 사용자 정보를 찾아 반환합니다. 사용자가 없을 시 임시가입을 진행합니다.
      */
+    @Override
     public Member findOrCreateMember(OAuthInfoResponse oAuthInfoResponse) {
         return memberRepository.findByEmail(oAuthInfoResponse.getEmail())
                 .orElseGet(() -> registerSocialMember(oAuthInfoResponse));

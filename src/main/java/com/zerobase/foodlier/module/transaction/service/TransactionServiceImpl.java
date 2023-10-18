@@ -37,7 +37,7 @@ public class TransactionServiceImpl implements TransactionService {
 
         validSendSuggestion(memberAuthDto, dmRoom);
 
-        dmRoom.setSuggestion(Suggestion.builder()
+        dmRoom.updateSuggestion(Suggestion.builder()
                 .suggestedPrice(form.getSuggestedPrice())
                 .isAccept(false)
                 .isSuggested(true)
@@ -60,7 +60,7 @@ public class TransactionServiceImpl implements TransactionService {
 
         validCancelSuggestion(memberAuthDto, dmRoom);
 
-        dmRoom.setSuggestion(Suggestion.builder()
+        dmRoom.updateSuggestion(Suggestion.builder()
                 .suggestedPrice(0)
                 .isSuggested(false)
                 .isAccept(false)
@@ -72,8 +72,8 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     /**
-     * 작성자 : 이승현
-     * 작성일 : 2023-10-04
+     * 작성자 : 이승현 (전현서)
+     * 작성일 : 2023-10-04 (2023-10-14)
      * 요청자가 제안을 수락합니다.
      */
     @Override
@@ -90,8 +90,9 @@ public class TransactionServiceImpl implements TransactionService {
 
         dmRoom.getRequest().getMember().transaction(-suggestedPrice);
         dmRoom.getRequest().getChefMember().getMember().transaction(suggestedPrice);
-        dmRoom.getSuggestion().setIsAccept(true);
-        dmRoom.getRequest().setPaid(true);
+        dmRoom.getSuggestion().updateAccept(true);
+        dmRoom.getRequest().updatePaid(true);
+        dmRoom.getRequest().updateFinished(true);
         dmRoomRepository.save(dmRoom);
 
         return TransactionDto.builder()
@@ -113,7 +114,7 @@ public class TransactionServiceImpl implements TransactionService {
 
         validRejectSuggestion(memberAuthDto, dmRoom);
 
-        dmRoom.setSuggestion(Suggestion.builder()
+        dmRoom.updateSuggestion(Suggestion.builder()
                 .suggestedPrice(0)
                 .isAccept(false)
                 .isSuggested(false)

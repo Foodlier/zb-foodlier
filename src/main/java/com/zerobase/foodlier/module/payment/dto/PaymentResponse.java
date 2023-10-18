@@ -3,7 +3,6 @@ package com.zerobase.foodlier.module.payment.dto;
 import lombok.*;
 
 @Getter
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -18,4 +17,12 @@ public class PaymentResponse {
     private String failUrl;
     private String payDate;
     private String paySuccessYn;
+
+    public void updateSuccessUrl(String url) {
+        this.successUrl = url;
+    }
+
+    public void updateFailUrl(String url) {
+        this.failUrl = url;
+    }
 }

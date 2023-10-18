@@ -3,14 +3,15 @@ package com.zerobase.foodlier.module.review.recipe.domain.model;
 import com.zerobase.foodlier.common.jpa.audit.Audit;
 import com.zerobase.foodlier.module.member.member.domain.model.Member;
 import com.zerobase.foodlier.module.recipe.domain.model.Recipe;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
 import javax.persistence.*;
 
 @Entity
 @Getter
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @SuperBuilder
@@ -32,4 +33,16 @@ public class RecipeReview extends Audit {
     @ManyToOne
     @JoinColumn(name = "member_id")
     private Member member;
+
+    public void updateContent(String content) {
+        this.content = content;
+    }
+
+    public void updateStar(int value) {
+        this.star = value;
+    }
+
+    public void updateCookUrl(String url) {
+        this.cookUrl = url;
+    }
 }

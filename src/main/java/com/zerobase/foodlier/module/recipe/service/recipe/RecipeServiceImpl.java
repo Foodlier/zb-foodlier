@@ -131,7 +131,7 @@ public class RecipeServiceImpl implements RecipeService {
         RecipeDtoResponse recipeDtoResponse =
                 RecipeDtoResponse.fromEntity(recipe);
 
-        recipeDtoResponse.setHeart(heartRepository
+        recipeDtoResponse.updateHeart(heartRepository
                 .existsByRecipeAndMember(recipe, member));
 
         return recipeDtoResponse;
@@ -348,12 +348,13 @@ public class RecipeServiceImpl implements RecipeService {
         Member member = memberRepository.findById(memberAuthDto.getId())
                 .orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
 
-        return recipeRepository.findTop3ByIsPublicOrderByCreatedAtDesc(false)
+        return recipeRepository.findTop3ByIsPublicIsTrueOrderByCreatedAtDesc()
                 .stream()
                 .map(r -> RecipeCardDto.builder()
                         .id(r.getId())
                         .nickName(r.getMember().getNickname())
                         .title(r.getSummary().getTitle())
+                        .mainImageUrl(r.getMainImageUrl())
                         .content(r.getSummary().getContent())
                         .heartCount(r.getHeartCount())
                         .isHeart(heartRepository.existsByRecipeAndMember(r, member))
@@ -380,22 +381,22 @@ public class RecipeServiceImpl implements RecipeService {
 
         switch (orderType) {
             case CREATED_AT:
-                recipePage = recipeRepository.findByIsPublicOrderByCreatedAtDesc(
-                        false, pageable);
+                recipePage = recipeRepository
+                        .findByIsPublicIsTrueOrderByCreatedAtDesc(pageable);
                 totalElements = recipePage.getTotalElements();
                 totalPages = recipePage.getTotalPages();
                 hasNext = recipePage.hasNext();
                 break;
             case HEART_COUNT:
-                recipePage = recipeRepository.findByIsPublicOrderByHeartCountDesc(
-                        false, pageable);
+                recipePage = recipeRepository
+                        .findByIsPublicIsTrueOrderByHeartCountDesc(pageable);
                 totalPages = recipePage.getTotalPages();
                 totalElements = recipePage.getTotalElements();
                 hasNext = recipePage.hasNext();
                 break;
             case COMMENT_COUNT:
-                recipePage = recipeRepository.findByIsPublicOrderByCommentCountDesc(
-                        false, pageable);
+                recipePage = recipeRepository
+                        .findByIsPublicIsTrueOrderByCommentCountDesc(pageable);
                 totalPages = recipePage.getTotalPages();
                 totalElements = recipePage.getTotalElements();
                 hasNext = recipePage.hasNext();
@@ -413,6 +414,7 @@ public class RecipeServiceImpl implements RecipeService {
                                 .map(r -> RecipeCardDto.builder()
                                         .id(r.getId())
                                         .nickName(r.getMember().getNickname())
+                                        .mainImageUrl(r.getMainImageUrl())
                                         .title(r.getSummary().getTitle())
                                         .content(r.getSummary().getContent())
                                         .heartCount(r.getHeartCount())
@@ -432,13 +434,14 @@ public class RecipeServiceImpl implements RecipeService {
         Member member = memberRepository.findById(memberAuthDto.getId())
                 .orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
 
-        return recipeRepository.findTop5ByIsPublicAndCreatedAtAfterOrderByHeartCountDesc(
-                        false, LocalDate.now().atStartOfDay())
+        return recipeRepository.findTop5ByIsPublicIsTrueAndCreatedAtAfterOrderByHeartCountDesc(
+                        LocalDate.now().atStartOfDay())
                 .stream()
                 .map(r -> RecipeCardDto.builder()
                         .id(r.getId())
                         .nickName(r.getMember().getNickname())
                         .title(r.getSummary().getTitle())
+                        .mainImageUrl(r.getMainImageUrl())
                         .content(r.getSummary().getContent())
                         .heartCount(r.getHeartCount())
                         .isHeart(heartRepository.existsByRecipeAndMember(r, member))

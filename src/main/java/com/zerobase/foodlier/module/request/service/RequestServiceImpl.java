@@ -45,7 +45,7 @@ public class RequestServiceImpl implements RequestService {
      */
     @Override
     public void setDmRoom(Request request, DmRoom dmRoom){
-        request.setDmRoom(dmRoom);
+        request.updateDmRoom(dmRoom);
         requestRepository.save(request);
     }
 
@@ -85,15 +85,16 @@ public class RequestServiceImpl implements RequestService {
      *  Request에 Quotation을 할당함.
      */
     @Override
-    public void setQuotation(Long requestId, Recipe quotation) {
+    public Request setQuotation(Long requestId, Recipe quotation) {
         Request request = getRequest(requestId);
 
         if(request.getRecipe() != null){
             throw new RequestException(ALREADY_SETTED_QUOTATION);
         }
 
-        request.setRecipe(quotation);
-        requestRepository.save(request);
+        request.updateQuotation(quotation);
+        return requestRepository.save(request);
+
     }
 
     /**
@@ -103,7 +104,7 @@ public class RequestServiceImpl implements RequestService {
      *  요청을 보내는 메서드, 같은 요리사에게는 중복 요청 X
      */
     @Override
-    public void sendRequest(Long memberId, Long requestFormId, Long chefMemberId) {
+    public Request sendRequest(Long memberId, Long requestFormId, Long chefMemberId) {
         Member member = getMember(memberId);
 
         ChefMember chefMember = chefMemberRepository.findById(chefMemberId)
@@ -130,7 +131,7 @@ public class RequestServiceImpl implements RequestService {
                 .isPaid(false)
                 .build();
 
-        requestRepository.save(request);
+        return requestRepository.save(request);
     }
 
     /**
@@ -139,13 +140,19 @@ public class RequestServiceImpl implements RequestService {
      *  요청자가 보낸 요청을 취소함, 성사된 요청 취소 X
      */
     @Override
-    public void cancelRequest(Long memberId, Long requestId) {
+    public Request cancelRequest(Long memberId, Long requestId) {
         Member member = getMember(memberId);
         Request request = getRequest(requestId);
+        Request canceledRequest = Request.builder()
+                .id(request.getId())
+                .chefMember(request.getChefMember())
+                .title(request.getTitle())
+                .build();
 
         validateCancelRequest(member, request);
 
         requestRepository.delete(request);
+        return canceledRequest;
     }
 
     /**
@@ -183,12 +190,13 @@ public class RequestServiceImpl implements RequestService {
      *  요리사가 요청을 거절함.
      */
     @Override
-    public void rejectRequest(Long memberId, Long requestId) {
+    public Request rejectRequest(Long memberId, Long requestId) {
         Member member = getMember(memberId);
         Request request = getRequest(requestId);
 
         validateRejectRequest(member, request);
         requestRepository.delete(request);
+        return request;
     }
 
     private Member getMember(Long memberId){
@@ -222,7 +230,7 @@ public class RequestServiceImpl implements RequestService {
         if(Objects.equals(member.getId(), chefMember.getMember().getId())){
             throw new RequestException(CANNOT_REQUEST_TO_ME);
         }
-        if(requestRepository.existsByMemberAndChefMemberAndIsPaidFalse(
+        if(requestRepository.existsByMemberAndChefMemberAndIsFinishedFalse(
                 member, chefMember
         )){
             throw new RequestException(ALREADY_REQUESTED_CHEF);

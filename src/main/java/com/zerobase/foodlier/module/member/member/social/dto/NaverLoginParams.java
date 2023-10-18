@@ -1,6 +1,7 @@
 package com.zerobase.foodlier.module.member.member.social.dto;
 
 import com.zerobase.foodlier.module.member.member.type.RegistrationType;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.util.LinkedMultiValueMap;
@@ -12,6 +13,7 @@ import static com.zerobase.foodlier.module.member.member.type.RegistrationType.N
 
 @Getter
 @NoArgsConstructor
+@AllArgsConstructor
 public class NaverLoginParams implements OAuthLoginParams {
     private String authorizationCode;
     private String state;

@@ -1514,7 +1514,7 @@ class RecipeServiceImplTest {
 
         given(memberRepository.findById(any()))
                 .willReturn(Optional.ofNullable(member));
-        given(recipeRepository.findTop3ByIsPublicOrderByCreatedAtDesc(any()))
+        given(recipeRepository.findTop3ByIsPublicIsTrueOrderByCreatedAtDesc())
                 .willReturn(List.of(
                         recipe1,
                         recipe2,
@@ -1623,7 +1623,7 @@ class RecipeServiceImplTest {
                 .willReturn(false);
         given(heartRepository.existsByRecipeAndMember(recipe3, member))
                 .willReturn(true);
-        given(recipeRepository.findByIsPublicOrderByCreatedAtDesc(any(), any()))
+        given(recipeRepository.findByIsPublicIsTrueOrderByCreatedAtDesc(any()))
                 .willReturn(new PageImpl<>(new ArrayList<>(List.of(
                         recipe1,
                         recipe2,
@@ -1712,7 +1712,7 @@ class RecipeServiceImplTest {
                 .willReturn(false);
         given(heartRepository.existsByRecipeAndMember(recipe3, member))
                 .willReturn(true);
-        given(recipeRepository.findByIsPublicOrderByHeartCountDesc(any(), any()))
+        given(recipeRepository.findByIsPublicIsTrueOrderByHeartCountDesc(any()))
                 .willReturn(new PageImpl<>(new ArrayList<>(List.of(
                         recipe1,
                         recipe2,
@@ -1806,7 +1806,7 @@ class RecipeServiceImplTest {
                 .willReturn(false);
         given(heartRepository.existsByRecipeAndMember(recipe3, member))
                 .willReturn(true);
-        given(recipeRepository.findByIsPublicOrderByCommentCountDesc(any(), any()))
+        given(recipeRepository.findByIsPublicIsTrueOrderByCommentCountDesc(any()))
                 .willReturn(new PageImpl<>(new ArrayList<>(List.of(
                         recipe1,
                         recipe2,
@@ -1958,7 +1958,7 @@ class RecipeServiceImplTest {
 
         given(memberRepository.findById(any()))
                 .willReturn(Optional.ofNullable(member));
-        given(recipeRepository.findTop5ByIsPublicAndCreatedAtAfterOrderByHeartCountDesc(any(), any()))
+        given(recipeRepository.findTop5ByIsPublicIsTrueAndCreatedAtAfterOrderByHeartCountDesc(any()))
                 .willReturn(Stream.of(
                                 recipe1,
                                 recipe2,
