@@ -118,11 +118,11 @@ public class RecipeReviewServiceImpl implements RecipeReviewService{
         int originStar = recipeReview.getStar();
         String originCookUrl = recipeReview.getCookUrl();
 
-        recipeReview.setContent(request.getContent());
-        recipeReview.setStar(request.getStar());
+        recipeReview.updateContent(request.getContent());
+        recipeReview.updateStar(request.getStar());
 
         if(StringUtils.hasText(request.getCookImageUrl())){
-            recipeReview.setCookUrl(request.getCookImageUrl());
+            recipeReview.updateCookUrl(request.getCookImageUrl());
         }
 
         recipeReviewRepository.save(recipeReview);

@@ -11,7 +11,6 @@ import com.zerobase.foodlier.module.dm.room.domain.vo.Suggestion;
 import com.zerobase.foodlier.module.dm.room.exception.DmRoomException;
 import com.zerobase.foodlier.module.dm.room.repository.DmRoomRepository;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -51,12 +50,12 @@ public class DmServiceImpl implements DmService {
                 .orElseThrow(() -> new DmRoomException(DM_ROOM_NOT_FOUND));
 
         if (message.getMessageType() == SUGGESTION) {
-            dmRoom.setSuggestion(
+            dmRoom.updateSuggestion(
                     Suggestion.builder()
-                    .isSuggested(true)
-                    .isAccept(false)
-                    .suggestedPrice(Integer.parseInt(message.getMessage()))
-                    .build());
+                            .isSuggested(true)
+                            .isAccept(false)
+                            .suggestedPrice(Integer.parseInt(message.getMessage()))
+                            .build());
             dmRoomRepository.save(dmRoom);
         }
 

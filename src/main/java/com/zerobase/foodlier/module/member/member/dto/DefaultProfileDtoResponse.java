@@ -3,7 +3,6 @@ package com.zerobase.foodlier.module.member.member.dto;
 import lombok.*;
 
 @Getter
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder

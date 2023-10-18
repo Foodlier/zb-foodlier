@@ -1126,4 +1126,94 @@ class MemberServiceImplTest {
 
     }
 
+    @Test
+    @DisplayName("닉네임 중복 체크 - 사용가능")
+    void success_checkNickname(){
+        //given
+        given(memberRepository.existsByNickname(eq("nickname")))
+                .willReturn(false);
+
+        //when
+        memberService.checkNickname("nickname");
+
+        //then
+        verify(memberRepository, times(1))
+                .existsByNickname(eq("nickname"));
+    }
+
+    @Test
+    @DisplayName("닉네임 중복 체크 - 이미 사용중")
+    void fail_checkNickname_nickname_is_already_exists(){
+        //given
+        given(memberRepository.existsByNickname(eq("nickname")))
+                .willReturn(true);
+
+        //when
+        MemberException exception = assertThrows(MemberException.class,
+                () -> memberService.checkNickname("nickname"));
+
+        //then
+        assertEquals(NICKNAME_IS_ALREADY_EXIST, exception.getErrorCode());
+    }
+
+    @Test
+    @DisplayName("핸드폰 번호 중복 체크 - 사용가능")
+    void success_checkphoneNumber(){
+        //given
+        given(memberRepository.existsByPhoneNumber(eq("01011112222")))
+                .willReturn(false);
+
+        //when
+        memberService.checkPhoneNumber("01011112222");
+
+        //then
+        verify(memberRepository, times(1))
+                .existsByPhoneNumber(eq("01011112222"));
+    }
+
+    @Test
+    @DisplayName("핸드폰 번호 중복 체크 - 이미 사용중")
+    void fail_checkPhoneNumber_phone_number_is_already_exists(){
+        //given
+        given(memberRepository.existsByPhoneNumber(eq("01011112222")))
+                .willReturn(true);
+
+        //when
+        MemberException exception = assertThrows(MemberException.class,
+                () -> memberService.checkPhoneNumber("01011112222"));
+
+        //then
+        assertEquals(PHONE_NUMBER_IS_ALREADY_EXIST, exception.getErrorCode());
+    }
+
+    @Test
+    @DisplayName("이메일 중복 체크 - 사용가능")
+    void success_checkEmail(){
+        //given
+        given(memberRepository.existsByEmail(eq("test@test.com")))
+                .willReturn(false);
+
+        //when
+        memberService.checkEmail("test@test.com");
+
+        //then
+        verify(memberRepository, times(1))
+                .existsByEmail(eq("test@test.com"));
+    }
+
+    @Test
+    @DisplayName("이메일 중복 체크 - 이미 사용중")
+    void fail_checkEmail_email_is_already_exists(){
+        //given
+        given(memberRepository.existsByEmail(eq("test@test.com")))
+                .willReturn(true);
+
+        //when
+        MemberException exception = assertThrows(MemberException.class,
+                () -> memberService.checkEmail("test@test.com"));
+
+        //then
+        assertEquals(EMAIL_IS_ALREADY_EXIST, exception.getErrorCode());
+    }
+
 }

@@ -3,12 +3,14 @@ package com.zerobase.foodlier.module.member.chef.domain.model;
 import com.zerobase.foodlier.common.jpa.audit.Audit;
 import com.zerobase.foodlier.module.member.chef.type.GradeType;
 import com.zerobase.foodlier.module.member.member.domain.model.Member;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 
 @Getter
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -29,27 +31,31 @@ public class ChefMember extends Audit {
     private int starSum;
     private int reviewCount;
 
-    public void plusExp(int exp){
+    public void plusExp(int exp) {
         this.exp += exp;
         setGrade();
     }
 
-    public void plusStar(int star){
+    public void plusStar(int star) {
         this.starSum += star;
         this.reviewCount++;
         this.calcAvg();
     }
 
-    private void calcAvg(){
-        if(this.reviewCount == 0){
+    private void calcAvg() {
+        if (this.reviewCount == 0) {
             this.starAvg = 0;
             return;
         }
         this.starAvg = (double) this.starSum / this.reviewCount;
     }
 
-    private void setGrade(){
+    private void setGrade() {
         this.gradeType = GradeType.getGrade(this.exp);
+    }
+
+    public void updateIntroduce(String introduce) {
+        this.introduce = introduce;
     }
 
 }

@@ -4,7 +4,6 @@ import com.zerobase.foodlier.module.review.chef.domain.model.ChefReview;
 import lombok.*;
 
 @Getter
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder

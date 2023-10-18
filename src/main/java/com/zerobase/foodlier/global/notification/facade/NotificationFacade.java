@@ -27,8 +27,6 @@ public class NotificationFacade {
     public SseEmitter subscribe(MemberAuthDto memberAuthDto) {
         String emitterId = emitterService.makeUUIDIncludeId(memberAuthDto.getEmail());
         SseEmitter emitter = emitterService.createEmitter(memberAuthDto.getEmail());
-        emitter.onCompletion(() -> emitterService.deleteEmitter(emitterId));
-        emitter.onTimeout(() -> emitterService.deleteEmitter(emitterId));
 
         String eventId = emitterService.makeUUIDIncludeId(memberAuthDto.getEmail());
         Long unReadNotification = notificationService.countUnreadNotification(memberAuthDto.getId());
@@ -41,6 +39,12 @@ public class NotificationFacade {
                 .build();
 
         emitterService.send(emitter, eventId, emitterId, notificationDto);
+        emitter.onCompletion(() -> emitterService.deleteEmitter(emitterId));
+        emitter.onTimeout(() -> {
+            emitter.complete();
+            emitterService.deleteEmitter(emitterId);
+        });
+        emitter.onError(throwable -> emitter.complete());
         return emitter;
     }
 
