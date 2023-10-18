@@ -203,8 +203,8 @@ class RecipeReviewServiceImplTest {
             Member member = getMember();
             RecipeReview recipeReview = getRecipeReview();
             Recipe recipe = getRecipe();
-            recipeReview.setMember(member);
-            recipeReview.setRecipe(recipe);
+            recipeReview.updateMember(member);
+            recipeReview.updateRecipe(recipe);
             given(memberRepository.findById(anyLong()))
                     .willReturn(Optional.of(member));
             given(recipeRepository.findById(anyLong()))
@@ -292,8 +292,8 @@ class RecipeReviewServiceImplTest {
             Member member = getMember();
             RecipeReview recipeReview = getRecipeReview();
             Recipe recipe = getRecipe();
-            recipeReview.setMember(member);
-            recipeReview.setRecipe(recipe);
+            recipeReview.updateMember(member);
+            recipeReview.updateRecipe(recipe);
             given(recipeReviewRepository.findRecipe(anyLong(), anyLong(), any()))
                     .willReturn(
                             new PageImpl<>(
@@ -337,8 +337,8 @@ class RecipeReviewServiceImplTest {
             Member member = getMember();
             RecipeReview recipeReview = getRecipeReview();
             Recipe recipe = getRecipe();
-            recipeReview.setMember(member);
-            recipeReview.setRecipe(recipe);
+            recipeReview.updateMember(member);
+            recipeReview.updateRecipe(recipe);
             given(recipeReviewRepository.findById(anyLong()))
                     .willReturn(Optional.of(recipeReview));
 
@@ -386,7 +386,7 @@ class RecipeReviewServiceImplTest {
 
             RecipeReview returningReview = getRecipeReview();
             Recipe recipe = getRecipe();
-            returningReview.setRecipe(recipe);
+            returningReview.updateRecipe(recipe);
 
             given(memberRepository.findById(anyLong()))
                     .willReturn(Optional.of(getMember()));
@@ -466,7 +466,7 @@ class RecipeReviewServiceImplTest {
 
             Recipe recipe = getRecipe();
             RecipeReview recipeReview = getRecipeReview();
-            recipeReview.setRecipe(recipe);
+            recipeReview.updateRecipe(recipe);
 
             given(memberRepository.findById(anyLong()))
                     .willReturn(Optional.of(getMember()));
