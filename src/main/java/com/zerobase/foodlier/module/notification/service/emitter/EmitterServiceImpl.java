@@ -1,5 +1,7 @@
 package com.zerobase.foodlier.module.notification.service.emitter;
 
+import com.zerobase.foodlier.module.notification.exception.NotificationErrorCode;
+import com.zerobase.foodlier.module.notification.exception.NotificationException;
 import com.zerobase.foodlier.module.notification.repository.sse.EmitterRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -12,7 +14,7 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 public class EmitterServiceImpl implements EmitterService {
-    private static final Long DEFAULT_TIMEOUT = 60L * 1000 * 60; // 1시간 동안 http 연결 유지
+    private static final Long DEFAULT_TIMEOUT = 60L * 1000 * 60;
     private static final String EVENT_NAME = "sse";
     private static final String DELIMITER = "_";
 
@@ -37,7 +39,9 @@ public class EmitterServiceImpl implements EmitterService {
                     .name(EVENT_NAME)
                     .data(data));
         } catch (IOException exception) {
+            emitter.complete();
             emitterRepository.deleteById(emitterId);
+            throw new NotificationException(NotificationErrorCode.NO_SUCH_EMITTER);
         }
     }
 
