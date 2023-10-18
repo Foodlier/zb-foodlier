@@ -3,14 +3,14 @@ package com.zerobase.foodlier.module.member.member.social.dto;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.zerobase.foodlier.module.member.member.type.RegistrationType;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 import static com.zerobase.foodlier.module.member.member.type.RegistrationType.KAKAO;
 
 @Getter
 @JsonIgnoreProperties(ignoreUnknown = true)
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class KakaoInfoResponse implements OAuthInfoResponse {
 
     @JsonProperty("kakao_account")
@@ -18,7 +18,7 @@ public class KakaoInfoResponse implements OAuthInfoResponse {
 
     @Getter
     @JsonIgnoreProperties(ignoreUnknown = true)
-    @AllArgsConstructor
+    @RequiredArgsConstructor
     public static class KakaoAccount {
         private KakaoProfile profile;
         private String email;
@@ -26,7 +26,7 @@ public class KakaoInfoResponse implements OAuthInfoResponse {
 
     @Getter
     @JsonIgnoreProperties(ignoreUnknown = true)
-    @AllArgsConstructor
+    @RequiredArgsConstructor
     public static class KakaoProfile {
         private String nickname;
     }
