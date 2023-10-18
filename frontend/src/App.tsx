@@ -16,7 +16,7 @@ import ChattingPage from './pages/chat/ChattingPage'
 import MyProfilePage from './pages/user/MyProfilePage'
 import MyPage from './pages/user/MyPage'
 import DmTest2 from './pages/chat/DmTest2'
-import Toss from './pages/point/Toss'
+import Point from './pages/point/point'
 import Success from './pages/point/Success'
 
 function App() {
@@ -55,8 +55,9 @@ function App() {
         <Route path="/my" element={<MyPage />} />
         <Route path="/myprofilepage" element={<MyProfilePage />} />
         <Route path="/dmtest2" element={<DmTest2 />} />
-        <Route path="/toss" element={<Toss />} />
-        <Route path="/success" element={<Success />} />
+        <Route path="/point" element={<Point />} />
+        <Route path="/point/success" element={<Success />} />
+        <Route path="/point/fail" element={<Success />} />
       </Routes>
     </div>
   )

@@ -331,6 +331,7 @@ const ChatRoom = ({ roomNum }: { roomNum: number | undefined }) => {
       {isDealModalOpen && (
         <DealModal
           price={priceRef.current}
+          roomId={roomInfo?.roomId}
           setIsDealModalOpen={setIsDealModalOpen}
         />
       )}
