@@ -50,7 +50,7 @@ class MemberBalanceHistoryServiceImplTest {
     void success_createRequestMemberBalanceHistory() {
         //given
         TransactionDto transactionDto = getTransactionDto();
-        transactionDto.getRequestMember().setPoint(0);
+        transactionDto.getRequestMember().pointMinus(1000L);
 
         ArgumentCaptor<MemberBalanceHistory> captor =
                 ArgumentCaptor.forClass(MemberBalanceHistory.class);
@@ -79,7 +79,7 @@ class MemberBalanceHistoryServiceImplTest {
     void success_createChefMemberBalanceHistory() {
         //given
         TransactionDto transactionDto = getTransactionDto();
-        transactionDto.getChefMember().setPoint(1000L);
+        transactionDto.getChefMember().pointPlus(1000L);
 
         ArgumentCaptor<MemberBalanceHistory> captor =
                 ArgumentCaptor.forClass(MemberBalanceHistory.class);

@@ -1,12 +1,14 @@
 package com.zerobase.foodlier.module.dm.room.domain.vo;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.Embeddable;
 
 @Embeddable
 @Getter
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -14,4 +16,16 @@ public class Suggestion {
     private Integer suggestedPrice;
     private Boolean isAccept;
     private Boolean isSuggested;
+
+    public void updateAccept(boolean value) {
+        this.isAccept = value;
+    }
+
+    public void updateSuggested(boolean value) {
+        this.isSuggested = value;
+    }
+
+    public void updatePrice(int price) {
+        this.suggestedPrice = price;
+    }
 }

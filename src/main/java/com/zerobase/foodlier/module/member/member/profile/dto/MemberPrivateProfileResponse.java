@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 public class MemberPrivateProfileResponse {
+    private Long myMemberId;
     private String nickName;
     private String email;
     private String phoneNumber;

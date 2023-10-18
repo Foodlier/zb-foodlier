@@ -19,7 +19,6 @@ import com.zerobase.foodlier.module.recipe.exception.recipe.RecipeException;
 import com.zerobase.foodlier.module.recipe.repository.RecipeRepository;
 import com.zerobase.foodlier.module.recipe.repository.RecipeSearchRepository;
 import com.zerobase.foodlier.module.recipe.type.OrderType;
-import com.zerobase.foodlier.module.recipe.type.SortType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -27,7 +26,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -76,12 +74,15 @@ public class RecipeServiceImpl implements RecipeService {
                 .id(recipe.getId())
                 .memberId(recipe.getMember().getId())
                 .title(recipe.getSummary().getTitle())
+                .content(recipe.getSummary().getContent())
                 .writer(recipe.getMember().getNickname())
                 .ingredients(recipe.getRecipeIngredientList().stream()
                         .map(RecipeIngredient::getName)
                         .collect(Collectors.joining(DELIMITER)))
                 .numberOfHeart(recipe.getHeartList().size())
                 .numberOfComment(recipe.getCommentList().size())
+                .createAt(recipe.getCreatedAt())
+                .mainImageUrl(recipe.getMainImageUrl())
                 .build());
     }
 
@@ -89,19 +90,37 @@ public class RecipeServiceImpl implements RecipeService {
      * 작성자: 황태원(이종욱)
      * 레시피 수정 정보를 받아 레시피를 수정
      * 레시피 수정 시 레시피 검색을 위한 객체도 레시피 정보를 기반으로 수정
-     * 작성일자: 2023-09-27(2023-10-15)
+     * 작성일자: 2023-09-27
      */
+    @Transactional
     @Override
     public void updateRecipe(RecipeDtoRequest recipeDtoRequest, Long id) {
         Recipe recipe = recipeRepository.findById(id)
                 .orElseThrow(() -> new RecipeException(NO_SUCH_RECIPE));
 
-        recipe.updateRecipe(recipeDtoRequest);
+        recipe.setSummary(Summary.builder()
+                .title(recipeDtoRequest.getTitle())
+                .content(recipeDtoRequest.getContent())
+                .build());
+        recipe.setMainImageUrl(recipeDtoRequest.getMainImageUrl());
+        recipe.setExpectedTime(recipeDtoRequest.getExpectedTime());
+        recipe.setDifficulty(recipeDtoRequest.getDifficulty());
+        recipe.setRecipeDetailList(recipeDtoRequest.getRecipeDetailDtoList()
+                .stream()
+                .map(RecipeDetailDto::toEntity)
+                .collect(Collectors.toList()));
+        recipe.setRecipeIngredientList(recipeDtoRequest.getRecipeIngredientDtoList()
+                .stream()
+                .map(RecipeIngredientDto::toEntity)
+                .collect(Collectors.toList()));
+
         recipeRepository.save(recipe);
         RecipeDocument recipeDocument = recipeSearchRepository.findById(recipe.getId())
                 .orElseThrow(() -> new RecipeException(RecipeErrorCode.NO_SUCH_RECIPE_DOCUMENT));
 
-        recipeDocument.updateTitle(recipe.getSummary().getTitle());
+        recipeDocument.updateTitle(recipeDtoRequest.getTitle());
+        recipeDocument.updateContent(recipeDtoRequest.getContent());
+        recipeDocument.updateMainImageUrl(recipeDtoRequest.getMainImageUrl());
         recipeDocument.updateIngredients(recipe.getRecipeIngredientList().stream()
                 .map(RecipeIngredient::getName)
                 .collect(Collectors.joining(DELIMITER)));
@@ -131,7 +150,7 @@ public class RecipeServiceImpl implements RecipeService {
         RecipeDtoResponse recipeDtoResponse =
                 RecipeDtoResponse.fromEntity(recipe);
 
-        recipeDtoResponse.setHeart(heartRepository
+        recipeDtoResponse.updateHeart(heartRepository
                 .existsByRecipeAndMember(recipe, member));
 
         return recipeDtoResponse;
@@ -155,71 +174,29 @@ public class RecipeServiceImpl implements RecipeService {
         recipeSearchRepository.deleteById(id);
     }
 
-    private List<RecipeCardDto> searchBy(Page<RecipeDocument> recipeDocumentPage, Long memberId) {
-        Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
-
-        List<RecipeCardDto> recipeListByWriter = new ArrayList<>();
-        for (RecipeDocument recipeDocument : recipeDocumentPage.getContent()) {
-            Recipe recipe = recipeRepository.findById(recipeDocument.getId())
-                    .orElseThrow(() -> new RecipeException(NO_SUCH_RECIPE));
-            recipeListByWriter.add(RecipeCardDto.builder()
-                    .id(recipe.getId())
-                    .nickName(recipe.getMember().getNickname())
-                    .content(recipe.getSummary().getContent())
-                    .title(recipe.getSummary().getTitle())
-                    .mainImageUrl(recipe.getMainImageUrl())
-                    .isHeart(heartRepository.existsByRecipeAndMember(recipe, member))
-                    .heartCount(recipe.getHeartCount())
-                    .build());
-        }
-        return recipeListByWriter;
-    }
-
-    /**
-     * - 작성자: 이종욱
-     * - 검색어와 정렬 타입을 이용하여 조건에 맞는 레시피 목록 반환
-     * - 작성일자: 2023-10-11
-     */
-    @Override
-    @Transactional(readOnly = true)
     public ListResponse<RecipeCardDto> getRecipeList(RecipeSearchRequest recipeSearchRequest) {
-        Page<RecipeDocument> findingResult;
 
-        if (!SortType.existsSortType(recipeSearchRequest.getSortType())) {
-            throw new RecipeException(SORT_TYPE_NOT_FOUND);
-        }
-
-        switch (recipeSearchRequest.getSearchType()) {
-
-            case TITLE: {
-                findingResult = recipeSearchRepository.findByTitle(recipeSearchRequest.getSearchText(),
-                        recipeSearchRequest.getPageable());
-                break;
-            }
-
-            case WRITER: {
-                findingResult = recipeSearchRepository.findByWriter(recipeSearchRequest.getSearchText(),
-                        recipeSearchRequest.getPageable());
-                break;
-            }
-
-            case INGREDIENTS: {
-                findingResult = recipeSearchRepository.findByIngredients(recipeSearchRequest.getSearchText(),
-                        recipeSearchRequest.getPageable());
-                break;
-            }
-
-            default:
-                throw new RecipeException(SEARCH_TYPE_NOT_FOUND);
-        }
+        Member member = memberRepository.findById(recipeSearchRequest.getMemberId())
+                .orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
+        Page<RecipeDocument> result = recipeSearchRepository.searchBy(recipeSearchRequest.getSearchType(),
+                recipeSearchRequest.getSearchText(), recipeSearchRequest.getPageable());
 
         return ListResponse.<RecipeCardDto>builder()
-                .totalElements(findingResult.getTotalElements())
-                .totalPages(findingResult.getTotalPages())
-                .hasNextPage(findingResult.hasNext())
-                .content(searchBy(findingResult, recipeSearchRequest.getMemberId()))
+                .totalPages(result.getTotalPages())
+                .totalElements(result.getTotalElements())
+                .hasNextPage(result.hasNext())
+                .content(result.stream()
+                        .map(recipeDocument -> RecipeCardDto.builder()
+                                .id(recipeDocument.getId())
+                                .title(recipeDocument.getTitle())
+                                .content(recipeDocument.getContent())
+                                .mainImageUrl(recipeDocument.getMainImageUrl())
+                                .nickName(recipeDocument.getWriter())
+                                .heartCount((int) recipeDocument.getNumberOfHeart())
+                                .isHeart(heartRepository.existsByRecipe_IdAndMember(recipeDocument.getId(), member))
+                                .build()).collect(Collectors.toList()))
                 .build();
+
     }
 
 
@@ -348,12 +325,13 @@ public class RecipeServiceImpl implements RecipeService {
         Member member = memberRepository.findById(memberAuthDto.getId())
                 .orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
 
-        return recipeRepository.findTop3ByIsPublicOrderByCreatedAtDesc(false)
+        return recipeRepository.findTop3ByIsPublicIsTrueOrderByCreatedAtDesc()
                 .stream()
                 .map(r -> RecipeCardDto.builder()
                         .id(r.getId())
                         .nickName(r.getMember().getNickname())
                         .title(r.getSummary().getTitle())
+                        .mainImageUrl(r.getMainImageUrl())
                         .content(r.getSummary().getContent())
                         .heartCount(r.getHeartCount())
                         .isHeart(heartRepository.existsByRecipeAndMember(r, member))
@@ -413,6 +391,7 @@ public class RecipeServiceImpl implements RecipeService {
                                 .map(r -> RecipeCardDto.builder()
                                         .id(r.getId())
                                         .nickName(r.getMember().getNickname())
+                                        .mainImageUrl(r.getMainImageUrl())
                                         .title(r.getSummary().getTitle())
                                         .content(r.getSummary().getContent())
                                         .heartCount(r.getHeartCount())
@@ -432,13 +411,14 @@ public class RecipeServiceImpl implements RecipeService {
         Member member = memberRepository.findById(memberAuthDto.getId())
                 .orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
 
-        return recipeRepository.findTop5ByIsPublicAndCreatedAtAfterOrderByHeartCountDesc(
-                        false, LocalDate.now().atStartOfDay())
+        return recipeRepository.findTop5ByIsPublicIsTrueAndCreatedAtAfterOrderByHeartCountDesc(
+                        LocalDate.now().atStartOfDay())
                 .stream()
                 .map(r -> RecipeCardDto.builder()
                         .id(r.getId())
                         .nickName(r.getMember().getNickname())
                         .title(r.getSummary().getTitle())
+                        .mainImageUrl(r.getMainImageUrl())
                         .content(r.getSummary().getContent())
                         .heartCount(r.getHeartCount())
                         .isHeart(heartRepository.existsByRecipeAndMember(r, member))

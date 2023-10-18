@@ -113,8 +113,8 @@ class RequestServiceImplTest {
                     .id(1L)
                     .build();
 
-            chef.setChefMember(chefMember);
-            chefMember.setMember(chef);
+            chef.updateChefMember(chefMember);
+            chefMember.updateMember(chef);
 
             Recipe recipe = Recipe.builder()
                     .id(1L)
@@ -223,8 +223,8 @@ class RequestServiceImplTest {
             ChefMember chefMember = ChefMember.builder()
                     .id(1L)
                     .build();
-            chef.setChefMember(chefMember);
-            chefMember.setMember(chef);
+            chef.updateChefMember(chefMember);
+            chefMember.updateMember(chef);
 
             Member otherChef = Member.builder()
                     .id(3L)
@@ -232,8 +232,8 @@ class RequestServiceImplTest {
             ChefMember otherChefMember = ChefMember.builder()
                     .id(2L)
                     .build();
-            otherChef.setChefMember(otherChefMember);
-            otherChefMember.setMember(chef);
+            otherChef.updateChefMember(otherChefMember);
+            otherChefMember.updateMember(chef);
 
             Request request = Request.builder()
                     .id(1L)
@@ -894,7 +894,7 @@ class RequestServiceImplTest {
                     .member(member)
                     .build();
 
-            member.setChefMember(chefMember);
+            member.updateChefMember(chefMember);
 
             Request request = Request.builder()
                     .id(1L)
@@ -969,7 +969,7 @@ class RequestServiceImplTest {
                     .member(member)
                     .build();
 
-            member.setChefMember(chefMember);
+            member.updateChefMember(chefMember);
 
             Request request = Request.builder()
                     .id(1L)
@@ -1011,7 +1011,7 @@ class RequestServiceImplTest {
                     .member(member)
                     .build();
 
-            member.setChefMember(chefMember);
+            member.updateChefMember(chefMember);
 
             Request request = Request.builder()
                     .id(1L)
@@ -1050,7 +1050,7 @@ class RequestServiceImplTest {
                     .member(member)
                     .build();
 
-            member.setChefMember(chefMember);
+            member.updateChefMember(chefMember);
 
             Request request = Request.builder()
                     .id(1L)
@@ -1098,7 +1098,7 @@ class RequestServiceImplTest {
                     .member(member)
                     .build();
 
-            member.setChefMember(chefMember);
+            member.updateChefMember(chefMember);
 
             Request request = Request.builder()
                     .id(1L)
@@ -1173,7 +1173,7 @@ class RequestServiceImplTest {
                     .member(member)
                     .build();
 
-            member.setChefMember(chefMember);
+            member.updateChefMember(chefMember);
 
             Request request = Request.builder()
                     .id(1L)
@@ -1210,7 +1210,7 @@ class RequestServiceImplTest {
                     .member(member)
                     .build();
 
-            member.setChefMember(chefMember);
+            member.updateChefMember(chefMember);
 
             Request request = Request.builder()
                     .id(1L)
@@ -1247,7 +1247,7 @@ class RequestServiceImplTest {
                     .member(member)
                     .build();
 
-            member.setChefMember(chefMember);
+            member.updateChefMember(chefMember);
 
             Request request = Request.builder()
                     .id(1L)

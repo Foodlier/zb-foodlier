@@ -1,6 +1,5 @@
 package com.zerobase.foodlier.module.notification.service.emitter;
 
-import com.zerobase.foodlier.module.notification.domain.model.Notification;
 import com.zerobase.foodlier.module.notification.repository.sse.EmitterRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -85,7 +84,7 @@ class EmitterServiceTest {
         String email = "test@example.com";
 
         // when
-        String emitterId = emitterService.makeTimeIncludeId(email);
+        String emitterId = emitterService.makeUUIDIncludeId(email);
 
         // then
         assertNotNull(emitterId);
@@ -94,26 +93,12 @@ class EmitterServiceTest {
     }
 
     @Test
-    @DisplayName("알림 캐시 객체 생성 성공")
-    void success_createEventCache() {
-        // given
-        String emitterId = "test@example.com_123456789";
-        Notification notification = new Notification();
-
-        // when
-        emitterService.createEventCache(emitterId, notification);
-
-        // then
-        verify(emitterRepository).saveEventCache(eq(emitterId), eq(notification));
-    }
-
-    @Test
     @DisplayName("알림 전송 객체 찾기 성공")
     void success_findAllEmitter() {
         // given
         String receiverEmail = "test@example.com";
         Map<String, SseEmitter> emitterMap = new HashMap<>();
-        when(emitterRepository.findAllEmitterStartWithByMemberId(receiverEmail)).thenReturn(emitterMap);
+        when(emitterRepository.findAllEmitterStartWithByEmail(receiverEmail)).thenReturn(emitterMap);
 
         // when
         Map<String, SseEmitter> result = emitterService.findAllEmitter(receiverEmail);

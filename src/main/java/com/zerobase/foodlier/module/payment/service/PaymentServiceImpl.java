@@ -60,14 +60,14 @@ public class PaymentServiceImpl implements PaymentService {
         Payment payment = PaymentRequest.from(paymentRequest);
         Member member = memberRepository.findByEmail(memberAuthDto.getEmail())
                 .orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
-        payment.setMember(member);
-        payment.setCustomerEmail(memberAuthDto.getEmail());
-        payment.setCustomerNickName(member.getNickname());
+        payment.updateMember(member);
+        payment.updateCustomerEmail(memberAuthDto.getEmail());
+        payment.updateCustomerNickName(member.getNickname());
         paymentRepository.save(payment);
 
         paymentResponse = Payment.from(payment);
-        paymentResponse.setSuccessUrl(successCallBackUrl);
-        paymentResponse.setFailUrl(failCallBackUrl);
+        paymentResponse.updateSuccessUrl(successCallBackUrl);
+        paymentResponse.updateFailUrl(failCallBackUrl);
 
         return paymentResponse;
     }
@@ -105,8 +105,8 @@ public class PaymentServiceImpl implements PaymentService {
 
         Payment payment = paymentRepository.findByOrderId(orderId)
                 .orElseThrow(() -> new PaymentException(PAYMENT_REQUEST_NOT_FOUND));
-        payment.setPaySuccessYn(SUCCESS_Y);
-        payment.getMember().setPoint(payment.getMember().getPoint() + amount);
+        payment.updatePaySuccessYn(SUCCESS_Y);
+        payment.getMember().pointPlus(amount);
 
         return paymentRepository.save(payment);
     }
@@ -121,8 +121,8 @@ public class PaymentServiceImpl implements PaymentService {
     public PaymentResponseHandleFailDto requestFail(String errorCode, String errorMsg, String orderId) {
         Payment payment = paymentRepository.findByOrderId(orderId)
                 .orElseThrow(() -> new PaymentException(PAYMENT_REQUEST_NOT_FOUND));
-        payment.setPaySuccessYn(SUCCESS_N);
-        payment.setPayFailReason(errorMsg);
+        payment.updatePaySuccessYn(SUCCESS_N);
+        payment.updatePayFailReason(errorMsg);
         paymentRepository.save(payment);
 
         return PaymentResponseHandleFailDto.builder()
@@ -165,8 +165,8 @@ public class PaymentServiceImpl implements PaymentService {
         }
 
         Long amount = payment.getAmount();
-        payment.getMember().setPoint(payment.getMember().getPoint() - amount);
-        payment.setCanceled(true);
+        payment.getMember().pointMinus(amount);
+        payment.updateCanceled();
 
         return paymentRepository.save(payment);
     }
@@ -176,7 +176,7 @@ public class PaymentServiceImpl implements PaymentService {
                 .ifPresentOrElse(
                         P -> {
                             if (P.getAmount().equals(amount)) {
-                                P.setPaymentKey(paymentKey);
+                                P.updatePaymentKey(paymentKey);
                             } else {
                                 throw new PaymentException(PAYMENT_ERROR_ORDER_AMOUNT);
                             }

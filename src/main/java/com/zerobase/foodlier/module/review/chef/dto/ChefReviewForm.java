@@ -6,7 +6,6 @@ import org.hibernate.validator.constraints.Range;
 import javax.validation.constraints.NotBlank;
 
 @Getter
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder

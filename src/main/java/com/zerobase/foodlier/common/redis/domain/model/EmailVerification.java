@@ -7,7 +7,6 @@ import org.springframework.data.redis.core.RedisHash;
 import java.time.LocalDateTime;
 
 @Getter
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -23,4 +22,7 @@ public class EmailVerification {
 
     private boolean isAuthorized;
 
+    public void updateAuthorized() {
+        this.isAuthorized = true;
+    }
 }

@@ -8,7 +8,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
 public interface CommentService {
-    void createComment(Comment comment);
+    Comment createComment(Comment comment);
     void updateComment(Long memberId, Long commentId, String modifiedMessage);
     void deleteComment(Long memberId, Long commentId);
     ListResponse<CommentDto> getCommentList(Long recipeId, PageRequest pageRequest);

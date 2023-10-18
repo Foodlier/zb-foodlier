@@ -113,6 +113,7 @@ public class MemberServiceImpl implements MemberService {
         Member member = findByEmail(email);
 
         return MemberPrivateProfileResponse.builder()
+                .myMemberId(member.getId())
                 .nickName(member.getNickname())
                 .point(member.getPoint())
                 .isChef(!Objects.isNull(member.getChefMember()))

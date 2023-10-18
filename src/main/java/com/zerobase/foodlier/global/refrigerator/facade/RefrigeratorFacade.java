@@ -16,15 +16,17 @@ public class RefrigeratorFacade {
     private final RequestService requestService;
     private final DmRoomService dmRoomService;
 
-    public void requesterApproveAndCreateDm(Long memberId, Long requestId) {
+    public Request requesterApproveAndCreateDm(Long memberId, Long requestId) {
         Request request = requestService.requesterApproveRequest(memberId, requestId);
         DmRoom dmRoom = dmRoomService.createDmRoom(request);
         requestService.setDmRoom(request, dmRoom);
+        return request;
     }
 
-    public void chefApproveAndCreateDm(Long memberId, Long requestId){
+    public Request chefApproveAndCreateDm(Long memberId, Long requestId){
         Request request = requestService.chefApproveRequest(memberId, requestId);
         DmRoom dmRoom = dmRoomService.createDmRoom(request);
         requestService.setDmRoom(request, dmRoom);
+        return request;
     }
 }

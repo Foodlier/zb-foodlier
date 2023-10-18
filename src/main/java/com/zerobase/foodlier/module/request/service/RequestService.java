@@ -8,15 +8,15 @@ import com.zerobase.foodlier.module.request.dto.RequestDetailDto;
 public interface RequestService {
 
     void setDmRoom(Request request, DmRoom dmRoom);
-    void setQuotation(Long requestId, Recipe quotation);
+    Request setQuotation(Long requestId, Recipe quotation);
     RequestDetailDto getRequestDetail(Long memberId, Long requestId);
-    void sendRequest(Long memberId, Long requestFormId, Long chefMemberId);
+    Request sendRequest(Long memberId, Long requestFormId, Long chefMemberId);
 
-    void cancelRequest(Long memberId, Long requestId);
+    Request cancelRequest(Long memberId, Long requestId);
 
     Request requesterApproveRequest(Long memberId, Long requestId);
 
     Request chefApproveRequest(Long memberId, Long requestId);
 
-    void rejectRequest(Long memberId, Long requestId);
+    Request rejectRequest(Long memberId, Long requestId);
 }

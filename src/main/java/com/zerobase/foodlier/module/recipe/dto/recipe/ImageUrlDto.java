@@ -1,12 +1,13 @@
 package com.zerobase.foodlier.module.recipe.dto.recipe;
 
-import com.zerobase.foodlier.module.recipe.domain.vo.RecipeDetail;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 
 @Getter
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
