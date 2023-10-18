@@ -45,4 +45,12 @@ public class RecipeReview extends Audit {
     public void updateCookUrl(String url) {
         this.cookUrl = url;
     }
+
+    public void updateMember(Member member) {
+        this.member = member;
+    }
+
+    public void updateRecipe(Recipe recipe) {
+        this.recipe = recipe;
+    }
 }
