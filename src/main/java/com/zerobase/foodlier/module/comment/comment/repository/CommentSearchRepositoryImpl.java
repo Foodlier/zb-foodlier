@@ -35,6 +35,7 @@ public class CommentSearchRepositoryImpl implements CommentSearchRepository {
                 .on(comment.recipe.id.eq(recipeId))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
+                .orderBy(comment.createdAt.desc())
                 .fetch();
 
 
@@ -59,6 +60,7 @@ public class CommentSearchRepositoryImpl implements CommentSearchRepository {
                 .from(comment).where(comment.member.id.eq(memberId))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
+                .orderBy(comment.createdAt.desc())
                 .fetch();
 
         return new PageImpl<>(result);
