@@ -37,7 +37,7 @@ class ReplyServiceTest {
 
     @BeforeEach
     void setup() {
-        replyService = new ReplyServiceImpl(replyRepository);
+        replyService = new ReplyService(replyRepository);
     }
 
     @Test

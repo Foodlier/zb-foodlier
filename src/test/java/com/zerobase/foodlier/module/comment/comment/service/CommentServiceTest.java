@@ -45,7 +45,7 @@ class CommentServiceTest {
 
     @BeforeEach
     void setup() {
-        commentService = new CommentServiceImpl(commentRepository);
+        commentService = new CommentService(commentRepository);
     }
 
     @Test
