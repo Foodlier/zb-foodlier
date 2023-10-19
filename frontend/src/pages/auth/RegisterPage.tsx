@@ -303,7 +303,7 @@ const Register = () => {
     } else {
       formDataToSend.append('profileImage', formData.profileImage as Blob)
     }
-    formDataToSend.append('address', formData.roadAddress)
+    formDataToSend.append('roadAddress', formData.roadAddress)
 
     // API : 회원가입 요청
     axios

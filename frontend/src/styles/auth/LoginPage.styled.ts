@@ -1,14 +1,19 @@
-// 스타일드 컴포넌트
-// TODO :비밀번호 찾기
 import styled from 'styled-components'
+import { breakpoints, typographyDev } from '../../constants/Styles'
 
 export const inputStyles = `
   height: 55px;
   padding: 10px 30px;
   margin-bottom: 15px;
   border: 1px solid #ccc;
-  border-radius: 12px;
-  font-size: 16px;
+  border-radius: 1rem;
+  font-weight: 400;
+  @media ${breakpoints.small} {
+    font-size: ${typographyDev.mobile.content};
+  }
+  @media ${breakpoints.large} {
+    font-size: ${typographyDev.web.content};
+  }
 `
 
 export const buttonStyles = `
@@ -16,9 +21,15 @@ export const buttonStyles = `
   padding: 10px;
   margin-bottom: 10px;
   border: none;
-  border-radius: 12px;
-  font-size: 16px;
+  border-radius: 1rem;
+  font-weight: 400;
   cursor: pointer;
+  @media ${breakpoints.small} {
+    font-size: ${typographyDev.mobile.content};
+  }
+  @media ${breakpoints.large} {
+    font-size: ${typographyDev.web.content};
+  }
 `
 
 export const Container = styled.div`
@@ -31,8 +42,7 @@ export const Container = styled.div`
 `
 
 export const Title = styled.div`
-  width: 70%;
-  font-size: 24px;
+  width: 20em;
   margin-bottom: 50px;
   text-align: center;
 `
@@ -57,9 +67,14 @@ export const FindPassword = styled.div`
   display: flex;
   justify-content: flex-start;
   margin-bottom: 15px;
-  font-size: 14px;
   color: #000;
   cursor: pointer;
+  @media ${breakpoints.small} {
+    font-size: ${typographyDev.mobile.content};
+  }
+  @media ${breakpoints.large} {
+    font-size: ${typographyDev.web.content};
+  }
 `
 
 export const Button = styled.button`
@@ -96,8 +111,13 @@ export const Text = styled.span`
   transform: translate(-50%, -50%);
   background-color: #fff;
   padding: 0 10px;
-  font-size: 18px;
   color: #ccc;
+  @media ${breakpoints.small} {
+    font-size: ${typographyDev.mobile.subTitle};
+  }
+  @media ${breakpoints.large} {
+    font-size: ${typographyDev.web.subTitle};
+  }
 `
 
 export const RegisterButton = styled(Button)`
