@@ -51,7 +51,7 @@ public class CommentController {
     @PutMapping("/{commentId}")
     public ResponseEntity<String> updateComment(@AuthenticationPrincipal MemberAuthDto memberAuthDto,
                                                 @PathVariable Long commentId,
-                                                @RequestBody String modifiedMessage)
+                                                @RequestParam String modifiedMessage)
     {
         commentService.updateComment(memberAuthDto.getId(), commentId, modifiedMessage);
         return ResponseEntity.ok("댓글 수정이 완료되었습니다.");
@@ -96,7 +96,7 @@ public class CommentController {
     @PutMapping("/reply/{replyId}")
     public ResponseEntity<String> updateReply(@AuthenticationPrincipal MemberAuthDto memberAuthDto,
                                               @PathVariable Long replyId,
-                                              @RequestBody String message)
+                                              @RequestParam String message)
     {
         replyService.updateReply(memberAuthDto.getId(), replyId, message);
         return ResponseEntity.ok("답글 수정이 완료되었습니다.");
@@ -113,13 +113,11 @@ public class CommentController {
 
     @GetMapping("/reply/{commentId}/{pageIdx}/{pageSize}")
     public ResponseEntity<ListResponse<ReplyDto>> getReplyList(@AuthenticationPrincipal MemberAuthDto memberAuthDto,
-                                               @PathVariable Long commentId,
-                                               @PathVariable int pageIdx,
-                                               @PathVariable int pageSize)
+                                                               @PathVariable Long commentId,
+                                                               @PathVariable int pageIdx,
+                                                               @PathVariable int pageSize)
     {
         return ResponseEntity.ok(replyService.getReplyList(commentId,
                 PageRequest.of(pageIdx, pageSize)));
     }
-
-
 }
