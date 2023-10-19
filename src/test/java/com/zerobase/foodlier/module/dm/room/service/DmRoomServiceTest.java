@@ -30,14 +30,14 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
-public class DmRoomServiceImplTest {
+public class DmRoomServiceTest {
 
     @Mock
     private DmRoomRepository dmRoomRepository;
     @Mock
     private RequestRepository requestRepository;
     @InjectMocks
-    private DmRoomServiceImpl dmRoomService;
+    private DmRoomService dmRoomService;
 
     @Test
     @DisplayName("채팅방 목록 가져오기")

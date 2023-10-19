@@ -41,7 +41,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
-class ChefReviewServiceImplTest {
+class ChefReviewServiceTest {
 
     @Mock
     private ChefReviewRepository chefReviewRepository;
@@ -52,7 +52,7 @@ class ChefReviewServiceImplTest {
     @Mock
     private ChefMemberRepository chefMemberRepository;
     @InjectMocks
-    private ChefReviewServiceImpl chefReviewService;
+    private ChefReviewService chefReviewService;
 
     @Test
     @DisplayName("요리사 후기 작성 성공")

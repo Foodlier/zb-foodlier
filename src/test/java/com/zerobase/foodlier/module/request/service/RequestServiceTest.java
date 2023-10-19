@@ -41,7 +41,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
-class RequestServiceImplTest {
+class RequestServiceTest {
 
     @Mock
     private RequestRepository requestRepository;
@@ -52,7 +52,7 @@ class RequestServiceImplTest {
     @Mock
     private MemberRepository memberRepository;
     @InjectMocks
-    private RequestServiceImpl requestService;
+    private RequestService requestService;
 
     @Nested
     @DisplayName("setDmRoom() 테스트")

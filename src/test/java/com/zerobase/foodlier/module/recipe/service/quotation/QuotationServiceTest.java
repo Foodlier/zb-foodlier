@@ -44,7 +44,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
-class QuotationServiceImplTest {
+class QuotationServiceTest {
 
     @Mock
     private RecipeRepository recipeRepository;
@@ -53,7 +53,7 @@ class QuotationServiceImplTest {
     @Mock
     private MemberRepository memberRepository;
     @InjectMocks
-    private QuotationServiceImpl quotationService;
+    private QuotationService quotationService;
 
     @Nested
     @DisplayName("createQuotation() 테스트")

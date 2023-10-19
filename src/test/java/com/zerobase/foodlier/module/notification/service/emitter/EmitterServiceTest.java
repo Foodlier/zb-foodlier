@@ -21,12 +21,12 @@ class EmitterServiceTest {
     @Mock
     private EmitterRepository emitterRepository;
 
-    private EmitterServiceImpl emitterService;
+    private EmitterService emitterService;
 
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        emitterService = new EmitterServiceImpl(emitterRepository);
+        emitterService = new EmitterService(emitterRepository);
     }
 
     @Test

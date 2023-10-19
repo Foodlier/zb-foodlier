@@ -35,7 +35,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
-class PointChargeHistoryServiceImplTest {
+class PointChargeHistoryServiceTest {
     @Mock
     private PointChargeHistoryRepository pointChargeHistoryRepository;
 
@@ -43,7 +43,7 @@ class PointChargeHistoryServiceImplTest {
     private MemberRepository memberRepository;
 
     @InjectMocks
-    private PointChargeHistoryServiceImpl pointChargeHistoryService;
+    private PointChargeHistoryService pointChargeHistoryService;
 
     @Test
     @DisplayName("충전 내역 생성 성공")

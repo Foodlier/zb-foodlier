@@ -37,7 +37,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
-class PaymentServiceImplTest {
+class PaymentServiceTest {
     @Mock
     private PaymentRepository paymentRepository;
 
@@ -48,7 +48,7 @@ class PaymentServiceImplTest {
     private RestTemplate restTemplate;
 
     @InjectMocks
-    private PaymentServiceImpl paymentService;
+    private PaymentService paymentService;
 
     @Test
     @DisplayName("주문 요청 성공")

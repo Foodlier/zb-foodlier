@@ -40,7 +40,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
-class RecipeReviewServiceImplTest {
+class RecipeReviewServiceTest {
     @Mock
     private RecipeReviewRepository recipeReviewRepository;
     @Mock
@@ -48,7 +48,7 @@ class RecipeReviewServiceImplTest {
     @Mock
     private MemberRepository memberRepository;
     @InjectMocks
-    private RecipeReviewServiceImpl recipeReviewService;
+    private RecipeReviewService recipeReviewService;
 
     private Member getMember(){
         return Member.builder()
