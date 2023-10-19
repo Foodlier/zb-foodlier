@@ -110,7 +110,7 @@ class TransactionServiceImplTest {
     void fail_sendSuggestion_alreadySuggested() {
         //given
         DmRoom dmRoom = getDmRoom();
-        dmRoom.getSuggestion().setIsSuggested(true);
+        dmRoom.getSuggestion().updateSuggested(true);
 
         given(dmRoomRepository.findById(anyLong()))
                 .willReturn(Optional.of(dmRoom));
@@ -134,7 +134,7 @@ class TransactionServiceImplTest {
     void success_cancelSuggestion() {
         //given
         DmRoom dmRoom = getDmRoom();
-        dmRoom.getSuggestion().setIsSuggested(true);
+        dmRoom.getSuggestion().updateSuggested(true);
 
         given(dmRoomRepository.findById(anyLong()))
                 .willReturn(Optional.of(dmRoom));
@@ -223,8 +223,8 @@ class TransactionServiceImplTest {
     void success_approveSuggestion() {
         //given
         DmRoom dmRoom = getDmRoom();
-        dmRoom.getSuggestion().setSuggestedPrice(1000);
-        dmRoom.getSuggestion().setIsSuggested(true);
+        dmRoom.getSuggestion().updatePrice(1000);
+        dmRoom.getSuggestion().updateSuggested(true);
 
         given(dmRoomRepository.findById(anyLong()))
                 .willReturn(Optional.of(dmRoom));
@@ -307,8 +307,8 @@ class TransactionServiceImplTest {
     void fail_approveSuggestion_notEnoughPoint() {
         //given
         DmRoom dmRoom = getDmRoom();
-        dmRoom.getSuggestion().setIsSuggested(true);
-        dmRoom.getSuggestion().setSuggestedPrice(10000);
+        dmRoom.getSuggestion().updateSuggested(true);
+        dmRoom.getSuggestion().updatePrice(10000);
 
         given(dmRoomRepository.findById(anyLong()))
                 .willReturn(Optional.of(dmRoom));
@@ -329,7 +329,7 @@ class TransactionServiceImplTest {
     void success_rejectSuggestion() {
         //given
         DmRoom dmRoom = getDmRoom();
-        dmRoom.getSuggestion().setIsSuggested(true);
+        dmRoom.getSuggestion().updateSuggested(true);
 
         given(dmRoomRepository.findById(anyLong()))
                 .willReturn(Optional.of(dmRoom));

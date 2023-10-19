@@ -2,9 +2,11 @@
   "properties" : {
     "id" : {"type" : "long"},
     "title" : {"type" : "text", "fields": {"kor":  {"type":  "text", "analyzer": "korean"}}},
+    "content" : {"type" : "text"},
     "ingredients" :{"type": "text", "fields": {"kor": {"type": "text", "analyzer":  "korean"}}},
     "writer" : {"type" : "text", "fields": {"kor":  {"type":  "text", "analyzer": "korean"}}},
     "memberId": {"type" : "long"},
+    "mainImageUrl": {"type": "text"},
     "numberOfHeart" : {"type" : "long"},
     "numberOfComment": {"type": "long"},
     "createdAt": {"type": "date", "format": "yyyy-MM-dd HH:mm:ss"}

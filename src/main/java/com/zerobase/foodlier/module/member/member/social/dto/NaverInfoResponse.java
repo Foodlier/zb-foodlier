@@ -5,11 +5,14 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.zerobase.foodlier.module.member.member.type.RegistrationType;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 
 import static com.zerobase.foodlier.module.member.member.type.RegistrationType.NAVER;
 
 @Getter
 @JsonIgnoreProperties(ignoreUnknown = true)
+@NoArgsConstructor
 @AllArgsConstructor
 public class NaverInfoResponse implements OAuthInfoResponse {
 
@@ -18,6 +21,7 @@ public class NaverInfoResponse implements OAuthInfoResponse {
 
     @Getter
     @JsonIgnoreProperties(ignoreUnknown = true)
+    @NoArgsConstructor
     @AllArgsConstructor
     public static class Response {
         private String email;

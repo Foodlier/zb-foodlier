@@ -35,9 +35,10 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -133,6 +134,9 @@ class PointControllerTest {
         perform.andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().string("결제 완료, 금액 : 1000"));
+
+        verify(paymentFacade,times(1))
+                .pointChargeAndCreateHistory(anyString(),anyString(),anyLong());
     }
 
     @Test
@@ -184,6 +188,9 @@ class PointControllerTest {
                         status().isOk(),
                         content().string("결제 취소 완료, 이유 : 단순변심")
                 );
+
+        verify(paymentFacade,times(1))
+                .pointChargeCancelAndCreateHistory(anyString(),anyString());
     }
 
     @Test
@@ -246,6 +253,9 @@ class PointControllerTest {
                         status().isOk(),
                         content().string("제안을 수락했습니다.")
                 );
+
+        verify(transactionFacade,times(1))
+                .pointTransactionAndSaveHistory(any(),anyLong());
     }
 
     @Test
