@@ -131,10 +131,6 @@ class NotificationServiceTest {
 
 
     private static ArrayList<NotificationDto> makeExpectedNotificationList() {
-        Member member = Member.builder()
-                .id(1L)
-                .nickname("제육볶음 러버")
-                .build();
         return new ArrayList<>(Arrays.asList(
                 NotificationDto.builder()
                         .id(2L)

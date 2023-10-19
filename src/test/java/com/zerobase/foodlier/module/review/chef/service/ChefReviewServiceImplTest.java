@@ -26,7 +26,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.Optional;
 
 import static com.zerobase.foodlier.module.member.chef.exception.ChefMemberErrorCode.CHEF_MEMBER_NOT_FOUND;
@@ -274,7 +274,7 @@ class ChefReviewServiceImplTest {
                 .willReturn(
                         new PageImpl<>(
                                 new ArrayList<>(
-                                        Arrays.asList(
+                                        Collections.singletonList(
                                                 ChefReview.builder()
                                                         .content("content")
                                                         .star(5)

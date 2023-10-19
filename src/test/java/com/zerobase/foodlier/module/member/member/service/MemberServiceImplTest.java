@@ -1016,9 +1016,9 @@ class MemberServiceImplTest {
 
         //then
         assertAll(
-                () -> assertEquals(expectedMember.getNickname(), member.getNickname()),
-                () -> assertEquals(expectedMember.getEmail(), member.getEmail()),
-                () -> assertEquals(expectedMember.getRegistrationType(),
+                () -> assertEquals(Objects.requireNonNull(expectedMember).getNickname(), member.getNickname()),
+                () -> assertEquals(Objects.requireNonNull(expectedMember).getEmail(), member.getEmail()),
+                () -> assertEquals(Objects.requireNonNull(expectedMember).getRegistrationType(),
                         member.getRegistrationType())
         );
     }
@@ -1047,9 +1047,9 @@ class MemberServiceImplTest {
 
         //then
         assertAll(
-                () -> assertEquals(expectedMember.getNickname(), member.getNickname()),
-                () -> assertEquals(expectedMember.getEmail(), member.getEmail()),
-                () -> assertEquals(expectedMember.getRegistrationType(),
+                () -> assertEquals(Objects.requireNonNull(expectedMember).getNickname(), member.getNickname()),
+                () -> assertEquals(Objects.requireNonNull(expectedMember).getEmail(), member.getEmail()),
+                () -> assertEquals(Objects.requireNonNull(expectedMember).getRegistrationType(),
                         member.getRegistrationType())
         );
     }

@@ -36,8 +36,7 @@ public class CommentController {
     @PostMapping("/{recipeId}")
     public ResponseEntity<String> createComment(@AuthenticationPrincipal MemberAuthDto memberAuthDto,
                                                 @PathVariable Long recipeId,
-                                                @RequestParam String message)
-    {
+                                                @RequestParam String message) {
         CommentNotify commentNotify = CommentNotify.from(commentFacade.createComment(recipeId, memberAuthDto.getEmail(), message),
                 NotifyInfoDto.builder()
                         .performerType(PerformerType.COMMENTER)
@@ -53,6 +52,7 @@ public class CommentController {
                                                 @PathVariable Long commentId,
                                                 @RequestParam String modifiedMessage)
     {
+
         commentService.updateComment(memberAuthDto.getId(), commentId, modifiedMessage);
         return ResponseEntity.ok("댓글 수정이 완료되었습니다.");
     }
@@ -68,8 +68,7 @@ public class CommentController {
     @GetMapping("/{recipeId}/{pageIdx}/{pageSize}")
     public ResponseEntity<ListResponse<CommentDto>> getCommentList(@PathVariable int pageIdx,
                                                                    @PathVariable int pageSize,
-                                                                   @PathVariable Long recipeId)
-    {
+                                                                   @PathVariable Long recipeId) {
         return ResponseEntity.ok(commentService.getCommentList(recipeId,
                 PageRequest.of(pageIdx, pageSize)));
     }
@@ -80,8 +79,7 @@ public class CommentController {
     public ResponseEntity<String> createReply(@AuthenticationPrincipal MemberAuthDto memberAuthDto,
                                               @PathVariable Long recipeId,
                                               @PathVariable Long commentId,
-                                              @RequestParam String message)
-    {
+                                              @RequestParam String message) {
         ReplyNotify replyNotify = ReplyNotify.from(replyFacade.createReply(commentId, recipeId, memberAuthDto.getEmail(), message),
                 NotifyInfoDto.builder()
                         .notificationType(NotificationType.RE_COMMENT)
@@ -105,15 +103,13 @@ public class CommentController {
     @DeleteMapping("/reply/{recipeId}/{replyId}")
     public ResponseEntity<String> deleteRely(@AuthenticationPrincipal MemberAuthDto memberAuthDto,
                                              @PathVariable Long recipeId,
-                                             @PathVariable Long replyId)
-    {
+                                             @PathVariable Long replyId) {
         replyFacade.deleteReply(replyId, recipeId, memberAuthDto.getId());
         return ResponseEntity.ok("답글이 삭제되었습니다.");
     }
 
     @GetMapping("/reply/{commentId}/{pageIdx}/{pageSize}")
-    public ResponseEntity<ListResponse<ReplyDto>> getReplyList(@AuthenticationPrincipal MemberAuthDto memberAuthDto,
-                                                               @PathVariable Long commentId,
+    public ResponseEntity<ListResponse<ReplyDto>> getReplyList(@PathVariable Long commentId,
                                                                @PathVariable int pageIdx,
                                                                @PathVariable int pageSize)
     {

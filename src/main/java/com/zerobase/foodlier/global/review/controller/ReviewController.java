@@ -69,7 +69,6 @@ public class ReviewController {
 
     @GetMapping("/recipe/{recipeReviewId}")
     public ResponseEntity<RecipeReviewResponseDto> getRecipeReviewDetail(
-            @AuthenticationPrincipal MemberAuthDto memberAuthDto,
             @PathVariable Long recipeReviewId
     ){
         return ResponseEntity.ok(

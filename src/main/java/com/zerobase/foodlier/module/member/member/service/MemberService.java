@@ -38,6 +38,8 @@ public interface MemberService {
 
     DefaultProfileDtoResponse getDefaultProfile(Long memberId);
 
+    Member findById(Long id);
+
     Member findByEmail(String email);
 
     String reissue(String refreshToken);

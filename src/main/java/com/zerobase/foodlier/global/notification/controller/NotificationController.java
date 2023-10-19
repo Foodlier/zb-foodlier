@@ -6,7 +6,6 @@ import com.zerobase.foodlier.global.notification.facade.NotificationFacade;
 import com.zerobase.foodlier.module.notification.dto.NotificationDto;
 import com.zerobase.foodlier.module.notification.service.notification.NotificationService;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;

@@ -25,7 +25,6 @@ import javax.transaction.Transactional;
 import java.util.*;
 
 import static com.zerobase.foodlier.module.member.member.exception.MemberErrorCode.*;
-import static com.zerobase.foodlier.module.member.member.type.RegistrationType.DOMAIN;
 
 @Service
 @Transactional
@@ -231,6 +230,12 @@ public class MemberServiceImpl implements MemberService {
     @Override
     public DefaultProfileDtoResponse getDefaultProfile(Long memberId) {
         return memberRepository.getDefaultProfile(memberId);
+    }
+
+    @Override
+    public Member findById(Long id) {
+        return memberRepository.findById(id)
+                .orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
     }
 
     @Override

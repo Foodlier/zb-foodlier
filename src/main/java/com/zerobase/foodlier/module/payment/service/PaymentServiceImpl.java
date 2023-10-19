@@ -37,8 +37,6 @@ public class PaymentServiceImpl implements PaymentService {
     private final MemberRepository memberRepository;
     private final RestTemplate restTemplate;
 
-    @Value("${payments.toss.test_client_api_key}")
-    private String testClientApiKey;
     @Value("${payments.toss.test_client_secret_api_key}")
     private String testSecretApiKey;
     @Value("${payments.toss.success_url}")

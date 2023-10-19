@@ -470,13 +470,13 @@ class RecipeServiceImplTest {
                     RecipeCardDto actual = recipeList.getContent().get(i);
                     RecipeCardDto expect = recipeList.getContent().get(i);
 
-                    assertEquals(actual.getId(), expect.getId());
+                    assertEquals(actual.getRecipeId(), expect.getRecipeId());
                     assertEquals(actual.getHeartCount(), expect.getHeartCount());
                     assertEquals(actual.getTitle(), expect.getTitle());
                     assertEquals(actual.getContent(), expect.getContent());
                     assertEquals(actual.getNickName(), expect.getNickName());
                     assertEquals(actual.getMainImageUrl(), expect.getMainImageUrl());
-                    assertEquals(actual.isHeart(), expect.isHeart());
+                    assertEquals(actual.getIsHeart(), expect.getIsHeart());
                 }
 
 
@@ -519,13 +519,13 @@ class RecipeServiceImplTest {
                     RecipeCardDto actual = recipeList.getContent().get(i);
                     RecipeCardDto expect = recipeList.getContent().get(i);
 
-                    assertEquals(actual.getId(), expect.getId());
+                    assertEquals(actual.getRecipeId(), expect.getRecipeId());
                     assertEquals(actual.getHeartCount(), expect.getHeartCount());
                     assertEquals(actual.getTitle(), expect.getTitle());
                     assertEquals(actual.getContent(), expect.getContent());
                     assertEquals(actual.getNickName(), expect.getNickName());
                     assertEquals(actual.getMainImageUrl(), expect.getMainImageUrl());
-                    assertEquals(actual.isHeart(), expect.isHeart());
+                    assertEquals(actual.getIsHeart(), expect.getIsHeart());
                 }
             }
 
@@ -566,13 +566,13 @@ class RecipeServiceImplTest {
                     RecipeCardDto actual = recipeList.getContent().get(i);
                     RecipeCardDto expect = recipeList.getContent().get(i);
 
-                    assertEquals(actual.getId(), expect.getId());
+                    assertEquals(actual.getRecipeId(), expect.getRecipeId());
                     assertEquals(actual.getHeartCount(), expect.getHeartCount());
                     assertEquals(actual.getTitle(), expect.getTitle());
                     assertEquals(actual.getContent(), expect.getContent());
                     assertEquals(actual.getNickName(), expect.getNickName());
                     assertEquals(actual.getMainImageUrl(), expect.getMainImageUrl());
-                    assertEquals(actual.isHeart(), expect.isHeart());
+                    assertEquals(actual.getIsHeart(), expect.getIsHeart());
                 }
 
             }
@@ -626,13 +626,13 @@ class RecipeServiceImplTest {
                     RecipeCardDto actual = recipeList.getContent().get(i);
                     RecipeCardDto expect = recipeList.getContent().get(i);
 
-                    assertEquals(actual.getId(), expect.getId());
+                    assertEquals(actual.getRecipeId(), expect.getRecipeId());
                     assertEquals(actual.getHeartCount(), expect.getHeartCount());
                     assertEquals(actual.getTitle(), expect.getTitle());
                     assertEquals(actual.getContent(), expect.getContent());
                     assertEquals(actual.getNickName(), expect.getNickName());
                     assertEquals(actual.getMainImageUrl(), expect.getMainImageUrl());
-                    assertEquals(actual.isHeart(), expect.isHeart());
+                    assertEquals(actual.getIsHeart(), expect.getIsHeart());
                 }
 
             }
@@ -681,13 +681,13 @@ class RecipeServiceImplTest {
                     RecipeCardDto actual = recipeList.getContent().get(i);
                     RecipeCardDto expect = recipeList.getContent().get(i);
 
-                    assertEquals(actual.getId(), expect.getId());
+                    assertEquals(actual.getRecipeId(), expect.getRecipeId());
                     assertEquals(actual.getHeartCount(), expect.getHeartCount());
                     assertEquals(actual.getTitle(), expect.getTitle());
                     assertEquals(actual.getContent(), expect.getContent());
                     assertEquals(actual.getNickName(), expect.getNickName());
                     assertEquals(actual.getMainImageUrl(), expect.getMainImageUrl());
-                    assertEquals(actual.isHeart(), expect.isHeart());
+                    assertEquals(actual.getIsHeart(), expect.getIsHeart());
                 }
             }
 
@@ -735,13 +735,13 @@ class RecipeServiceImplTest {
                     RecipeCardDto actual = recipeList.getContent().get(i);
                     RecipeCardDto expect = recipeList.getContent().get(i);
 
-                    assertEquals(actual.getId(), expect.getId());
+                    assertEquals(actual.getRecipeId(), expect.getRecipeId());
                     assertEquals(actual.getHeartCount(), expect.getHeartCount());
                     assertEquals(actual.getTitle(), expect.getTitle());
                     assertEquals(actual.getContent(), expect.getContent());
                     assertEquals(actual.getNickName(), expect.getNickName());
                     assertEquals(actual.getMainImageUrl(), expect.getMainImageUrl());
-                    assertEquals(actual.isHeart(), expect.isHeart());
+                    assertEquals(actual.getIsHeart(), expect.getIsHeart());
                 }
             }
         }
@@ -791,13 +791,13 @@ class RecipeServiceImplTest {
                     RecipeCardDto actual = recipeList.getContent().get(i);
                     RecipeCardDto expect = recipeList.getContent().get(i);
 
-                    assertEquals(actual.getId(), expect.getId());
+                    assertEquals(actual.getRecipeId(), expect.getRecipeId());
                     assertEquals(actual.getHeartCount(), expect.getHeartCount());
                     assertEquals(actual.getTitle(), expect.getTitle());
                     assertEquals(actual.getContent(), expect.getContent());
                     assertEquals(actual.getNickName(), expect.getNickName());
                     assertEquals(actual.getMainImageUrl(), expect.getMainImageUrl());
-                    assertEquals(actual.isHeart(), expect.isHeart());
+                    assertEquals(actual.getIsHeart(), expect.getIsHeart());
                 }
             }
 
@@ -843,13 +843,13 @@ class RecipeServiceImplTest {
                     RecipeCardDto actual = recipeList.getContent().get(i);
                     RecipeCardDto expect = recipeList.getContent().get(i);
 
-                    assertEquals(actual.getId(), expect.getId());
+                    assertEquals(actual.getRecipeId(), expect.getRecipeId());
                     assertEquals(actual.getHeartCount(), expect.getHeartCount());
                     assertEquals(actual.getTitle(), expect.getTitle());
                     assertEquals(actual.getContent(), expect.getContent());
                     assertEquals(actual.getNickName(), expect.getNickName());
                     assertEquals(actual.getMainImageUrl(), expect.getMainImageUrl());
-                    assertEquals(actual.isHeart(), expect.isHeart());
+                    assertEquals(actual.getIsHeart(), expect.getIsHeart());
                 }
             }
 
@@ -895,13 +895,13 @@ class RecipeServiceImplTest {
                     RecipeCardDto actual = recipeList.getContent().get(i);
                     RecipeCardDto expect = recipeList.getContent().get(i);
 
-                    assertEquals(actual.getId(), expect.getId());
+                    assertEquals(actual.getRecipeId(), expect.getRecipeId());
                     assertEquals(actual.getHeartCount(), expect.getHeartCount());
                     assertEquals(actual.getTitle(), expect.getTitle());
                     assertEquals(actual.getContent(), expect.getContent());
                     assertEquals(actual.getNickName(), expect.getNickName());
                     assertEquals(actual.getMainImageUrl(), expect.getMainImageUrl());
-                    assertEquals(actual.isHeart(), expect.isHeart());
+                    assertEquals(actual.getIsHeart(), expect.getIsHeart());
                 }
             }
         }
@@ -1310,7 +1310,7 @@ class RecipeServiceImplTest {
             assertEquals("content" + (i + 1),
                     mainPageRecipeList.get(i).getContent());
             assertEquals(i + 1,
-                    mainPageRecipeList.get(i).getId());
+                    mainPageRecipeList.get(i).getRecipeId());
             assertEquals("test" + (i + 1),
                     mainPageRecipeList.get(i).getNickName());
             assertEquals(i + 1,
@@ -1318,9 +1318,9 @@ class RecipeServiceImplTest {
         }
 
         assertAll(
-                () -> assertTrue(mainPageRecipeList.get(0).isHeart()),
-                () -> assertFalse(mainPageRecipeList.get(1).isHeart()),
-                () -> assertTrue(mainPageRecipeList.get(2).isHeart())
+                () -> assertTrue(mainPageRecipeList.get(0).getIsHeart()),
+                () -> assertFalse(mainPageRecipeList.get(1).getIsHeart()),
+                () -> assertTrue(mainPageRecipeList.get(2).getIsHeart())
         );
     }
 
@@ -1414,16 +1414,16 @@ class RecipeServiceImplTest {
             assertEquals("content" + (i + 1),
                     recipePageRecipeList.getContent().get(i).getContent());
             assertEquals(i + 1,
-                    recipePageRecipeList.getContent().get(i).getId());
+                    recipePageRecipeList.getContent().get(i).getRecipeId());
             assertEquals("test" + (i + 1),
                     recipePageRecipeList.getContent().get(i).getNickName());
         }
 
         assertAll(
                 () -> assertEquals(3, recipePageRecipeList.getTotalElements()),
-                () -> assertTrue(recipePageRecipeList.getContent().get(0).isHeart()),
-                () -> assertFalse(recipePageRecipeList.getContent().get(1).isHeart()),
-                () -> assertTrue(recipePageRecipeList.getContent().get(2).isHeart()),
+                () -> assertTrue(recipePageRecipeList.getContent().get(0).getIsHeart()),
+                () -> assertFalse(recipePageRecipeList.getContent().get(1).getIsHeart()),
+                () -> assertTrue(recipePageRecipeList.getContent().get(2).getIsHeart()),
                 () -> assertEquals(1,
                         recipePageRecipeList.getTotalPages()),
                 () -> assertFalse(recipePageRecipeList.isHasNextPage())
@@ -1505,16 +1505,16 @@ class RecipeServiceImplTest {
             assertEquals("content" + (3 - i),
                     recipePageRecipeList.getContent().get(i).getContent());
             assertEquals(3 - i,
-                    recipePageRecipeList.getContent().get(i).getId());
+                    recipePageRecipeList.getContent().get(i).getRecipeId());
             assertEquals("test" + (3 - i),
                     recipePageRecipeList.getContent().get(i).getNickName());
         }
 
         assertAll(
                 () -> assertEquals(3, recipePageRecipeList.getTotalElements()),
-                () -> assertTrue(recipePageRecipeList.getContent().get(0).isHeart()),
-                () -> assertFalse(recipePageRecipeList.getContent().get(1).isHeart()),
-                () -> assertTrue(recipePageRecipeList.getContent().get(2).isHeart()),
+                () -> assertTrue(recipePageRecipeList.getContent().get(0).getIsHeart()),
+                () -> assertFalse(recipePageRecipeList.getContent().get(1).getIsHeart()),
+                () -> assertTrue(recipePageRecipeList.getContent().get(2).getIsHeart()),
                 () -> assertEquals(1,
                         recipePageRecipeList.getTotalPages()),
                 () -> assertFalse(recipePageRecipeList.isHasNextPage())
@@ -1599,16 +1599,16 @@ class RecipeServiceImplTest {
             assertEquals("content" + (i + 1),
                     recipePageRecipeList.getContent().get(i).getContent());
             assertEquals(i + 1,
-                    recipePageRecipeList.getContent().get(i).getId());
+                    recipePageRecipeList.getContent().get(i).getRecipeId());
             assertEquals("test" + (i + 1),
                     recipePageRecipeList.getContent().get(i).getNickName());
         }
 
         assertAll(
                 () -> assertEquals(3, recipePageRecipeList.getTotalElements()),
-                () -> assertTrue(recipePageRecipeList.getContent().get(0).isHeart()),
-                () -> assertFalse(recipePageRecipeList.getContent().get(1).isHeart()),
-                () -> assertTrue(recipePageRecipeList.getContent().get(2).isHeart()),
+                () -> assertTrue(recipePageRecipeList.getContent().get(0).getIsHeart()),
+                () -> assertFalse(recipePageRecipeList.getContent().get(1).getIsHeart()),
+                () -> assertTrue(recipePageRecipeList.getContent().get(2).getIsHeart()),
                 () -> assertEquals(1,
                         recipePageRecipeList.getTotalPages()),
                 () -> assertFalse(recipePageRecipeList.isHasNextPage())
@@ -1764,17 +1764,17 @@ class RecipeServiceImplTest {
             assertEquals(5 - i,
                     recipeListDtoList.get(i).getHeartCount());
             assertEquals(5 - i,
-                    recipeListDtoList.get(i).getId());
+                    recipeListDtoList.get(i).getRecipeId());
             assertEquals("test" + (5 - i),
                     recipeListDtoList.get(i).getNickName());
         }
 
         assertAll(
-                () -> assertTrue(recipeListDtoList.get(4).isHeart()),
-                () -> assertFalse(recipeListDtoList.get(3).isHeart()),
-                () -> assertTrue(recipeListDtoList.get(2).isHeart()),
-                () -> assertTrue(recipeListDtoList.get(1).isHeart()),
-                () -> assertFalse(recipeListDtoList.get(0).isHeart())
+                () -> assertTrue(recipeListDtoList.get(4).getIsHeart()),
+                () -> assertFalse(recipeListDtoList.get(3).getIsHeart()),
+                () -> assertTrue(recipeListDtoList.get(2).getIsHeart()),
+                () -> assertTrue(recipeListDtoList.get(1).getIsHeart()),
+                () -> assertFalse(recipeListDtoList.get(0).getIsHeart())
         );
     }
 
@@ -1929,16 +1929,6 @@ class RecipeServiceImplTest {
                 .difficulty(HARD)
                 .member(member)
                 .commentCount(1)
-                .build();
-    }
-
-    private static RecipeDocument getDocument(Member member, String title) {
-        return RecipeDocument.builder()
-                .id(1L)
-                .title(title)
-                .writer(member.getNickname())
-                .numberOfHeart(0L)
-                .numberOfComment(0L)
                 .build();
     }
 

@@ -20,7 +20,6 @@ import com.zerobase.foodlier.module.recipe.repository.RecipeRepository;
 import com.zerobase.foodlier.module.recipe.repository.RecipeSearchRepository;
 import com.zerobase.foodlier.module.recipe.type.OrderType;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -174,7 +173,7 @@ public class RecipeServiceImpl implements RecipeService {
                 .hasNextPage(result.hasNext())
                 .content(result.stream()
                         .map(recipeDocument -> RecipeCardDto.builder()
-                                .id(recipeDocument.getId())
+                                .recipeId(recipeDocument.getId())
                                 .title(recipeDocument.getTitle())
                                 .content(recipeDocument.getContent())
                                 .mainImageUrl(recipeDocument.getMainImageUrl())
@@ -315,7 +314,7 @@ public class RecipeServiceImpl implements RecipeService {
         return recipeRepository.findTop3ByIsPublicIsTrueOrderByCreatedAtDesc()
                 .stream()
                 .map(r -> RecipeCardDto.builder()
-                        .id(r.getId())
+                        .recipeId(r.getId())
                         .nickName(r.getMember().getNickname())
                         .title(r.getSummary().getTitle())
                         .mainImageUrl(r.getMainImageUrl())
@@ -376,7 +375,7 @@ public class RecipeServiceImpl implements RecipeService {
                 .content(
                         recipePage.stream()
                                 .map(r -> RecipeCardDto.builder()
-                                        .id(r.getId())
+                                        .recipeId(r.getId())
                                         .nickName(r.getMember().getNickname())
                                         .mainImageUrl(r.getMainImageUrl())
                                         .title(r.getSummary().getTitle())
@@ -402,7 +401,7 @@ public class RecipeServiceImpl implements RecipeService {
                         LocalDate.now().atStartOfDay())
                 .stream()
                 .map(r -> RecipeCardDto.builder()
-                        .id(r.getId())
+                        .recipeId(r.getId())
                         .nickName(r.getMember().getNickname())
                         .title(r.getSummary().getTitle())
                         .mainImageUrl(r.getMainImageUrl())

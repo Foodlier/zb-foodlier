@@ -4,7 +4,6 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.zerobase.foodlier.module.heart.domain.model.Heart;
 import com.zerobase.foodlier.module.heart.domain.model.QHeart;
 import com.zerobase.foodlier.module.member.member.domain.model.Member;
-import com.zerobase.foodlier.module.member.member.domain.model.QMember;
 import com.zerobase.foodlier.module.recipe.domain.model.QRecipe;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
