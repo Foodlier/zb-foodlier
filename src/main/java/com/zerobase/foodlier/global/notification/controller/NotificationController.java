@@ -22,8 +22,7 @@ public class NotificationController {
     @GetMapping("/{pageIdx}/{pageSize}")
     public ResponseEntity<ListResponse<NotificationDto>> getSimpleNotificationList(@AuthenticationPrincipal MemberAuthDto memberAuthDto,
                                                                                    @PathVariable int pageIdx,
-                                                                                   @PathVariable int pageSize)
-    {
+                                                                                   @PathVariable int pageSize) {
         return ResponseEntity.ok(notificationService.getNotificationBy(memberAuthDto.getId(),
                 PageRequest.of(pageIdx, pageSize)));
     }
@@ -36,7 +35,7 @@ public class NotificationController {
     @PatchMapping(value = "/read/{notificationId}")
     public ResponseEntity<String> changeReadStatus(@AuthenticationPrincipal MemberAuthDto memberAuthDto,
                                                    @PathVariable Long notificationId) {
-        notificationService.updateNotificationStatus(memberAuthDto.getId(),notificationId);
+        notificationService.updateNotificationStatus(memberAuthDto.getId(), notificationId);
         return ResponseEntity.ok("알림을 읽었습니다");
     }
 }

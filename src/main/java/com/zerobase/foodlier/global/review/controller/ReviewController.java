@@ -30,7 +30,7 @@ public class ReviewController {
             @AuthenticationPrincipal MemberAuthDto memberAuthDto,
             @PathVariable Long requestId,
             @RequestBody @Valid ChefReviewForm form
-            ){
+    ) {
         chefReviewFacade.createChefReview(memberAuthDto.getId(), requestId, form);
         return ResponseEntity.ok("요리사 후기를 작성하였습니다.");
     }
@@ -40,7 +40,7 @@ public class ReviewController {
             @AuthenticationPrincipal MemberAuthDto memberAuthDto,
             @PathVariable Long recipeId,
             @ModelAttribute @Valid RecipeReviewForm request
-            ){
+    ) {
         recipeReviewFacade.createRecipeReview(memberAuthDto.getId(), recipeId, request);
         return ResponseEntity.ok("꿀조합 후기를 작성하였습니다.");
     }
@@ -49,7 +49,7 @@ public class ReviewController {
     public ResponseEntity<RecipeReviewResponseDto> getMyRecipeReview(
             @AuthenticationPrincipal MemberAuthDto memberAuthDto,
             @PathVariable Long recipeId
-    ){
+    ) {
         return ResponseEntity.ok(
                 recipeReviewService.getMyRecipeReview(memberAuthDto.getId(), recipeId)
         );
@@ -61,7 +61,7 @@ public class ReviewController {
             @PathVariable int pageIdx,
             @PathVariable int pageSize,
             @PathVariable Long recipeId
-    ){
+    ) {
         return ResponseEntity.ok(
                 recipeReviewService.getRecipeReviewList(memberAuthDto.getId(), recipeId, PageRequest.of(pageIdx, pageSize))
         );
@@ -70,7 +70,7 @@ public class ReviewController {
     @GetMapping("/recipe/{recipeReviewId}")
     public ResponseEntity<RecipeReviewResponseDto> getRecipeReviewDetail(
             @PathVariable Long recipeReviewId
-    ){
+    ) {
         return ResponseEntity.ok(
                 recipeReviewService.getReviewDetail(recipeReviewId)
         );
@@ -81,7 +81,7 @@ public class ReviewController {
             @AuthenticationPrincipal MemberAuthDto memberAuthDto,
             @PathVariable Long recipeReviewId,
             @ModelAttribute @Valid RecipeReviewForm request
-    ){
+    ) {
         recipeReviewFacade.updateRecipeReview(memberAuthDto.getId(),
                 recipeReviewId, request);
         return ResponseEntity.ok(
@@ -93,7 +93,7 @@ public class ReviewController {
     public ResponseEntity<String> deleteRecipeReview(
             @AuthenticationPrincipal MemberAuthDto memberAuthDto,
             @PathVariable Long recipeReviewId
-    ){
+    ) {
         recipeReviewFacade.deleteRecipeReview(memberAuthDto.getId(), recipeReviewId);
         return ResponseEntity.ok(
                 "꿀조합 후기가 삭제되었습니다."
