@@ -1,6 +1,8 @@
+/* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable no-restricted-globals */
 /* eslint-disable react/no-array-index-key */
-import { useNavigate } from 'react-router-dom'
-import React, { useState } from 'react'
+import { useLocation, useNavigate } from 'react-router-dom'
+import React, { useEffect, useState } from 'react'
 import Header from '../../components/Header'
 import BottomNavigation from '../../components/BottomNavigation'
 import * as S from '../../styles/recipe/WriteRecipePage.styled'
@@ -32,6 +34,11 @@ interface Recipe {
 
 const WriteRecipePage = () => {
   const navigate = useNavigate()
+  const { state } = useLocation()
+  const recipeId = state?.recipeId || 0
+
+  const isEdit = Boolean(recipeId)
+
   const { IcAddRound, IcFileDockLight } = useIcon()
 
   const emptyFile = new File([''], 'empty.txt', { type: 'text/plain' })
@@ -41,6 +48,16 @@ const WriteRecipePage = () => {
     cookingOrderImageList: [],
   })
   const [isCompleteModal, setIsCompleteModal] = useState(false)
+  const [modalContent, setModalContent] = useState('')
+  const [errorValue, setErrorValue] = useState({
+    title: '',
+    content: '',
+    mainImageUrl: '',
+    recipeIngredientDtoList: '',
+    difficulty: '',
+    recipeDetailDtoList: '',
+    expectedTime: '',
+  })
   const [recipeValue, setRecipeValue] = useState<Recipe>({
     title: '',
     content: '',
@@ -84,6 +101,7 @@ const WriteRecipePage = () => {
   ) => {
     const updatedValue = [...recipeValue.recipeIngredientDtoList]
     if (category === 'count') {
+      if (isNaN(Number(e.target.value))) return
       updatedValue[index][category] = Number(e.target.value)
     } else if (category === 'name' || category === 'unit') {
       updatedValue[index][category] = e.target.value
@@ -110,20 +128,41 @@ const WriteRecipePage = () => {
     }))
   }
 
-  const postRecipe = async (body: Recipe) => {
+  const editRecipe = async () => {
     try {
-      const res = await axiosInstance.post('/recipe', body)
-      if (res.status === 200) {
-        setIsCompleteModal(true)
-        setTimeout(() => {
-          setIsCompleteModal(false)
-          navigate(-1)
-        }, 1500)
+      const { status } = await axiosInstance.put(
+        `recipe/${recipeId}`,
+        recipeValue
+      )
+      if (status === 200) {
+        setModalContent('게시글 수정이 완료되었습니다.')
       }
     } catch (error) {
-      // 추후 에러 처리 필요
       console.log(error)
+      setModalContent('게시글 수정에 실패하였습니다.')
     }
+    setIsCompleteModal(true)
+    setTimeout(() => {
+      setIsCompleteModal(false)
+      navigate(-1)
+    }, 1500)
+  }
+
+  const postRecipe = async (body: Recipe) => {
+    try {
+      const { status } = await axiosInstance.post('/recipe', body)
+      if (status === 200) {
+        setModalContent('게시글 작성이 완료되었습니다.')
+      }
+    } catch (error) {
+      console.log(error)
+      setModalContent('게시글 작성에 실패하였습니다.')
+    }
+    setIsCompleteModal(true)
+    setTimeout(() => {
+      setIsCompleteModal(false)
+      navigate(-1)
+    }, 1500)
   }
 
   const postImage = async () => {
@@ -152,6 +191,94 @@ const WriteRecipePage = () => {
     }
   }
 
+  // 유효성 검사
+  const checkForm = () => {
+    const errors: Record<string, string> = { ...errorValue }
+
+    const validations = [
+      {
+        condition: imageFile.mainImage.name === 'empty.txt',
+        key: 'mainImageUrl',
+        message: '대표 이미지를 선택해주세요.',
+      },
+      {
+        condition: recipeValue.title.length < 2,
+        key: 'title',
+        message: '제목을 2글자 이상 입력해주세요',
+      },
+      {
+        condition: recipeValue.content.length < 2,
+        key: 'content',
+        message: '설명을 2글자 이상 입력해주세요',
+      },
+      {
+        condition:
+          recipeValue.recipeIngredientDtoList.filter(item => !item.name)
+            .length > 0 ||
+          recipeValue.recipeIngredientDtoList.filter(item => !item.count)
+            .length > 0 ||
+          recipeValue.recipeIngredientDtoList.filter(item => !item.unit)
+            .length > 0,
+        key: 'recipeIngredientDtoList',
+        message: '재료를 1개 이상 입력해주세요.',
+      },
+      {
+        condition: !recipeValue.difficulty,
+        key: 'difficulty',
+        message: '난이도를 선택해주세요',
+      },
+      {
+        condition: !recipeValue.expectedTime,
+        key: 'expectedTime',
+        message: '조리시간을 입력해주세요',
+      },
+      {
+        condition:
+          !imageFile.cookingOrderImageList.length ||
+          recipeValue.recipeDetailDtoList.filter(item => !item.cookingOrder)
+            .length > 0,
+        key: 'recipeDetailDtoList',
+        message: '순서를 1개 이상 입력해주세요.',
+      },
+    ]
+    validations.forEach(validation => {
+      if (validation.condition) {
+        errors[validation.key] = validation.message
+      } else {
+        errors[validation.key] = ''
+      }
+    })
+    setErrorValue({ ...errorValue, ...errors })
+
+    if (Object.values(errors).every(error => error === '')) {
+      if (isEdit) {
+        editRecipe()
+      } else {
+        postImage()
+      }
+    }
+  }
+
+  const getRecipe = async () => {
+    const { data } = await axiosInstance.get(`/recipe/${recipeId}`)
+
+    setRecipeValue({
+      title: data.title,
+      content: data.content,
+      mainImageUrl: data.mainImageUrl,
+      recipeIngredientDtoList: data.recipeIngredientDtoList,
+      difficulty: data.difficulty,
+      recipeDetailDtoList: data.recipeDetailDtoList,
+      expectedTime: data.expectedTime,
+    })
+  }
+
+  useEffect(() => {
+    if (isEdit) {
+      getRecipe()
+    }
+  }, [])
+
   return (
     <>
       <Header />
@@ -161,31 +288,37 @@ const WriteRecipePage = () => {
           <S.QuotationButton>견적서 목록 불러오기</S.QuotationButton>
         </S.WrapQuitation>
         <RecipeImage
-          size={20}
+          size={25}
           isText
           formKey="mainImage"
           imageFile={imageFile}
           setImageFile={setImageFile}
+          defaultUrl={recipeValue.mainImageUrl}
         />
+        <S.ErrorText>{errorValue.mainImageUrl}</S.ErrorText>
 
         <S.WrapForm>
           <S.Title>제목</S.Title>
           <S.Input
             placeholder="제목을 입력해주세요"
+            value={recipeValue.title}
             onChange={e =>
               setRecipeValue({ ...recipeValue, title: e.target.value })
             }
           />
+          <S.ErrorText>{errorValue.title}</S.ErrorText>
         </S.WrapForm>
 
         <S.WrapForm>
           <S.Title>설명</S.Title>
           <S.Input
             placeholder="설명을 입력해주세요"
+            value={recipeValue.content}
             onChange={e =>
               setRecipeValue({ ...recipeValue, content: e.target.value })
             }
           />
+          <S.ErrorText>{errorValue.content}</S.ErrorText>
         </S.WrapForm>
 
         <S.WrapForm>
@@ -212,6 +345,7 @@ const WriteRecipePage = () => {
             <IcAddRound size={1.2} color={palette.textSecondary} />
             재료 추가
           </S.AddButton>
+          <S.ErrorText>{errorValue.recipeIngredientDtoList}</S.ErrorText>
         </S.WrapForm>
 
         <S.WrapForm>
@@ -229,28 +363,34 @@ const WriteRecipePage = () => {
               </S.Difficulty>
             ))}
           </S.WrapDifficultyButton>
+
+          <S.ErrorText>{errorValue.difficulty}</S.ErrorText>
         </S.WrapForm>
 
         <S.WrapForm>
           <S.Title>조리시간</S.Title>
           <S.WrapTime>
             <S.Input
-              onChange={e =>
+              onChange={e => {
+                if (isNaN(Number(e.target.value))) return
                 setRecipeValue({
                   ...recipeValue,
                   expectedTime: Number(e.target.value),
                 })
-              }
+              }}
+              value={recipeValue.expectedTime}
               $width={30}
               $marginRi={0.6}
             />
             분 이내
           </S.WrapTime>
+
+          <S.ErrorText>{errorValue.expectedTime}</S.ErrorText>
         </S.WrapForm>
 
         <S.WrapForm>
           <S.Title>순서</S.Title>
-          {recipeValue.recipeDetailDtoList.map((_, index) => (
+          {recipeValue.recipeDetailDtoList.map((item, index) => (
             <S.WrapOrder key={`key-${index}`}>
               <RecipeImage
                 size={7}
@@ -258,10 +398,12 @@ const WriteRecipePage = () => {
                 formKey="cookingOrderImageList"
                 imageFile={imageFile}
                 setImageFile={setImageFile}
+                defaultUrl={item.cookingOrderImageUrl}
               />
               <S.Input
                 onChange={e => updateOrder(e, index)}
                 placeholder="조리 순서를 입력해주세요."
+                value={item.cookingOrder}
                 $width={70}
                 $marginLf={1}
               />
@@ -272,13 +414,18 @@ const WriteRecipePage = () => {
             <IcAddRound size={1.2} color={palette.textSecondary} />
             조리 내용 추가
           </S.AddButton>
+
+          <S.ErrorText>{errorValue.recipeDetailDtoList}</S.ErrorText>
         </S.WrapForm>
 
-        <S.RequestButton onClick={postImage}>레시피 등록하기</S.RequestButton>
+        {/* <S.RequestButton onClick={isEdit ? editRecipe : postImage}> */}
+        <S.RequestButton onClick={checkForm}>
+          {isEdit ? '수정하기' : '레시피 등록하기'}
+        </S.RequestButton>
       </S.Container>
       {isCompleteModal && (
         <ModalWithoutButton
-          content="게시글 작성이 완료되었습니다."
+          content={modalContent}
           setIsModalFalse={() => setIsCompleteModal(false)}
         />
       )}
