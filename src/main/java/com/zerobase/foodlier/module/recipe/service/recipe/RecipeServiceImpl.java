@@ -180,7 +180,7 @@ public class RecipeServiceImpl implements RecipeService {
                                 .mainImageUrl(recipeDocument.getMainImageUrl())
                                 .nickName(recipeDocument.getWriter())
                                 .heartCount((int) recipeDocument.getNumberOfHeart())
-                                .isHeart(heartRepository.existsByRecipe_IdAndMember(recipeDocument.getId(), member))
+                                .isHeart(heartRepository.existsHeart(recipeDocument.getId(), member))
                                 .build()).collect(Collectors.toList()))
                 .build();
 
