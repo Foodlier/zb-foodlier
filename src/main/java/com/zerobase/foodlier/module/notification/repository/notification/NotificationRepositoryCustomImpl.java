@@ -46,10 +46,10 @@ public class NotificationRepositoryCustomImpl implements NotificationRepositoryC
 
         return jpaQueryFactory.select(notification.count())
                 .from(notification)
-                .join(member)
-                .on(notification.member.id.eq(memberId))
-                .where(notification.isRead.eq(NOT_READ))
-                .fetchFirst();
+                .leftJoin(member)
+                .on(member.id.eq(memberId))
+                .where(notification.member.id.eq(memberId).and(notification.isRead.eq(NOT_READ)))
+                .fetchOne();
     }
 
     @Override
