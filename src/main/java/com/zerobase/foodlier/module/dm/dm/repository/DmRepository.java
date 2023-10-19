@@ -13,5 +13,4 @@ public interface DmRepository extends JpaRepository<Dm, Long> {
 
     Dm findFirstByDmroomOrderByIdDesc(DmRoom dmRoom);
 
-    List<Dm> findByDmroom(DmRoom dmRoom);
 }

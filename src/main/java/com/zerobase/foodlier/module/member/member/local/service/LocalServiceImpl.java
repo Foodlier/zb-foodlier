@@ -35,7 +35,6 @@ public class LocalServiceImpl implements LocalService{
      *  주소를 입력하여, 좌표(위도, 경도)를 가져오는 메서드
      */
     public CoordinateResponseDto getCoordinate(String roadAddress){
-//        RestTemplate restTemplate = new RestTemplate();
 
         HttpEntity<String> httpEntity = new HttpEntity<>(getHeaders()); //엔티티로 만들기
         URI targetUrl = UriComponentsBuilder
@@ -46,7 +45,7 @@ public class LocalServiceImpl implements LocalService{
                 .toUri();
 
         //API 호출
-        ResponseEntity<LocalApiResponse> apiResponse = null;
+        ResponseEntity<LocalApiResponse> apiResponse;
         try{
             apiResponse = restTemplate.exchange(targetUrl, HttpMethod.GET, httpEntity, LocalApiResponse.class);
         }catch (Exception e){
@@ -54,7 +53,7 @@ public class LocalServiceImpl implements LocalService{
         }
 
         //데이터 추출
-        CoordinateResponseDto coordinateResponseDto = null;
+        CoordinateResponseDto coordinateResponseDto;
         try {
             coordinateResponseDto = new CoordinateResponseDto(
                     Objects.requireNonNull(apiResponse.getBody()).getDocuments().get(0).getLat(),

@@ -25,7 +25,6 @@ import javax.transaction.Transactional;
 import java.util.*;
 
 import static com.zerobase.foodlier.module.member.member.exception.MemberErrorCode.*;
-import static com.zerobase.foodlier.module.member.member.type.RegistrationType.DOMAIN;
 
 @Service
 @Transactional

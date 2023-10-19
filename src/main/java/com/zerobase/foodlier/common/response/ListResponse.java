@@ -20,9 +20,10 @@ public class ListResponse<T> {
     private long totalElements;
     private int totalPages;
     private boolean hasNextPage;
+    @Builder.Default
     private List<T> content = new ArrayList<>();
 
-    public static <T> ListResponse<T> from(Page<T> page){
+    public static <T> ListResponse<T> from(Page<T> page) {
         return ListResponse.<T>builder()
                 .totalElements(page.getTotalElements())
                 .totalPages(page.getTotalPages())
