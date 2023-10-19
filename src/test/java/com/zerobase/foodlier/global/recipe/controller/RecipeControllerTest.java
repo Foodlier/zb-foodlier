@@ -6,6 +6,7 @@ import com.zerobase.foodlier.global.notification.facade.NotificationFacade;
 import com.zerobase.foodlier.global.recipe.facade.RecipeFacade;
 import com.zerobase.foodlier.mockuser.WithCustomMockUser;
 import com.zerobase.foodlier.module.heart.service.HeartService;
+import com.zerobase.foodlier.module.recipe.dto.recipe.RecipeImageResponse;
 import com.zerobase.foodlier.module.recipe.service.recipe.RecipeService;
 import com.zerobase.foodlier.module.review.recipe.dto.RecipeReviewForm;
 import org.junit.jupiter.api.DisplayName;
@@ -19,16 +20,23 @@ import org.springframework.context.annotation.FilterType;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.ResultActions;
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(value = RecipeController.class, excludeFilters =
 @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, classes = SecurityConfig.class))
@@ -55,65 +63,148 @@ class RecipeControllerTest {
         String mainImageName = "foodlier_logo.png";
         File file = new File("src/test/resources/foodlier_logo.png");
         String cookingOrderImageName = "foodlier_logo.png";
-        MockMultipartFile mockMultipartFile1 = new MockMultipartFile(cookingOrderImageName,
+        MockMultipartFile mainImage = new MockMultipartFile(mainImageName,
+                mainImageName,
+                MediaType.IMAGE_PNG_VALUE, new FileInputStream(file));
+        MockMultipartFile cookingOrderImage1 = new MockMultipartFile(cookingOrderImageName,
                 cookingOrderImageName,
                 MediaType.IMAGE_PNG_VALUE, new FileInputStream(file));
-        MockMultipartFile mockMultipartFile2 = new MockMultipartFile(cookingOrderImageName,
+        MockMultipartFile cookingOrderImage2 = new MockMultipartFile(cookingOrderImageName,
                 cookingOrderImageName,
                 MediaType.IMAGE_PNG_VALUE, new FileInputStream(file));
-        List<MultipartFile> cookingOrderImageList = new ArrayList<>(
-                List.of(mockMultipartFile1, mockMultipartFile2)
+        List<MockMultipartFile> cookingOrderImageList = new ArrayList<>(
+                List.of(cookingOrderImage1, cookingOrderImage2)
         );
+
+        given(recipeFacade.uploadRecipeImage(any(), any()))
+                .willReturn(RecipeImageResponse.builder()
+                        .mainImage("http://s3.test/mainimage")
+                        .cookingOrderImageList(new ArrayList<>(
+                                List.of("http://s3.test/cookingorderimage1",
+                                        "http://s3.test/cookingorderimage2")))
+                        .build());
 
         //when
-        mockMvc.perform(multipart("/recipe/image")
-                .file("mainImage", )
-        );
+        ResultActions perform = mockMvc.perform(multipart("/recipe/image")
+                .file("mainImage", mainImage.getBytes())
+                .file("cookingOrderImageList", cookingOrderImageList.get(0).getBytes())
+                .file("cookingOrderImageList", cookingOrderImageList.get(1).getBytes())
+                .with(request -> {
+                    request.setMethod("POST");
+                    return request;
+                }).with(csrf())
+                .contentType(MediaType.MULTIPART_FORM_DATA));
 
         //then
-
+        verify(recipeFacade, times(1)).uploadRecipeImage(any(), any());
+        perform.andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.mainImage")
+                        .value("http://s3.test/mainimage"))
+                .andExpect(jsonPath("$.cookingOrderImageList.[0]")
+                        .value("http://s3.test/cookingorderimage1"))
+                .andExpect(jsonPath("$.cookingOrderImageList.[1]")
+                        .value("http://s3.test/cookingorderimage2"))
+        ;
 
     }
 
     @Test
     @WithCustomMockUser
-    @DisplayName("꿀조합 후기 작성 성공")
-    void success_createRecipeReview() throws Exception {
-        //when & then
-        String cookImageName = "foodlier_logo.png";
+    @DisplayName("레시피 이미지 수정 성공")
+    void success_update_recipe_image() throws Exception {
+        //given
+        String mainImageName = "foodlier_logo.png";
         File file = new File("src/test/resources/foodlier_logo.png");
-
-        RecipeReviewForm form = RecipeReviewForm.builder()
-                .content("최고의 극찬")
-                .star(5)
-                .cookImage(new MockMultipartFile(cookImageName,
-                        cookImageName, MediaType.IMAGE_PNG_VALUE, new FileInputStream(file)))
-                .build();
-
-        mockMvc.perform(multipart("/review/recipe/1")
-                        .file("cookImage", form.getCookImage().getBytes())
-                        .param("content", form.getContent())
-                        .param("star", String.valueOf(form.getStar()))
-                        .with(request -> {
-                            request.setMethod("POST");
-                            return request;
-                        }).with(csrf())
-                        .contentType(MediaType.MULTIPART_FORM_DATA))
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(content().string("꿀조합 후기를 작성하였습니다."));
-
-        ArgumentCaptor<RecipeReviewForm> captor = ArgumentCaptor.forClass(RecipeReviewForm.class);
-        verify(recipeReviewFacade, times(1))
-                .createRecipeReview(eq(1L), eq(1L), captor.capture());
-        RecipeReviewForm expectedForm = captor.getValue();
-
-        assertAll(
-                () -> assertEquals(form.getContent(), expectedForm.getContent()),
-                () -> assertEquals(form.getStar(), expectedForm.getStar()),
-                () -> assertEquals(form.getCookImage().getSize(), expectedForm.getCookImage().getSize())
+        String cookingOrderImageName = "foodlier_logo.png";
+        MockMultipartFile mainImage = new MockMultipartFile(mainImageName,
+                mainImageName,
+                MediaType.IMAGE_PNG_VALUE, new FileInputStream(file));
+        MockMultipartFile cookingOrderImage1 = new MockMultipartFile(cookingOrderImageName,
+                cookingOrderImageName,
+                MediaType.IMAGE_PNG_VALUE, new FileInputStream(file));
+        MockMultipartFile cookingOrderImage2 = new MockMultipartFile(cookingOrderImageName,
+                cookingOrderImageName,
+                MediaType.IMAGE_PNG_VALUE, new FileInputStream(file));
+        List<MockMultipartFile> cookingOrderImageList = new ArrayList<>(
+                List.of(cookingOrderImage1, cookingOrderImage2)
         );
+
+        given(recipeFacade.updateRecipeImage(any(), any(), any(), any()))
+                .willReturn(RecipeImageResponse.builder()
+                        .mainImage("http://s3.test/mainimage")
+                        .cookingOrderImageList(new ArrayList<>(
+                                List.of("http://s3.test/cookingorderimage1",
+                                        "http://s3.test/cookingorderimage2")))
+                        .build());
+
+        long recipeId = 2L;
+
+        //when
+        ResultActions perform = mockMvc.perform(multipart("/recipe/image/{recipeId}", recipeId)
+                .file("mainImage", mainImage.getBytes())
+                .file("cookingOrderImageList", cookingOrderImageList.get(0).getBytes())
+                .file("cookingOrderImageList", cookingOrderImageList.get(1).getBytes())
+                .with(request -> {
+                    request.setMethod("PUT");
+                    return request;
+                }).with(csrf())
+                .contentType(MediaType.MULTIPART_FORM_DATA));
+
+        //then
+        verify(recipeFacade, times(1))
+                .updateRecipeImage(any(), any(), any(), any());
+        perform.andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.mainImage")
+                        .value("http://s3.test/mainimage"))
+                .andExpect(jsonPath("$.cookingOrderImageList.[0]")
+                        .value("http://s3.test/cookingorderimage1"))
+                .andExpect(jsonPath("$.cookingOrderImageList.[1]")
+                        .value("http://s3.test/cookingorderimage2"))
+        ;
+
     }
+
+//    @Test
+//    @WithCustomMockUser
+//    @DisplayName("꿀조합 후기 작성 성공")
+//    void success_createRecipeReview() throws Exception {
+//        //when & then
+//        String cookImageName = "foodlier_logo.png";
+//        File file = new File("src/test/resources/foodlier_logo.png");
+//
+//        RecipeReviewForm form = RecipeReviewForm.builder()
+//                .content("최고의 극찬")
+//                .star(5)
+//                .cookImage(new MockMultipartFile(cookImageName,
+//                        cookImageName, MediaType.IMAGE_PNG_VALUE, new FileInputStream(file)))
+//                .build();
+//
+//        mockMvc.perform(multipart("/review/recipe/1")
+//                        .file("cookImage", form.getCookImage().getBytes())
+//                        .param("content", form.getContent())
+//                        .param("star", String.valueOf(form.getStar()))
+//                        .with(request -> {
+//                            request.setMethod("POST");
+//                            return request;
+//                        }).with(csrf())
+//                        .contentType(MediaType.MULTIPART_FORM_DATA))
+//                .andDo(print())
+//                .andExpect(status().isOk())
+//                .andExpect(content().string("꿀조합 후기를 작성하였습니다."));
+//
+//        ArgumentCaptor<RecipeReviewForm> captor = ArgumentCaptor.forClass(RecipeReviewForm.class);
+//        verify(recipeReviewFacade, times(1))
+//                .createRecipeReview(eq(1L), eq(1L), captor.capture());
+//        RecipeReviewForm expectedForm = captor.getValue();
+//
+//        assertAll(
+//                () -> assertEquals(form.getContent(), expectedForm.getContent()),
+//                () -> assertEquals(form.getStar(), expectedForm.getStar()),
+//                () -> assertEquals(form.getCookImage().getSize(), expectedForm.getCookImage().getSize())
+//        );
+//    }
 
 //    @Test
 //    @DisplayName("충전 요청 성공")
