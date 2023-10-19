@@ -3,7 +3,6 @@ package com.zerobase.foodlier.module.member.chef.repository;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.core.types.dsl.StringPath;
-import com.querydsl.core.types.dsl.Wildcard;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.zerobase.foodlier.module.member.chef.domain.model.QChefMember;
@@ -79,26 +78,11 @@ public class ChefMemberRepositoryCustomImpl implements ChefMemberRepositoryCusto
                                 .on(request.chefMember.id.eq(chefMember.id))
                                 .where(member.id.eq(memberId)))))
                 .orderBy(orderBy.asc())
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
                 .fetch();
 
-        Long count = queryFactory.select(Wildcard.count)
-                .from(chefMember)
-                .join(chefMember.member, member)
-                .where(member.id.ne(memberId)
-                        .and(member.isDeleted.eq(false))
-                        .and(Expressions.booleanTemplate("st_contains(st_buffer(point({0}, {1}), {2}), point({3}, {4}))",
-                                lat, lnt, distance, member.address.lat, member.address.lnt).isTrue())
-                        .and(chefMember.id.notIn(JPAExpressions.select(chefMember.id)
-                                .from(member)
-                                .join(request)
-                                .on(request.member.id.eq(member.id).and(request.isFinished.isFalse()))
-                                .join(chefMember)
-                                .on(request.chefMember.id.eq(chefMember.id))
-                                .where(member.id.eq(memberId)))))
-                .fetchFirst();
-
-
-        return new PageImpl<>(content, pageable, count);
+        return new PageImpl<>(content);
     }
 
     @Override
@@ -143,25 +127,10 @@ public class ChefMemberRepositoryCustomImpl implements ChefMemberRepositoryCusto
                 .leftJoin(recipe)
                 .on(recipe.id.eq(request.recipe.id))
                 .where(requestMember.id.eq(memberId))
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
                 .fetch();
 
-        Long count = queryFactory.select(Wildcard.count)
-                .from(requestMember)
-                .join(request)
-                .on(request.member.id.eq(requestMember.id)
-                        .and(request.isPaid.isFalse())
-                        .and(request.dmRoom.isNull())
-                        .and(request.isFinished.isFalse()))
-                .join(chefMember)
-                .on(chefMember.id.eq(request.chefMember.id))
-                .join(chefsMember)
-                .on(chefsMember.id.eq(chefMember.member.id)
-                        .and(chefsMember.isDeleted.isFalse()))
-                .leftJoin(recipe)
-                .on(recipe.id.eq(request.recipe.id))
-                .where(requestMember.id.eq(memberId))
-                .fetchFirst();
-
-        return new PageImpl<>(content, pageable, count);
+        return new PageImpl<>(content);
     }
 }

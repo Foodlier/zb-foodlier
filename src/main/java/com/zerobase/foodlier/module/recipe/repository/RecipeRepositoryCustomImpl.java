@@ -32,16 +32,11 @@ public class RecipeRepositoryCustomImpl implements RecipeRepositoryCustom {
                 .join(heart)
                 .on(heart.recipe.eq(recipe)
                         .and(heart.member.id.eq(memberId)))
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
                 .fetch();
 
-        Long count = queryFactory.select(Wildcard.count)
-                .from(recipe)
-                .join(heart)
-                .on(heart.recipe.eq(recipe)
-                        .and(heart.member.id.eq(memberId)))
-                .fetchFirst();
-
-        return new PageImpl<>(content, pageable, count);
+        return new PageImpl<>(content);
     }
 
     @Override
@@ -63,22 +58,11 @@ public class RecipeRepositoryCustomImpl implements RecipeRepositoryCustom {
                                 .join(request)
                                 .on(request.recipe.eq(recipe))
                                 .where(recipe.member.id.eq(memberId)))))
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
                 .fetch();
 
-        Long count = queryFactory.select(Wildcard.count)
-                .from(recipe)
-                .join(member)
-                .on(recipe.member.id.eq(member.id)
-                        .and(member.id.eq(memberId)))
-                .where(recipe.isQuotation.isTrue()
-                        .and(recipe.id.notIn(JPAExpressions.select(recipe.id)
-                                .from(recipe)
-                                .join(request)
-                                .on(request.recipe.eq(recipe))
-                                .where(recipe.member.id.eq(memberId)))))
-                .fetchFirst();
-
-        return new PageImpl<>(content, pageable, count);
+        return new PageImpl<>(content);
     }
 
     @Override
@@ -95,18 +79,11 @@ public class RecipeRepositoryCustomImpl implements RecipeRepositoryCustom {
                         .and(request.isPaid.isTrue()))
                 .where(recipe.member.id.eq(memberId)
                         .and(recipe.isQuotation.isTrue()))
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
                 .fetch();
 
-        Long count = queryFactory.select(Wildcard.count)
-                .from(recipe)
-                .join(request)
-                .on(request.recipe.eq(recipe)
-                        .and(request.isPaid.isTrue()))
-                .where(recipe.member.id.eq(memberId)
-                        .and(recipe.isQuotation.isTrue()))
-                .fetchFirst();
-
-        return new PageImpl<>(content, pageable, count);
+        return new PageImpl<>(content);
     }
 
     @Override

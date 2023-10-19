@@ -3,7 +3,6 @@ package com.zerobase.foodlier.module.dm.room.repository;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.CaseBuilder;
 import com.querydsl.core.types.dsl.ComparableExpression;
-import com.querydsl.core.types.dsl.Wildcard;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.zerobase.foodlier.module.dm.room.domain.model.QDmRoom;
 import com.zerobase.foodlier.module.dm.room.dto.DmRoomDto;
@@ -50,18 +49,10 @@ public class DmRoomRepositoryCustomImpl implements DmRoomRepositoryCustom {
                         .and(Objects.requireNonNull(dmRoom.isChefExit).isFalse())
                         .or(request.member.id.eq(memberId)
                                 .and(Objects.requireNonNull(dmRoom.isMemberExit).isFalse())))
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
                 .fetch();
 
-        Long count = queryFactory.select(Wildcard.count)
-                .from(dmRoom)
-                .join(request)
-                .on(dmRoom.request.eq(request))
-                .where(request.chefMember.member.id.eq(memberId)
-                        .and(dmRoom.isChefExit.isFalse())
-                        .or(request.member.id.eq(memberId)
-                                .and(dmRoom.isMemberExit.isFalse())))
-                .fetchFirst();
-
-        return new PageImpl<>(content, pageable, count);
+        return new PageImpl<>(content);
     }
 }

@@ -4,7 +4,6 @@ import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.CaseBuilder;
 import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.core.types.dsl.StringPath;
-import com.querydsl.core.types.dsl.Wildcard;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.zerobase.foodlier.module.member.chef.domain.model.QChefMember;
 import com.zerobase.foodlier.module.member.member.domain.model.QMember;
@@ -49,32 +48,20 @@ public class MemberRepositoryCustomImpl implements MemberRepositoryCustom {
                 .on(request.chefMember.id.eq(chefMember.id)
                         .and(request.isPaid.isFalse())
                         .and(request.dmRoom.isNull()
-                        .and(request.isFinished.isFalse())))
+                                .and(request.isFinished.isFalse())))
                 .join(member)
                 .on(request.member.id.eq(member.id))
                 .leftJoin(recipe)
                 .on(request.recipe.id.eq(recipe.id)
                         .and(request.recipe.isNull()
-                        .or(request.recipe.isQuotation.isTrue())))
+                                .or(request.recipe.isQuotation.isTrue())))
                 .where(chefMember.id.eq(chefMemberId))
                 .orderBy(orderBy.asc())
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
                 .fetch();
 
-        Long count = queryFactory.select(Wildcard.count)
-                .from(chefMember)
-                .join(request)
-                .on(request.chefMember.id.eq(chefMember.id)
-                        .and(request.isPaid.isFalse())
-                        .and(request.dmRoom.isNull()
-                        .and(request.isFinished.isFalse())))
-                .join(member)
-                .on(request.member.id.eq(member.id))
-                .leftJoin(recipe)
-                .on(recipe.id.eq(request.recipe.id))
-                .where(chefMember.id.eq(chefMemberId))
-                .fetchFirst();
-
-        return new PageImpl<>(content, pageable, count);
+        return new PageImpl<>(content);
     }
 
     @Override
@@ -98,6 +85,6 @@ public class MemberRepositoryCustomImpl implements MemberRepositoryCustom {
                         .and(recipe.isDeleted.isFalse()))
                 .where(member.id.eq(memberId))
                 .groupBy(member.id, member.nickname, member.profileUrl, chefMember.id)
-                .fetchFirst();
+                .fetchOne();
     }
 }
