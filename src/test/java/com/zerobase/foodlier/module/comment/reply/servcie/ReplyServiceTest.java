@@ -2,8 +2,8 @@ package com.zerobase.foodlier.module.comment.reply.servcie;
 
 import com.zerobase.foodlier.common.response.ListResponse;
 import com.zerobase.foodlier.module.comment.comment.domain.model.Comment;
+import com.zerobase.foodlier.module.comment.comment.dto.CommentDto;
 import com.zerobase.foodlier.module.comment.reply.domain.model.Reply;
-import com.zerobase.foodlier.module.comment.reply.dto.ReplyDto;
 import com.zerobase.foodlier.module.comment.reply.exception.ReplyException;
 import com.zerobase.foodlier.module.comment.reply.reposiotry.ReplyRepository;
 import com.zerobase.foodlier.module.member.member.domain.model.Member;
@@ -181,13 +181,13 @@ class ReplyServiceTest {
     void success_getReplyList() {
 
         // given
-        PageImpl<ReplyDto> findingResult = getReplyList();
+        PageImpl<CommentDto> findingResult = getReplyList();
         given(replyRepository.findReplyList(any(), any()))
                 .willReturn(findingResult);
-        ListResponse<ReplyDto> expectedPagingDto = ListResponse.from(findingResult);
+        ListResponse<CommentDto> expectedPagingDto = ListResponse.from(findingResult);
         // when
 
-        ListResponse<ReplyDto> replyPagingDto = replyService.getReplyList(any(), any());
+        ListResponse<CommentDto> replyPagingDto = replyService.getReplyList(any(), any());
 
         // then
         assertAll(
@@ -246,14 +246,14 @@ class ReplyServiceTest {
                 .build();
     }
 
-    private static PageImpl<ReplyDto> getReplyList() {
+    private static PageImpl<CommentDto> getReplyList() {
 
         return new PageImpl<>(new ArrayList<>(Arrays.asList(
-                ReplyDto.builder()
+                CommentDto.builder()
                         .message("저는 별로던데...")
                         .createdAt(LocalDateTime.now())
                         .build(),
-                ReplyDto.builder()
+                CommentDto.builder()
                         .message("진짜 맛있어요?")
                         .createdAt(LocalDateTime.now().minusDays(1))
                         .build()
