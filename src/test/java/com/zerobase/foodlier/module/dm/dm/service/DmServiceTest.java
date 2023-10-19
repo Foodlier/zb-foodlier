@@ -153,7 +153,6 @@ public class DmServiceTest {
     @DisplayName("채팅내역 가져오기")
     void success_get_dm_list() {
         // given
-        Long id = 1L;
         Long roomId = 100L;
         Long dmId = 6L;
 
@@ -202,7 +201,6 @@ public class DmServiceTest {
     @DisplayName("채팅내역 가져오기 실패 - 채팅방 없음")
     void fail_get_dm_list_dm_room_not_found() {
         // given
-        Long id = 1L;
         Long roomId = 100L;
         Long dmId = 50L;
 
@@ -221,7 +219,6 @@ public class DmServiceTest {
     @DisplayName("채팅내역 가져오기 실패 - 채팅기록 없음")
     void fail_get_dm_list_valid_dm_page() {
         // given
-        Long id = 1L;
         Long roomId = 100L;
         Long dmId = 50L;
 
