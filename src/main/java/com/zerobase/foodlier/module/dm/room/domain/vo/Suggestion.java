@@ -20,4 +20,12 @@ public class Suggestion {
     public void updateAccept(boolean value) {
         this.isAccept = value;
     }
+
+    public void updateSuggested(boolean value) {
+        this.isSuggested = value;
+    }
+
+    public void updatePrice(int price) {
+        this.suggestedPrice = price;
+    }
 }

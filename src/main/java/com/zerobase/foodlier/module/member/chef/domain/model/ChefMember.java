@@ -58,4 +58,8 @@ public class ChefMember extends Audit {
         this.introduce = introduce;
     }
 
+    public void updateMember(Member member) {
+        this.member = member;
+    }
+
 }
