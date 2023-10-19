@@ -93,7 +93,6 @@ class RecipeFacadeTest {
     @DisplayName("꿀조합 게시글 수정 시 이미지 등록 후 url return 성공")
     void success_update_recipe_image() {
         //given
-        String email = "email@email.com";
         Long id = 1L;
         String imageName1 = "img1.jpg";
         String content1 = "content1";
@@ -121,7 +120,7 @@ class RecipeFacadeTest {
         given(s3Service.getImageUrl(mainImage)).willReturn(expectedMainImageUrl);
         given(s3Service.getImageUrlList(cookingOrderImageList))
                 .willReturn(expectedCookingOrderImageUrlList);
-        given(memberService.findByEmail(email))
+        given(memberService.findById(id))
                 .willReturn(Member.builder()
                         .id(id)
                         .build());
@@ -134,7 +133,7 @@ class RecipeFacadeTest {
 
         //when
         RecipeImageResponse recipeImageResponse = recipeFacade
-                .updateRecipeImage(email, mainImage, cookingOrderImageList, id);
+                .updateRecipeImage(id, mainImage, cookingOrderImageList, id);
 
         //then
         assertAll(
@@ -147,7 +146,6 @@ class RecipeFacadeTest {
     @DisplayName("꿀조합 게시글 수정 시 이미지 등록 후 url return 실패 - 권한없음")
     void fail_update_recipe_image_no_permission() {
         //given
-        String email = "email@email.com";
         Long id = 1L;
         Long wrongId = 2L;
         Long recipeId = 3L;
@@ -170,7 +168,7 @@ class RecipeFacadeTest {
         List<MultipartFile> cookingOrderImageList =
                 new ArrayList<>(List.of(cookingOrderImage1, cookingOrderImage2));
 
-        given(memberService.findByEmail(email)).willReturn(Member.builder()
+        given(memberService.findById(id)).willReturn(Member.builder()
                 .id(id)
                 .build());
         given(recipeService.getRecipe(recipeId)).willReturn(Recipe.builder()
@@ -181,7 +179,7 @@ class RecipeFacadeTest {
 
         //when
         RecipeException recipeException = assertThrows(RecipeException.class,
-                () -> recipeFacade.updateRecipeImage(email, mainImage, cookingOrderImageList, recipeId));
+                () -> recipeFacade.updateRecipeImage(id, mainImage, cookingOrderImageList, recipeId));
 
         //then
         assertEquals(NO_PERMISSION, recipeException.getErrorCode());
@@ -191,7 +189,7 @@ class RecipeFacadeTest {
     @DisplayName("꿀조합 게시글 작성 성공")
     void success_create_recipe() {
         //given
-        String email = "email@email.com";
+        Long id = 1L;
         RecipeDtoRequest recipeDtoRequest = RecipeDtoRequest.builder()
                 .title("title")
                 .content("content")
@@ -204,7 +202,7 @@ class RecipeFacadeTest {
                 ArgumentCaptor.forClass(RecipeDtoRequest.class);
 
         //when
-        recipeFacade.createRecipe(email, recipeDtoRequest);
+        recipeFacade.createRecipe(id, recipeDtoRequest);
 
         //then
         verify(recipeService, times(1)).createRecipe(any(), captor.capture());
@@ -222,7 +220,7 @@ class RecipeFacadeTest {
     @DisplayName("꿀조합 게시글 작성 실패 - 사용자 없음")
     void fail_create_recipe_member_not_found() {
         //given
-        String email = "email@email.com";
+        Long id = 1L;
         RecipeDtoRequest recipeDtoRequest = RecipeDtoRequest.builder()
                 .title("title")
                 .content("content")
@@ -231,12 +229,12 @@ class RecipeFacadeTest {
                 .expectedTime(30)
                 .build();
 
-        given(memberService.findByEmail(email))
+        given(memberService.findById(id))
                 .willThrow(new MemberException(MEMBER_NOT_FOUND));
 
         //when
         MemberException memberException = assertThrows(MemberException.class,
-                () -> recipeFacade.createRecipe(email, recipeDtoRequest));
+                () -> recipeFacade.createRecipe(id, recipeDtoRequest));
 
         //then
         assertEquals(MEMBER_NOT_FOUND, memberException.getErrorCode());
@@ -246,7 +244,6 @@ class RecipeFacadeTest {
     @DisplayName("게시글 수정 성공")
     void success_update_recipe() {
         //given
-        String email = "email@email.com";
         Long recipeId = 10L;
         Long id = 1L;
         RecipeDtoRequest recipeDtoRequest = RecipeDtoRequest.builder()
@@ -265,7 +262,7 @@ class RecipeFacadeTest {
                 .expectedTime(30)
                 .build();
 
-        given(memberService.findByEmail(email)).willReturn(Member.builder()
+        given(memberService.findById(id)).willReturn(Member.builder()
                 .id(id)
                 .build());
         given(recipeService.getRecipe(recipeId)).willReturn(Recipe.builder()
@@ -284,7 +281,7 @@ class RecipeFacadeTest {
         );
 
         // when
-        recipeFacade.updateRecipe(email, recipeDtoRequest, recipeId);
+        recipeFacade.updateRecipe(id, recipeDtoRequest, recipeId);
 
         // then
         ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
@@ -301,13 +298,12 @@ class RecipeFacadeTest {
     @DisplayName("게시글 수정 실패 - 권한 없음")
     void fail_update_recipe_no_permission() {
         //given
-        String email = "email@email.com";
         Long recipeId = 10L;
         Long id = 9L;
         Long wrongId = 8L;
         RecipeDtoRequest recipeDtoRequest = RecipeDtoRequest.builder().build();
 
-        given(memberService.findByEmail(email)).willReturn(Member.builder()
+        given(memberService.findById(id)).willReturn(Member.builder()
                 .id(id)
                 .build());
         given(recipeService.getRecipe(recipeId)).willReturn(Recipe.builder()
@@ -318,7 +314,7 @@ class RecipeFacadeTest {
 
         //when
         RecipeException recipeException = assertThrows(RecipeException.class,
-                () -> recipeFacade.updateRecipe(email, recipeDtoRequest, recipeId));
+                () -> recipeFacade.updateRecipe(id, recipeDtoRequest, recipeId));
 
         //then
         assertEquals(NO_PERMISSION, recipeException.getErrorCode());
@@ -328,11 +324,10 @@ class RecipeFacadeTest {
     @DisplayName("꿀조합 게시글 삭제, 삭제 후 이미지 삭제 성공")
     void success_delete_recipe() {
         //given
-        String email = "email@email.com";
         Long recipeId = 10L;
         Long id = 1L;
 
-        given(memberService.findByEmail(email)).willReturn(Member.builder()
+        given(memberService.findById(id)).willReturn(Member.builder()
                 .id(id)
                 .build());
         given(recipeService.getRecipe(recipeId)).willReturn(Recipe.builder()
@@ -350,7 +345,7 @@ class RecipeFacadeTest {
                         .build());
 
         //when
-        recipeFacade.deleteRecipe(email, recipeId);
+        recipeFacade.deleteRecipe(id, recipeId);
 
         //then
         ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
@@ -367,12 +362,11 @@ class RecipeFacadeTest {
     @DisplayName("꿀조합 게시글 삭제, 삭제 후 이미지 삭제 실패 - 권한없음")
     void fail_delete_recipe_no_permission() {
         //given
-        String email = "email@email.com";
         Long recipeId = 10L;
         Long id = 9L;
         Long wrongId = 8L;
 
-        given(memberService.findByEmail(email)).willReturn(Member.builder()
+        given(memberService.findById(id)).willReturn(Member.builder()
                 .id(id)
                 .build());
         given(recipeService.getRecipe(recipeId)).willReturn(Recipe.builder()
@@ -383,7 +377,7 @@ class RecipeFacadeTest {
 
         //when
         RecipeException recipeException = assertThrows(RecipeException.class,
-                () -> recipeFacade.deleteRecipe(email, recipeId));
+                () -> recipeFacade.deleteRecipe(id, recipeId));
 
         //then
         assertEquals(NO_PERMISSION, recipeException.getErrorCode());
@@ -393,11 +387,10 @@ class RecipeFacadeTest {
     @DisplayName("게시글 수정, 삭제권한 검증 성공")
     void success_check_permission() {
         //given
-        String email = "email@email.com";
         Long recipeId = 10L;
         Long id = 9L;
 
-        given(memberService.findByEmail(email)).willReturn(Member.builder()
+        given(memberService.findById(id)).willReturn(Member.builder()
                 .id(id)
                 .build());
         given(recipeService.getRecipe(recipeId)).willReturn(Recipe.builder()
@@ -409,19 +402,18 @@ class RecipeFacadeTest {
         //when
 
         //then
-        assertDoesNotThrow(() -> recipeFacade.checkPermission(email, recipeId));
+        assertDoesNotThrow(() -> recipeFacade.checkPermission(id, recipeId));
     }
 
     @Test
     @DisplayName("게시글 수정, 삭제권한 검증 실패 - 권한없음")
     void fail_check_permission_no_permission() {
         //given
-        String email = "email@email.com";
         Long recipeId = 10L;
         Long id = 9L;
         Long wrongId = 8L;
 
-        given(memberService.findByEmail(email)).willReturn(Member.builder()
+        given(memberService.findById(id)).willReturn(Member.builder()
                 .id(id)
                 .build());
         given(recipeService.getRecipe(recipeId)).willReturn(Recipe.builder()
@@ -432,7 +424,7 @@ class RecipeFacadeTest {
 
         //when
         RecipeException recipeException = assertThrows(RecipeException.class,
-                () -> recipeFacade.checkPermission(email, recipeId));
+                () -> recipeFacade.checkPermission(id, recipeId));
 
         //then
         assertEquals(NO_PERMISSION, recipeException.getErrorCode());
