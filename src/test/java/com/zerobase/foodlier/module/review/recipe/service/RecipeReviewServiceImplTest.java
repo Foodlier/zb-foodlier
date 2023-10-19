@@ -26,7 +26,6 @@ import org.springframework.data.domain.PageRequest;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -298,7 +297,7 @@ class RecipeReviewServiceImplTest {
                     .willReturn(
                             new PageImpl<>(
                                     new ArrayList<>(
-                                            Arrays.asList(
+                                            List.of(
                                                     recipeReview
                                             )
                                     ),

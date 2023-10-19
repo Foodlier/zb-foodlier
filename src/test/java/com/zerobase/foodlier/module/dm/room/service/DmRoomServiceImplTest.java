@@ -1,7 +1,6 @@
 package com.zerobase.foodlier.module.dm.room.service;
 
 import com.zerobase.foodlier.common.response.ListResponse;
-import com.zerobase.foodlier.module.dm.dm.domain.model.Dm;
 import com.zerobase.foodlier.module.dm.dm.repository.DmRepository;
 import com.zerobase.foodlier.module.dm.room.domain.model.DmRoom;
 import com.zerobase.foodlier.module.dm.room.dto.DmRoomDto;
@@ -21,6 +20,7 @@ import org.springframework.data.domain.PageImpl;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 import static com.zerobase.foodlier.module.dm.room.exception.DmRoomErrorCode.DM_ROOM_NOT_FOUND;
@@ -111,7 +111,7 @@ public class DmRoomServiceImplTest {
         dmRoomService.exitDmRoom(id, roomId);
 
         //then
-        verify(dmRoomRepository, times(1)).save(dmRoom);
+        verify(dmRoomRepository, times(1)).save(Objects.requireNonNull(dmRoom));
     }
 
     @Test
@@ -144,7 +144,7 @@ public class DmRoomServiceImplTest {
         dmRoomService.exitDmRoom(id, roomId);
 
         //then
-        verify(requestRepository, times(1)).save(dmRoom.getRequest());
+        verify(requestRepository, times(1)).save(Objects.requireNonNull(dmRoom).getRequest());
         verify(dmRoomRepository, times(1)).save(dmRoom);
     }
 

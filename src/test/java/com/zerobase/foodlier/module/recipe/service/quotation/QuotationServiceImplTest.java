@@ -30,7 +30,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -57,11 +57,11 @@ class QuotationServiceImplTest {
 
     @Nested
     @DisplayName("createQuotation() 테스트")
-    class createQuotationTest{
+    class createQuotationTest {
 
         @Test
         @DisplayName("견적서 생성 성공")
-        void success_createQuotation(){
+        void success_createQuotation() {
             //given
 
             Member member = Member.builder().id(1L).build();
@@ -117,7 +117,7 @@ class QuotationServiceImplTest {
 
         @Test
         @DisplayName("견적서 생성 실패 - 회원 X")
-        void fail_createQuotation(){
+        void fail_createQuotation() {
             //given
             given(memberRepository.findById(anyLong()))
                     .willReturn(Optional.empty());
@@ -134,11 +134,11 @@ class QuotationServiceImplTest {
 
     @Nested
     @DisplayName("getQuotationListForRefrigerator() 테스트")
-    class getQuotationListForRefrigeratorTest{
+    class getQuotationListForRefrigeratorTest {
 
         @Test
         @DisplayName("냉장고를 부탁해 페이지에서 - 견적서 조회하기")
-        void success_getQuotationListForRefrigerator(){
+        void success_getQuotationListForRefrigerator() {
             //given
             QuotationTopResponse topResponse = QuotationTopResponse.builder()
                     .quotationId(1L)
@@ -152,8 +152,8 @@ class QuotationServiceImplTest {
                     .willReturn(
                             new PageImpl<>(
                                     new ArrayList<>(
-                                            Arrays.asList(
-                                                topResponse
+                                            Collections.singletonList(
+                                                    topResponse
                                             )
                                     ),
                                     PageRequest.of(0, 10),
@@ -186,11 +186,11 @@ class QuotationServiceImplTest {
 
     @Nested
     @DisplayName("getQuotationListForRecipe() 테스트")
-    class getQuotationListForRecipeTest{
+    class getQuotationListForRecipeTest {
 
         @Test
         @DisplayName("꿀조합 작성 페이지에서 - 견적서 조회하기")
-        void success_getQuotationListForRecipe(){
+        void success_getQuotationListForRecipe() {
             //given
             QuotationTopResponse topResponse = QuotationTopResponse.builder()
                     .quotationId(1L)
@@ -204,7 +204,7 @@ class QuotationServiceImplTest {
                     .willReturn(
                             new PageImpl<>(
                                     new ArrayList<>(
-                                            Arrays.asList(
+                                            Collections.singletonList(
                                                     topResponse
                                             )
                                     ),
@@ -237,11 +237,11 @@ class QuotationServiceImplTest {
 
     @Nested
     @DisplayName("getQuotationDetail() 테스트")
-    class getQuotationDetailTest{
+    class getQuotationDetailTest {
 
         @Test
         @DisplayName("견적서 상세 정보 조회 성공")
-        void success_getQuotationDetail(){
+        void success_getQuotationDetail() {
             //given
             Recipe quotation = Recipe.builder()
                     .id(1L)
@@ -299,7 +299,7 @@ class QuotationServiceImplTest {
 
         @Test
         @DisplayName("견적서 상세 정보 조회 실패 - 권한 없음")
-        void fail_getQuotationDetail_has_not_quotation_read_permission(){
+        void fail_getQuotationDetail_has_not_quotation_read_permission() {
 
             //given
             given(recipeRepository.existsByIdAndMemberForQuotation(anyLong(), anyLong()))
@@ -316,7 +316,7 @@ class QuotationServiceImplTest {
 
         @Test
         @DisplayName("견적서 상세 정보 조회 실패 - 견적서 X")
-        void fail_getQuotationDetail_quotation_not_found(){
+        void fail_getQuotationDetail_quotation_not_found() {
             //given
             given(recipeRepository.existsByIdAndMemberForQuotation(anyLong(), anyLong()))
                     .willReturn(true);
@@ -335,11 +335,11 @@ class QuotationServiceImplTest {
 
     @Nested
     @DisplayName("convertToRecipe() 테스트")
-    class convertToRecipeTest{
+    class convertToRecipeTest {
 
         @Test
         @DisplayName("견적서를 꿀조합으로 변환 성공")
-        void success_convertToRecipe(){
+        void success_convertToRecipe() {
             //given
             given(memberRepository.findById(anyLong()))
                     .willReturn(Optional.of(Member.builder().build()));
@@ -406,7 +406,7 @@ class QuotationServiceImplTest {
 
         @Test
         @DisplayName("견적서를 꿀조합으로 변환 실패 - 회원 X")
-        void fail_convertToRecipe_member_not_found(){
+        void fail_convertToRecipe_member_not_found() {
             //given
             given(memberRepository.findById(anyLong()))
                     .willReturn(Optional.empty());
@@ -422,7 +422,7 @@ class QuotationServiceImplTest {
 
         @Test
         @DisplayName("견적서를 꿀조합으로 변환 실패 - 견적서 X")
-        void fail_convertToRecipe_quotation_not_found(){
+        void fail_convertToRecipe_quotation_not_found() {
             //given
             given(memberRepository.findById(anyLong()))
                     .willReturn(Optional.of(Member.builder().build()));
@@ -441,7 +441,7 @@ class QuotationServiceImplTest {
 
         @Test
         @DisplayName("견적서를 꿀조합으로 변환 실패 - 거래가 성사 되지 않아 변환이 불가능함")
-        void fail_convertToRecipe_cannot_convert_to_recipe(){
+        void fail_convertToRecipe_cannot_convert_to_recipe() {
             //given
             given(memberRepository.findById(anyLong()))
                     .willReturn(Optional.of(Member.builder().build()));
@@ -465,11 +465,11 @@ class QuotationServiceImplTest {
 
     @Nested
     @DisplayName("updateQuotation() 테스트")
-    class updateQuotationTest{
+    class updateQuotationTest {
 
         @Test
         @DisplayName("견적서 수정 성공")
-        void success_updateQuotation(){
+        void success_updateQuotation() {
             //given
             Member member = Member.builder().id(1L).build();
 
@@ -531,7 +531,7 @@ class QuotationServiceImplTest {
 
         @Test
         @DisplayName("견적서 수정 실패 - 회원 X")
-        void fail_updateQuotation_member_not_found(){
+        void fail_updateQuotation_member_not_found() {
             //given
             given(memberRepository.findById(anyLong()))
                     .willReturn(Optional.empty());
@@ -546,7 +546,7 @@ class QuotationServiceImplTest {
 
         @Test
         @DisplayName("견적서 수정 실패 - 견적서 X")
-        void fail_updateQuotation_quotation_not_found(){
+        void fail_updateQuotation_quotation_not_found() {
             //given
             Member member = Member.builder().id(1L).build();
 
@@ -568,11 +568,11 @@ class QuotationServiceImplTest {
 
     @Nested
     @DisplayName("deleteQuotation() 테스트")
-    class deleteQuotationTest{
+    class deleteQuotationTest {
 
         @Test
         @DisplayName("견적서 삭제 성공")
-        void success_deleteQuotation(){
+        void success_deleteQuotation() {
             //given
             Recipe quotation = Recipe.builder()
                     .id(1L)
@@ -598,7 +598,7 @@ class QuotationServiceImplTest {
 
         @Test
         @DisplayName("견적서 삭제 실패 - 회원 X")
-        void fail_deleteQuotation_member_not_found(){
+        void fail_deleteQuotation_member_not_found() {
             //given
             given(memberRepository.findById(anyLong()))
                     .willReturn(Optional.empty());
@@ -613,7 +613,7 @@ class QuotationServiceImplTest {
 
         @Test
         @DisplayName("견적서 삭제 실패 - 요청에 포함되어, 삭제 불가능한 상태")
-        void fail_deleteQuotation_cannot_delete_is_locked(){
+        void fail_deleteQuotation_cannot_delete_is_locked() {
             //given
             given(recipeRepository.isNotAbleToDeleteForQuotation(anyLong(), anyLong()))
                     .willReturn(true);
@@ -628,7 +628,7 @@ class QuotationServiceImplTest {
 
         @Test
         @DisplayName("견적서 삭제 실패 - 견적서 X")
-        void fail_deleteQuotation_quotation_not_found(){
+        void fail_deleteQuotation_quotation_not_found() {
             //given
             given(memberRepository.findById(anyLong()))
                     .willReturn(Optional.of(Member.builder().build()));
@@ -648,11 +648,11 @@ class QuotationServiceImplTest {
 
     @Nested
     @DisplayName("getQuotationForSend() 테스트")
-    class getQuotationForSendTest{
+    class getQuotationForSendTest {
 
         @Test
         @DisplayName("전송을 위한 견적서 가져오기 성공")
-        void success_getQuotationForSend(){
+        void success_getQuotationForSend() {
             //given
             Recipe quotation = Recipe.builder()
                     .id(1L)
@@ -675,7 +675,7 @@ class QuotationServiceImplTest {
 
         @Test
         @DisplayName("전송을 위한 견적서 가져오기 실패 - 회원 X")
-        void fail_getQuotationForSend_member_not_found(){
+        void fail_getQuotationForSend_member_not_found() {
             //given
             given(memberRepository.findById(anyLong()))
                     .willReturn(Optional.empty());
@@ -690,7 +690,7 @@ class QuotationServiceImplTest {
 
         @Test
         @DisplayName("전송을 위한 견적서 가져오기 실패 - 견적서 X")
-        void fail_getQuotationForSend_quotation_not_found(){
+        void fail_getQuotationForSend_quotation_not_found() {
             //given
             given(memberRepository.findById(anyLong()))
                     .willReturn(Optional.of(Member.builder().id(1L).build()));
@@ -707,7 +707,7 @@ class QuotationServiceImplTest {
 
         @Test
         @DisplayName("전송을 위한 견적서 가져오기 실패 - 이미 보낸 견적서")
-        void fail_getQuotationForSend_already_sent_quotation(){
+        void fail_getQuotationForSend_already_sent_quotation() {
             //given
             Recipe quotation = Recipe.builder()
                     .id(1L)

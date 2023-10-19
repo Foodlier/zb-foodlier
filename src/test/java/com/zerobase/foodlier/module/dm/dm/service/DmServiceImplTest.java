@@ -4,7 +4,6 @@ import com.zerobase.foodlier.module.dm.dm.domain.model.Dm;
 import com.zerobase.foodlier.module.dm.dm.dto.MessagePubDto;
 import com.zerobase.foodlier.module.dm.dm.dto.MessageResponseDto;
 import com.zerobase.foodlier.module.dm.dm.dto.MessageSubDto;
-import com.zerobase.foodlier.module.dm.dm.exception.DmErrorCode;
 import com.zerobase.foodlier.module.dm.dm.exception.DmException;
 import com.zerobase.foodlier.module.dm.dm.repository.DmRepository;
 import com.zerobase.foodlier.module.dm.room.domain.model.DmRoom;
@@ -23,7 +22,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 
-import static com.zerobase.foodlier.module.dm.dm.exception.DmErrorCode.*;
+import static com.zerobase.foodlier.module.dm.dm.exception.DmErrorCode.NO_SUCH_DM;
 import static com.zerobase.foodlier.module.dm.dm.type.MessageType.CHAT;
 import static com.zerobase.foodlier.module.dm.dm.type.MessageType.SUGGESTION;
 import static com.zerobase.foodlier.module.dm.room.exception.DmRoomErrorCode.DM_ROOM_NOT_FOUND;
