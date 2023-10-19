@@ -6,10 +6,15 @@ import com.zerobase.foodlier.common.security.config.SecurityConfig;
 import com.zerobase.foodlier.global.notification.facade.NotificationFacade;
 import com.zerobase.foodlier.global.recipe.facade.RecipeFacade;
 import com.zerobase.foodlier.mockuser.WithCustomMockUser;
+import com.zerobase.foodlier.module.heart.domain.model.Heart;
 import com.zerobase.foodlier.module.heart.service.HeartService;
+import com.zerobase.foodlier.module.member.member.domain.model.Member;
+import com.zerobase.foodlier.module.recipe.domain.model.Recipe;
 import com.zerobase.foodlier.module.recipe.domain.type.Difficulty;
+import com.zerobase.foodlier.module.recipe.domain.vo.Summary;
 import com.zerobase.foodlier.module.recipe.dto.recipe.*;
 import com.zerobase.foodlier.module.recipe.service.recipe.RecipeService;
+import com.zerobase.foodlier.module.recipe.type.OrderType;
 import com.zerobase.foodlier.module.recipe.type.SearchType;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -33,10 +38,8 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -419,20 +422,19 @@ class RecipeControllerTest {
 
     @Test
     @WithCustomMockUser
-    @DisplayName("레시피 검색하기")
-    void success_get_recipe_list() throws Exception {
+    @DisplayName("레시피 제목으로 검색하기")
+    void success_get_recipe_list_search_type_title() throws Exception {
         //given
         SearchType searchType = SearchType.TITLE;
         int pageIdx = 0;
-        int pageSize = 2;
-        String searchText = "찜닭";
-        RecipeSearchRequest recipeSearchRequest = RecipeSearchRequest.builder().build();
+        int pageSize = 1;
+        String searchText = "간장찜닭";
         RecipeCardDto recipeCardDto = RecipeCardDto.builder()
                 .recipeId(1L)
                 .nickName("요리왕비룡")
                 .title("간장찜닭")
                 .mainImageUrl("http://s3.test.com/mainimage")
-                .content("맛있는 간장찜닭")
+                .content("간장찜닭은 맛있다.")
                 .heartCount(1000)
                 .isHeart(true)
                 .build();
@@ -455,8 +457,664 @@ class RecipeControllerTest {
         perform.andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.content.[0].recipeId")
-                        .value(recipeCardDto.getRecipeId()));
+                        .value(recipeCardDto.getRecipeId()))
+                .andExpect(jsonPath("$.content.[0].nickName")
+                        .value(recipeCardDto.getNickName()))
+                .andExpect(jsonPath("$.content.[0].title")
+                        .value(recipeCardDto.getTitle()))
+                .andExpect(jsonPath("$.content.[0].mainImageUrl")
+                        .value(recipeCardDto.getMainImageUrl()))
+                .andExpect(jsonPath("$.content.[0].content")
+                        .value(recipeCardDto.getContent()))
+                .andExpect(jsonPath("$.content.[0].heartCount")
+                        .value(recipeCardDto.getHeartCount()))
+                .andExpect(jsonPath("$.content.[0].isHeart")
+                        .value(recipeCardDto.getIsHeart()));
+    }
 
+    @Test
+    @WithCustomMockUser
+    @DisplayName("레시피 재료로 검색하기")
+    void success_get_recipe_list_search_type_ingredients() throws Exception {
+        //given
+        SearchType searchType = SearchType.INGREDIENTS;
+        int pageIdx = 0;
+        int pageSize = 1;
+        String searchText = "당근";
+        RecipeCardDto recipeCardDto = RecipeCardDto.builder()
+                .recipeId(1L)
+                .nickName("요리왕비룡")
+                .title("당근주스")
+                .mainImageUrl("http://s3.test.com/mainimage")
+                .content("시원한 당근주소")
+                .heartCount(1000)
+                .isHeart(true)
+                .build();
 
+        given(recipeService.getRecipeList(any()))
+                .willReturn(ListResponse.from(
+                        new PageImpl<>(
+                                List.of(
+                                        recipeCardDto
+                                )
+                        )
+                ));
+
+        //when
+        ResultActions perform = mockMvc.perform(get("/recipe/search/" +
+                        "{searchType}/{pageIdx}/{pageSize}?searchText={searchText}",
+                searchType, pageIdx, pageSize, searchText));
+
+        //then
+        perform.andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content.[0].recipeId")
+                        .value(recipeCardDto.getRecipeId()))
+                .andExpect(jsonPath("$.content.[0].nickName")
+                        .value(recipeCardDto.getNickName()))
+                .andExpect(jsonPath("$.content.[0].title")
+                        .value(recipeCardDto.getTitle()))
+                .andExpect(jsonPath("$.content.[0].mainImageUrl")
+                        .value(recipeCardDto.getMainImageUrl()))
+                .andExpect(jsonPath("$.content.[0].content")
+                        .value(recipeCardDto.getContent()))
+                .andExpect(jsonPath("$.content.[0].heartCount")
+                        .value(recipeCardDto.getHeartCount()))
+                .andExpect(jsonPath("$.content.[0].isHeart")
+                        .value(recipeCardDto.getIsHeart()));
+    }
+
+    @Test
+    @WithCustomMockUser
+    @DisplayName("레시피 제목으로 작성일순 검색하기")
+    void success_get_filtered_recipe_list_search_type_title_order_type_created_at() throws Exception {
+        //given
+        SearchType searchType = SearchType.TITLE;
+        OrderType orderType = OrderType.CREATED_AT;
+        int pageIdx = 0;
+        int pageSize = 1;
+        String searchText = "찜닭";
+        RecipeCardDto recipeCardDto = RecipeCardDto.builder()
+                .recipeId(1L)
+                .nickName("요리왕비룡")
+                .title("최신 간장찜닭")
+                .mainImageUrl("http://s3.test.com/mainimage")
+                .content("최신 간장찜닭은 맛있다.")
+                .heartCount(1000)
+                .isHeart(true)
+                .build();
+
+        given(recipeService.getRecipeList(any()))
+                .willReturn(ListResponse.from(
+                        new PageImpl<>(
+                                List.of(
+                                        recipeCardDto
+                                )
+                        )
+                ));
+
+        //when
+        ResultActions perform = mockMvc.perform(get("/recipe/search/" +
+                        "{searchType}/{orderType}/{pageIdx}/{pageSize}?searchText={searchText}",
+                searchType, orderType, pageIdx, pageSize, searchText));
+
+        //then
+        perform.andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content.[0].recipeId")
+                        .value(recipeCardDto.getRecipeId()))
+                .andExpect(jsonPath("$.content.[0].nickName")
+                        .value(recipeCardDto.getNickName()))
+                .andExpect(jsonPath("$.content.[0].title")
+                        .value(recipeCardDto.getTitle()))
+                .andExpect(jsonPath("$.content.[0].mainImageUrl")
+                        .value(recipeCardDto.getMainImageUrl()))
+                .andExpect(jsonPath("$.content.[0].content")
+                        .value(recipeCardDto.getContent()))
+                .andExpect(jsonPath("$.content.[0].heartCount")
+                        .value(recipeCardDto.getHeartCount()))
+                .andExpect(jsonPath("$.content.[0].isHeart")
+                        .value(recipeCardDto.getIsHeart()));
+    }
+
+    @Test
+    @WithCustomMockUser
+    @DisplayName("레시피 제목으로 좋아요순 검색하기")
+    void success_get_filtered_recipe_list_search_type_title_order_type_heart_count() throws Exception {
+        //given
+        SearchType searchType = SearchType.TITLE;
+        OrderType orderType = OrderType.HEART_COUNT;
+        int pageIdx = 0;
+        int pageSize = 1;
+        String searchText = "찜닭";
+        RecipeCardDto recipeCardDto = RecipeCardDto.builder()
+                .recipeId(1L)
+                .nickName("요리왕비룡")
+                .title("좋아요가 많은 간장찜닭")
+                .mainImageUrl("http://s3.test.com/mainimage")
+                .content("간장찜닭은 맛있다.")
+                .heartCount(1000)
+                .isHeart(true)
+                .build();
+
+        given(recipeService.getRecipeList(any()))
+                .willReturn(ListResponse.from(
+                        new PageImpl<>(
+                                List.of(
+                                        recipeCardDto
+                                )
+                        )
+                ));
+
+        //when
+        ResultActions perform = mockMvc.perform(get("/recipe/search/" +
+                        "{searchType}/{orderType}/{pageIdx}/{pageSize}?searchText={searchText}",
+                searchType, orderType, pageIdx, pageSize, searchText));
+
+        //then
+        perform.andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content.[0].recipeId")
+                        .value(recipeCardDto.getRecipeId()))
+                .andExpect(jsonPath("$.content.[0].nickName")
+                        .value(recipeCardDto.getNickName()))
+                .andExpect(jsonPath("$.content.[0].title")
+                        .value(recipeCardDto.getTitle()))
+                .andExpect(jsonPath("$.content.[0].mainImageUrl")
+                        .value(recipeCardDto.getMainImageUrl()))
+                .andExpect(jsonPath("$.content.[0].content")
+                        .value(recipeCardDto.getContent()))
+                .andExpect(jsonPath("$.content.[0].heartCount")
+                        .value(recipeCardDto.getHeartCount()))
+                .andExpect(jsonPath("$.content.[0].isHeart")
+                        .value(recipeCardDto.getIsHeart()));
+    }
+
+    @Test
+    @WithCustomMockUser
+    @DisplayName("레시피 제목으로 답글많은순 검색하기")
+    void success_get_filtered_recipe_list_search_type_title_order_type_comment_count() throws Exception {
+        //given
+        SearchType searchType = SearchType.TITLE;
+        OrderType orderType = OrderType.COMMENT_COUNT;
+        int pageIdx = 0;
+        int pageSize = 1;
+        String searchText = "찜닭";
+        RecipeCardDto recipeCardDto = RecipeCardDto.builder()
+                .recipeId(1L)
+                .nickName("요리왕비룡")
+                .title("댓글많은 간장찜닭")
+                .mainImageUrl("http://s3.test.com/mainimage")
+                .content("간장찜닭은 맛있다.")
+                .heartCount(1000)
+                .isHeart(true)
+                .build();
+
+        given(recipeService.getRecipeList(any()))
+                .willReturn(ListResponse.from(
+                        new PageImpl<>(
+                                List.of(
+                                        recipeCardDto
+                                )
+                        )
+                ));
+
+        //when
+        ResultActions perform = mockMvc.perform(get("/recipe/search/" +
+                        "{searchType}/{orderType}/{pageIdx}/{pageSize}?searchText={searchText}",
+                searchType, orderType, pageIdx, pageSize, searchText));
+
+        //then
+        perform.andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content.[0].recipeId")
+                        .value(recipeCardDto.getRecipeId()))
+                .andExpect(jsonPath("$.content.[0].nickName")
+                        .value(recipeCardDto.getNickName()))
+                .andExpect(jsonPath("$.content.[0].title")
+                        .value(recipeCardDto.getTitle()))
+                .andExpect(jsonPath("$.content.[0].mainImageUrl")
+                        .value(recipeCardDto.getMainImageUrl()))
+                .andExpect(jsonPath("$.content.[0].content")
+                        .value(recipeCardDto.getContent()))
+                .andExpect(jsonPath("$.content.[0].heartCount")
+                        .value(recipeCardDto.getHeartCount()))
+                .andExpect(jsonPath("$.content.[0].isHeart")
+                        .value(recipeCardDto.getIsHeart()));
+    }
+
+    @Test
+    @WithCustomMockUser
+    @DisplayName("작성자로 작성일순 검색하기")
+    void success_get_filtered_recipe_list_search_type_writer_order_type_created_at() throws Exception {
+        //given
+        SearchType searchType = SearchType.WRITER;
+        OrderType orderType = OrderType.CREATED_AT;
+        int pageIdx = 0;
+        int pageSize = 1;
+        String searchText = "작성자1";
+        RecipeCardDto recipeCardDto = RecipeCardDto.builder()
+                .recipeId(1L)
+                .nickName("요리왕비룡")
+                .title("최신 간장찜닭")
+                .mainImageUrl("http://s3.test.com/mainimage")
+                .content("최신 간장찜닭은 맛있다.")
+                .heartCount(1000)
+                .isHeart(true)
+                .build();
+
+        given(recipeService.getRecipeList(any()))
+                .willReturn(ListResponse.from(
+                        new PageImpl<>(
+                                List.of(
+                                        recipeCardDto
+                                )
+                        )
+                ));
+
+        //when
+        ResultActions perform = mockMvc.perform(get("/recipe/search/" +
+                        "{searchType}/{orderType}/{pageIdx}/{pageSize}?searchText={searchText}",
+                searchType, orderType, pageIdx, pageSize, searchText));
+
+        //then
+        perform.andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content.[0].recipeId")
+                        .value(recipeCardDto.getRecipeId()))
+                .andExpect(jsonPath("$.content.[0].nickName")
+                        .value(recipeCardDto.getNickName()))
+                .andExpect(jsonPath("$.content.[0].title")
+                        .value(recipeCardDto.getTitle()))
+                .andExpect(jsonPath("$.content.[0].mainImageUrl")
+                        .value(recipeCardDto.getMainImageUrl()))
+                .andExpect(jsonPath("$.content.[0].content")
+                        .value(recipeCardDto.getContent()))
+                .andExpect(jsonPath("$.content.[0].heartCount")
+                        .value(recipeCardDto.getHeartCount()))
+                .andExpect(jsonPath("$.content.[0].isHeart")
+                        .value(recipeCardDto.getIsHeart()));
+    }
+
+    @Test
+    @WithCustomMockUser
+    @DisplayName("작성자로 좋아요순 검색하기")
+    void success_get_filtered_recipe_list_search_type_writer_order_type_heart_count() throws Exception {
+        //given
+        SearchType searchType = SearchType.WRITER;
+        OrderType orderType = OrderType.HEART_COUNT;
+        int pageIdx = 0;
+        int pageSize = 1;
+        String searchText = "작성자1";
+        RecipeCardDto recipeCardDto = RecipeCardDto.builder()
+                .recipeId(1L)
+                .nickName("요리왕비룡")
+                .title("좋아요가 많은 간장찜닭")
+                .mainImageUrl("http://s3.test.com/mainimage")
+                .content("간장찜닭은 맛있다.")
+                .heartCount(1000)
+                .isHeart(true)
+                .build();
+
+        given(recipeService.getRecipeList(any()))
+                .willReturn(ListResponse.from(
+                        new PageImpl<>(
+                                List.of(
+                                        recipeCardDto
+                                )
+                        )
+                ));
+
+        //when
+        ResultActions perform = mockMvc.perform(get("/recipe/search/" +
+                        "{searchType}/{orderType}/{pageIdx}/{pageSize}?searchText={searchText}",
+                searchType, orderType, pageIdx, pageSize, searchText));
+
+        //then
+        perform.andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content.[0].recipeId")
+                        .value(recipeCardDto.getRecipeId()))
+                .andExpect(jsonPath("$.content.[0].nickName")
+                        .value(recipeCardDto.getNickName()))
+                .andExpect(jsonPath("$.content.[0].title")
+                        .value(recipeCardDto.getTitle()))
+                .andExpect(jsonPath("$.content.[0].mainImageUrl")
+                        .value(recipeCardDto.getMainImageUrl()))
+                .andExpect(jsonPath("$.content.[0].content")
+                        .value(recipeCardDto.getContent()))
+                .andExpect(jsonPath("$.content.[0].heartCount")
+                        .value(recipeCardDto.getHeartCount()))
+                .andExpect(jsonPath("$.content.[0].isHeart")
+                        .value(recipeCardDto.getIsHeart()));
+    }
+
+    @Test
+    @WithCustomMockUser
+    @DisplayName("작성자로 답글많은순 검색하기")
+    void success_get_filtered_recipe_list_search_type_writer_order_type_comment_count() throws Exception {
+        //given
+        SearchType searchType = SearchType.WRITER;
+        OrderType orderType = OrderType.COMMENT_COUNT;
+        int pageIdx = 0;
+        int pageSize = 1;
+        String searchText = "작성자1";
+        RecipeCardDto recipeCardDto = RecipeCardDto.builder()
+                .recipeId(1L)
+                .nickName("요리왕비룡")
+                .title("댓글많은 간장찜닭")
+                .mainImageUrl("http://s3.test.com/mainimage")
+                .content("간장찜닭은 맛있다.")
+                .heartCount(1000)
+                .isHeart(true)
+                .build();
+
+        given(recipeService.getRecipeList(any()))
+                .willReturn(ListResponse.from(
+                        new PageImpl<>(
+                                List.of(
+                                        recipeCardDto
+                                )
+                        )
+                ));
+
+        //when
+        ResultActions perform = mockMvc.perform(get("/recipe/search/" +
+                        "{searchType}/{orderType}/{pageIdx}/{pageSize}?searchText={searchText}",
+                searchType, orderType, pageIdx, pageSize, searchText));
+
+        //then
+        perform.andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content.[0].recipeId")
+                        .value(recipeCardDto.getRecipeId()))
+                .andExpect(jsonPath("$.content.[0].nickName")
+                        .value(recipeCardDto.getNickName()))
+                .andExpect(jsonPath("$.content.[0].title")
+                        .value(recipeCardDto.getTitle()))
+                .andExpect(jsonPath("$.content.[0].mainImageUrl")
+                        .value(recipeCardDto.getMainImageUrl()))
+                .andExpect(jsonPath("$.content.[0].content")
+                        .value(recipeCardDto.getContent()))
+                .andExpect(jsonPath("$.content.[0].heartCount")
+                        .value(recipeCardDto.getHeartCount()))
+                .andExpect(jsonPath("$.content.[0].isHeart")
+                        .value(recipeCardDto.getIsHeart()));
+    }
+
+    @Test
+    @WithCustomMockUser
+    @DisplayName("좋아요 누르기 성공")
+    void success_create_heart() throws Exception {
+        //given
+        Long recipeId = 1L;
+
+        Member member = Member.builder()
+                .nickname("nickname")
+                .build();
+        Recipe recipe = Recipe.builder()
+                .id(recipeId)
+                .member(member)
+                .summary(Summary.builder()
+                        .title("title")
+                        .build())
+                .build();
+
+        given(heartService.createHeart(any(), any()))
+                .willReturn(Heart.builder()
+                        .recipe(recipe)
+                        .member(member)
+                        .build());
+
+        //when
+        ResultActions perform = mockMvc.perform(post("/recipe/heart/{recipeId}",
+                recipeId).with(csrf()));
+
+        //then
+        perform.andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(content().string("좋아요를 눌렀습니다"));
+
+        verify(notificationFacade, times(1)).send(any());
+    }
+
+    @Test
+    @WithCustomMockUser
+    @DisplayName("좋아요 취소 성공")
+    void success_delete_heart() throws Exception {
+        //given
+        Long recipeId = 1L;
+        doNothing().when(heartService).deleteHeart(any(), any());
+
+        //when
+        ResultActions perform = mockMvc.perform(delete("/recipe/heart/{recipeId}",
+                recipeId).with(csrf()));
+
+        //then
+        perform.andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(content().string("좋아요를 취소하였습니다."));
+
+    }
+
+    @Test
+    @WithCustomMockUser
+    @DisplayName("메인페이지 레시피 가져오기 성공")
+    void success_get_main_page_recipe_list() throws Exception {
+        //given
+        Long recipeId = 1L;
+
+        given(recipeService.getMainPageRecipeList(any())).willReturn(
+                new ArrayList<>(List.of(RecipeCardDto.builder()
+                        .recipeId(recipeId)
+                        .nickName("nickName")
+                        .title("title")
+                        .mainImageUrl("http://s3.test.com/mainimage")
+                        .content("content")
+                        .heartCount(1000)
+                        .isHeart(true)
+                        .build())));
+
+        //when
+        ResultActions perform = mockMvc.perform(get("/recipe/main"));
+
+        //then
+        perform.andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.[0].recipeId").value(recipeId))
+                .andExpect(jsonPath("$.[0].nickName").value("nickName"))
+                .andExpect(jsonPath("$.[0].title").value("title"))
+                .andExpect(jsonPath("$.[0].mainImageUrl")
+                        .value("http://s3.test.com/mainimage"))
+                .andExpect(jsonPath("$.[0].content").value("content"))
+                .andExpect(jsonPath("$.[0].heartCount").value(1000))
+                .andExpect(jsonPath("$.[0].isHeart").value(true));
+    }
+
+    @Test
+    @WithCustomMockUser
+    @DisplayName("레시피 최신순 일반조회 성공")
+    void success_get_recipe_page_recipe_list_created_at() throws Exception {
+        //given
+        int pageIdx = 0;
+        int pageSize = 1;
+        OrderType orderType = OrderType.CREATED_AT;
+        RecipeCardDto recipeCardDto = RecipeCardDto.builder()
+                .recipeId(1L)
+                .nickName("요리왕비룡")
+                .title("최신 간장찜닭")
+                .mainImageUrl("http://s3.test.com/mainimage")
+                .content("간장찜닭은 맛있다.")
+                .heartCount(1000)
+                .isHeart(true)
+                .build();
+
+        given(recipeService.getRecipePageRecipeList(any(), any(), any()))
+                .willReturn(ListResponse.from(
+                        new PageImpl<>(
+                                List.of(
+                                        recipeCardDto
+                                )
+                        )));
+
+        //when
+        ResultActions perform = mockMvc.perform(get("/recipe/default/" +
+                "{pageIdx}/{pageSize}?orderType={orderType}", pageIdx, pageSize, orderType));
+
+        //then
+        perform.andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content.[0].recipeId")
+                        .value(recipeCardDto.getRecipeId()))
+                .andExpect(jsonPath("$.content.[0].nickName")
+                        .value(recipeCardDto.getNickName()))
+                .andExpect(jsonPath("$.content.[0].title")
+                        .value(recipeCardDto.getTitle()))
+                .andExpect(jsonPath("$.content.[0].mainImageUrl")
+                        .value(recipeCardDto.getMainImageUrl()))
+                .andExpect(jsonPath("$.content.[0].content")
+                        .value(recipeCardDto.getContent()))
+                .andExpect(jsonPath("$.content.[0].heartCount")
+                        .value(recipeCardDto.getHeartCount()))
+                .andExpect(jsonPath("$.content.[0].isHeart")
+                        .value(recipeCardDto.getIsHeart()));
+    }
+
+    @Test
+    @WithCustomMockUser
+    @DisplayName("레시피 답글많은 순 일반조회 성공")
+    void success_get_recipe_page_recipe_list_comment_count() throws Exception {
+        //given
+        int pageIdx = 0;
+        int pageSize = 1;
+        OrderType orderType = OrderType.COMMENT_COUNT;
+        RecipeCardDto recipeCardDto = RecipeCardDto.builder()
+                .recipeId(1L)
+                .nickName("요리왕비룡")
+                .title("최신 간장찜닭")
+                .mainImageUrl("http://s3.test.com/mainimage")
+                .content("간장찜닭은 맛있다.")
+                .heartCount(1000)
+                .isHeart(true)
+                .build();
+
+        given(recipeService.getRecipePageRecipeList(any(), any(), any()))
+                .willReturn(ListResponse.from(
+                        new PageImpl<>(
+                                List.of(
+                                        recipeCardDto
+                                )
+                        )));
+
+        //when
+        ResultActions perform = mockMvc.perform(get("/recipe/default/" +
+                "{pageIdx}/{pageSize}?orderType={orderType}", pageIdx, pageSize, orderType));
+
+        //then
+        perform.andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content.[0].recipeId")
+                        .value(recipeCardDto.getRecipeId()))
+                .andExpect(jsonPath("$.content.[0].nickName")
+                        .value(recipeCardDto.getNickName()))
+                .andExpect(jsonPath("$.content.[0].title")
+                        .value(recipeCardDto.getTitle()))
+                .andExpect(jsonPath("$.content.[0].mainImageUrl")
+                        .value(recipeCardDto.getMainImageUrl()))
+                .andExpect(jsonPath("$.content.[0].content")
+                        .value(recipeCardDto.getContent()))
+                .andExpect(jsonPath("$.content.[0].heartCount")
+                        .value(recipeCardDto.getHeartCount()))
+                .andExpect(jsonPath("$.content.[0].isHeart")
+                        .value(recipeCardDto.getIsHeart()));
+    }
+
+    @Test
+    @WithCustomMockUser
+    @DisplayName("레시피 좋아요 많은순 일반조회 성공")
+    void success_get_recipe_page_recipe_list_heart_count() throws Exception {
+        //given
+        int pageIdx = 0;
+        int pageSize = 1;
+        OrderType orderType = OrderType.HEART_COUNT;
+        RecipeCardDto recipeCardDto = RecipeCardDto.builder()
+                .recipeId(1L)
+                .nickName("요리왕비룡")
+                .title("좋아요가 많은 간장찜닭")
+                .mainImageUrl("http://s3.test.com/mainimage")
+                .content("간장찜닭은 맛있다.")
+                .heartCount(1000)
+                .isHeart(true)
+                .build();
+
+        given(recipeService.getRecipePageRecipeList(any(), any(), any()))
+                .willReturn(ListResponse.from(
+                        new PageImpl<>(
+                                List.of(
+                                        recipeCardDto
+                                )
+                        )));
+
+        //when
+        ResultActions perform = mockMvc.perform(get("/recipe/default/" +
+                "{pageIdx}/{pageSize}?orderType={orderType}", pageIdx, pageSize, orderType));
+
+        //then
+        perform.andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content.[0].recipeId")
+                        .value(recipeCardDto.getRecipeId()))
+                .andExpect(jsonPath("$.content.[0].nickName")
+                        .value(recipeCardDto.getNickName()))
+                .andExpect(jsonPath("$.content.[0].title")
+                        .value(recipeCardDto.getTitle()))
+                .andExpect(jsonPath("$.content.[0].mainImageUrl")
+                        .value(recipeCardDto.getMainImageUrl()))
+                .andExpect(jsonPath("$.content.[0].content")
+                        .value(recipeCardDto.getContent()))
+                .andExpect(jsonPath("$.content.[0].heartCount")
+                        .value(recipeCardDto.getHeartCount()))
+                .andExpect(jsonPath("$.content.[0].isHeart")
+                        .value(recipeCardDto.getIsHeart()));
+    }
+
+    @Test
+    @WithCustomMockUser
+    @DisplayName("추천레시피 가져오기 성공")
+    void success_get_recommended_recipe_list() throws Exception {
+        //given
+        RecipeCardDto recipeCardDto = RecipeCardDto.builder()
+                .recipeId(1L)
+                .nickName("요리왕비룡")
+                .title("추천하는 간장찜닭")
+                .mainImageUrl("http://s3.test.com/mainimage")
+                .content("간장찜닭은 맛있다.")
+                .heartCount(1000)
+                .isHeart(true)
+                .build();
+
+        given(recipeService.recommendedRecipe(any()))
+                .willReturn(new ArrayList<>(List.of(recipeCardDto)));
+
+        //when
+        ResultActions perform = mockMvc.perform(get("/recipe/recommended"));
+
+        //then
+        perform.andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.[0].recipeId")
+                        .value(recipeCardDto.getRecipeId()))
+                .andExpect(jsonPath("$.[0].nickName")
+                        .value(recipeCardDto.getNickName()))
+                .andExpect(jsonPath("$.[0].title")
+                        .value(recipeCardDto.getTitle()))
+                .andExpect(jsonPath("$.[0].mainImageUrl")
+                        .value(recipeCardDto.getMainImageUrl()))
+                .andExpect(jsonPath("$.[0].content")
+                        .value(recipeCardDto.getContent()))
+                .andExpect(jsonPath("$.[0].heartCount")
+                        .value(recipeCardDto.getHeartCount()))
+                .andExpect(jsonPath("$.[0].isHeart")
+                        .value(recipeCardDto.getIsHeart()));
     }
 }
