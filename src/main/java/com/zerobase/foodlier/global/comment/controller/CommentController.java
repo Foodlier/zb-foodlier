@@ -6,7 +6,7 @@ import com.zerobase.foodlier.global.comment.facade.comment.CommentFacade;
 import com.zerobase.foodlier.global.comment.facade.reply.ReplyFacade;
 import com.zerobase.foodlier.global.notification.facade.NotificationFacade;
 import com.zerobase.foodlier.module.comment.comment.dto.CommentDto;
-import com.zerobase.foodlier.module.comment.comment.service.CommentServiceImpl;
+import com.zerobase.foodlier.module.comment.comment.service.CommentService;
 import com.zerobase.foodlier.module.comment.reply.servcie.ReplyService;
 import com.zerobase.foodlier.module.notification.domain.type.ActionType;
 import com.zerobase.foodlier.module.notification.domain.type.NotificationType;
@@ -26,7 +26,7 @@ import org.springframework.web.bind.annotation.*;
 public class CommentController {
 
     private final CommentFacade commentFacade;
-    private final CommentServiceImpl commentService;
+    private final CommentService commentService;
     private final ReplyFacade replyFacade;
     private final ReplyService replyService;
     private final NotificationFacade notificationFacade;

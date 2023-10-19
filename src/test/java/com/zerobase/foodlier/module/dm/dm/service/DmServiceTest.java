@@ -33,13 +33,13 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
-public class DmServiceImplTest {
+public class DmServiceTest {
     @Mock
     private DmRepository dmRepository;
     @Mock
     private DmRoomRepository dmRoomRepository;
     @InjectMocks
-    private DmServiceImpl dmService;
+    private DmService dmService;
 
     @Test
     @DisplayName("채팅작성 - 채팅")
@@ -153,7 +153,6 @@ public class DmServiceImplTest {
     @DisplayName("채팅내역 가져오기")
     void success_get_dm_list() {
         // given
-        Long id = 1L;
         Long roomId = 100L;
         Long dmId = 6L;
 
@@ -190,7 +189,7 @@ public class DmServiceImplTest {
                 .willReturn(dmPage);
 
         // when
-        MessageResponseDto messageResponseDto = dmService.getDmList(id, roomId, dmId);
+        MessageResponseDto messageResponseDto = dmService.getDmList(roomId, dmId);
 
         // then
         assertNotNull(messageResponseDto);
@@ -202,7 +201,6 @@ public class DmServiceImplTest {
     @DisplayName("채팅내역 가져오기 실패 - 채팅방 없음")
     void fail_get_dm_list_dm_room_not_found() {
         // given
-        Long id = 1L;
         Long roomId = 100L;
         Long dmId = 50L;
 
@@ -211,7 +209,7 @@ public class DmServiceImplTest {
 
         // when
         DmRoomException dmRoomException = assertThrows(DmRoomException.class,
-                () -> dmService.getDmList(id, roomId, dmId));
+                () -> dmService.getDmList(roomId, dmId));
 
         // then
         assertEquals(DM_ROOM_NOT_FOUND, dmRoomException.getErrorCode());
@@ -221,7 +219,6 @@ public class DmServiceImplTest {
     @DisplayName("채팅내역 가져오기 실패 - 채팅기록 없음")
     void fail_get_dm_list_valid_dm_page() {
         // given
-        Long id = 1L;
         Long roomId = 100L;
         Long dmId = 50L;
 
@@ -241,7 +238,7 @@ public class DmServiceImplTest {
 
         // when
         DmException dmException = assertThrows(DmException.class,
-                () -> dmService.getDmList(id, roomId, dmId));
+                () -> dmService.getDmList(roomId, dmId));
 
         // then
         assertEquals(NO_SUCH_DM, dmException.getErrorCode());

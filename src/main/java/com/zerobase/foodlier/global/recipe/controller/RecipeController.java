@@ -36,6 +36,7 @@ public class RecipeController {
     private final RecipeService recipeService;
     private final HeartService heartService;
     private final NotificationFacade notificationFacade;
+
     @PostMapping("/image")
     public ResponseEntity<RecipeImageResponse> uploadRecipeImage(
             @Valid @ImageFile @RequestPart MultipartFile mainImage,
@@ -74,7 +75,7 @@ public class RecipeController {
             @AuthenticationPrincipal MemberAuthDto memberAuthDto,
             @PathVariable(name = "recipeId") Long recipeId
     ) {
-        return ResponseEntity.ok(recipeService.getRecipeDetail(memberAuthDto,recipeId));
+        return ResponseEntity.ok(recipeService.getRecipeDetail(memberAuthDto, recipeId));
     }
 
     @DeleteMapping("/{recipeId}")

@@ -47,7 +47,7 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-class RecipeServiceImplTest {
+class RecipeServiceTest {
 
     @Mock
     private RecipeRepository recipeRepository;
@@ -62,7 +62,7 @@ class RecipeServiceImplTest {
     private RecipeSearchRepository recipeSearchRepository;
 
     @InjectMocks
-    private RecipeServiceImpl recipeService;
+    private RecipeService recipeService;
 
     @Test
     @DisplayName("레시피 저장 성공")

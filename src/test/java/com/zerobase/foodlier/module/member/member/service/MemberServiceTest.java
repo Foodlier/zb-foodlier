@@ -46,7 +46,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
-class MemberServiceImplTest {
+class MemberServiceTest {
 
     @Mock
     private MemberRepository memberRepository;
@@ -54,7 +54,7 @@ class MemberServiceImplTest {
     @Mock
     private JwtTokenProvider tokenProvider;
 
-    private MemberServiceImpl memberService;
+    private MemberService memberService;
 
     private PasswordEncoder passwordEncoder;
 
@@ -62,7 +62,7 @@ class MemberServiceImplTest {
     public void setUp() {
         MockitoAnnotations.openMocks(this);
         passwordEncoder = new BCryptPasswordEncoder();
-        memberService = new MemberServiceImpl(memberRepository,
+        memberService = new MemberService(memberRepository,
                 passwordEncoder,
                 tokenProvider);
     }

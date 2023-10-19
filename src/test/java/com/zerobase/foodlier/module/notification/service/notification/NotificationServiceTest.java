@@ -39,7 +39,7 @@ class NotificationServiceTest {
 
     @BeforeEach
     void setup() {
-        notificationService = new NotificationServiceImpl(notificationRepository);
+        notificationService = new NotificationService(notificationRepository);
     }
 
     @Test
