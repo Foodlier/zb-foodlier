@@ -101,7 +101,7 @@ class ProfileControllerTest {
                         .build())
                 .build();
 
-        given(memberService.getPrivateProfile(anyString()))
+        given(memberService.getPrivateProfile(any()))
                 .willReturn(response);
 
         //when
