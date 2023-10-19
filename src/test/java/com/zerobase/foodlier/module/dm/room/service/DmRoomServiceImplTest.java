@@ -1,7 +1,6 @@
 package com.zerobase.foodlier.module.dm.room.service;
 
 import com.zerobase.foodlier.common.response.ListResponse;
-import com.zerobase.foodlier.module.dm.dm.repository.DmRepository;
 import com.zerobase.foodlier.module.dm.room.domain.model.DmRoom;
 import com.zerobase.foodlier.module.dm.room.dto.DmRoomDto;
 import com.zerobase.foodlier.module.dm.room.exception.DmRoomException;
@@ -36,8 +35,6 @@ public class DmRoomServiceImplTest {
     @Mock
     private DmRoomRepository dmRoomRepository;
     @Mock
-    private DmRepository dmRepository;
-    @Mock
     private RequestRepository requestRepository;
     @InjectMocks
     private DmRoomServiceImpl dmRoomService;
@@ -63,8 +60,8 @@ public class DmRoomServiceImplTest {
         given(dmRoomRepository.getDmRoomPage(any(), any()))
                 .willReturn(new PageImpl<>(
                                 new ArrayList<>(expectDmRoomDtoList)
-                            )
-                        );
+                        )
+                );
 
         //when
         ListResponse<DmRoomDto> dmRoomDtoList =
