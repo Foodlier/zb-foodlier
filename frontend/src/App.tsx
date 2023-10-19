@@ -13,6 +13,7 @@ import WriteRecipePage from './pages/recipe/WriteRecipePage'
 import RecipeDetailPage from './pages/recipe/RecipeDetailPage'
 import WriteReviewPage from './pages/recipe/WriteReviewPage'
 import ChattingPage from './pages/chat/ChattingPage'
+import FindPasswordPage from './pages/auth/FindPasswordPage'
 import MyPage from './pages/user/MyPage'
 
 function App() {
@@ -21,6 +22,7 @@ function App() {
       <Routes>
         <Route path="/" element={<MainPage />} />
         <Route path="/login" element={<LoginPage />} />
+        <Route path="/find-password" element={<FindPasswordPage />} />
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/refrigerator" element={<RefrigeratorPage />} />
         <Route

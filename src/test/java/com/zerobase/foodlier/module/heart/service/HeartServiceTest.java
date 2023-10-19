@@ -33,7 +33,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
-class HeartServiceImplTest {
+class HeartServiceTest {
     @Mock
     private HeartRepository heartRepository;
 
@@ -46,7 +46,7 @@ class HeartServiceImplTest {
     private RecipeSearchRepository recipeSearchRepository;
 
     @InjectMocks
-    private HeartServiceImpl heartService;
+    private HeartService heartService;
 
     @Test
     @DisplayName("좋아요 생성 성공")

@@ -50,11 +50,9 @@ class NotificationFacadeTest {
 
         // given
         String userEmail = "test@example.com";
-        String lastEventId = "test@example.com_12345678";
         String emitterId = "test@example.com_123456789";
         String eventId = "test@example.com_1234567891";
         SseEmitter sseEmitter = mock(SseEmitter.class);
-        SseEmitter cacheEmitter = mock(SseEmitter.class);
 
         given(emitterService.makeUUIDIncludeId(any()))
                 .willReturn(emitterId);

@@ -16,7 +16,7 @@ import com.zerobase.foodlier.module.requestform.dto.RequestFormDto;
 import com.zerobase.foodlier.module.requestform.dto.RequestFormResponseDto;
 import com.zerobase.foodlier.module.requestform.exception.RequestFormException;
 import com.zerobase.foodlier.module.requestform.repository.RequestFormRepository;
-import com.zerobase.foodlier.module.requestform.service.RequestFormServiceImpl;
+import com.zerobase.foodlier.module.requestform.service.RequestFormService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -35,7 +35,7 @@ import java.util.Optional;
 
 import static com.zerobase.foodlier.module.member.member.exception.MemberErrorCode.MEMBER_NOT_FOUND;
 import static com.zerobase.foodlier.module.recipe.exception.recipe.RecipeErrorCode.*;
-import static com.zerobase.foodlier.module.requestForm.service.RequestFormServiceImplTest.Constants.*;
+import static com.zerobase.foodlier.module.requestForm.service.RequestFormServiceTest.Constants.*;
 import static com.zerobase.foodlier.module.requestform.exception.RequestFormErrorCode.REQUEST_FORM_NOT_FOUND;
 import static com.zerobase.foodlier.module.requestform.exception.RequestFormErrorCode.REQUEST_FORM_PERMISSION_DENIED;
 import static org.junit.jupiter.api.Assertions.*;
@@ -44,7 +44,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
-class RequestFormServiceImplTest {
+class RequestFormServiceTest {
 
     @Mock
     private RequestFormRepository requestFormRepository;
@@ -53,7 +53,7 @@ class RequestFormServiceImplTest {
     @Mock
     private RecipeRepository recipeRepository;
     @InjectMocks
-    private RequestFormServiceImpl requestFormService;
+    private RequestFormService requestFormService;
 
     static class Constants {
         static Long constRequesterId = 1L;

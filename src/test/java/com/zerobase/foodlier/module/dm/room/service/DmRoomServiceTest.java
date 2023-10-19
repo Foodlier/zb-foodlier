@@ -1,8 +1,6 @@
 package com.zerobase.foodlier.module.dm.room.service;
 
 import com.zerobase.foodlier.common.response.ListResponse;
-import com.zerobase.foodlier.module.dm.dm.domain.model.Dm;
-import com.zerobase.foodlier.module.dm.dm.repository.DmRepository;
 import com.zerobase.foodlier.module.dm.room.domain.model.DmRoom;
 import com.zerobase.foodlier.module.dm.room.dto.DmRoomDto;
 import com.zerobase.foodlier.module.dm.room.exception.DmRoomException;
@@ -21,6 +19,7 @@ import org.springframework.data.domain.PageImpl;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 import static com.zerobase.foodlier.module.dm.room.exception.DmRoomErrorCode.DM_ROOM_NOT_FOUND;
@@ -31,16 +30,14 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
-public class DmRoomServiceImplTest {
+public class DmRoomServiceTest {
 
     @Mock
     private DmRoomRepository dmRoomRepository;
     @Mock
-    private DmRepository dmRepository;
-    @Mock
     private RequestRepository requestRepository;
     @InjectMocks
-    private DmRoomServiceImpl dmRoomService;
+    private DmRoomService dmRoomService;
 
     @Test
     @DisplayName("채팅방 목록 가져오기")
@@ -63,8 +60,8 @@ public class DmRoomServiceImplTest {
         given(dmRoomRepository.getDmRoomPage(any(), any()))
                 .willReturn(new PageImpl<>(
                                 new ArrayList<>(expectDmRoomDtoList)
-                            )
-                        );
+                        )
+                );
 
         //when
         ListResponse<DmRoomDto> dmRoomDtoList =
@@ -111,7 +108,7 @@ public class DmRoomServiceImplTest {
         dmRoomService.exitDmRoom(id, roomId);
 
         //then
-        verify(dmRoomRepository, times(1)).save(dmRoom);
+        verify(dmRoomRepository, times(1)).save(Objects.requireNonNull(dmRoom));
     }
 
     @Test
@@ -144,7 +141,7 @@ public class DmRoomServiceImplTest {
         dmRoomService.exitDmRoom(id, roomId);
 
         //then
-        verify(requestRepository, times(1)).save(dmRoom.getRequest());
+        verify(requestRepository, times(1)).save(Objects.requireNonNull(dmRoom).getRequest());
         verify(dmRoomRepository, times(1)).save(dmRoom);
     }
 

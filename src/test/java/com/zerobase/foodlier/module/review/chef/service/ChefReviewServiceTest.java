@@ -26,7 +26,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.Optional;
 
 import static com.zerobase.foodlier.module.member.chef.exception.ChefMemberErrorCode.CHEF_MEMBER_NOT_FOUND;
@@ -41,7 +41,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
-class ChefReviewServiceImplTest {
+class ChefReviewServiceTest {
 
     @Mock
     private ChefReviewRepository chefReviewRepository;
@@ -52,7 +52,7 @@ class ChefReviewServiceImplTest {
     @Mock
     private ChefMemberRepository chefMemberRepository;
     @InjectMocks
-    private ChefReviewServiceImpl chefReviewService;
+    private ChefReviewService chefReviewService;
 
     @Test
     @DisplayName("요리사 후기 작성 성공")
@@ -274,7 +274,7 @@ class ChefReviewServiceImplTest {
                 .willReturn(
                         new PageImpl<>(
                                 new ArrayList<>(
-                                        Arrays.asList(
+                                        Collections.singletonList(
                                                 ChefReview.builder()
                                                         .content("content")
                                                         .star(5)

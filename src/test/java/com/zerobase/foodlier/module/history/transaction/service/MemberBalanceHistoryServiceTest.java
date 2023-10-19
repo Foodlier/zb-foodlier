@@ -35,7 +35,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
-class MemberBalanceHistoryServiceImplTest {
+class MemberBalanceHistoryServiceTest {
     @Mock
     private MemberBalanceHistoryRepository memberBalanceHistoryRepository;
 
@@ -43,7 +43,7 @@ class MemberBalanceHistoryServiceImplTest {
     private MemberRepository memberRepository;
 
     @InjectMocks
-    private MemberBalanceHistoryServiceImpl memberBalanceHistoryService;
+    private MemberBalanceHistoryService memberBalanceHistoryService;
 
     @Test
     @DisplayName("요청자 포인트 거래내역 생성 성공")

@@ -7,6 +7,7 @@ import com.zerobase.foodlier.global.profile.facade.ProfileFacade;
 import com.zerobase.foodlier.mockuser.WithCustomMockUser;
 import com.zerobase.foodlier.module.comment.comment.dto.MyPageCommentDto;
 import com.zerobase.foodlier.module.comment.comment.service.CommentService;
+import com.zerobase.foodlier.module.comment.reply.servcie.ReplyService;
 import com.zerobase.foodlier.module.member.chef.dto.ChefIntroduceForm;
 import com.zerobase.foodlier.module.member.chef.dto.ChefProfileDto;
 import com.zerobase.foodlier.module.member.chef.dto.TopChefDto;
@@ -71,7 +72,8 @@ class ProfileControllerTest {
     private RecipeService recipeService;
     @MockBean
     private CommentService commentService;
-
+    @MockBean
+    private ReplyService replyService;
     @Autowired
     private MockMvc mockMvc;
 
@@ -99,7 +101,7 @@ class ProfileControllerTest {
                         .build())
                 .build();
 
-        given(memberService.getPrivateProfile(anyString()))
+        given(memberService.getPrivateProfile(any()))
                 .willReturn(response);
 
         //when

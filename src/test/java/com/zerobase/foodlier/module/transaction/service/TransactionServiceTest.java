@@ -30,12 +30,12 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
-class TransactionServiceImplTest {
+class TransactionServiceTest {
     @Mock
     private DmRoomRepository dmRoomRepository;
 
     @InjectMocks
-    private TransactionServiceImpl transactionService;
+    private TransactionService transactionService;
 
     @Test
     @DisplayName("제안 성공")

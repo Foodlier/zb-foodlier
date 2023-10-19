@@ -46,7 +46,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
-class MemberServiceImplTest {
+class MemberServiceTest {
 
     @Mock
     private MemberRepository memberRepository;
@@ -54,7 +54,7 @@ class MemberServiceImplTest {
     @Mock
     private JwtTokenProvider tokenProvider;
 
-    private MemberServiceImpl memberService;
+    private MemberService memberService;
 
     private PasswordEncoder passwordEncoder;
 
@@ -62,7 +62,7 @@ class MemberServiceImplTest {
     public void setUp() {
         MockitoAnnotations.openMocks(this);
         passwordEncoder = new BCryptPasswordEncoder();
-        memberService = new MemberServiceImpl(memberRepository,
+        memberService = new MemberService(memberRepository,
                 passwordEncoder,
                 tokenProvider);
     }
@@ -306,8 +306,9 @@ class MemberServiceImplTest {
         //given
         String password = passwordEncoder.encode("password");
 
-        given(memberRepository.findByEmail("test@test.com"))
+        given(memberRepository.findById(1L))
                 .willReturn(Optional.ofNullable(Member.builder()
+                        .id(1L)
                         .nickname("test")
                         .email("test@test.com")
                         .point(1000)
@@ -328,7 +329,9 @@ class MemberServiceImplTest {
 
         //when
         MemberPrivateProfileResponse privateProfile =
-                memberService.getPrivateProfile("test@test.com");
+                memberService.getPrivateProfile(MemberAuthDto.builder()
+                        .id(1L)
+                        .build());
 
         //then
         assertAll(
@@ -1016,9 +1019,9 @@ class MemberServiceImplTest {
 
         //then
         assertAll(
-                () -> assertEquals(expectedMember.getNickname(), member.getNickname()),
-                () -> assertEquals(expectedMember.getEmail(), member.getEmail()),
-                () -> assertEquals(expectedMember.getRegistrationType(),
+                () -> assertEquals(Objects.requireNonNull(expectedMember).getNickname(), member.getNickname()),
+                () -> assertEquals(Objects.requireNonNull(expectedMember).getEmail(), member.getEmail()),
+                () -> assertEquals(Objects.requireNonNull(expectedMember).getRegistrationType(),
                         member.getRegistrationType())
         );
     }
@@ -1047,9 +1050,9 @@ class MemberServiceImplTest {
 
         //then
         assertAll(
-                () -> assertEquals(expectedMember.getNickname(), member.getNickname()),
-                () -> assertEquals(expectedMember.getEmail(), member.getEmail()),
-                () -> assertEquals(expectedMember.getRegistrationType(),
+                () -> assertEquals(Objects.requireNonNull(expectedMember).getNickname(), member.getNickname()),
+                () -> assertEquals(Objects.requireNonNull(expectedMember).getEmail(), member.getEmail()),
+                () -> assertEquals(Objects.requireNonNull(expectedMember).getRegistrationType(),
                         member.getRegistrationType())
         );
     }
@@ -1128,7 +1131,7 @@ class MemberServiceImplTest {
 
     @Test
     @DisplayName("닉네임 중복 체크 - 사용가능")
-    void success_checkNickname(){
+    void success_checkNickname() {
         //given
         given(memberRepository.existsByNickname(eq("nickname")))
                 .willReturn(false);
@@ -1143,7 +1146,7 @@ class MemberServiceImplTest {
 
     @Test
     @DisplayName("닉네임 중복 체크 - 이미 사용중")
-    void fail_checkNickname_nickname_is_already_exists(){
+    void fail_checkNickname_nickname_is_already_exists() {
         //given
         given(memberRepository.existsByNickname(eq("nickname")))
                 .willReturn(true);
@@ -1158,7 +1161,7 @@ class MemberServiceImplTest {
 
     @Test
     @DisplayName("핸드폰 번호 중복 체크 - 사용가능")
-    void success_checkphoneNumber(){
+    void success_checkphoneNumber() {
         //given
         given(memberRepository.existsByPhoneNumber(eq("01011112222")))
                 .willReturn(false);
@@ -1173,7 +1176,7 @@ class MemberServiceImplTest {
 
     @Test
     @DisplayName("핸드폰 번호 중복 체크 - 이미 사용중")
-    void fail_checkPhoneNumber_phone_number_is_already_exists(){
+    void fail_checkPhoneNumber_phone_number_is_already_exists() {
         //given
         given(memberRepository.existsByPhoneNumber(eq("01011112222")))
                 .willReturn(true);
@@ -1188,7 +1191,7 @@ class MemberServiceImplTest {
 
     @Test
     @DisplayName("이메일 중복 체크 - 사용가능")
-    void success_checkEmail(){
+    void success_checkEmail() {
         //given
         given(memberRepository.existsByEmail(eq("test@test.com")))
                 .willReturn(false);
@@ -1203,7 +1206,7 @@ class MemberServiceImplTest {
 
     @Test
     @DisplayName("이메일 중복 체크 - 이미 사용중")
-    void fail_checkEmail_email_is_already_exists(){
+    void fail_checkEmail_email_is_already_exists() {
         //given
         given(memberRepository.existsByEmail(eq("test@test.com")))
                 .willReturn(true);
