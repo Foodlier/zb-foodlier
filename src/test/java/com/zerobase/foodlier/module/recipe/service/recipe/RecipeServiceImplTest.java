@@ -456,7 +456,7 @@ class RecipeServiceImplTest {
                 given(recipeSearchRepository.searchBy(any(), any(), any()))
                         .willReturn(recipeDocumentPage);
                 for (int i = 0; i < expectedRecipeList.getContent().size(); i++) {
-                    given(heartRepository.existsByRecipe_IdAndMember(anyLong(),any())).willReturn(false);
+                    given(heartRepository.existsHeart(anyLong(),any())).willReturn(false);
                 }
                 // when
                 ListResponse<RecipeCardDto> recipeList = recipeService.getRecipeList(recipeSearchRequest);
@@ -506,7 +506,7 @@ class RecipeServiceImplTest {
                 given(recipeSearchRepository.searchBy(any(), any(), any()))
                         .willReturn(recipeDocumentPage);
                 for (int i = 0; i < expectedRecipeList.getContent().size(); i++) {
-                    given(heartRepository.existsByRecipe_IdAndMember(anyLong(),any())).willReturn(false);
+                    given(heartRepository.existsHeart(anyLong(),any())).willReturn(false);
                 }
                 // when
                 ListResponse<RecipeCardDto> recipeList = recipeService.getRecipeList(recipeSearchRequest);
@@ -553,7 +553,7 @@ class RecipeServiceImplTest {
                 given(recipeSearchRepository.searchBy(any(), any(), any()))
                         .willReturn(recipeDocumentPage);
                 for (int i = 0; i < expectedRecipeList.getContent().size(); i++) {
-                    given(heartRepository.existsByRecipe_IdAndMember(anyLong(),any())).willReturn(false);
+                    given(heartRepository.existsHeart(anyLong(),any())).willReturn(false);
                 }
                 // when
                 ListResponse<RecipeCardDto> recipeList = recipeService.getRecipeList(recipeSearchRequest);
@@ -611,7 +611,7 @@ class RecipeServiceImplTest {
                 given(recipeSearchRepository.searchBy(any(), any(), any()))
                         .willReturn(recipeDocumentPage);
                 for (int i = 0; i < expectedRecipeList.getContent().size(); i++) {
-                    given(heartRepository.existsByRecipe_IdAndMember(anyLong(),any())).willReturn(false);
+                    given(heartRepository.existsHeart(anyLong(),any())).willReturn(false);
                 }
 
                 // when
@@ -667,7 +667,7 @@ class RecipeServiceImplTest {
                 given(recipeSearchRepository.searchBy(any(), any(), any()))
                         .willReturn(recipeDocumentPage);
                 for (int i = 0; i < expectedRecipeList.getContent().size(); i++) {
-                    given(heartRepository.existsByRecipe_IdAndMember(anyLong(),any())).willReturn(false);
+                    given(heartRepository.existsHeart(anyLong(),any())).willReturn(false);
                 }
                 // when
                 ListResponse<RecipeCardDto> recipeList = recipeService.getRecipeList(recipeSearchRequest);
@@ -721,7 +721,7 @@ class RecipeServiceImplTest {
                 given(recipeSearchRepository.searchBy(any(), any(), any()))
                         .willReturn(recipeDocumentPage);
                 for (int i = 0; i < expectedRecipeList.getContent().size(); i++) {
-                    given(heartRepository.existsByRecipe_IdAndMember(anyLong(),any())).willReturn(false);
+                    given(heartRepository.existsHeart(anyLong(),any())).willReturn(false);
                 }
                 // when
                 ListResponse<RecipeCardDto> recipeList = recipeService.getRecipeList(recipeSearchRequest);
@@ -777,7 +777,7 @@ class RecipeServiceImplTest {
                 given(recipeSearchRepository.searchBy(any(), any(), any()))
                         .willReturn(recipeDocumentPage);
                 for (int i = 0; i < expectedRecipeList.getContent().size(); i++) {
-                    given(heartRepository.existsByRecipe_IdAndMember(anyLong(),any())).willReturn(false);
+                    given(heartRepository.existsHeart(anyLong(),any())).willReturn(false);
                 }
                 // when
                 ListResponse<RecipeCardDto> recipeList = recipeService.getRecipeList(recipeSearchRequest);
@@ -829,7 +829,7 @@ class RecipeServiceImplTest {
                 given(recipeSearchRepository.searchBy(any(), any(), any()))
                         .willReturn(recipeDocumentPage);
                 for (int i = 0; i < expectedRecipeList.getContent().size(); i++) {
-                    given(heartRepository.existsByRecipe_IdAndMember(anyLong(),any())).willReturn(false);
+                    given(heartRepository.existsHeart(anyLong(),any())).willReturn(false);
                 }
                 // when
                 ListResponse<RecipeCardDto> recipeList = recipeService.getRecipeList(recipeSearchRequest);
@@ -881,7 +881,7 @@ class RecipeServiceImplTest {
                 given(recipeSearchRepository.searchBy(any(), any(), any()))
                         .willReturn(recipeDocumentPage);
                 for (int i = 0; i < expectedRecipeList.getContent().size(); i++) {
-                    given(heartRepository.existsByRecipe_IdAndMember(anyLong(),any())).willReturn(false);
+                    given(heartRepository.existsHeart(anyLong(),any())).willReturn(false);
                 }
                 // when
                 ListResponse<RecipeCardDto> recipeList = recipeService.getRecipeList(recipeSearchRequest);
