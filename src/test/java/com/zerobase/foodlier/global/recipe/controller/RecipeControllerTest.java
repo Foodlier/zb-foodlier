@@ -1,6 +1,7 @@
 package com.zerobase.foodlier.global.recipe.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.zerobase.foodlier.common.response.ListResponse;
 import com.zerobase.foodlier.common.security.config.SecurityConfig;
 import com.zerobase.foodlier.global.notification.facade.NotificationFacade;
 import com.zerobase.foodlier.global.recipe.facade.RecipeFacade;
@@ -9,6 +10,7 @@ import com.zerobase.foodlier.module.heart.service.HeartService;
 import com.zerobase.foodlier.module.recipe.domain.type.Difficulty;
 import com.zerobase.foodlier.module.recipe.dto.recipe.*;
 import com.zerobase.foodlier.module.recipe.service.recipe.RecipeService;
+import com.zerobase.foodlier.module.recipe.type.SearchType;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -17,6 +19,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.FilterType;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
@@ -30,6 +33,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -400,16 +404,59 @@ class RecipeControllerTest {
     void success_delete_recipe() throws Exception {
         //given
         Long recipeId = 1L;
-        String email = "test@test.com";
+        Long id = 1L;
 
         //when
         ResultActions perform = mockMvc.perform(delete("/recipe/{recipeId}",
                 recipeId).with(csrf()));
 
         //then
-        verify(recipeFacade, times(1)).deleteRecipe(email, recipeId);
+        verify(recipeFacade, times(1)).deleteRecipe(id, recipeId);
         perform.andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().string("레시피 삭제를 성공했습니다."));
+    }
+
+    @Test
+    @WithCustomMockUser
+    @DisplayName("레시피 검색하기")
+    void success_get_recipe_list() throws Exception {
+        //given
+        SearchType searchType = SearchType.TITLE;
+        int pageIdx = 0;
+        int pageSize = 2;
+        String searchText = "찜닭";
+        RecipeSearchRequest recipeSearchRequest = RecipeSearchRequest.builder().build();
+        RecipeCardDto recipeCardDto = RecipeCardDto.builder()
+                .recipeId(1L)
+                .nickName("요리왕비룡")
+                .title("간장찜닭")
+                .mainImageUrl("http://s3.test.com/mainimage")
+                .content("맛있는 간장찜닭")
+                .heartCount(1000)
+                .isHeart(true)
+                .build();
+
+        given(recipeService.getRecipeList(any()))
+                .willReturn(ListResponse.from(
+                        new PageImpl<>(
+                                List.of(
+                                        recipeCardDto
+                                )
+                        )
+                ));
+
+        //when
+        ResultActions perform = mockMvc.perform(get("/recipe/search/" +
+                        "{searchType}/{pageIdx}/{pageSize}?searchText={searchText}",
+                searchType, pageIdx, pageSize, searchText));
+
+        //then
+        perform.andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content.[0].recipeId")
+                        .value(recipeCardDto.getRecipeId()));
+
+
     }
 }
