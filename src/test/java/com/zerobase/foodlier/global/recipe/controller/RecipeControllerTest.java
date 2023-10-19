@@ -6,9 +6,9 @@ import com.zerobase.foodlier.global.notification.facade.NotificationFacade;
 import com.zerobase.foodlier.global.recipe.facade.RecipeFacade;
 import com.zerobase.foodlier.mockuser.WithCustomMockUser;
 import com.zerobase.foodlier.module.heart.service.HeartService;
-import com.zerobase.foodlier.module.recipe.dto.recipe.RecipeImageResponse;
+import com.zerobase.foodlier.module.recipe.domain.type.Difficulty;
+import com.zerobase.foodlier.module.recipe.dto.recipe.*;
 import com.zerobase.foodlier.module.recipe.service.recipe.RecipeService;
-import com.zerobase.foodlier.module.review.recipe.dto.RecipeReviewForm;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -21,20 +21,20 @@ import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -104,8 +104,7 @@ class RecipeControllerTest {
                 .andExpect(jsonPath("$.cookingOrderImageList.[0]")
                         .value("http://s3.test/cookingorderimage1"))
                 .andExpect(jsonPath("$.cookingOrderImageList.[1]")
-                        .value("http://s3.test/cookingorderimage2"))
-        ;
+                        .value("http://s3.test/cookingorderimage2"));
 
     }
 
@@ -161,342 +160,256 @@ class RecipeControllerTest {
                 .andExpect(jsonPath("$.cookingOrderImageList.[0]")
                         .value("http://s3.test/cookingorderimage1"))
                 .andExpect(jsonPath("$.cookingOrderImageList.[1]")
-                        .value("http://s3.test/cookingorderimage2"))
-        ;
+                        .value("http://s3.test/cookingorderimage2"));
 
     }
 
-//    @Test
-//    @WithCustomMockUser
-//    @DisplayName("꿀조합 후기 작성 성공")
-//    void success_createRecipeReview() throws Exception {
-//        //when & then
-//        String cookImageName = "foodlier_logo.png";
-//        File file = new File("src/test/resources/foodlier_logo.png");
-//
-//        RecipeReviewForm form = RecipeReviewForm.builder()
-//                .content("최고의 극찬")
-//                .star(5)
-//                .cookImage(new MockMultipartFile(cookImageName,
-//                        cookImageName, MediaType.IMAGE_PNG_VALUE, new FileInputStream(file)))
-//                .build();
-//
-//        mockMvc.perform(multipart("/review/recipe/1")
-//                        .file("cookImage", form.getCookImage().getBytes())
-//                        .param("content", form.getContent())
-//                        .param("star", String.valueOf(form.getStar()))
-//                        .with(request -> {
-//                            request.setMethod("POST");
-//                            return request;
-//                        }).with(csrf())
-//                        .contentType(MediaType.MULTIPART_FORM_DATA))
-//                .andDo(print())
-//                .andExpect(status().isOk())
-//                .andExpect(content().string("꿀조합 후기를 작성하였습니다."));
-//
-//        ArgumentCaptor<RecipeReviewForm> captor = ArgumentCaptor.forClass(RecipeReviewForm.class);
-//        verify(recipeReviewFacade, times(1))
-//                .createRecipeReview(eq(1L), eq(1L), captor.capture());
-//        RecipeReviewForm expectedForm = captor.getValue();
-//
-//        assertAll(
-//                () -> assertEquals(form.getContent(), expectedForm.getContent()),
-//                () -> assertEquals(form.getStar(), expectedForm.getStar()),
-//                () -> assertEquals(form.getCookImage().getSize(), expectedForm.getCookImage().getSize())
-//        );
-//    }
+    @Test
+    @WithCustomMockUser
+    @DisplayName("게시글 작성 성공")
+    void success_create_recipe() throws Exception {
+        //given
+        RecipeDtoRequest recipeDtoRequest = RecipeDtoRequest.builder()
+                .title("title")
+                .mainImageUrl("http://s3.test.com/mainimage")
+                .content("content")
+                .difficulty(Difficulty.EASY)
+                .expectedTime(30)
+                .recipeDetailDtoList(new ArrayList<>(List.of(RecipeDetailDto.builder()
+                        .cookingOrder("order1")
+                        .cookingOrderImageUrl("http://s3.test.com/cookingorderimage")
+                        .build())))
+                .recipeIngredientDtoList(new ArrayList<>(List.of(RecipeIngredientDto.builder()
+                        .count(1)
+                        .name("name")
+                        .unit("ea")
+                        .build())))
+                .build();
 
-//    @Test
-//    @DisplayName("충전 요청 성공")
-//    @WithCustomMockUser
-//    void success_requestPayments() throws Exception {
-//        //given
-//        PaymentRequest paymentRequest = PaymentRequest.builder()
-//                .payType(PayType.CARD)
-//                .orderName(OrderNameType.CHARGE)
-//                .amount(1000L)
-//                .build();
-//
-//        given(paymentService.requestPayments(any(), any()))
-//                .willReturn(PaymentResponse.builder()
-//                        .payType(PayType.CARD.name())
-//                        .amount(1000L)
-//                        .orderId("orderId")
-//                        .orderName(OrderNameType.CHARGE.name())
-//                        .customerEmail("test@test.com")
-//                        .customerNickName("test")
-//                        .successUrl("success")
-//                        .failUrl("fail")
-//                        .payDate(String.valueOf(LocalDate.now()))
-//                        .build());
-//
-//        //when
-//        ResultActions perform = mockMvc.perform(post("/point/charge")
-//                .contentType(MediaType.APPLICATION_JSON)
-//                .content(objectMapper.writeValueAsString(paymentRequest))
-//                .with(csrf()));
-//
-//        //then
-//        perform.andDo(print())
-//                .andExpectAll(
-//                        status().isOk(),
-//                        jsonPath("$.payType")
-//                                .value(paymentRequest.getPayType().name()),
-//                        jsonPath("$.amount")
-//                                .value(paymentRequest.getAmount()),
-//                        jsonPath("$.orderId")
-//                                .value("orderId"),
-//                        jsonPath("$.orderName")
-//                                .value(paymentRequest.getOrderName().name()),
-//                        jsonPath("$.customerEmail")
-//                                .value("test@test.com"),
-//                        jsonPath("$.customerNickName")
-//                                .value("test"),
-//                        jsonPath("$.successUrl")
-//                                .value("success"),
-//                        jsonPath("$.failUrl")
-//                                .value("fail"),
-//                        jsonPath("$.payDate")
-//                                .value(String.valueOf(LocalDate.now()))
-//                );
-//    }
-//
-//    @Test
-//    @DisplayName("결제 완료 성공")
-//    @WithCustomMockUser
-//    void success_requestFinalPayments() throws Exception {
-//        //given
-//
-//        //when
-//        ResultActions perform = mockMvc.perform(get("/point/success?" +
-//                "paymentKey=paymentKey&orderId=orderId&amount=1000"));
-//
-//        //then
-//        perform.andDo(print())
-//                .andExpect(status().isOk())
-//                .andExpect(content().string("결제 완료, 금액 : 1000"));
-//    }
-//
-//    @Test
-//    @DisplayName("결제 실패 성공")
-//    @WithCustomMockUser
-//    void success_requestFail() throws Exception {
-//        //given
-//        PaymentResponseHandleFailDto paymentResponseHandleFailDto =
-//                PaymentResponseHandleFailDto.builder()
-//                        .errorCode("errorCode")
-//                        .errorMsg("결제실패")
-//                        .orderId("orderId")
-//                        .build();
-//
-//        given(paymentService.requestFail(any(), any(), any()))
-//                .willReturn(paymentResponseHandleFailDto);
-//
-//        //when
-//        ResultActions perform = mockMvc.perform(get("/point/fail?" +
-//                "code=errorCode&message=결제실패&orderId=orderId"));
-//
-//        //then
-//        perform.andDo(print())
-//                .andExpectAll(
-//                        status().isOk(),
-//                        jsonPath("$.errorCode")
-//                                .value(paymentResponseHandleFailDto.getErrorCode()),
-//                        jsonPath("$.errorMsg")
-//                                .value(paymentResponseHandleFailDto.getErrorMsg()),
-//                        jsonPath("$.orderId")
-//                                .value(paymentResponseHandleFailDto.getOrderId())
-//                );
-//    }
-//
-//    @Test
-//    @WithCustomMockUser
-//    @DisplayName("결제 취소 성공")
-//    void success_requestPaymentCancel() throws Exception {
-//        //given
-//
-//        //when
-//        ResultActions perform = mockMvc.perform(post("/point/cancel?" +
-//                "paymentKey=paymentKey&cancelReason=단순변심")
-//                .with(csrf()));
-//
-//        //then
-//        perform.andDo(print())
-//                .andExpectAll(
-//                        status().isOk(),
-//                        content().string("결제 취소 완료, 이유 : 단순변심")
-//                );
-//    }
-//
-//    @Test
-//    @WithCustomMockUser
-//    @DisplayName("가격 제안 성공")
-//    void success_suggestPrice() throws Exception {
-//        //given
-//        SuggestionForm suggestionForm = new SuggestionForm(1000);
-//
-//        given(transactionService.sendSuggestion(any(), any(), anyLong()))
-//                .willReturn("가격을 제안했습니다.");
-//
-//        //when
-//        ResultActions perform = mockMvc.perform(post("/point/suggest/1")
-//                .contentType(MediaType.APPLICATION_JSON)
-//                .content(objectMapper.writeValueAsString(suggestionForm))
-//                .with(csrf()));
-//
-//        //then
-//        perform.andDo(print())
-//                .andExpectAll(
-//                        status().isOk(),
-//                        content().string("가격을 제안했습니다.")
-//                );
-//    }
-//
-//    @Test
-//    @WithCustomMockUser
-//    @DisplayName("가격 제안 취소 성공")
-//    void success_cancelSuggestion() throws Exception {
-//        //given
-//        given(transactionService.cancelSuggestion(any(), anyLong()))
-//                .willReturn("제안이 취소되었습니다.");
-//
-//        //when
-//        ResultActions perform = mockMvc.perform(post("/point/suggest/cancel/1")
-//                .with(csrf()));
-//
-//        //then
-//        perform.andDo(print())
-//                .andExpectAll(
-//                        status().isOk(),
-//                        content().string("제안이 취소되었습니다.")
-//                );
-//    }
-//
-//    @Test
-//    @WithCustomMockUser
-//    @DisplayName("제안 수락 성공")
-//    void success_approveSuggestion() throws Exception {
-//        //given
-//
-//        //when
-//        ResultActions perform = mockMvc.perform(patch("/point/suggest/approve/1")
-//                .with(csrf()));
-//
-//        //then
-//        perform.andDo(print())
-//                .andExpectAll(
-//                        status().isOk(),
-//                        content().string("제안을 수락했습니다.")
-//                );
-//    }
-//
-//    @Test
-//    @WithCustomMockUser
-//    @DisplayName("제안 거절 성공")
-//    void success_rejectSuggestion() throws Exception {
-//        //given
-//        given(transactionService.rejectSuggestion(any(), anyLong()))
-//                .willReturn("제안을 거절하였습니다.");
-//
-//        //when
-//        ResultActions perform = mockMvc.perform(patch("/point/suggest/reject/1")
-//                .with(csrf()));
-//
-//        //then
-//        perform.andDo(print())
-//                .andExpectAll(
-//                        status().isOk(),
-//                        content().string("제안을 거절하였습니다.")
-//                );
-//    }
-//
-//    @Test
-//    @WithCustomMockUser
-//    @DisplayName("포인 충전 내역 조회 성공")
-//    void success_getPointHistory() throws Exception {
-//        //given
-//        PointChargeHistoryDto pointCharge = PointChargeHistoryDto.builder()
-//                .paymentKey("paymentKey1")
-//                .chargePoint(1000L)
-//                .description(TransactionType.CHARGE_POINT.getDescription())
-//                .chargeAt(LocalDateTime.of(2023, 12, 25, 1, 23, 45))
-//                .build();
-//        PointChargeHistoryDto pointChargeCancel = PointChargeHistoryDto.builder()
-//                .paymentKey("paymentKey2")
-//                .chargePoint(1000L)
-//                .description(TransactionType.CHARGE_CANCEL.getDescription())
-//                .chargeAt(LocalDateTime.of(2023, 12, 25, 1, 23, 45))
-//                .build();
-//
-//
-//        given(pointChargeHistoryService.getPointHistory(any(), any()))
-//                .willReturn(ListResponse.from(new PageImpl<>(
-//                        List.of(pointCharge, pointChargeCancel)
-//                )));
-//
-//
-//        //when
-//        ResultActions perform = mockMvc.perform(get("/point/charge/0/10"));
-//
-//        //then
-//        perform.andDo(print())
-//                .andExpectAll(
-//                        status().isOk(),
-//                        jsonPath("$.content.[0].chargePoint")
-//                                .value(pointCharge.getChargePoint()),
-//                        jsonPath("$.content.[0].paymentKey")
-//                                .value(pointCharge.getPaymentKey()),
-//                        jsonPath("$.content.[0].chargeAt")
-//                                .value("2023-12-25 01:23:45"),
-//                        jsonPath("$.content.[0].description")
-//                                .value(pointCharge.getDescription()),
-//
-//                        jsonPath("$.content.[1].chargePoint")
-//                                .value(pointChargeCancel.getChargePoint()),
-//                        jsonPath("$.content.[1].paymentKey")
-//                                .value(pointChargeCancel.getPaymentKey()),
-//                        jsonPath("$.content.[1].chargeAt")
-//                                .value("2023-12-25 01:23:45"),
-//                        jsonPath("$.content.[1].description")
-//                                .value(pointChargeCancel.getDescription())
-//                );
-//    }
-//
-//    @Test
-//    @WithCustomMockUser
-//    @DisplayName("거래 내역 조회 성공")
-//    void success_getTransactionHistory() throws Exception {
-//        //given
-//        MemberBalanceHistoryDto memberBalanceHistoryDto = MemberBalanceHistoryDto.builder()
-//                .currentPoint(1000)
-//                .changePoint(1000)
-//                .sender("testSender")
-//                .description(TransactionType.POINT_RECEIVE.getDescription())
-//                .transactionAt(LocalDateTime.of(2023, 12, 25, 1, 23, 45))
-//                .build();
-//
-//        given(memberBalanceHistoryService.getTransactionHistory(any(), any()))
-//                .willReturn(ListResponse.from(new PageImpl<>(
-//                        List.of(memberBalanceHistoryDto)
-//                )));
-//
-//        //when
-//        ResultActions perform = mockMvc.perform(get("/point/transaction/0/10"));
-//
-//        //then
-//        perform.andDo(print())
-//                .andExpectAll(
-//                        status().isOk(),
-//                        jsonPath("$.content.[0].changePoint")
-//                                .value(memberBalanceHistoryDto.getChangePoint()),
-//                        jsonPath("$.content.[0].currentPoint")
-//                                .value(memberBalanceHistoryDto.getCurrentPoint()),
-//                        jsonPath("$.content.[0].sender")
-//                                .value(memberBalanceHistoryDto.getSender()),
-//                        jsonPath("$.content.[0].transactionAt")
-//                                .value("2023-12-25 01:23:45"),
-//                        jsonPath("$.content.[0].description")
-//                                .value(memberBalanceHistoryDto.getDescription())
-//                );
-//    }
+        //when
+        ResultActions perform = mockMvc.perform(post("/recipe")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(recipeDtoRequest))
+                .with(csrf()));
+
+        //then
+        ArgumentCaptor<RecipeDtoRequest> captor = ArgumentCaptor.forClass(RecipeDtoRequest.class);
+        verify(recipeFacade, times(1))
+                .createRecipe(any(), captor.capture());
+        RecipeDtoRequest captorValue = captor.getValue();
+
+        perform.andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(content().string("게시글 작성을 성공했습니다."));
+
+        assertAll(
+                () -> assertEquals(recipeDtoRequest.getTitle(), captorValue.getTitle()),
+                () -> assertEquals(recipeDtoRequest.getMainImageUrl(),
+                        captorValue.getMainImageUrl()),
+                () -> assertEquals(recipeDtoRequest.getContent(),
+                        captorValue.getContent()),
+                () -> assertEquals(recipeDtoRequest.getDifficulty(),
+                        captorValue.getDifficulty()),
+                () -> assertEquals(recipeDtoRequest.getExpectedTime(),
+                        captorValue.getExpectedTime()),
+                () -> assertEquals(recipeDtoRequest.getRecipeDetailDtoList()
+                                .get(0).getCookingOrder(),
+                        captorValue.getRecipeDetailDtoList()
+                                .get(0).getCookingOrder()),
+                () -> assertEquals(recipeDtoRequest.getRecipeDetailDtoList()
+                                .get(0).getCookingOrderImageUrl(),
+                        captorValue.getRecipeDetailDtoList()
+                                .get(0).getCookingOrderImageUrl()),
+                () -> assertEquals(recipeDtoRequest.getRecipeIngredientDtoList()
+                                .get(0).getCount(),
+                        captorValue.getRecipeIngredientDtoList()
+                                .get(0).getCount()),
+                () -> assertEquals(recipeDtoRequest.getRecipeIngredientDtoList()
+                                .get(0).getUnit(),
+                        captorValue.getRecipeIngredientDtoList()
+                                .get(0).getUnit()),
+                () -> assertEquals(recipeDtoRequest.getRecipeIngredientDtoList()
+                                .get(0).getName(),
+                        captorValue.getRecipeIngredientDtoList()
+                                .get(0).getName()));
+    }
+
+    @Test
+    @WithCustomMockUser
+    @DisplayName("게시글 수정 성공")
+    void success_update_recipe() throws Exception {
+        //given
+        RecipeDtoRequest recipeDtoRequest = RecipeDtoRequest.builder()
+                .title("title")
+                .mainImageUrl("http://s3.test.com/mainimage")
+                .content("content")
+                .difficulty(Difficulty.EASY)
+                .expectedTime(30)
+                .recipeDetailDtoList(new ArrayList<>(List.of(RecipeDetailDto.builder()
+                        .cookingOrder("order1")
+                        .cookingOrderImageUrl("http://s3.test.com/cookingorderimage")
+                        .build())))
+                .recipeIngredientDtoList(new ArrayList<>(List.of(RecipeIngredientDto.builder()
+                        .count(1)
+                        .name("name")
+                        .unit("ea")
+                        .build())))
+                .build();
+        Long recipeId = 1L;
+
+        //when
+        ResultActions perform = mockMvc.perform(put("/recipe/{recipeId}",
+                recipeId)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(recipeDtoRequest))
+                .with(csrf()));
+
+        //then
+        ArgumentCaptor<RecipeDtoRequest> captor = ArgumentCaptor.forClass(RecipeDtoRequest.class);
+        verify(recipeFacade, times(1))
+                .updateRecipe(any(), captor.capture(), any());
+        RecipeDtoRequest captorValue = captor.getValue();
+
+        perform.andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(content().string("게시글 수정을 성공했습니다."));
+
+        assertAll(
+                () -> assertEquals(recipeDtoRequest.getTitle(), captorValue.getTitle()),
+                () -> assertEquals(recipeDtoRequest.getMainImageUrl(),
+                        captorValue.getMainImageUrl()),
+                () -> assertEquals(recipeDtoRequest.getContent(),
+                        captorValue.getContent()),
+                () -> assertEquals(recipeDtoRequest.getDifficulty(),
+                        captorValue.getDifficulty()),
+                () -> assertEquals(recipeDtoRequest.getExpectedTime(),
+                        captorValue.getExpectedTime()),
+                () -> assertEquals(recipeDtoRequest.getRecipeDetailDtoList()
+                                .get(0).getCookingOrder(),
+                        captorValue.getRecipeDetailDtoList()
+                                .get(0).getCookingOrder()),
+                () -> assertEquals(recipeDtoRequest.getRecipeDetailDtoList()
+                                .get(0).getCookingOrderImageUrl(),
+                        captorValue.getRecipeDetailDtoList()
+                                .get(0).getCookingOrderImageUrl()),
+                () -> assertEquals(recipeDtoRequest.getRecipeIngredientDtoList()
+                                .get(0).getCount(),
+                        captorValue.getRecipeIngredientDtoList()
+                                .get(0).getCount()),
+                () -> assertEquals(recipeDtoRequest.getRecipeIngredientDtoList()
+                                .get(0).getUnit(),
+                        captorValue.getRecipeIngredientDtoList()
+                                .get(0).getUnit()),
+                () -> assertEquals(recipeDtoRequest.getRecipeIngredientDtoList()
+                                .get(0).getName(),
+                        captorValue.getRecipeIngredientDtoList()
+                                .get(0).getName()));
+    }
+
+    @Test
+    @WithCustomMockUser
+    @DisplayName("레시피 가져오기 성공")
+    void success_get_recipe() throws Exception {
+        //given
+        Long recipeId = 1L;
+        Long memberId = 1L;
+        RecipeDtoResponse recipeDtoResponse = RecipeDtoResponse.builder()
+                .recipeId(recipeId)
+                .memberId(memberId)
+                .nickname("nickname")
+                .profileUrl("http://s3.test.com/profile")
+                .title("title")
+                .content("content")
+                .mainImageUrl("http://s3.test.com/mainimage")
+                .expectedTime(30)
+                .heartCount(100)
+                .difficulty(Difficulty.HARD)
+                .recipeDetailDtoList(new ArrayList<>(List.of(
+                        RecipeDetailDto.builder()
+                                .cookingOrderImageUrl("http://s3.test.com/cookingorderimage")
+                                .cookingOrder("cookingorder")
+                                .build())))
+                .recipeIngredientDtoList(new ArrayList<>(List.of(
+                        RecipeIngredientDto.builder()
+                                .unit("ea")
+                                .count(3)
+                                .name("ingredient")
+                                .build()
+                )))
+                .isHeart(false)
+                .build();
+
+        given(recipeService.getRecipeDetail(any(), any()))
+                .willReturn(recipeDtoResponse);
+
+        //when
+        ResultActions perform = mockMvc.perform(get("/recipe/{recipeId}",
+                recipeId));
+
+        //then
+        perform.andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.recipeId")
+                        .value(recipeDtoResponse.getRecipeId()))
+                .andExpect(jsonPath("$.memberId")
+                        .value(recipeDtoResponse.getMemberId()))
+                .andExpect(jsonPath("$.nickname")
+                        .value(recipeDtoResponse.getNickname()))
+                .andExpect(jsonPath("$.profileUrl")
+                        .value(recipeDtoResponse.getProfileUrl()))
+                .andExpect(jsonPath("$.title")
+                        .value(recipeDtoResponse.getTitle()))
+                .andExpect(jsonPath("$.content")
+                        .value(recipeDtoResponse.getContent()))
+                .andExpect(jsonPath("$.mainImageUrl")
+                        .value(recipeDtoResponse.getMainImageUrl()))
+                .andExpect(jsonPath("$.expectedTime")
+                        .value(recipeDtoResponse.getExpectedTime()))
+                .andExpect(jsonPath("$.heartCount")
+                        .value(recipeDtoResponse.getHeartCount()))
+                .andExpect(jsonPath("$.difficulty")
+                        .value(recipeDtoResponse.getDifficulty().toString()))
+                .andExpect(jsonPath("$.recipeDetailDtoList.[0]" +
+                        ".cookingOrderImageUrl")
+                        .value(recipeDtoResponse.getRecipeDetailDtoList()
+                                .get(0).getCookingOrderImageUrl()))
+                .andExpect(jsonPath("$.recipeDetailDtoList.[0]" +
+                        ".cookingOrder")
+                        .value(recipeDtoResponse.getRecipeDetailDtoList()
+                                .get(0).getCookingOrder()))
+                .andExpect(jsonPath("$.recipeIngredientDtoList.[0]" +
+                        ".unit")
+                        .value(recipeDtoResponse.getRecipeIngredientDtoList()
+                                .get(0).getUnit()))
+                .andExpect(jsonPath("$.recipeIngredientDtoList.[0]" +
+                        ".count")
+                        .value(recipeDtoResponse.getRecipeIngredientDtoList()
+                                .get(0).getCount()))
+                .andExpect(jsonPath("$.recipeIngredientDtoList.[0]" +
+                        ".name")
+                        .value(recipeDtoResponse.getRecipeIngredientDtoList()
+                                .get(0).getName()))
+                .andExpect(jsonPath("$.heart")
+                        .value(recipeDtoResponse.isHeart()));
+
+    }
+
+    @Test
+    @WithCustomMockUser
+    @DisplayName("레시피 삭제 성공")
+    void success_delete_recipe() throws Exception {
+        //given
+        Long recipeId = 1L;
+        String email = "test@test.com";
+
+        //when
+        ResultActions perform = mockMvc.perform(delete("/recipe/{recipeId}",
+                recipeId).with(csrf()));
+
+        //then
+        verify(recipeFacade, times(1)).deleteRecipe(email, recipeId);
+        perform.andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(content().string("레시피 삭제를 성공했습니다."));
+    }
 }
