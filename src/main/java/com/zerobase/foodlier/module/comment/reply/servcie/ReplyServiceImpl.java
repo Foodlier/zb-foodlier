@@ -1,8 +1,9 @@
 package com.zerobase.foodlier.module.comment.reply.servcie;
 
 import com.zerobase.foodlier.common.response.ListResponse;
+import com.zerobase.foodlier.module.comment.comment.dto.CommentDto;
+import com.zerobase.foodlier.module.comment.comment.dto.MyPageCommentDto;
 import com.zerobase.foodlier.module.comment.reply.domain.model.Reply;
-import com.zerobase.foodlier.module.comment.reply.dto.ReplyDto;
 import com.zerobase.foodlier.module.comment.reply.exception.ReplyException;
 import com.zerobase.foodlier.module.comment.reply.reposiotry.ReplyRepository;
 import lombok.RequiredArgsConstructor;
@@ -43,9 +44,17 @@ public class ReplyServiceImpl implements ReplyService{
 
     @Override
     @Transactional(readOnly = true)
-    public ListResponse<ReplyDto> getReplyList(Long commentId, PageRequest pageRequest) {
+    public ListResponse<CommentDto> getReplyList(Long commentId, PageRequest pageRequest) {
         return ListResponse.from(
                 replyRepository.findReplyList(commentId, pageRequest));
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public ListResponse<MyPageCommentDto> getMyReplyList(Long memberId, PageRequest pageRequest){
+        return ListResponse.from(
+                replyRepository.findMyReplyList(memberId, pageRequest)
+        );
     }
 
 }
