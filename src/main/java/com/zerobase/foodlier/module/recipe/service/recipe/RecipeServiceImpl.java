@@ -20,6 +20,7 @@ import com.zerobase.foodlier.module.recipe.repository.RecipeRepository;
 import com.zerobase.foodlier.module.recipe.repository.RecipeSearchRepository;
 import com.zerobase.foodlier.module.recipe.type.OrderType;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -34,6 +35,7 @@ import static com.zerobase.foodlier.module.recipe.exception.recipe.RecipeErrorCo
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class RecipeServiceImpl implements RecipeService {
     private static final String DELIMITER = " ";
     private final RecipeRepository recipeRepository;
@@ -98,22 +100,7 @@ public class RecipeServiceImpl implements RecipeService {
         Recipe recipe = recipeRepository.findById(id)
                 .orElseThrow(() -> new RecipeException(NO_SUCH_RECIPE));
 
-        recipe.setSummary(Summary.builder()
-                .title(recipeDtoRequest.getTitle())
-                .content(recipeDtoRequest.getContent())
-                .build());
-        recipe.setMainImageUrl(recipeDtoRequest.getMainImageUrl());
-        recipe.setExpectedTime(recipeDtoRequest.getExpectedTime());
-        recipe.setDifficulty(recipeDtoRequest.getDifficulty());
-        recipe.setRecipeDetailList(recipeDtoRequest.getRecipeDetailDtoList()
-                .stream()
-                .map(RecipeDetailDto::toEntity)
-                .collect(Collectors.toList()));
-        recipe.setRecipeIngredientList(recipeDtoRequest.getRecipeIngredientDtoList()
-                .stream()
-                .map(RecipeIngredientDto::toEntity)
-                .collect(Collectors.toList()));
-
+        recipe.updateRecipe(recipeDtoRequest);
         recipeRepository.save(recipe);
         RecipeDocument recipeDocument = recipeSearchRepository.findById(recipe.getId())
                 .orElseThrow(() -> new RecipeException(RecipeErrorCode.NO_SUCH_RECIPE_DOCUMENT));
@@ -193,7 +180,7 @@ public class RecipeServiceImpl implements RecipeService {
                                 .mainImageUrl(recipeDocument.getMainImageUrl())
                                 .nickName(recipeDocument.getWriter())
                                 .heartCount((int) recipeDocument.getNumberOfHeart())
-                                .isHeart(heartRepository.existsByRecipe_IdAndMember(recipeDocument.getId(), member))
+                                .isHeart(heartRepository.existsHeart(recipeDocument.getId(), member))
                                 .build()).collect(Collectors.toList()))
                 .build();
 

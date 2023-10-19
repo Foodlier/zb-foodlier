@@ -15,7 +15,6 @@ import com.zerobase.foodlier.module.recipe.dto.recipe.*;
 import com.zerobase.foodlier.module.recipe.service.recipe.RecipeService;
 import com.zerobase.foodlier.module.recipe.type.OrderType;
 import com.zerobase.foodlier.module.recipe.type.SearchType;
-import com.zerobase.foodlier.module.recipe.type.SortType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
@@ -107,19 +106,19 @@ public class RecipeController {
         );
     }
 
-    @GetMapping("search/{searchType}/{sortType}/{pageIdx}/{pageSize}")
+    @GetMapping("search/{searchType}/{orderType}/{pageIdx}/{pageSize}")
     public ResponseEntity<ListResponse<RecipeCardDto>> getFilteredRecipeList(@AuthenticationPrincipal MemberAuthDto memberAuthDto,
                                                                              @PathVariable SearchType searchType,
                                                                              @PathVariable int pageIdx,
                                                                              @PathVariable int pageSize,
-                                                                             @PathVariable SortType sortType,
+                                                                             @PathVariable OrderType orderType,
                                                                              @RequestParam String searchText) {
         return ResponseEntity.ok(recipeService.getRecipeList(RecipeSearchRequest.builder()
                 .searchType(searchType)
                 .searchText(searchText)
                 .memberId(memberAuthDto.getId())
                 .pageable(PageRequest.of(pageIdx, pageSize))
-                .sortType(sortType)
+                .orderType(orderType)
                 .build())
         );
     }
