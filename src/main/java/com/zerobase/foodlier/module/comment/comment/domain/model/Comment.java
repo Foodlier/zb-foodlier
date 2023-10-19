@@ -3,13 +3,15 @@ package com.zerobase.foodlier.module.comment.comment.domain.model;
 import com.zerobase.foodlier.common.jpa.audit.Audit;
 import com.zerobase.foodlier.module.member.member.domain.model.Member;
 import com.zerobase.foodlier.module.recipe.domain.model.Recipe;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.ColumnDefault;
 
 import javax.persistence.*;
 
 @Getter
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -37,12 +39,12 @@ public class Comment extends Audit {
     @ColumnDefault("false")
     private boolean isDeleted = false;
 
-    public void updateMessage(String message){
+    public void updateMessage(String message) {
         this.message = message;
     }
 
-    public void delete(){
-        if(!this.isDeleted){
+    public void delete() {
+        if (!this.isDeleted) {
             this.isDeleted = true;
         }
     }

@@ -3,7 +3,6 @@ package com.zerobase.foodlier.module.payment.dto;
 import lombok.*;
 
 @Getter
-@Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor

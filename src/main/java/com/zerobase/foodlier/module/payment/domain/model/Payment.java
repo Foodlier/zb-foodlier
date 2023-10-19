@@ -5,12 +5,14 @@ import com.zerobase.foodlier.module.member.member.domain.model.Member;
 import com.zerobase.foodlier.module.payment.dto.PaymentResponse;
 import com.zerobase.foodlier.module.payment.type.OrderNameType;
 import com.zerobase.foodlier.module.payment.type.PayType;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 
 @Getter
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -55,6 +57,34 @@ public class Payment extends Audit {
                 .customerNickName(payment.getCustomerNickName())
                 .payDate(payment.getPayDate())
                 .build();
+    }
+
+    public void updateMember(Member member) {
+        this.member = member;
+    }
+
+    public void updateCustomerEmail(String email) {
+        this.customerEmail = email;
+    }
+
+    public void updateCustomerNickName(String nickName) {
+        this.customerNickName = nickName;
+    }
+
+    public void updatePaySuccessYn(String value) {
+        this.paySuccessYn = value;
+    }
+
+    public void updatePayFailReason(String reason) {
+        this.payFailReason = reason;
+    }
+
+    public void updateCanceled() {
+        this.isCanceled = true;
+    }
+
+    public void updatePaymentKey(String paymentKey) {
+        this.paymentKey = paymentKey;
     }
 
 }

@@ -5,7 +5,10 @@ import com.zerobase.foodlier.module.member.chef.domain.model.ChefMember;
 import com.zerobase.foodlier.module.member.member.domain.vo.Address;
 import com.zerobase.foodlier.module.member.member.profile.dto.MemberUpdateDto;
 import com.zerobase.foodlier.module.member.member.type.RegistrationType;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.springframework.util.StringUtils;
 
 import javax.persistence.*;
@@ -15,7 +18,6 @@ import java.util.List;
 import static com.zerobase.foodlier.module.member.member.type.RegistrationType.DOMAIN;
 
 @Getter
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -98,4 +100,17 @@ public class Member extends Audit {
             this.isTemp = false;
         }
     }
+
+    public void updateChefMember(ChefMember chefMember) {
+        this.chefMember = chefMember;
+    }
+
+    public void pointPlus(long point) {
+        this.point += point;
+    }
+
+    public void pointMinus(long point) {
+        this.point -= point;
+    }
+
 }

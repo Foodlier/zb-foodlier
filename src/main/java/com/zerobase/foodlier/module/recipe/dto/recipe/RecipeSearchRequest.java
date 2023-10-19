@@ -1,7 +1,7 @@
 package com.zerobase.foodlier.module.recipe.dto.recipe;
 
+import com.zerobase.foodlier.module.recipe.type.OrderType;
 import com.zerobase.foodlier.module.recipe.type.SearchType;
-import com.zerobase.foodlier.module.recipe.type.SortType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -20,12 +20,12 @@ public class RecipeSearchRequest {
     private Pageable pageable;
     private String searchText;
     @Builder.Default
-    private SortType sortType = SortType.CREATE_AT;
+    private OrderType orderType = OrderType.CREATED_AT;
 
 
     public Pageable getPageable(){
         return PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(),
-                Sort.by(Sort.Order.desc(this.sortType.getDocumentKey())));
+                Sort.by(Sort.Order.desc(this.orderType.getOrderKey())));
     }
 
 }

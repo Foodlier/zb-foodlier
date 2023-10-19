@@ -37,7 +37,7 @@ public class TransactionServiceImpl implements TransactionService {
 
         validSendSuggestion(memberAuthDto, dmRoom);
 
-        dmRoom.setSuggestion(Suggestion.builder()
+        dmRoom.updateSuggestion(Suggestion.builder()
                 .suggestedPrice(form.getSuggestedPrice())
                 .isAccept(false)
                 .isSuggested(true)
@@ -60,7 +60,7 @@ public class TransactionServiceImpl implements TransactionService {
 
         validCancelSuggestion(memberAuthDto, dmRoom);
 
-        dmRoom.setSuggestion(Suggestion.builder()
+        dmRoom.updateSuggestion(Suggestion.builder()
                 .suggestedPrice(0)
                 .isSuggested(false)
                 .isAccept(false)
@@ -90,9 +90,9 @@ public class TransactionServiceImpl implements TransactionService {
 
         dmRoom.getRequest().getMember().transaction(-suggestedPrice);
         dmRoom.getRequest().getChefMember().getMember().transaction(suggestedPrice);
-        dmRoom.getSuggestion().setIsAccept(true);
-        dmRoom.getRequest().setPaid(true);
-        dmRoom.getRequest().setFinished(true);
+        dmRoom.getSuggestion().updateAccept(true);
+        dmRoom.getRequest().updatePaid(true);
+        dmRoom.getRequest().updateFinished(true);
         dmRoomRepository.save(dmRoom);
 
         return TransactionDto.builder()
@@ -114,7 +114,7 @@ public class TransactionServiceImpl implements TransactionService {
 
         validRejectSuggestion(memberAuthDto, dmRoom);
 
-        dmRoom.setSuggestion(Suggestion.builder()
+        dmRoom.updateSuggestion(Suggestion.builder()
                 .suggestedPrice(0)
                 .isAccept(false)
                 .isSuggested(false)
