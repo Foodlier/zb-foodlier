@@ -7,9 +7,11 @@ import com.zerobase.foodlier.module.heart.reposiotry.HeartRepository;
 import com.zerobase.foodlier.module.member.member.domain.model.Member;
 import com.zerobase.foodlier.module.member.member.exception.MemberException;
 import com.zerobase.foodlier.module.member.member.repository.MemberRepository;
+import com.zerobase.foodlier.module.recipe.domain.document.RecipeDocument;
 import com.zerobase.foodlier.module.recipe.domain.model.Recipe;
 import com.zerobase.foodlier.module.recipe.exception.recipe.RecipeException;
 import com.zerobase.foodlier.module.recipe.repository.RecipeRepository;
+import com.zerobase.foodlier.module.recipe.repository.RecipeSearchRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -40,6 +42,8 @@ class HeartServiceImplTest {
 
     @Mock
     private MemberRepository memberRepository;
+    @Mock
+    private RecipeSearchRepository recipeSearchRepository;
 
     @InjectMocks
     private HeartServiceImpl heartService;
@@ -59,13 +63,18 @@ class HeartServiceImplTest {
                 .recipe(recipe)
                 .member(member)
                 .build();
-
+        RecipeDocument recipeDocument = RecipeDocument.builder()
+                .id(1L)
+                .numberOfHeart(0L)
+                .build();
         given(recipeRepository.findById(anyLong()))
                 .willReturn(Optional.of(recipe));
         given(memberRepository.findById(anyLong()))
                 .willReturn(Optional.ofNullable(member));
         given(heartRepository.existsByRecipeAndMember(any(), any()))
                 .willReturn(false);
+        given(recipeSearchRepository.findById(anyLong()))
+                .willReturn(Optional.of(recipeDocument));
         given(heartRepository.save(any()))
                 .willReturn(heart);
 
@@ -75,19 +84,25 @@ class HeartServiceImplTest {
 
         //then
         ArgumentCaptor<Heart> captor = ArgumentCaptor.forClass(Heart.class);
+        ArgumentCaptor<RecipeDocument> recipeDocumentArgumentCaptor = ArgumentCaptor.forClass(RecipeDocument.class);
         verify(recipeRepository, times(1))
                 .findById(1L);
         verify(memberRepository, times(1))
                 .findById(1L);
         verify(heartRepository, times(1))
                 .save(captor.capture());
-
+        verify(recipeSearchRepository, times(1)).findById(anyLong());
+        verify(recipeSearchRepository, times(1)).save(recipeDocumentArgumentCaptor.capture());
         Heart value = captor.getValue();
+        RecipeDocument recipeDocumentCaptured = recipeDocumentArgumentCaptor.getValue();
         assertAll(
                 () -> assertEquals(1, value.getRecipe().getHeartCount()),
                 () -> assertEquals(1L, value.getRecipe().getId()),
-                () -> assertEquals(1L, value.getMember().getId())
+                () -> assertEquals(1L, value.getMember().getId()),
+                () -> assertEquals(1L, recipeDocumentCaptured.getId()),
+                () -> assertEquals(1, recipeDocumentCaptured.getNumberOfHeart())
         );
+
     }
 
     @Test
@@ -146,17 +161,38 @@ class HeartServiceImplTest {
                 .recipe(recipe)
                 .member(member)
                 .build();
-
+        RecipeDocument recipeDocument = RecipeDocument.builder()
+                .id(1L)
+                .numberOfHeart(1L)
+                .build();
+        RecipeDocument updatedRecipeDocument = RecipeDocument.builder()
+                .id(1L)
+                .numberOfHeart(0L)
+                .build();
         given(heartRepository.findHeart(anyLong(), anyLong()))
                 .willReturn(Optional.ofNullable(heart));
-
+        given(recipeSearchRepository.findById(anyLong()))
+                .willReturn(Optional.of(recipeDocument));
+        given(recipeSearchRepository.save(any()))
+                .willReturn(updatedRecipeDocument);
         //when
+        ArgumentCaptor<RecipeDocument> recipeDocumentArgumentCaptor = ArgumentCaptor.forClass(RecipeDocument.class);
         heartService.deleteHeart(MemberAuthDto.builder()
                 .id(1L).build(), 1L);
 
         //then
         verify(heartRepository, times(1))
                 .delete(any());
+        verify(recipeSearchRepository, times(1)).findById(anyLong());
+        verify(recipeSearchRepository, times(1)).save(recipeDocumentArgumentCaptor.capture());
+
+        RecipeDocument capturedRecipeDocument = recipeDocumentArgumentCaptor.getValue();
+
+        assertAll(
+                () -> assertEquals(0, capturedRecipeDocument.getNumberOfHeart()),
+                () -> assertEquals(1L, capturedRecipeDocument.getId())
+        );
+
     }
 
     @Test
