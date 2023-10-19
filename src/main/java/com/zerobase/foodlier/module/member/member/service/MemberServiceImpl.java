@@ -108,8 +108,9 @@ public class MemberServiceImpl implements MemberService {
      * 유저 개인 정보를 가져옵니다.
      */
     @Override
-    public MemberPrivateProfileResponse getPrivateProfile(String email) {
-        Member member = findByEmail(email);
+    public MemberPrivateProfileResponse getPrivateProfile(MemberAuthDto memberAuthDto) {
+        Member member = memberRepository.findById(memberAuthDto.getId())
+                .orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
 
         return MemberPrivateProfileResponse.builder()
                 .myMemberId(member.getId())
@@ -272,22 +273,22 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
-    public void checkNickname(String nickname){
-        if(memberRepository.existsByNickname(nickname)){
+    public void checkNickname(String nickname) {
+        if (memberRepository.existsByNickname(nickname)) {
             throw new MemberException(NICKNAME_IS_ALREADY_EXIST);
         }
     }
 
     @Override
-    public void checkPhoneNumber(String phoneNumber){
-        if(memberRepository.existsByPhoneNumber(phoneNumber)){
+    public void checkPhoneNumber(String phoneNumber) {
+        if (memberRepository.existsByPhoneNumber(phoneNumber)) {
             throw new MemberException(PHONE_NUMBER_IS_ALREADY_EXIST);
         }
     }
 
     @Override
-    public void checkEmail(String email){
-        if(memberRepository.existsByEmail(email)){
+    public void checkEmail(String email) {
+        if (memberRepository.existsByEmail(email)) {
             throw new MemberException(EMAIL_IS_ALREADY_EXIST);
         }
     }

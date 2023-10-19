@@ -47,7 +47,7 @@ public class ProfileController {
     public ResponseEntity<MemberPrivateProfileResponse> getPrivateProfile(
             @AuthenticationPrincipal MemberAuthDto memberAuthDto
     ) {
-        return ResponseEntity.ok(memberService.getPrivateProfile(memberAuthDto.getEmail()));
+        return ResponseEntity.ok(memberService.getPrivateProfile(memberAuthDto));
     }
 
     @GetMapping("/private/heart/{pageIdx}/{pageSize}")
