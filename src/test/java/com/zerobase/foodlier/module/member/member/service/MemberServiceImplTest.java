@@ -306,7 +306,7 @@ class MemberServiceImplTest {
         //given
         String password = passwordEncoder.encode("password");
 
-        given(memberRepository.findByEmail("test@test.com"))
+        given(memberRepository.findById(1L))
                 .willReturn(Optional.ofNullable(Member.builder()
                         .id(1L)
                         .nickname("test")
