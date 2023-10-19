@@ -1,7 +1,6 @@
 package com.zerobase.foodlier.module.dm.room.service;
 
 import com.zerobase.foodlier.common.response.ListResponse;
-import com.zerobase.foodlier.module.dm.dm.repository.DmRepository;
 import com.zerobase.foodlier.module.dm.room.domain.model.DmRoom;
 import com.zerobase.foodlier.module.dm.room.domain.vo.Suggestion;
 import com.zerobase.foodlier.module.dm.room.dto.DmRoomDto;
@@ -24,7 +23,6 @@ import static com.zerobase.foodlier.module.dm.room.exception.DmRoomErrorCode.DM_
 public class DmRoomServiceImpl implements DmRoomService {
 
     private final DmRoomRepository dmRoomRepository;
-    private final DmRepository dmRepository;
     private final RequestRepository requestRepository;
     private static final String SORT_BY_CREATED_AT = "createdAt";
 

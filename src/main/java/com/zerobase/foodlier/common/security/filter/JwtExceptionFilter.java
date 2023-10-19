@@ -5,7 +5,6 @@ import com.zerobase.foodlier.common.exception.dto.ErrorResponse;
 import com.zerobase.foodlier.common.security.exception.JwtException;
 import lombok.NonNull;
 import org.springframework.http.MediaType;
-import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import javax.servlet.FilterChain;

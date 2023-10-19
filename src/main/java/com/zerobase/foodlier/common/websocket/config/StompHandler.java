@@ -2,9 +2,9 @@ package com.zerobase.foodlier.common.websocket.config;
 
 import com.zerobase.foodlier.common.security.provider.JwtTokenProvider;
 import com.zerobase.foodlier.common.security.provider.dto.MemberAuthDto;
-import com.zerobase.foodlier.module.member.member.domain.model.Member;
 import com.zerobase.foodlier.module.member.member.exception.MemberException;
 import com.zerobase.foodlier.module.member.member.repository.MemberRepository;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
@@ -30,7 +30,7 @@ public class StompHandler implements ChannelInterceptor {
     private final MemberRepository memberRepository;
 
     @Override
-    public Message<?> preSend(Message<?> message, MessageChannel channel) {
+    public Message<?> preSend(@NonNull Message<?> message, @NonNull MessageChannel channel) {
         StompHeaderAccessor accessor = StompHeaderAccessor.wrap(message);
 
         if (StompCommand.CONNECT == accessor.getCommand()) {
@@ -42,9 +42,8 @@ public class StompHandler implements ChannelInterceptor {
                     .getAuthentication(jwt);
             MemberAuthDto memberAuthDto = (MemberAuthDto) authentication.getPrincipal();
 
-            if (memberAuthDto != null) {
-                Member member = memberRepository.findById(memberAuthDto.getId())
-                        .orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
+            if (memberAuthDto != null && !memberRepository.existsById(memberAuthDto.getId())) {
+                throw new MemberException(MEMBER_NOT_FOUND);
             }
         }
         return message;

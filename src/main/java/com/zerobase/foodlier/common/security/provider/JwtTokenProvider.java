@@ -19,16 +19,15 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.zerobase.foodlier.common.security.constants.AuthorizationConstants.TOKEN_PREFIX;
 import static com.zerobase.foodlier.common.security.exception.JwtErrorCode.*;
+import static com.zerobase.foodlier.common.security.provider.constants.TokenType.ACCESS_TOKEN;
+import static com.zerobase.foodlier.common.security.provider.constants.TokenType.REFRESH_TOKEN;
 
 @Component
 public class JwtTokenProvider {
 
     private static final String KEY_ROLES = "roles";
     private static final String TOKEN_TYPE = "type";
-    private static final String ACCESS_TOKEN = "AT";
-    private static final String REFRESH_TOKEN = "RT";
     private final TokenExpiredConstant tokenExpiredConstant;
     private final RefreshTokenService refreshTokenService;
     private final String accessSecretKey;
@@ -141,7 +140,7 @@ public class JwtTokenProvider {
                 memberAuthDto, token, grantedAuthorities);
     }
 
-    public String getEmail(String token){
+    public String getEmail(String token) {
         return this.parseClaims(token).getSubject();
     }
 
@@ -154,7 +153,7 @@ public class JwtTokenProvider {
     private List<String> getRoles(String token) {
         Claims claims = parseClaims(token);
 
-        if(claims.get(TOKEN_TYPE).equals(REFRESH_TOKEN)) {
+        if (claims.get(TOKEN_TYPE).equals(REFRESH_TOKEN)) {
             return new ArrayList<>();
         }
 

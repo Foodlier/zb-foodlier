@@ -100,7 +100,6 @@ public class RequestServiceImpl implements RequestService {
     /**
      *  작성자 : 이승현 (전현서)
      *  작성일 : 2023-09-27 (2023-09-28)
-     *
      *  요청을 보내는 메서드, 같은 요리사에게는 중복 요청 X
      */
     @Override
