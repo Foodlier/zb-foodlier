@@ -17,6 +17,7 @@ import static com.zerobase.foodlier.module.comment.comment.exception.CommentErro
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class CommentService {
     private static final String DELETED_MESSAGE = "삭제된 댓글입니다.";
     private final CommentRepository commentRepository;

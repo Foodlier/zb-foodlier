@@ -16,6 +16,7 @@ import com.zerobase.foodlier.module.review.recipe.repository.RecipeReviewReposit
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import static com.zerobase.foodlier.module.member.member.exception.MemberErrorCode.MEMBER_NOT_FOUND;
@@ -24,6 +25,7 @@ import static com.zerobase.foodlier.module.review.recipe.exception.RecipeReviewE
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class RecipeReviewService {
 
     private final RecipeReviewRepository recipeReviewRepository;

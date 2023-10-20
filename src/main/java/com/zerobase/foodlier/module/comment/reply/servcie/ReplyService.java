@@ -15,6 +15,7 @@ import static com.zerobase.foodlier.module.comment.reply.exception.ReplyErrorCod
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class ReplyService {
 
     private final ReplyRepository replyRepository;
