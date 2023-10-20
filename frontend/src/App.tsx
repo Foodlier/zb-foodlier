@@ -17,6 +17,8 @@ import FindPasswordPage from './pages/auth/FindPasswordPage'
 import MyPage from './pages/user/MyPage'
 import KakaoLoginPage from './pages/auth/KakaoRedirectionPage'
 import NaverLoginPage from './pages/auth/NaverRedirectionPage'
+import MyLogPage from './pages/user/MyLogPage'
+import NotFoundPage from './pages/NotFoundPage'
 
 function App() {
   return (
@@ -48,13 +50,15 @@ function App() {
         <Route path="/refrigerator/" element={<RefrigeratorPage />} />
         <Route path="/recipe" element={<RecipePage />} />
         <Route path="/recipe/write" element={<WriteRecipePage />} />
-        <Route path="/recipe/detail" element={<RecipeDetailPage />} />
+        <Route path="/recipe/detail/:id" element={<RecipeDetailPage />} />
         <Route
           path="/recipe/detail/write-review"
           element={<WriteReviewPage />}
         />
         <Route path="/chat" element={<ChattingPage />} />
         <Route path="/my" element={<MyPage />} />
+        <Route path="/my/:category" element={<MyLogPage />} />
+        <Route path="*" element={<NotFoundPage />} />
       </Routes>
     </div>
   )
