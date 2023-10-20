@@ -1,12 +1,7 @@
 package com.zerobase.foodlier.global.refrigerator.controller;
 
-import com.zerobase.foodlier.module.notification.domain.type.ActionType;
-import com.zerobase.foodlier.module.notification.domain.type.PerformerType;
 import com.zerobase.foodlier.common.response.ListResponse;
 import com.zerobase.foodlier.common.security.provider.dto.MemberAuthDto;
-import com.zerobase.foodlier.module.notification.domain.type.NotificationType;
-import com.zerobase.foodlier.module.notification.dto.notify.NotifyInfoDto;
-import com.zerobase.foodlier.module.notification.dto.notify.Impl.ChefNotify;
 import com.zerobase.foodlier.global.notification.facade.NotificationFacade;
 import com.zerobase.foodlier.global.refrigerator.facade.RefrigeratorFacade;
 import com.zerobase.foodlier.module.member.chef.dto.AroundChefDto;
@@ -16,7 +11,12 @@ import com.zerobase.foodlier.module.member.chef.type.ChefSearchType;
 import com.zerobase.foodlier.module.member.member.dto.RequestedMemberDto;
 import com.zerobase.foodlier.module.member.member.service.MemberService;
 import com.zerobase.foodlier.module.member.member.type.RequestedOrderingType;
+import com.zerobase.foodlier.module.notification.domain.type.ActionType;
+import com.zerobase.foodlier.module.notification.domain.type.NotificationType;
+import com.zerobase.foodlier.module.notification.domain.type.PerformerType;
+import com.zerobase.foodlier.module.notification.dto.notify.Impl.ChefNotify;
 import com.zerobase.foodlier.module.notification.dto.notify.Impl.RequesterNotify;
+import com.zerobase.foodlier.module.notification.dto.notify.NotifyInfoDto;
 import com.zerobase.foodlier.module.request.dto.RequestDetailDto;
 import com.zerobase.foodlier.module.request.service.RequestService;
 import com.zerobase.foodlier.module.requestform.dto.RequestFormDetailDto;
@@ -42,6 +42,7 @@ public class RefrigeratorController {
     private final RequestFormService requestFormService;
     private final MemberService memberService;
     private final NotificationFacade notificationFacade;
+
     @PatchMapping("/send")
     public ResponseEntity<String> sendRequest(
             @AuthenticationPrincipal MemberAuthDto memberAuthDto,
@@ -50,11 +51,11 @@ public class RefrigeratorController {
     ) {
         ChefNotify chefNotify = ChefNotify.from(
                 requestService.sendRequest(memberAuthDto.getId(),
-                requestFormId, chefMemberId),
+                        requestFormId, chefMemberId),
                 NotifyInfoDto.builder()
                         .performerType(PerformerType.REQUESTER)
                         .actionType(ActionType.SEND_RECIPE_REQUEST)
-                .build());
+                        .build());
 
         notificationFacade.send(chefNotify);
 
@@ -160,7 +161,7 @@ public class RefrigeratorController {
     public ResponseEntity<RequestDetailDto> getRequestDetail(
             @AuthenticationPrincipal MemberAuthDto memberAuthDto,
             @PathVariable Long requestId
-    ){
+    ) {
         return ResponseEntity.ok(
                 requestService.getRequestDetail(memberAuthDto.getId(), requestId)
         );
@@ -193,7 +194,7 @@ public class RefrigeratorController {
             @AuthenticationPrincipal MemberAuthDto memberAuthDto,
             @PathVariable int pageIdx,
             @PathVariable int pageSize
-    ){
+    ) {
         return ResponseEntity.ok(
                 chefMemberService.getRequestedChefList(memberAuthDto.getId(),
                         PageRequest.of(pageIdx, pageSize))
@@ -206,7 +207,7 @@ public class RefrigeratorController {
             @PathVariable int pageIdx,
             @PathVariable int pageSize,
             @RequestParam ChefSearchType type
-    ){
+    ) {
         return ResponseEntity.ok(
                 chefMemberService.getAroundChefList(memberAuthDto.getId(),
                         PageRequest.of(pageIdx, pageSize), type)
@@ -219,7 +220,7 @@ public class RefrigeratorController {
             @PathVariable int pageIdx,
             @PathVariable int pageSize,
             @RequestParam("type") RequestedOrderingType type
-    ){
+    ) {
         return ResponseEntity.ok(
                 memberService.getRequestedMemberList(memberAuthDto.getId(),
                         type, PageRequest.of(pageIdx, pageSize))

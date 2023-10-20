@@ -5,6 +5,7 @@ import com.zerobase.foodlier.common.security.provider.dto.MemberAuthDto;
 import com.zerobase.foodlier.global.profile.facade.ProfileFacade;
 import com.zerobase.foodlier.module.comment.comment.dto.MyPageCommentDto;
 import com.zerobase.foodlier.module.comment.comment.service.CommentService;
+import com.zerobase.foodlier.module.comment.reply.servcie.ReplyService;
 import com.zerobase.foodlier.module.member.chef.dto.ChefIntroduceForm;
 import com.zerobase.foodlier.module.member.chef.dto.ChefProfileDto;
 import com.zerobase.foodlier.module.member.chef.dto.TopChefDto;
@@ -42,12 +43,13 @@ public class ProfileController {
     private final RecipeReviewService recipeReviewService;
     private final RecipeService recipeService;
     private final CommentService commentService;
+    private final ReplyService replyService;
 
     @GetMapping("/private")
     public ResponseEntity<MemberPrivateProfileResponse> getPrivateProfile(
             @AuthenticationPrincipal MemberAuthDto memberAuthDto
     ) {
-        return ResponseEntity.ok(memberService.getPrivateProfile(memberAuthDto.getEmail()));
+        return ResponseEntity.ok(memberService.getPrivateProfile(memberAuthDto));
     }
 
     @GetMapping("/private/heart/{pageIdx}/{pageSize}")
@@ -55,7 +57,7 @@ public class ProfileController {
             @AuthenticationPrincipal MemberAuthDto memberAuthDto,
             @PathVariable int pageIdx,
             @PathVariable int pageSize
-    ){
+    ) {
         return ResponseEntity.ok(
                 recipeService.getRecipeForHeart(memberAuthDto.getId(),
                         PageRequest.of(pageIdx, pageSize))
@@ -67,12 +69,25 @@ public class ProfileController {
             @AuthenticationPrincipal MemberAuthDto memberAuthDto,
             @PathVariable int pageIdx,
             @PathVariable int pageSize
-    ){
+    ) {
         return ResponseEntity.ok(
                 commentService.getMyCommentList(
-                memberAuthDto.getId(),
-                PageRequest.of(pageIdx, pageSize)
-        ));
+                        memberAuthDto.getId(),
+                        PageRequest.of(pageIdx, pageSize)
+                ));
+    }
+
+    @GetMapping("/private/reply/{pageIdx}/{pageSize}")
+    public ResponseEntity<ListResponse<MyPageCommentDto>> getMyReplyList(
+            @AuthenticationPrincipal MemberAuthDto memberAuthDto,
+            @PathVariable int pageIdx,
+            @PathVariable int pageSize
+    ) {
+        return ResponseEntity.ok(
+                replyService.getMyReplyList(
+                        memberAuthDto.getId(),
+                        PageRequest.of(pageIdx, pageSize)
+                ));
     }
 
     @PutMapping(value = "/private")
@@ -106,7 +121,7 @@ public class ProfileController {
     @GetMapping("public/{memberId}")
     public ResponseEntity<DefaultProfileDtoResponse> getPublicDefaultProfile(
             @PathVariable Long memberId
-    ){
+    ) {
         return ResponseEntity.ok(
                 memberService.getDefaultProfile(memberId)
         );
@@ -115,9 +130,9 @@ public class ProfileController {
     @GetMapping("public/chef/{chefMemberId}")
     public ResponseEntity<ChefProfileDto> getChefProfile(
             @PathVariable Long chefMemberId
-    ){
+    ) {
         return ResponseEntity.ok(
-            chefMemberService.getChefProfile(chefMemberId)
+                chefMemberService.getChefProfile(chefMemberId)
         );
     }
 
@@ -138,7 +153,7 @@ public class ProfileController {
             @PathVariable int pageIdx,
             @PathVariable int pageSize,
             @PathVariable Long memberId
-    ){
+    ) {
         return ResponseEntity.ok(
                 recipeReviewService.getRecipeReviewForProfile(memberId,
                         PageRequest.of(pageIdx, pageSize))
@@ -152,7 +167,7 @@ public class ProfileController {
             @PathVariable int pageIdx,
             @PathVariable int pageSize,
             @PathVariable("memberId") Long targetMemberId
-    ){
+    ) {
         return ResponseEntity.ok(
                 recipeService.getRecipeListByMemberId(memberAuthDto.getId(),
                         targetMemberId, PageRequest.of(pageIdx, pageSize))
@@ -160,9 +175,9 @@ public class ProfileController {
     }
 
     @GetMapping("/public/topchef")
-    public ResponseEntity<List<TopChefDto>> getTopChefList(){
+    public ResponseEntity<List<TopChefDto>> getTopChefList() {
         return ResponseEntity.ok(
-            chefMemberService.getTopChefList()
+                chefMemberService.getTopChefList()
         );
     }
 

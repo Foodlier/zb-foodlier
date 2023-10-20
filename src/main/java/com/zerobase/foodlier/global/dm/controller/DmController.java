@@ -40,10 +40,9 @@ public class DmController {
 
     @GetMapping("/message")
     public ResponseEntity<MessageResponseDto> getDmList(
-            @AuthenticationPrincipal MemberAuthDto memberAuthDto,
             @RequestParam("roomId") Long roomId,
             @RequestParam("dmId") Long dmId
     ) {
-        return ResponseEntity.ok(dmService.getDmList(memberAuthDto.getId(), roomId, dmId));
+        return ResponseEntity.ok(dmService.getDmList(roomId, dmId));
     }
 }

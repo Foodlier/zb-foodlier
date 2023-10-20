@@ -86,7 +86,7 @@ class LocalServiceImplTest {
         given(restTemplate.exchange(any(), any(), any(), any(Class.class)))
                 .willReturn(ResponseEntity.ok(
                         new LocalApiResponse(
-                                new ArrayList<LocalApiResponse.Documents>()
+                                new ArrayList<>()
                         )
                 ));
 

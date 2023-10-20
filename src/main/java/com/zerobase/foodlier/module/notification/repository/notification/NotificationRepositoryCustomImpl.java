@@ -28,7 +28,7 @@ public class NotificationRepositoryCustomImpl implements NotificationRepositoryC
         List<NotificationDto> content = jpaQueryFactory.select(
                 Projections.constructor(NotificationDto.class,
                         notification.id, notification.content, notification.notificationType,
-                        notification.sendAt, notification.isRead))
+                        notification.sendAt, notification.isRead, notification.targetId))
                 .from(notification)
                 .join(member)
                 .on(notification.member.eq(member))
@@ -46,10 +46,10 @@ public class NotificationRepositoryCustomImpl implements NotificationRepositoryC
 
         return jpaQueryFactory.select(notification.count())
                 .from(notification)
-                .join(member)
-                .on(notification.member.id.eq(memberId))
-                .where(notification.isRead.eq(NOT_READ))
-                .fetchFirst();
+                .leftJoin(member)
+                .on(member.id.eq(memberId))
+                .where(notification.member.id.eq(memberId).and(notification.isRead.eq(NOT_READ)))
+                .fetchOne();
     }
 
     @Override

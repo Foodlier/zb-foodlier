@@ -1,12 +1,19 @@
+/* eslint-disable import/no-extraneous-dependencies */
 import { ChangeEvent, useState, useRef, useEffect } from 'react'
 import DaumPostcode from 'react-daum-postcode'
-// import { rest } from 'msw'
 import axios from 'axios'
 import { useNavigate } from 'react-router-dom'
+import Swal from 'sweetalert2'
 import * as S from '../../styles/auth/RegisterPage.styled'
 import upload from '../../../public/images/profile_upload.svg'
 import Modal from '../../components/auth/AddressModal'
-// import { worker } from '../../mocks/browsers'
+import {
+  validateEmail,
+  validateNickname,
+  validatePassword,
+  validatePasswordConfirm,
+  validatePhoneNumber,
+} from '../../utils/FormValidation'
 
 interface FormData {
   profileImage: File | null
@@ -65,33 +72,40 @@ const Register = () => {
   const sendVerificationEmail = async () => {
     setIsCodeInput(true)
     // API : 인증번호 전송 요청
-    axios.post(`/api/auth/verification/send/${formData.email}`).then(res => {
-      alert('인증번호가 전송되었습니다.')
-      console.log(res)
-    })
+    axios
+      .post(`/api/auth/verification/send/${formData.email}`)
+      .then(function () {
+        Swal.fire({
+          icon: 'success',
+          title: '인증번호가 전송되었습니다.',
+          text: '이메일을 확인해주세요.',
+        })
+      })
+      .catch(err => {
+        const { errorCode } = err.response.data
+        if (errorCode === 'EMAIL_IS_ALREADY_EXIST') {
+          Swal.fire({
+            icon: 'error',
+            title: '이미 사용 중인 이메일 입니다.',
+            text: '다른 이메일을 입력해주세요.',
+          })
+        } else if (errorCode === 'NICKNAME_IS_ALREADY_EXIST') {
+          Swal.fire({
+            icon: 'error',
+            title: '이미 사용 중인 닉네임 입니다.',
+            text: '다른 닉네임을 입력해주세요.',
+          })
+        } else if (errorCode === 'PHONE_NUMBER_IS_ALREADY_EXIST') {
+          Swal.fire({
+            icon: 'error',
+            title: '이미 사용 중인 휴대폰 번호 입니다.',
+            text: '다른 휴대폰 번호를 입력해주세요.',
+          })
+        }
+      })
   }
 
-  /*
-    폼 유효성 검사 결과에 따른 버튼 활성화 상태
-    정규식은 개발 단계이므로 간단하게 작성하였습니다.
-    TODO : 정규식 별도 파일로 분리, useCallback
-  */
   const [isFormValid, setIsFormValid] = useState(false)
-
-  const validateNickname = (nickname: string) => {
-    const nicknameRegex = /^[a-zA-Z0-9]{4,}$/
-    return nicknameRegex.test(nickname)
-  }
-
-  const validateEmail = (email: string) => {
-    const emailRegex = /^[a-zA-Z0-9]+@[a-zA-Z0-9]+\.[a-zA-Z0-9]+$/
-    return emailRegex.test(email)
-  }
-
-  const validatePassword = (password: string) => {
-    const passwordRegex = /^[a-zA-Z0-9]{4,}$/
-    return passwordRegex.test(password)
-  }
 
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [openPostcode, setOpenPostcode] = useState<boolean>(false)
@@ -144,7 +158,7 @@ const Register = () => {
         if (!validateNickname(value)) {
           setFormErrors({
             ...formErrors,
-            [name]: '4자리 이상 입력해주세요.',
+            [name]: '2~8자로 입력해주세요',
           })
         }
         break
@@ -175,6 +189,16 @@ const Register = () => {
             ...formErrors,
             [name]: '휴대폰 번호를 입력해주세요.',
           })
+        } else if (value.includes('-')) {
+          setFormErrors({
+            ...formErrors,
+            [name]: '하이픈(-)을 제외하고 입력해주세요.',
+          })
+        } else if (!validatePhoneNumber(value)) {
+          setFormErrors({
+            ...formErrors,
+            [name]: '휴대폰 번호 형식이 올바르지 않습니다.',
+          })
         } else {
           setFormErrors({
             ...formErrors,
@@ -186,12 +210,13 @@ const Register = () => {
         if (!validatePassword(value)) {
           setFormErrors({
             ...formErrors,
-            [name]: '4자리 이상 입력해주세요.',
+            [name]: '8~16자 영문 대 소문자, 숫자, 특수문자를 사용하세요.',
           })
-        } else if (value !== formData.passwordCheck) {
+        } else if (formData.passwordCheck !== '' && value === '') {
+          formData.passwordCheck = ''
           setFormErrors({
             ...formErrors,
-            [name]: '비밀번호가 일치하지 않습니다.',
+            [name]: '비밀번호를 입력해주세요.',
           })
         } else {
           setFormErrors({
@@ -201,7 +226,7 @@ const Register = () => {
         }
         break
       case 'passwordCheck':
-        if (value !== formData.password) {
+        if (!validatePasswordConfirm(formData.password, value)) {
           setFormErrors({
             ...formErrors,
             [name]: '비밀번호가 일치하지 않습니다.',
@@ -248,12 +273,18 @@ const Register = () => {
         }
       )
       .then(function () {
-        alert('인증이 완료되었습니다.')
-        // console.log(response)
+        Swal.fire({
+          icon: 'success',
+          title: '인증되었습니다.',
+          text: '이메일 인증이 완료되었습니다.',
+        })
       })
       .catch(function () {
-        alert('인증번호가 일치하지 않습니다.')
-        // console.log(error)
+        Swal.fire({
+          icon: 'error',
+          title: '인증번호가 일치하지 않습니다.',
+          text: '인증번호를 다시 확인해주세요.',
+        })
       })
   }
 
@@ -265,6 +296,7 @@ const Register = () => {
       verificationCode,
       password,
       passwordCheck,
+      phoneNumber,
       roadAddress,
       addressDetail,
     } = formData
@@ -275,6 +307,7 @@ const Register = () => {
       verificationCode &&
       password &&
       passwordCheck &&
+      phoneNumber &&
       roadAddress &&
       addressDetail
     ) {
@@ -287,6 +320,15 @@ const Register = () => {
   //  회원가입 폼 제출 이벤트
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+
+    if (formData.password !== formData.passwordCheck) {
+      Swal.fire({
+        icon: 'error',
+        title: '비밀번호가 일치하지 않습니다.',
+        text: '비밀번호를 다시 확인해주세요.',
+      })
+      return
+    }
 
     const endpoint = '/api/auth/signup'
 
@@ -303,7 +345,7 @@ const Register = () => {
     } else {
       formDataToSend.append('profileImage', formData.profileImage as Blob)
     }
-    formDataToSend.append('address', formData.roadAddress)
+    formDataToSend.append('roadAddress', formData.roadAddress)
 
     // API : 회원가입 요청
     axios
@@ -312,14 +354,36 @@ const Register = () => {
           'Content-Type': 'multipart/form-data',
         },
       })
-      .then(res => {
-        console.log(res)
-        alert('회원가입이 완료되었습니다.')
+      .then(function () {
+        Swal.fire({
+          icon: 'success',
+          title: '회원가입이 완료되었습니다.',
+          text: '로그인 페이지로 이동합니다.',
+          timer: 1500,
+        })
         navigate('/login')
       })
       .catch(err => {
-        console.log(err)
-        alert('회원가입에 실패하였습니다.')
+        const { errorCode } = err.response.data
+        if (errorCode === 'EMAIL_IS_ALREADY_EXIST') {
+          Swal.fire({
+            icon: 'error',
+            title: '이미 사용 중인 이메일 입니다.',
+            text: '다른 이메일을 입력해주세요.',
+          })
+        } else if (errorCode === 'NICKNAME_IS_ALREADY_EXIST') {
+          Swal.fire({
+            icon: 'error',
+            title: '이미 사용 중인 닉네임 입니다.',
+            text: '다른 닉네임을 입력해주세요.',
+          })
+        } else if (errorCode === 'PHONE_NUMBER_IS_ALREADY_EXIST') {
+          Swal.fire({
+            icon: 'error',
+            title: '이미 사용 중인 휴대폰 번호 입니다.',
+            text: '다른 휴대폰 번호를 입력해주세요.',
+          })
+        }
       })
   }
 
@@ -334,7 +398,6 @@ const Register = () => {
             <DaumPostcode
               onComplete={handleOpenPostcode.selectAddress} // 값을 선택할 경우 실행되는 이벤트
               autoClose={false} // 값을 선택할 경우 사용되는 DOM을 제거하여 자동 닫힘 설정
-              defaultQuery="광교마을로 156" // 팝업을 열때 기본적으로 입력되는 검색어
             />
           )
         }
