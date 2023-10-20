@@ -4,14 +4,12 @@ import com.zerobase.foodlier.module.dm.dm.dto.MessagePubDto;
 import com.zerobase.foodlier.module.dm.dm.dto.MessageSubDto;
 import com.zerobase.foodlier.module.dm.dm.service.DmService;
 import com.zerobase.foodlier.module.dm.dm.type.MessageType;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 
@@ -24,7 +22,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.BDDMockito.*;
 
 @ExtendWith(MockitoExtension.class)
-class StompChatControllerTest {
+public class StompChatControllerTest {
 
     @Mock
     private DmService dmService;
