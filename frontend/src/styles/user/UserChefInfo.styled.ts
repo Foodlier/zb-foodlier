@@ -68,14 +68,14 @@ export const ReviewMoreBtn = styled.button`
   padding: 0 10px;
 `
 
-export const ReviewCardList = styled.ul`
+export const ReviewCardList = styled.ul<{ $isRow: boolean }>`
   display: flex;
   flex-direction: column;
   gap: 10px;
   padding-left: 0;
   list-style: none;
   ${breakpoints.large} {
-    flex-direction: row;
+    flex-direction: ${props => (props.$isRow ? 'column' : 'row')};
   }
 `
 
@@ -85,9 +85,6 @@ export const ReviewCard = styled.li`
   list-style: none;
   border-radius: 10px;
   box-shadow: 0px 2px 6px 2px rgba(89, 97, 104, 0.1);
-  ${breakpoints.large} {
-    width: 50%;
-  }
 `
 
 export const ReviewTopInfo = styled.div`

@@ -27,6 +27,7 @@ const UserRecipeItem: React.FC<UserRecipeItemProps> = ({ EA, memberId }) => {
       const res = await axiosInstance.get(
         `/profile/public/recipe/${0}/${EA}/${memberId}`
       )
+      console.log('작성한 게시물', res)
       console.log('작성한 게시물', res.data.content)
       setUserRecipes(res.data.content)
     } catch (error) {

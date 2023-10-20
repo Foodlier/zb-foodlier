@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react'
+import { useNavigate, useParams } from 'react-router-dom'
 import axiosInstance from '../../utils/FetchCall'
 import * as S from '../../styles/user/UserChefInfo.styled'
 import StarRating from '../StarRating'
@@ -8,6 +9,8 @@ interface ChefInfo {
   nickName: string
   chefMemberId: number
   EA: number
+  onlyReview: boolean
+  isRow: boolean
 }
 
 interface ChefGrade {
@@ -22,7 +25,13 @@ interface ChefReview {
   star: number
 }
 
-const UserChefInfo: React.FC<ChefInfo> = ({ EA, nickName, chefMemberId }) => {
+const UserChefInfo: React.FC<ChefInfo> = ({
+  EA,
+  nickName,
+  chefMemberId,
+  onlyReview,
+  isRow,
+}) => {
   const [chefGrade, setChefGrade] = useState<ChefGrade>({
     grade: 'BRONZE',
     exp: 0,
@@ -31,6 +40,9 @@ const UserChefInfo: React.FC<ChefInfo> = ({ EA, nickName, chefMemberId }) => {
   const [chefReview, setChefReview] = useState<ChefReview[]>([])
   const [isReviewLoading, setIsReviewLoading] = useState(false)
   const { InitialUserImg } = useIcon()
+  const params = useParams()
+  const userId = params.id
+  const navigate = useNavigate()
 
   // 쉐프 리뷰 가져오기
   const getChefReview = async () => {
@@ -60,6 +72,19 @@ const UserChefInfo: React.FC<ChefInfo> = ({ EA, nickName, chefMemberId }) => {
     }
   }
 
+  const goToMore = (
+    sort: string,
+    nickname: string | undefined,
+    id: number | undefined
+  ) => {
+    const Info = {
+      sort,
+      nickname,
+      id,
+    }
+    navigate(`/profile/${userId}/more`, { state: Info })
+  }
+
   useEffect(() => {
     getChefReview()
     getChefGrade()
@@ -68,33 +93,44 @@ const UserChefInfo: React.FC<ChefInfo> = ({ EA, nickName, chefMemberId }) => {
 
   return (
     <>
-      <S.MyGradeDiv>
-        <S.MyGradeP>{nickName}님의 등급</S.MyGradeP>
-        {isGradeLoading ? (
-          <>
-            <S.Bar>
-              <S.ExpBar $cookerExp={(chefGrade.exp / 50) * 100} />
-            </S.Bar>
-            <S.GradeList>
-              <S.Grade>브론즈</S.Grade>
-              <S.Grade>실버</S.Grade>
-              <S.Grade>골드</S.Grade>
-              <S.Grade>플래티넘</S.Grade>
-            </S.GradeList>
-          </>
-        ) : (
-          <S.EtcComment>Loading...</S.EtcComment>
-        )}
-      </S.MyGradeDiv>
+      {!onlyReview && (
+        <S.MyGradeDiv>
+          <S.MyGradeP>{nickName}님의 등급</S.MyGradeP>
+          {isGradeLoading ? (
+            <>
+              <S.Bar>
+                <S.ExpBar $cookerExp={(chefGrade.exp / 50) * 100} />
+              </S.Bar>
+              <S.GradeList>
+                <S.Grade>브론즈</S.Grade>
+                <S.Grade>실버</S.Grade>
+                <S.Grade>골드</S.Grade>
+                <S.Grade>플래티넘</S.Grade>
+              </S.GradeList>
+            </>
+          ) : (
+            <S.EtcComment>Loading...</S.EtcComment>
+          )}
+        </S.MyGradeDiv>
+      )}
 
       <S.ReviewContainer>
-        <S.ReviewIntro>
-          <S.ReviewTitle>{nickName}님의 받은 최근 후기</S.ReviewTitle>
-          <S.ReviewMoreBtn type="button">+</S.ReviewMoreBtn>
-        </S.ReviewIntro>
+        {!onlyReview && (
+          <S.ReviewIntro>
+            <S.ReviewTitle>{nickName}님의 받은 최근 후기</S.ReviewTitle>
+            <S.ReviewMoreBtn
+              type="button"
+              onClick={() => {
+                goToMore('review', nickName, chefMemberId)
+              }}
+            >
+              +
+            </S.ReviewMoreBtn>
+          </S.ReviewIntro>
+        )}
 
         {isReviewLoading && (
-          <S.ReviewCardList>
+          <S.ReviewCardList $isRow={isRow}>
             {chefReview.length > 0 &&
               chefReview.map(el => (
                 <S.ReviewCard key={el.nickname}>

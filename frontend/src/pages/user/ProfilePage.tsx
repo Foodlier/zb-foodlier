@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { useParams } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import Header from '../../components/Header'
 import BottomNavigation from '../../components/BottomNavigation'
 import * as S from '../../styles/user/ProfilePage.styled'
@@ -23,6 +23,7 @@ const ProfilePage = () => {
   const { IcFavoriteFill, ChefHat, InitialUserImg } = useIcon()
   const [user, setUser] = useState<User>()
   const [isUserLoading, setIsUserLoading] = useState(false)
+  const navigate = useNavigate()
   const params = useParams() // 파람에 있는 member Id 가져와야함
   const userId = params.id
 
@@ -36,6 +37,19 @@ const ProfilePage = () => {
     } catch (error) {
       console.log(error)
     }
+  }
+
+  const goToMore = (
+    sort: string,
+    nickname: string | undefined,
+    id: number | undefined
+  ) => {
+    const Info = {
+      sort,
+      nickname,
+      id,
+    }
+    navigate(`/profile/${userId}/more`, { state: Info })
   }
 
   useEffect(() => {
@@ -75,13 +89,22 @@ const ProfilePage = () => {
             EA={2}
             nickName={user?.nickname}
             chefMemberId={user?.chefMemberId}
+            onlyReview={false}
+            isRow={false}
           />
         )}
 
         <S.MyUploadContainer>
           <S.MyUploadIntro>
             <S.MyUploadTitle>{user?.nickname}님의 올린 게시물</S.MyUploadTitle>
-            <S.UploadMoreBtn type="button">+</S.UploadMoreBtn>
+            <S.UploadMoreBtn
+              type="button"
+              onClick={() => {
+                goToMore('recipe', user?.nickname, user?.memberId)
+              }}
+            >
+              +
+            </S.UploadMoreBtn>
           </S.MyUploadIntro>
           {isUserLoading && <UserRecipeItem EA={4} memberId={user?.memberId} />}
         </S.MyUploadContainer>
@@ -91,7 +114,14 @@ const ProfilePage = () => {
             <S.MyReviewedTitle>
               {user?.nickname}님의 레시피 후기
             </S.MyReviewedTitle>
-            <S.ReviewedMoreBtn type="button">+</S.ReviewedMoreBtn>
+            <S.ReviewedMoreBtn
+              type="button"
+              onClick={() => {
+                goToMore('recipeReview', user?.nickname, user?.memberId)
+              }}
+            >
+              +
+            </S.ReviewedMoreBtn>
           </S.MyReviewedInto>
           <S.ReviewedList>
             {isUserLoading && (
