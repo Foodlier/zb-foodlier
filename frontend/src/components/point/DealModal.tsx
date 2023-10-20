@@ -5,7 +5,7 @@ import * as S from '../../styles/point/DealModal.styled'
 
 interface Price {
   price: number
-  roomId: number
+  roomId: number | undefined
   setIsDealModalOpen: React.Dispatch<React.SetStateAction<boolean>>
 }
 

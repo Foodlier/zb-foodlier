@@ -727,6 +727,7 @@ const useIcon = () => {
     ChefHat,
     InitialChefImg,
     InitialUserImg,
+    IcCloseRound,
   }
 }
 
