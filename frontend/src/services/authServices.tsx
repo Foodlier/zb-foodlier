@@ -1,8 +1,6 @@
 /* eslint-disable @typescript-eslint/no-use-before-define */
 import axios from 'axios'
-import { setCookie } from '../utils/Cookies'
-
-const JWT_EXPIRY_TIME = 24 * 3600 * 1000 // 24 hours
+import { setCookie, removeCookie } from '../utils/Cookies'
 
 const onSilentRefresh = () => {
   axios
@@ -14,6 +12,7 @@ const onSilentRefresh = () => {
 }
 
 const onLoginSuccess = (res: any) => {
+  const JWT_EXPIRY_TIME = 24 * 3600 * 1000 // 24 hours
   const { accessToken, refreshToken } = res.data
 
   axios.defaults.headers.common.Authorization = `Bearer ${accessToken}`
@@ -26,4 +25,10 @@ const onLoginSuccess = (res: any) => {
   setTimeout(onSilentRefresh, JWT_EXPIRY_TIME - 60000)
 }
 
-export { onLoginSuccess, onSilentRefresh }
+const LogoutSuccess = () => {
+  delete axios.defaults.headers.common.Authorization
+  removeCookie('accessToken')
+  removeCookie('refreshToken')
+}
+
+export { onLoginSuccess, onSilentRefresh, LogoutSuccess }
