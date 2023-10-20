@@ -21,7 +21,6 @@ public class EmailVerificationServiceImpl implements EmailVerificationService{
 
     /**
      *  인증 객체를 생성하는 메서드
-     *
      *  작성자 : 전현서
      *  작성일 : 2023-09-23(2023-09-24)
      */
@@ -41,10 +40,8 @@ public class EmailVerificationServiceImpl implements EmailVerificationService{
 
     /**
      * 이메일 검증을 수행하는 메서드 입니다.
-     *
      * Redis를 사용하여, 맵핑되는 데이터를 저장하고,
      * 이와 동일한 경우에, 검증이 완료됩니다.
-     *
      * 작성자 : 전현서
      * 작성일 : 2023-09-23
      */
@@ -57,14 +54,13 @@ public class EmailVerificationServiceImpl implements EmailVerificationService{
 
         validateVerify(emailVerification, verificationCode, nowTime);
 
-        emailVerification.setAuthorized(true);
+        emailVerification.updateAuthorized();
         emailVerificationRepository.save(emailVerification);
     }
 
     /**
      * 회원가입을 수행할 떄, 인증된 이메일이 맞는지
      * 서버단 에서 한 번 더 확인하는 메서드입니다.
-     *
      * 작성자 : 전현서
      * 작성일 : 2023-09-23
      */

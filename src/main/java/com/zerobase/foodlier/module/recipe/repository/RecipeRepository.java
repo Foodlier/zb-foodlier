@@ -18,17 +18,14 @@ public interface RecipeRepository extends JpaRepository<Recipe, Long>, RecipeRep
 
     Optional<Recipe> findByIdAndMemberAndIsQuotationTrue(Long recipeId, Member member);
 
-    List<Recipe> findTop3ByIsPublicOrderByCreatedAtDesc(Boolean isPublic);
+    List<Recipe> findTop3ByIsPublicIsTrueOrderByCreatedAtDesc();
 
-    Page<Recipe> findByIsPublicOrderByCreatedAtDesc(Boolean isPublic,
-                                                    Pageable pageable);
+    Page<Recipe> findByIsPublicIsTrueOrderByCreatedAtDesc(Pageable pageable);
 
-    Page<Recipe> findByIsPublicOrderByHeartCountDesc(Boolean isPublic,
-                                                     Pageable pageable);
+    Page<Recipe> findByIsPublicIsTrueOrderByHeartCountDesc(Pageable pageable);
 
-    Page<Recipe> findByIsPublicOrderByCommentCountDesc(Boolean isPublic,
-                                                       Pageable pageable);
+    Page<Recipe> findByIsPublicIsTrueOrderByCommentCountDesc(Pageable pageable);
 
-    List<Recipe> findTop5ByIsPublicAndCreatedAtAfterOrderByHeartCountDesc(
-            Boolean isPublic, LocalDateTime createdAt);
+    List<Recipe> findTop5ByIsPublicIsTrueAndCreatedAtAfterOrderByHeartCountDesc(
+            LocalDateTime createdAt);
 }

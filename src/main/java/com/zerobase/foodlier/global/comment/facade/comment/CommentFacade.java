@@ -3,7 +3,6 @@ package com.zerobase.foodlier.global.comment.facade.comment;
 import com.zerobase.foodlier.common.aop.RedissonLock;
 import com.zerobase.foodlier.module.comment.comment.domain.model.Comment;
 import com.zerobase.foodlier.module.comment.comment.service.CommentService;
-import com.zerobase.foodlier.module.comment.comment.service.CommentServiceImpl;
 import com.zerobase.foodlier.module.member.member.domain.model.Member;
 import com.zerobase.foodlier.module.member.member.service.MemberService;
 import com.zerobase.foodlier.module.recipe.domain.model.Recipe;
@@ -19,15 +18,16 @@ public class CommentFacade {
     private final CommentService commentService;
     private final RecipeService recipeService;
     private final MemberService memberService;
+
     @Transactional
     @RedissonLock(group = "comment", key = "#recipeId")
-    public void createComment(Long recipeId, String userEmail, String message) {
+    public Comment createComment(Long recipeId, String userEmail, String message) {
 
         Member member = memberService.findByEmail(userEmail);
 
         Recipe recipe = recipeService.plusCommentCount(recipeId);
 
-        commentService.createComment(Comment.builder()
+        return commentService.createComment(Comment.builder()
                 .message(message)
                 .isDeleted(false)
                 .recipe(recipe)

@@ -10,11 +10,11 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 public class RecipeCardDto {
-    private Long id;
+    private Long recipeId;
     private String nickName;
     private String title;
     private String mainImageUrl;
     private String content;
     private int heartCount;
-    private boolean isHeart;
+    private Boolean isHeart;
 }

@@ -20,18 +20,22 @@ public class NotificationController {
     private final NotificationService notificationService;
 
     @GetMapping("/{pageIdx}/{pageSize}")
-    public ResponseEntity<ListResponse<NotificationDto>> getSimpleNotificationList(@AuthenticationPrincipal MemberAuthDto principal,
+    public ResponseEntity<ListResponse<NotificationDto>> getSimpleNotificationList(@AuthenticationPrincipal MemberAuthDto memberAuthDto,
                                                                                    @PathVariable int pageIdx,
-                                                                                   @PathVariable int pageSize)
-    {
-        return ResponseEntity.ok(notificationService.getNotificationBy(principal.getId(),
+                                                                                   @PathVariable int pageSize) {
+        return ResponseEntity.ok(notificationService.getNotificationBy(memberAuthDto.getId(),
                 PageRequest.of(pageIdx, pageSize)));
     }
 
     @GetMapping(value = "/subscribe", produces = "text/event-stream")
-    public ResponseEntity<SseEmitter> subscribe(@AuthenticationPrincipal MemberAuthDto principal,
-                                                @RequestHeader(value = "Last-Event-ID", required = false, defaultValue = "") String lastEventId) {
-        return ResponseEntity.ok(notificationFacade.subscribe(principal.getEmail(), lastEventId));
+    public ResponseEntity<SseEmitter> subscribe(@AuthenticationPrincipal MemberAuthDto memberAuthDto) {
+        return ResponseEntity.ok(notificationFacade.subscribe(memberAuthDto));
     }
 
+    @PatchMapping(value = "/read/{notificationId}")
+    public ResponseEntity<String> changeReadStatus(@AuthenticationPrincipal MemberAuthDto memberAuthDto,
+                                                   @PathVariable Long notificationId) {
+        notificationService.updateNotificationStatus(memberAuthDto.getId(), notificationId);
+        return ResponseEntity.ok("알림을 읽었습니다");
+    }
 }

@@ -14,8 +14,13 @@ import com.zerobase.foodlier.module.recipe.dto.recipe.RecipeDetailDto;
 import com.zerobase.foodlier.module.recipe.dto.recipe.RecipeDtoRequest;
 import com.zerobase.foodlier.module.recipe.dto.recipe.RecipeIngredientDto;
 import com.zerobase.foodlier.module.review.recipe.domain.model.RecipeReview;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -24,10 +29,11 @@ import java.util.stream.Collectors;
 
 @Entity
 @Getter
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @SuperBuilder
+@Where(clause = "is_deleted = false")
+@SQLDelete(sql = "UPDATE recipe SET is_deleted = true WHERE id = ?")
 public class Recipe extends Audit {
     private final static int ZERO = 0;
     @Id
@@ -93,11 +99,11 @@ public class Recipe extends Audit {
         }
     }
 
-    public void plusCommentCount(){
+    public void plusCommentCount() {
         ++this.commentCount;
     }
 
-    public void minusCommentCount(){
+    public void minusCommentCount() {
         this.commentCount = Math.max(ZERO, --this.commentCount);
     }
 
@@ -117,5 +123,37 @@ public class Recipe extends Audit {
                 .stream()
                 .map(RecipeIngredientDto::toEntity)
                 .collect(Collectors.toList());
+    }
+
+    public void updateSummary(Summary summary) {
+        this.summary = summary;
+    }
+
+    public void updateMainImageUrl(String url) {
+        this.mainImageUrl = url;
+    }
+
+    public void updateExpectedTime(int time) {
+        this.expectedTime = time;
+    }
+
+    public void updateDifficulty(Difficulty difficulty) {
+        this.difficulty = difficulty;
+    }
+
+    public void updateRecipeDetailList(List<RecipeDetail> recipeDetailList) {
+        this.recipeDetailList = recipeDetailList;
+    }
+
+    public void updateRecipeIngredientList(List<RecipeIngredient> recipeIngredientList) {
+        this.recipeIngredientList = recipeIngredientList;
+    }
+
+    public void updatePublic() {
+        this.isPublic = true;
+    }
+
+    public void updateNoQuotation() {
+        this.isQuotation = false;
     }
 }

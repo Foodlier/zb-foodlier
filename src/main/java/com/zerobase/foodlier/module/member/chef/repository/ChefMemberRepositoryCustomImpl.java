@@ -56,14 +56,14 @@ public class ChefMemberRepositoryCustomImpl implements ChefMemberRepositoryCusto
                         Expressions.numberTemplate(Double.class,
                                 "ROUND(ST_Distance_Sphere(point({0}, {1}), point({2}, {3}))/1000, 2)",
                                 member.address.lnt, member.address.lat, lnt, lat).as("distance")
-                        , JPAExpressions.select(recipe.count())
+                        , JPAExpressions.select(recipe.count().as("recipeCount"))
                                 .from(chefMember)
                                 .join(member)
                                 .on(chefMember.member.id.eq(member.id))
                                 .join(recipe)
                                 .on(recipe.member.id.eq(member.id))
                                 .where(recipe.isQuotation.isFalse().and(recipe.isDeleted.isFalse()).and(recipe.isPublic.isTrue()))
-                                .groupBy(chefMember.id)).as("recipeCount"))
+                                .groupBy(chefMember.id)))
                 .from(chefMember)
                 .join(member)
                 .on(chefMember.member.id.eq(member.id))
@@ -74,11 +74,13 @@ public class ChefMemberRepositoryCustomImpl implements ChefMemberRepositoryCusto
                         .and(chefMember.id.notIn(JPAExpressions.select(chefMember.id)
                                 .from(member)
                                 .join(request)
-                                .on(request.member.id.eq(member.id).and(request.isPaid.isFalse()).and(request.dmRoom.isNull()))
+                                .on(request.member.id.eq(member.id).and(request.isFinished.isFalse()))
                                 .join(chefMember)
                                 .on(request.chefMember.id.eq(chefMember.id))
                                 .where(member.id.eq(memberId)))))
                 .orderBy(orderBy.asc())
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
                 .fetch();
 
         Long count = queryFactory.select(Wildcard.count)
@@ -91,7 +93,7 @@ public class ChefMemberRepositoryCustomImpl implements ChefMemberRepositoryCusto
                         .and(chefMember.id.notIn(JPAExpressions.select(chefMember.id)
                                 .from(member)
                                 .join(request)
-                                .on(request.member.id.eq(member.id).and(request.isPaid.isFalse()).and(request.dmRoom.isNull()))
+                                .on(request.member.id.eq(member.id).and(request.isFinished.isFalse()))
                                 .join(chefMember)
                                 .on(request.chefMember.id.eq(chefMember.id))
                                 .where(member.id.eq(memberId)))))
@@ -133,7 +135,8 @@ public class ChefMemberRepositoryCustomImpl implements ChefMemberRepositoryCusto
                 .join(request)
                 .on(request.member.id.eq(requestMember.id)
                         .and(request.isPaid.isFalse())
-                        .and(request.dmRoom.isNull()))
+                        .and(request.dmRoom.isNull())
+                        .and(request.isFinished.isFalse()))
                 .join(chefMember)
                 .on(chefMember.id.eq(request.chefMember.id))
                 .join(chefsMember)
@@ -141,7 +144,9 @@ public class ChefMemberRepositoryCustomImpl implements ChefMemberRepositoryCusto
                         .and(chefsMember.isDeleted.isFalse()))
                 .leftJoin(recipe)
                 .on(recipe.id.eq(request.recipe.id))
-                .where(requestMember.id.ne(memberId))
+                .where(requestMember.id.eq(memberId))
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
                 .fetch();
 
         Long count = queryFactory.select(Wildcard.count)
@@ -149,7 +154,8 @@ public class ChefMemberRepositoryCustomImpl implements ChefMemberRepositoryCusto
                 .join(request)
                 .on(request.member.id.eq(requestMember.id)
                         .and(request.isPaid.isFalse())
-                        .and(request.dmRoom.isNull()))
+                        .and(request.dmRoom.isNull())
+                        .and(request.isFinished.isFalse()))
                 .join(chefMember)
                 .on(chefMember.id.eq(request.chefMember.id))
                 .join(chefsMember)
@@ -157,7 +163,7 @@ public class ChefMemberRepositoryCustomImpl implements ChefMemberRepositoryCusto
                         .and(chefsMember.isDeleted.isFalse()))
                 .leftJoin(recipe)
                 .on(recipe.id.eq(request.recipe.id))
-                .where(requestMember.id.ne(memberId))
+                .where(requestMember.id.eq(memberId))
                 .fetchFirst();
 
         return new PageImpl<>(content, pageable, count);

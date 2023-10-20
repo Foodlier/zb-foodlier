@@ -1,6 +1,5 @@
 package com.zerobase.foodlier.module.notification.service.emitter;
 
-import com.zerobase.foodlier.module.notification.domain.model.Notification;
 import com.zerobase.foodlier.module.notification.repository.sse.EmitterRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -15,7 +14,6 @@ import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.*;
 
@@ -23,12 +21,12 @@ class EmitterServiceTest {
     @Mock
     private EmitterRepository emitterRepository;
 
-    private EmitterServiceImpl emitterService;
+    private EmitterService emitterService;
 
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        emitterService = new EmitterServiceImpl(emitterRepository);
+        emitterService = new EmitterService(emitterRepository);
     }
 
     @Test
@@ -85,7 +83,7 @@ class EmitterServiceTest {
         String email = "test@example.com";
 
         // when
-        String emitterId = emitterService.makeTimeIncludeId(email);
+        String emitterId = emitterService.makeUUIDIncludeId(email);
 
         // then
         assertNotNull(emitterId);
@@ -94,26 +92,12 @@ class EmitterServiceTest {
     }
 
     @Test
-    @DisplayName("알림 캐시 객체 생성 성공")
-    void success_createEventCache() {
-        // given
-        String emitterId = "test@example.com_123456789";
-        Notification notification = new Notification();
-
-        // when
-        emitterService.createEventCache(emitterId, notification);
-
-        // then
-        verify(emitterRepository).saveEventCache(eq(emitterId), eq(notification));
-    }
-
-    @Test
     @DisplayName("알림 전송 객체 찾기 성공")
     void success_findAllEmitter() {
         // given
         String receiverEmail = "test@example.com";
         Map<String, SseEmitter> emitterMap = new HashMap<>();
-        when(emitterRepository.findAllEmitterStartWithByMemberId(receiverEmail)).thenReturn(emitterMap);
+        when(emitterRepository.findAllEmitterStartWithByEmail(receiverEmail)).thenReturn(emitterMap);
 
         // when
         Map<String, SseEmitter> result = emitterService.findAllEmitter(receiverEmail);

@@ -13,11 +13,14 @@ import WriteRecipePage from './pages/recipe/WriteRecipePage'
 import RecipeDetailPage from './pages/recipe/RecipeDetailPage'
 import WriteReviewPage from './pages/recipe/WriteReviewPage'
 import ChattingPage from './pages/chat/ChattingPage'
+import FindPasswordPage from './pages/auth/FindPasswordPage'
 import MyPage from './pages/user/MyPage'
 import ProfilePage from './pages/user/ProfilePage'
 import ProfileMorePage from './pages/user/ProfileMorePage'
 import Point from './pages/point/Point'
 import Success from './pages/point/Success'
+import KakaoLoginPage from './pages/auth/KakaoRedirectionPage'
+import NaverLoginPage from './pages/auth/NaverRedirectionPage'
 
 function App() {
   return (
@@ -25,7 +28,10 @@ function App() {
       <Routes>
         <Route path="/" element={<MainPage />} />
         <Route path="/login" element={<LoginPage />} />
+        <Route path="/find-password" element={<FindPasswordPage />} />
         <Route path="/register" element={<RegisterPage />} />
+        <Route path="/kakao/callback" element={<KakaoLoginPage />} />
+        <Route path="/naver/callback" element={<NaverLoginPage />} />
         <Route path="/refrigerator" element={<RefrigeratorPage />} />
         <Route
           path="/refrigerator/request/write"

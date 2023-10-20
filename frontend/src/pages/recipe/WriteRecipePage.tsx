@@ -6,14 +6,14 @@ import BottomNavigation from '../../components/BottomNavigation'
 import * as S from '../../styles/recipe/WriteRecipePage.styled'
 import useIcon from '../../hooks/useIcon'
 import { palette } from '../../constants/Styles'
-import RecipeImage from '../../components/recipe/RecipeImage'
+import RecipeImage, { ImageFile } from '../../components/recipe/RecipeImage'
 import {
   DIFFICULTY_LIST,
   EMPTY_INGREDIENT,
   EMPTY_ORDER,
   INGREDIENT_LIST,
 } from '../../constants/Data'
-import axiosInstance from '../../utils/FetchCall'
+import axiosInstance, { postFormData } from '../../utils/FetchCall'
 import ModalWithoutButton from '../../components/ui/ModalWithoutButton'
 import {
   RecipeIngredientDtoList,
@@ -34,6 +34,12 @@ const WriteRecipePage = () => {
   const navigate = useNavigate()
   const { IcAddRound, IcFileDockLight } = useIcon()
 
+  const emptyFile = new File([''], 'empty.txt', { type: 'text/plain' })
+
+  const [imageFile, setImageFile] = useState<ImageFile>({
+    mainImage: emptyFile,
+    cookingOrderImageList: [],
+  })
   const [isCompleteModal, setIsCompleteModal] = useState(false)
   const [recipeValue, setRecipeValue] = useState<Recipe>({
     title: '',
@@ -104,9 +110,9 @@ const WriteRecipePage = () => {
     }))
   }
 
-  const postRecipe = async () => {
+  const postRecipe = async (body: Recipe) => {
     try {
-      const res = await axiosInstance.post('/recipe', recipeValue)
+      const res = await axiosInstance.post('/recipe', body)
       if (res.status === 200) {
         setIsCompleteModal(true)
         setTimeout(() => {
@@ -120,6 +126,32 @@ const WriteRecipePage = () => {
     }
   }
 
+  const postImage = async () => {
+    try {
+      const formData = new FormData()
+      formData.append('mainImage', imageFile.mainImage)
+      imageFile.cookingOrderImageList.forEach(image =>
+        formData.append('cookingOrderImageList', image)
+      )
+
+      const { data, status } = await postFormData('/recipe/image', formData)
+      if (status === 200) {
+        const body = { ...recipeValue }
+        const { cookingOrderImageList, mainImage } = data
+
+        cookingOrderImageList.forEach((image: string, index: number) => {
+          body.recipeDetailDtoList[index].cookingOrderImageUrl = image
+        })
+        body.mainImageUrl = mainImage
+        console.log(body)
+        setRecipeValue(body)
+        postRecipe(body)
+      }
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
   return (
     <>
       <Header />
@@ -128,7 +160,13 @@ const WriteRecipePage = () => {
           <IcFileDockLight size={2} color={palette.textPrimary} />
           <S.QuotationButton>견적서 목록 불러오기</S.QuotationButton>
         </S.WrapQuitation>
-        <RecipeImage size={20} isText />
+        <RecipeImage
+          size={20}
+          isText
+          formKey="mainImage"
+          imageFile={imageFile}
+          setImageFile={setImageFile}
+        />
 
         <S.WrapForm>
           <S.Title>제목</S.Title>
@@ -214,7 +252,13 @@ const WriteRecipePage = () => {
           <S.Title>순서</S.Title>
           {recipeValue.recipeDetailDtoList.map((_, index) => (
             <S.WrapOrder key={`key-${index}`}>
-              <RecipeImage size={7} isText={false} />
+              <RecipeImage
+                size={7}
+                isText={false}
+                formKey="cookingOrderImageList"
+                imageFile={imageFile}
+                setImageFile={setImageFile}
+              />
               <S.Input
                 onChange={e => updateOrder(e, index)}
                 placeholder="조리 순서를 입력해주세요."
@@ -230,7 +274,7 @@ const WriteRecipePage = () => {
           </S.AddButton>
         </S.WrapForm>
 
-        <S.RequestButton onClick={postRecipe}>레시피 등록하기</S.RequestButton>
+        <S.RequestButton onClick={postImage}>레시피 등록하기</S.RequestButton>
       </S.Container>
       {isCompleteModal && (
         <ModalWithoutButton

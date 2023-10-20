@@ -1,6 +1,7 @@
 package com.zerobase.foodlier.global.comment.facade.reply;
 
 import com.zerobase.foodlier.common.aop.RedissonLock;
+import com.zerobase.foodlier.global.notification.facade.NotificationFacade;
 import com.zerobase.foodlier.module.comment.comment.domain.model.Comment;
 import com.zerobase.foodlier.module.comment.comment.service.CommentService;
 import com.zerobase.foodlier.module.comment.reply.domain.model.Reply;
@@ -16,25 +17,26 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @RequiredArgsConstructor
 public class ReplyFacade {
-
+    private static final String SUBJECT = "나의 ";
     private final ReplyService replyService;
     private final CommentService commentService;
     private final MemberService memberService;
     private final RecipeService recipeService;
-
+    private final NotificationFacade notificationFacade;
     @Transactional
     @RedissonLock(group = "comment", key = "#recipeId")
-    public void createReply(Long commentId, Long recipeId, String userEmail, String message) {
+    public Reply createReply(Long commentId, Long recipeId, String userEmail, String message) {
 
         Member member = memberService.findByEmail(userEmail);
 
         Recipe recipe = recipeService.plusCommentCount(recipeId);
         Comment comment = commentService.findComment(commentId);
-        replyService.createReply(Reply.builder()
+        return replyService.createReply(Reply.builder()
                 .message(message)
                 .comment(comment)
                 .member(member)
                 .build());
+
     }
 
     @Transactional

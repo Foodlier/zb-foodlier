@@ -7,7 +7,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Getter
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -22,6 +21,7 @@ public class RequestDetailDto {
     private LocalDateTime expectedAt;
     private String address;
     private String addressDetail;
+    private Long recipeId;
     private String mainImageUrl;
     private String recipeTitle;
     private String recipeContent;

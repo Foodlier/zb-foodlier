@@ -28,9 +28,7 @@ public class MemberRegisterFacade {
 
     /**
      *  도메인 회원가입을 수행하는 메서드입니다.
-     *
      *  이메일 검증 확인 -> 좌표 얻어오기 -> s3에 이미지 업로드 후 url가져오기 -> 회원가입
-     *
      *  작성자 : 전현서
      *  작성일 : 2023-09-25
      */
@@ -50,10 +48,6 @@ public class MemberRegisterFacade {
                         RegistrationType.DOMAIN
                 )
         );
-    }
-
-    public void socialRegister(){
-
     }
 
 }

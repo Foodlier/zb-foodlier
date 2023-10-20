@@ -5,7 +5,6 @@ import com.zerobase.foodlier.module.member.member.type.RegistrationType;
 import lombok.*;
 
 @Getter
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder

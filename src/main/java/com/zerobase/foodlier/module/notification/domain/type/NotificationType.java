@@ -4,5 +4,6 @@ public enum NotificationType {
     HEART,
     COMMENT,
     REQUEST,
-    RE_COMMENT
+    RE_COMMENT,
+    INITIAL
 }

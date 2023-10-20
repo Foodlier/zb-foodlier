@@ -2,6 +2,7 @@ package com.zerobase.foodlier.global.refrigerator.controller;
 
 import com.zerobase.foodlier.common.response.ListResponse;
 import com.zerobase.foodlier.common.security.provider.dto.MemberAuthDto;
+import com.zerobase.foodlier.global.notification.facade.NotificationFacade;
 import com.zerobase.foodlier.global.refrigerator.facade.RefrigeratorFacade;
 import com.zerobase.foodlier.module.member.chef.dto.AroundChefDto;
 import com.zerobase.foodlier.module.member.chef.dto.RequestedChefDto;
@@ -10,6 +11,12 @@ import com.zerobase.foodlier.module.member.chef.type.ChefSearchType;
 import com.zerobase.foodlier.module.member.member.dto.RequestedMemberDto;
 import com.zerobase.foodlier.module.member.member.service.MemberService;
 import com.zerobase.foodlier.module.member.member.type.RequestedOrderingType;
+import com.zerobase.foodlier.module.notification.domain.type.ActionType;
+import com.zerobase.foodlier.module.notification.domain.type.NotificationType;
+import com.zerobase.foodlier.module.notification.domain.type.PerformerType;
+import com.zerobase.foodlier.module.notification.dto.notify.Impl.ChefNotify;
+import com.zerobase.foodlier.module.notification.dto.notify.Impl.RequesterNotify;
+import com.zerobase.foodlier.module.notification.dto.notify.NotifyInfoDto;
 import com.zerobase.foodlier.module.request.dto.RequestDetailDto;
 import com.zerobase.foodlier.module.request.service.RequestService;
 import com.zerobase.foodlier.module.requestform.dto.RequestFormDetailDto;
@@ -34,6 +41,7 @@ public class RefrigeratorController {
     private final ChefMemberService chefMemberService;
     private final RequestFormService requestFormService;
     private final MemberService memberService;
+    private final NotificationFacade notificationFacade;
 
     @PatchMapping("/send")
     public ResponseEntity<String> sendRequest(
@@ -41,7 +49,16 @@ public class RefrigeratorController {
             @RequestParam Long requestFormId,
             @RequestParam Long chefMemberId
     ) {
-        requestService.sendRequest(memberAuthDto.getId(), requestFormId, chefMemberId);
+        ChefNotify chefNotify = ChefNotify.from(
+                requestService.sendRequest(memberAuthDto.getId(),
+                        requestFormId, chefMemberId),
+                NotifyInfoDto.builder()
+                        .performerType(PerformerType.REQUESTER)
+                        .actionType(ActionType.SEND_RECIPE_REQUEST)
+                        .build());
+
+        notificationFacade.send(chefNotify);
+
         return ResponseEntity.ok("요청서가 전송되었습니다.");
     }
 
@@ -50,7 +67,15 @@ public class RefrigeratorController {
             @AuthenticationPrincipal MemberAuthDto memberAuthDto,
             @PathVariable(name = "requestId") Long requestId
     ) {
-        requestService.cancelRequest(memberAuthDto.getId(), requestId);
+
+        ChefNotify chefNotify = ChefNotify.from(
+                requestService.cancelRequest(memberAuthDto.getId(), requestId),
+                NotifyInfoDto.builder()
+                        .performerType(PerformerType.REQUESTER)
+                        .actionType(ActionType.REQUEST_CANCEL)
+
+                        .build());
+        notificationFacade.send(chefNotify);
         return ResponseEntity.ok("요청이 취소되었습니다.");
     }
 
@@ -59,7 +84,14 @@ public class RefrigeratorController {
             @AuthenticationPrincipal MemberAuthDto memberAuthDto,
             @PathVariable(name = "requestId") Long requestId
     ) {
-        refrigeratorFacade.requesterApproveAndCreateDm(memberAuthDto.getId(), requestId);
+
+        ChefNotify chefNotify = ChefNotify.from(
+                refrigeratorFacade.requesterApproveAndCreateDm(memberAuthDto.getId(), requestId),
+                NotifyInfoDto.builder()
+                        .performerType(PerformerType.REQUESTER)
+                        .actionType(ActionType.QUOTATION_APPROVE)
+                        .build());
+        notificationFacade.send(chefNotify);
         return ResponseEntity.ok("요청을 수락하였습니다.");
     }
 
@@ -69,7 +101,14 @@ public class RefrigeratorController {
             @AuthenticationPrincipal MemberAuthDto memberAuthDto,
             @PathVariable(name = "requestId") Long requestId
     ) {
-        refrigeratorFacade.chefApproveAndCreateDm(memberAuthDto.getId(), requestId);
+        RequesterNotify requestNotify = RequesterNotify.from(
+                refrigeratorFacade.chefApproveAndCreateDm(memberAuthDto.getId(), requestId),
+                NotifyInfoDto.builder()
+                        .performerType(PerformerType.CHEF)
+                        .actionType(ActionType.REQUEST_APPROVE)
+                        .notificationType(NotificationType.REQUEST)
+                        .build());
+        notificationFacade.send(requestNotify);
         return ResponseEntity.ok("요청을 수락하였습니다.");
     }
 
@@ -79,7 +118,14 @@ public class RefrigeratorController {
             @AuthenticationPrincipal MemberAuthDto memberAuthDto,
             @PathVariable(name = "requestId") Long requestId
     ) {
-        requestService.rejectRequest(memberAuthDto.getId(), requestId);
+        RequesterNotify requestNotify = RequesterNotify.from(
+                requestService.rejectRequest(memberAuthDto.getId(), requestId),
+                NotifyInfoDto.builder()
+                        .performerType(PerformerType.CHEF)
+                        .actionType(ActionType.REQUEST_REJECT)
+                        .notificationType(NotificationType.REQUEST)
+                        .build());
+        notificationFacade.send(requestNotify);
         return ResponseEntity.ok("요청을 거절하였습니다.");
     }
 
@@ -115,7 +161,7 @@ public class RefrigeratorController {
     public ResponseEntity<RequestDetailDto> getRequestDetail(
             @AuthenticationPrincipal MemberAuthDto memberAuthDto,
             @PathVariable Long requestId
-    ){
+    ) {
         return ResponseEntity.ok(
                 requestService.getRequestDetail(memberAuthDto.getId(), requestId)
         );
@@ -148,7 +194,7 @@ public class RefrigeratorController {
             @AuthenticationPrincipal MemberAuthDto memberAuthDto,
             @PathVariable int pageIdx,
             @PathVariable int pageSize
-    ){
+    ) {
         return ResponseEntity.ok(
                 chefMemberService.getRequestedChefList(memberAuthDto.getId(),
                         PageRequest.of(pageIdx, pageSize))
@@ -161,7 +207,7 @@ public class RefrigeratorController {
             @PathVariable int pageIdx,
             @PathVariable int pageSize,
             @RequestParam ChefSearchType type
-    ){
+    ) {
         return ResponseEntity.ok(
                 chefMemberService.getAroundChefList(memberAuthDto.getId(),
                         PageRequest.of(pageIdx, pageSize), type)
@@ -174,7 +220,7 @@ public class RefrigeratorController {
             @PathVariable int pageIdx,
             @PathVariable int pageSize,
             @RequestParam("type") RequestedOrderingType type
-    ){
+    ) {
         return ResponseEntity.ok(
                 memberService.getRequestedMemberList(memberAuthDto.getId(),
                         type, PageRequest.of(pageIdx, pageSize))
