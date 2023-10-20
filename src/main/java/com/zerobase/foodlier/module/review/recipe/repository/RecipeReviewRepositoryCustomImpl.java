@@ -1,7 +1,9 @@
 package com.zerobase.foodlier.module.review.recipe.repository;
 
 import com.querydsl.core.types.dsl.Wildcard;
+import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import com.zerobase.foodlier.module.recipe.domain.model.QRecipe;
 import com.zerobase.foodlier.module.review.recipe.domain.model.QRecipeReview;
 import com.zerobase.foodlier.module.review.recipe.domain.model.RecipeReview;
 import lombok.RequiredArgsConstructor;
@@ -29,6 +31,35 @@ public class RecipeReviewRepositoryCustomImpl implements RecipeReviewRepositoryC
                 .from(recipeReview)
                 .where(recipeReview.recipe.id.eq(recipeId)
                         .and(recipeReview.member.id.ne(memberId)))
+                .fetchFirst();
+
+        return new PageImpl<>(content, pageable, count);
+    }
+
+    @Override
+    public Page<RecipeReview> findByRecipeReviewForRecipeWriter(Long memberId, Pageable pageable) {
+        QRecipeReview recipeReview = QRecipeReview.recipeReview;
+        QRecipe recipe = QRecipe.recipe;
+
+        List<RecipeReview> content = queryFactory.select(recipeReview)
+                .from(recipeReview)
+                .where(recipeReview.recipe.in(
+                        JPAExpressions
+                                .selectFrom(recipe)
+                                .where(recipe.member.id.eq(memberId))
+                ))
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetch();
+
+        Long count = queryFactory
+                .select(Wildcard.count)
+                .from(recipeReview)
+                .where(recipeReview.recipe.in(
+                        JPAExpressions
+                                .selectFrom(recipe)
+                                .where(recipe.member.id.eq(memberId))
+                ))
                 .fetchFirst();
 
         return new PageImpl<>(content, pageable, count);
