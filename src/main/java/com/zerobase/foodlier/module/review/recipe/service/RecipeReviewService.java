@@ -86,9 +86,8 @@ public class RecipeReviewService {
      */
     public ListResponse<RecipeReviewResponseDto> getRecipeReviewForProfile(Long memberId,
                                                                            Pageable pageable) {
-        Member member = getMember(memberId);
         return ListResponse.from(
-                recipeReviewRepository.findByMemberOrderByCreatedAtDesc(member, pageable),
+                recipeReviewRepository.findByRecipeReviewForRecipeWriter(memberId, pageable),
                 RecipeReviewResponseDto::from);
     }
 
