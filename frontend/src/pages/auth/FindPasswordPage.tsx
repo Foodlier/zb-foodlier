@@ -1,73 +1,55 @@
+/* eslint-disable import/no-extraneous-dependencies */
 // 비밀번호 찾기 스타일 컴포넌트
 import { useState } from 'react'
-import styled from 'styled-components'
-import { Link } from 'react-router-dom'
-import axios from 'axios'
+import { useNavigate } from 'react-router-dom'
+import Swal from 'sweetalert2'
+import * as S from '../../styles/auth/FindPasswordPage.styled'
 import axiosInstance from '../../utils/FetchCall'
+import logo from '../../../public/images/foodlier_logo.png'
+import { palette } from '../../constants/Styles'
 
-const Container = styled.div`
-  width: 400px;
-  margin: 0 auto;
-  padding: 100px 0;
-  text-align: center;
-`
-
-const Title = styled.h1`
-  font-size: 2rem;
-  font-weight: 600;
-  margin-bottom: 50px;
-`
-
-const Form = styled.form`
-  display: flex;
-  flex-direction: column;
-`
-
-const InputBox = styled.div`
-  display: flex;
-  flex-direction: column;
-  margin-bottom: 20px;
-`
-
-const Label = styled.label`
-  font-size: 1.2rem;
-  margin-bottom: 30px;
-`
-
-const Input = styled.input`
-  width: 100%;
-  padding: 10px;
-  font-size: 1.2rem;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-`
-
-const Button = styled.button`
-  width: 100%;
-  padding: 10px;
-  font-size: 1.2rem;
-  border: none;
-  background-color: #fff;
-  cursor: pointer;
-`
+interface UserInputs {
+  phoneNumber: string
+  email: string
+}
 
 const FindPasswordPage = () => {
-  const [userInputs] = useState({
-    phoneNumber: '01099989331',
-    email: 'bos3321@gmail.com',
+  const navigate = useNavigate()
+  const [userInputs, setUserInputs] = useState<UserInputs>({
+    phoneNumber: '',
+    email: '',
   })
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target
+    setUserInputs({
+      ...userInputs,
+      [name]: value,
+    })
+  }
 
   const handleSubmitFindPassword = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     axiosInstance
       .post('/api/auth/findPassword', userInputs)
       .then(res => {
-        alert('임시 비밀번호가 이메일로 전송되었습니다.')
+        Swal.fire({
+          icon: 'success',
+          title: '이메일로 비밀번호를 전송했습니다.',
+          text: '이메일을 확인해주세요.',
+          confirmButtonColor: `${palette.main}`,
+        })
         console.log(res)
       })
       .catch(err => {
-        if (err.response === 400) {
-          alert('핸드폰 번호 또는 이메일이 일치하지 않습니다.')
+        const { errorCode } = err.response.data
+        if (errorCode === 'MEMBER_NOT_FOUND') {
+          Swal.fire({
+            icon: 'error',
+            title: '회원 정보가 없습니다.',
+            text: '회원가입을 해주세요.',
+            confirmButtonColor: `${palette.main}`,
+          })
           return
         }
         console.log(err)
@@ -75,25 +57,43 @@ const FindPasswordPage = () => {
   }
 
   return (
-    <Container>
-      <Title>비밀번호 찾기</Title>
-      <Form onSubmit={handleSubmitFindPassword}>
-        <InputBox>
-          <Label htmlFor="phoneNumber">핸드폰 번호</Label>
-          <Input
+    <S.Container>
+      <S.Logo src={logo} alt="Foodlier Logo" />
+      <S.Title>비밀번호 찾기</S.Title>
+      <S.Form onSubmit={handleSubmitFindPassword}>
+        <S.InputBox>
+          <S.Label htmlFor="phoneNumber">핸드폰 번호</S.Label>
+          <S.Input
             id="phoneNumber"
             type="phoneNumber"
+            name="phoneNumber"
             value={userInputs.phoneNumber}
+            onChange={handleChange}
           />
-        </InputBox>
-        <InputBox>
-          <Label htmlFor="email">이메일</Label>
-          <Input id="email" type="email" value={userInputs.email} />
-          <Button type="submit">비밀번호 찾기</Button>
-        </InputBox>
-      </Form>
-      <Link to="/login">로그인</Link>
-    </Container>
+        </S.InputBox>
+        <S.InputBox>
+          <S.Label htmlFor="email">이메일</S.Label>
+          <S.Input
+            id="email"
+            type="email"
+            name="email"
+            value={userInputs.email}
+            onChange={handleChange}
+          />
+          <S.FindPasswordButton type="submit">
+            비밀번호 찾기
+          </S.FindPasswordButton>
+          <S.HomeButton
+            type="button"
+            onClick={() => {
+              navigate('/login')
+            }}
+          >
+            홈으로
+          </S.HomeButton>
+        </S.InputBox>
+      </S.Form>
+    </S.Container>
   )
 }
 
