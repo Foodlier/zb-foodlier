@@ -27,7 +27,7 @@ public class RequesterNotify implements Notify {
     private String targetTitle;
     private NotifyInfoDto notifyInfoDto;
 
-    public static RequesterNotify from(Request request, NotifyInfoDto notifyInfoDto){
+    public static RequesterNotify from(Request request, NotifyInfoDto notifyInfoDto) {
         return RequesterNotify.builder()
                 .receiver(request.getMember())
                 .performerNickname(request.getChefMember().getMember().getNickname())
@@ -53,5 +53,10 @@ public class RequesterNotify implements Notify {
     @Override
     public String getReceiverEmail() {
         return this.receiver.getEmail();
+    }
+
+    @Override
+    public Long getTargetId() {
+        return this.targetSubjectId;
     }
 }

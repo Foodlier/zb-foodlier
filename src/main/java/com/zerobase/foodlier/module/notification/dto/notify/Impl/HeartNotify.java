@@ -12,7 +12,8 @@ import lombok.NoArgsConstructor;
 
 import java.util.List;
 
-import static com.zerobase.foodlier.module.notification.constant.MessageConstant.*;
+import static com.zerobase.foodlier.module.notification.constant.MessageConstant.DELIMITER;
+import static com.zerobase.foodlier.module.notification.constant.MessageConstant.HONORIFIC_TITLE;
 
 @Getter
 @NoArgsConstructor
@@ -26,20 +27,13 @@ public class HeartNotify implements Notify {
     private String targetTitle;
     private NotifyInfoDto notifyInfoDto;
 
-    public static HeartNotify from(Heart heart, NotifyInfoDto notifyInfoDto){
-        return HeartNotify.builder()
-                .receiver(heart.getRecipe().getMember())
-                .performerNickname(heart.getMember().getNickname())
-                .targetSubjectId(heart.getRecipe().getId())
-                .targetTitle(heart.getRecipe().getSummary().getTitle())
-                .notifyInfoDto(notifyInfoDto)
-                .build();
+    public static HeartNotify from(Heart heart, NotifyInfoDto notifyInfoDto) {
+        return HeartNotify.builder().receiver(heart.getRecipe().getMember()).performerNickname(heart.getMember().getNickname()).targetSubjectId(heart.getRecipe().getId()).targetTitle(heart.getRecipe().getSummary().getTitle()).notifyInfoDto(notifyInfoDto).build();
     }
 
     @Override
     public String getMessage() {
-        List<String> messageComponent = List.of(notifyInfoDto.getPerformer(),
-                this.performerNickname, HONORIFIC_TITLE, this.targetTitle, notifyInfoDto.getAction());
+        List<String> messageComponent = List.of(notifyInfoDto.getPerformer(), this.performerNickname, HONORIFIC_TITLE, this.targetTitle, notifyInfoDto.getAction());
         return String.join(DELIMITER, messageComponent);
     }
 
@@ -57,5 +51,10 @@ public class HeartNotify implements Notify {
     @Override
     public String getReceiverEmail() {
         return this.receiver.getEmail();
+    }
+
+    @Override
+    public Long getTargetId() {
+        return this.targetSubjectId;
     }
 }

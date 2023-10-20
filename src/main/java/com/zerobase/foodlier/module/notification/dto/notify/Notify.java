@@ -6,7 +6,12 @@ import com.zerobase.foodlier.module.notification.domain.type.NotificationType;
 public interface Notify {
 
     String getMessage();
+
     Member getReceiver();
+
     NotificationType getNotificationType();
+
     String getReceiverEmail();
+
+    Long getTargetId();
 }
