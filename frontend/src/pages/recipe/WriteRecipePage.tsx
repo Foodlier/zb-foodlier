@@ -39,7 +39,7 @@ const WriteRecipePage = () => {
 
   const isEdit = Boolean(recipeId)
 
-  const { IcAddRound, IcFileDockLight } = useIcon()
+  const { IcAddRound } = useIcon()
 
   const emptyFile = new File([''], 'empty.txt', { type: 'text/plain' })
 
@@ -91,6 +91,15 @@ const WriteRecipePage = () => {
         recipeDetailDtoList: [...updateValue],
       })
     }
+  }
+
+  const deleteItem = (index: number, key: string) => {
+    if (key === 'ingredient') {
+      recipeValue.recipeIngredientDtoList.splice(index, 1)
+    } else {
+      recipeValue.recipeDetailDtoList.splice(index, 1)
+    }
+    setRecipeValue({ ...recipeValue })
   }
 
   // 해당 index의 재료 값 수정
@@ -197,14 +206,15 @@ const WriteRecipePage = () => {
 
     const validations = [
       {
-        condition: imageFile.mainImage.name === 'empty.txt',
+        condition: isEdit ? false : imageFile.mainImage.name === 'empty.txt',
         key: 'mainImageUrl',
         message: '대표 이미지를 선택해주세요.',
       },
       {
-        condition: recipeValue.title.length < 2,
+        condition:
+          recipeValue.title.length < 2 || recipeValue.title.length > 20,
         key: 'title',
-        message: '제목을 2글자 이상 입력해주세요',
+        message: '제목을 2글자 이상 20자 이하로 입력해주세요',
       },
       {
         condition: recipeValue.content.length < 2,
@@ -234,7 +244,7 @@ const WriteRecipePage = () => {
       },
       {
         condition:
-          !imageFile.cookingOrderImageList.length ||
+          (isEdit ? false : !imageFile.cookingOrderImageList.length) ||
           recipeValue.recipeDetailDtoList.filter(item => !item.cookingOrder)
             .length > 0,
         key: 'recipeDetailDtoList',
@@ -283,10 +293,6 @@ const WriteRecipePage = () => {
     <>
       <Header />
       <S.Container>
-        <S.WrapQuitation>
-          <IcFileDockLight size={2} color={palette.textPrimary} />
-          <S.QuotationButton>견적서 목록 불러오기</S.QuotationButton>
-        </S.WrapQuitation>
         <RecipeImage
           size={25}
           isText
@@ -324,22 +330,29 @@ const WriteRecipePage = () => {
         <S.WrapForm>
           <S.Title>재료</S.Title>
           {recipeValue.recipeIngredientDtoList.map((item, index) => (
-            <S.WrapIngredient key={`key-${index}`}>
-              <S.WrapItemInput>
-                {INGREDIENT_LIST.map(ingredientItem => (
-                  <S.ItemInput
-                    key={ingredientItem.value}
-                    placeholder={ingredientItem.placeholder}
-                    onChange={e =>
-                      updateIngredient(e, index, ingredientItem.value)
-                    }
-                    value={item[ingredientItem.value]}
-                    $width={ingredientItem.width}
-                    $radius={ingredientItem.radius}
-                  />
-                ))}
-              </S.WrapItemInput>
-            </S.WrapIngredient>
+            <S.FlexWrap key={`key-${index}`}>
+              <S.WrapIngredient>
+                <S.WrapItemInput>
+                  {INGREDIENT_LIST.map(ingredientItem => (
+                    <S.ItemInput
+                      key={ingredientItem.value}
+                      placeholder={ingredientItem.placeholder}
+                      onChange={e =>
+                        updateIngredient(e, index, ingredientItem.value)
+                      }
+                      value={item[ingredientItem.value]}
+                      $width={ingredientItem.width}
+                      $radius={ingredientItem.radius}
+                    />
+                  ))}
+                </S.WrapItemInput>
+              </S.WrapIngredient>
+              {Boolean(index) && (
+                <S.DeleteItem onClick={() => deleteItem(index, 'ingredient')}>
+                  삭제
+                </S.DeleteItem>
+              )}
+            </S.FlexWrap>
           ))}
           <S.AddButton onClick={() => addItem('ingredient')} $width={50}>
             <IcAddRound size={1.2} color={palette.textSecondary} />
@@ -391,23 +404,30 @@ const WriteRecipePage = () => {
         <S.WrapForm>
           <S.Title>순서</S.Title>
           {recipeValue.recipeDetailDtoList.map((item, index) => (
-            <S.WrapOrder key={`key-${index}`}>
-              <RecipeImage
-                size={7}
-                isText={false}
-                formKey="cookingOrderImageList"
-                imageFile={imageFile}
-                setImageFile={setImageFile}
-                defaultUrl={item.cookingOrderImageUrl}
-              />
-              <S.Input
-                onChange={e => updateOrder(e, index)}
-                placeholder="조리 순서를 입력해주세요."
-                value={item.cookingOrder}
-                $width={70}
-                $marginLf={1}
-              />
-            </S.WrapOrder>
+            <S.FlexWrap key={`key-${index}`}>
+              <S.WrapOrder>
+                <RecipeImage
+                  size={7}
+                  isText={false}
+                  formKey="cookingOrderImageList"
+                  imageFile={imageFile}
+                  setImageFile={setImageFile}
+                  defaultUrl={item.cookingOrderImageUrl}
+                />
+                <S.Input
+                  onChange={e => updateOrder(e, index)}
+                  placeholder="조리 순서를 입력해주세요."
+                  value={item.cookingOrder}
+                  $width={100}
+                  $marginLf={1}
+                />
+              </S.WrapOrder>
+              {Boolean(index) && (
+                <S.DeleteItem onClick={() => deleteItem(index, 'detail')}>
+                  삭제
+                </S.DeleteItem>
+              )}
+            </S.FlexWrap>
           ))}
 
           <S.AddButton onClick={() => addItem('order')} $width={50}>
@@ -418,7 +438,6 @@ const WriteRecipePage = () => {
           <S.ErrorText>{errorValue.recipeDetailDtoList}</S.ErrorText>
         </S.WrapForm>
 
-        {/* <S.RequestButton onClick={isEdit ? editRecipe : postImage}> */}
         <S.RequestButton onClick={checkForm}>
           {isEdit ? '수정하기' : '레시피 등록하기'}
         </S.RequestButton>

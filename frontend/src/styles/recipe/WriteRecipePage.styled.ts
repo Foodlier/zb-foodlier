@@ -11,15 +11,12 @@ export const Container = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
+  padding-top: 5rem;
   padding-bottom: 10rem;
 `
 
 export const WrapIngredient = styled.div`
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 1rem;
+  width: 70%;
 `
 
 export const WrapQuitation = styled.div`
@@ -54,6 +51,15 @@ export const Title = styled.span`
     font-size: ${typography.web.subTitle};
   }
 `
+
+export const FlexWrap = styled.div`
+  width: 100%;
+  display: flex;
+  align-items: center;
+
+  margin-bottom: 1rem;
+`
+
 export const Input = styled.input<{
   $width?: number
   $marginRi?: number
@@ -83,8 +89,21 @@ export const Input = styled.input<{
 `
 
 export const WrapItemInput = styled.div`
-  width: 70%;
+  width: 100%;
   display: flex;
+`
+
+export const DeleteItem = styled.button`
+  margin-left: 1rem;
+  font-size: ${typography.mobile.content};
+  background-color: ${palette.dim};
+  color: ${palette.white};
+  padding: 0.5rem 1rem;
+  border-radius: 1rem;
+
+  ${breakpoints.large} {
+    font-size: ${typography.web.content};
+  }
 `
 
 export const ItemInput = styled.input<{ $width: number; $radius: string }>`
@@ -150,9 +169,8 @@ export const WrapTime = styled.div`
 `
 
 export const WrapOrder = styled.div`
-  width: 100%;
+  width: 90%;
   display: flex;
-  margin-bottom: 1rem;
 `
 
 export const RequestButton = styled.button`

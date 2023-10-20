@@ -8,6 +8,8 @@ export const Label = styled.label<{ $size: number }>`
   justify-content: center;
   width: ${props => props.$size || 0}rem;
   height: ${props => props.$size || 0}rem;
+  min-width: ${props => props.$size || 0}rem;
+  min-height: ${props => props.$size || 0}rem;
 
   border-radius: 1rem;
   background-color: #f3f3f3;
@@ -36,6 +38,8 @@ export const EmptyImage = styled.button<{ $size: number }>`
   justify-content: center;
   width: ${props => props.$size || 0}rem;
   height: ${props => props.$size || 0}rem;
+  min-width: ${props => props.$size || 0}rem;
+  min-height: ${props => props.$size || 0}rem;
   object-fit: cover;
   border-radius: 1rem;
   background-color: #f3f3f3;
@@ -45,6 +49,8 @@ export const EmptyImage = styled.button<{ $size: number }>`
 export const Image = styled.img<{ $size: number }>`
   width: ${props => props.$size || 0}rem;
   height: ${props => props.$size || 0}rem;
+  min-width: ${props => props.$size || 0}rem;
+  min-height: ${props => props.$size || 0}rem;
   object-fit: contain;
   border: 1px solid ${palette.divider};
   border-radius: 1rem;
