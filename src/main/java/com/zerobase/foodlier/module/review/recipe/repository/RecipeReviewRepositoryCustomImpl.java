@@ -1,5 +1,7 @@
 package com.zerobase.foodlier.module.review.recipe.repository;
 
+import com.querydsl.core.types.dsl.Expressions;
+import com.querydsl.core.types.dsl.StringPath;
 import com.querydsl.core.types.dsl.Wildcard;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -18,6 +20,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class RecipeReviewRepositoryCustomImpl implements RecipeReviewRepositoryCustom {
     private final JPAQueryFactory queryFactory;
+    private final StringPath CREATED_AT_ORDER_BY = Expressions.stringPath("createdAt");
 
     @Override
     public Page<RecipeReview> findRecipe(Long recipeId, Long memberId, Pageable pageable) {
@@ -48,6 +51,7 @@ public class RecipeReviewRepositoryCustomImpl implements RecipeReviewRepositoryC
                                 .selectFrom(recipe)
                                 .where(recipe.member.id.eq(memberId))
                 ))
+                .orderBy(CREATED_AT_ORDER_BY.desc())
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
