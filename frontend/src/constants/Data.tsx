@@ -64,3 +64,17 @@ export const REQUEST_OPTION_MENU_LIST = [
   { value: 'DISTANCE', text: '거리 순' },
   { value: 'PRICE', text: '가격 순' },
 ]
+
+// 레시피 검색 시 sort option list
+export const RECIPE_OPTION_MENU_LIST = [
+  { value: 'CREATED_AT', text: '최신 순' },
+  { value: 'COMMENT_COUNT', text: '댓글 순' },
+  { value: 'HEART_COUNT', text: '찜 많은 순' },
+]
+
+// 레시피 검색 시 type option list
+export const RECIPE_TYPE_MENU_LIST = [
+  { value: 'TITLE', text: '제목' },
+  { value: 'INGREDIENTS', text: '재료' },
+  { value: 'WRITER', text: '작성자' },
+]
