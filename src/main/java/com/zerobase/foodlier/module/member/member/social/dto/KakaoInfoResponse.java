@@ -6,7 +6,6 @@ import com.zerobase.foodlier.module.member.member.type.RegistrationType;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
 
 import static com.zerobase.foodlier.module.member.member.type.RegistrationType.KAKAO;
 

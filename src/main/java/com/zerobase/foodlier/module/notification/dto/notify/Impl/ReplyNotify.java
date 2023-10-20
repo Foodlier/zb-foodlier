@@ -27,7 +27,7 @@ public class ReplyNotify implements Notify {
     private String targetTitle;
     private NotifyInfoDto notifyInfoDto;
 
-    public static ReplyNotify from(Reply reply, NotifyInfoDto notifyInfoDto){
+    public static ReplyNotify from(Reply reply, NotifyInfoDto notifyInfoDto) {
         return ReplyNotify.builder()
                 .receiver(reply.getComment().getRecipe().getMember())
                 .performerNickname(reply.getMember().getNickname())
@@ -58,5 +58,10 @@ public class ReplyNotify implements Notify {
     @Override
     public String getReceiverEmail() {
         return this.receiver.getEmail();
+    }
+
+    @Override
+    public Long getTargetId() {
+        return this.targetSubjectId;
     }
 }

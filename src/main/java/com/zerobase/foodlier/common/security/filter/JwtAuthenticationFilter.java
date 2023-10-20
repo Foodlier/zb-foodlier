@@ -1,6 +1,5 @@
 package com.zerobase.foodlier.common.security.filter;
 
-import com.zerobase.foodlier.common.security.constants.AuthorizationConstants;
 import com.zerobase.foodlier.common.security.exception.JwtException;
 import com.zerobase.foodlier.common.security.provider.JwtTokenProvider;
 import lombok.NonNull;
@@ -15,8 +14,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.Date;
-import java.util.Objects;
 
 import static com.zerobase.foodlier.common.security.constants.AuthorizationConstants.*;
 import static com.zerobase.foodlier.common.security.exception.JwtErrorCode.*;

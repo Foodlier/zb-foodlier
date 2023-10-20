@@ -46,10 +46,10 @@ public class RecipeFacade {
      * 꿀조합 게시글 수정 시 사진을 s3에 등록 후 url을 return
      */
     public RecipeImageResponse updateRecipeImage(
-            String email,
+            Long id,
             MultipartFile mainImage,
-            List<MultipartFile> cookingOrderImageList, Long id) {
-        checkPermission(email, id);
+            List<MultipartFile> cookingOrderImageList, Long recipeId) {
+        checkPermission(id, recipeId);
 
         return RecipeImageResponse.builder()
                 .mainImage(s3Service.getImageUrl(mainImage))
@@ -63,8 +63,8 @@ public class RecipeFacade {
      * 황태원
      * 꿀조합 게시글 작성
      */
-    public void createRecipe(String email, RecipeDtoRequest recipeDtoRequest) {
-        Member member = memberService.findByEmail(email);
+    public void createRecipe(Long id, RecipeDtoRequest recipeDtoRequest) {
+        Member member = memberService.findById(id);
 
         recipeService.createRecipe(member, recipeDtoRequest);
     }
@@ -75,10 +75,10 @@ public class RecipeFacade {
      * 꿀조합 게시글 수정
      */
     @Transactional
-    public void updateRecipe(String email, RecipeDtoRequest recipeDtoRequest, Long id) {
-        checkPermission(email, id);
-        ImageUrlDto imageUrlDto = recipeService.getBeforeImageUrl(id);
-        recipeService.updateRecipe(recipeDtoRequest, id);
+    public void updateRecipe(Long id, RecipeDtoRequest recipeDtoRequest, Long recipeId) {
+        checkPermission(id, recipeId);
+        ImageUrlDto imageUrlDto = recipeService.getBeforeImageUrl(recipeId);
+        recipeService.updateRecipe(recipeDtoRequest, recipeId);
         deleteRecipeImage(imageUrlDto);
     }
 
@@ -88,10 +88,10 @@ public class RecipeFacade {
      * 꿀조합 게시글 삭제, 삭제 후 s3이미지 삭제
      */
     @Transactional
-    public void deleteRecipe(String email, Long id) {
-        checkPermission(email, id);
-        ImageUrlDto imageUrlDto = recipeService.getBeforeImageUrl(id);
-        recipeService.deleteRecipe(id);
+    public void deleteRecipe(Long id, Long recipeId) {
+        checkPermission(id, recipeId);
+        ImageUrlDto imageUrlDto = recipeService.getBeforeImageUrl(recipeId);
+        recipeService.deleteRecipe(recipeId);
         deleteRecipeImage(imageUrlDto);
     }
 
@@ -110,9 +110,9 @@ public class RecipeFacade {
      * 황태원
      * 꿀조합 게시글 수정, 삭제권한 체크
      */
-    public void checkPermission(String email, Long id) {
-        Member member = memberService.findByEmail(email);
-        Recipe recipe = recipeService.getRecipe(id);
+    public void checkPermission(Long id, Long recipeId) {
+        Member member = memberService.findById(id);
+        Recipe recipe = recipeService.getRecipe(recipeId);
 
         if (!member.getId().equals(recipe.getMember().getId())) {
             throw new RecipeException(NO_PERMISSION);

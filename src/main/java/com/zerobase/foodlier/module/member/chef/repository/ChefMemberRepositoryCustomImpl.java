@@ -79,6 +79,8 @@ public class ChefMemberRepositoryCustomImpl implements ChefMemberRepositoryCusto
                                 .on(request.chefMember.id.eq(chefMember.id))
                                 .where(member.id.eq(memberId)))))
                 .orderBy(orderBy.asc())
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
                 .fetch();
 
         Long count = queryFactory.select(Wildcard.count)
@@ -143,6 +145,8 @@ public class ChefMemberRepositoryCustomImpl implements ChefMemberRepositoryCusto
                 .leftJoin(recipe)
                 .on(recipe.id.eq(request.recipe.id))
                 .where(requestMember.id.eq(memberId))
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
                 .fetch();
 
         Long count = queryFactory.select(Wildcard.count)

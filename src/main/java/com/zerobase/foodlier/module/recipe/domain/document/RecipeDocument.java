@@ -45,10 +45,6 @@ public class RecipeDocument {
         this.ingredients = ingredients;
     }
 
-    public void updateWriter(String writer) {
-        this.writer = writer;
-    }
-
     public void updateMainImageUrl(String mainImageUrl) {
         this.mainImageUrl = mainImageUrl;
     }

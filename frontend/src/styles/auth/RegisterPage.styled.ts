@@ -1,7 +1,5 @@
 import styled from 'styled-components'
-// import React, { useState } from 'react'
-// import { Modal } from '../../components/auth/AddressModal'
-import { palette } from '../../constants/Styles'
+import { palette, breakpoints, typographyDev } from '../../constants/Styles'
 
 // 회원가입 페이지 스타일 컴포넌트
 const inputStyles = `
@@ -9,8 +7,14 @@ const inputStyles = `
   padding: 10px 10px;
   margin-bottom: 15px;
   border: 1px solid #ccc;
-  border-radius: 12px;
-  font-size: 16px;
+  border-radius: 1rem;
+  font-weight: 400;
+  ${breakpoints.small} {
+    font-size: ${typographyDev.mobile.content};
+  }
+  ${breakpoints.large} {
+    font-size: ${typographyDev.web.content};
+  }
 `
 
 const buttonStyles = `
@@ -18,9 +22,14 @@ const buttonStyles = `
   padding: 10px;
   margin: 0 5px;
   border: none;
-  border-radius: 12px;
-  font-size: 16px;
+  border-radius: 1rem;
   cursor: pointer;
+  ${breakpoints.small} {
+    font-size: ${typographyDev.mobile.content};
+  }
+  ${breakpoints.large} {
+    font-size: ${typographyDev.web.content};
+  }
 `
 
 export const Container = styled.div`
@@ -36,9 +45,7 @@ export const Profile = styled.div`
   width: 100px;
   height: 100px;
   margin: 0 auto;
-  padding: 10px 10px;
   border: 1px solid #ccc;
-  border-radius: 20%;
   margin-bottom: 5px;
   text-align: center;
 `
@@ -75,8 +82,13 @@ export const InputInfo = styled.span`
 `
 
 export const Title = styled.h1`
-  font-size: 24px;
   margin-bottom: 10px;
+  ${breakpoints.small} {
+    font-size: ${typographyDev.mobile.mainTitle};
+  }
+  ${breakpoints.large} {
+    font-size: ${typographyDev.web.mainTitle};
+  }
 `
 
 export const Form = styled.form`
@@ -100,15 +112,6 @@ export const Input2 = styled.input`
   width: 70%;
 `
 
-export const FindPassword = styled.div`
-  display: flex;
-  justify-content: flex-start;
-  margin-bottom: 15px;
-  font-size: 14px;
-  color: #000;
-  cursor: pointer;
-`
-
 export const Button = styled.button`
   ${buttonStyles}
 `
@@ -129,8 +132,13 @@ export const ConfirmButton = styled.button`
   height: 65px;
   background-color: ${palette.main};
   color: #fff;
-  font-size: 18px;
   margin: 0 auto;
+  ${breakpoints.small} {
+    font-size: ${typographyDev.mobile.subTitle};
+  }
+  ${breakpoints.large} {
+    font-size: ${typographyDev.web.subTitle};
+  }
 `
 
 export const DisabledButton = styled.button`
@@ -139,8 +147,13 @@ export const DisabledButton = styled.button`
   height: 65px;
   background-color: #ccc;
   color: #fff;
-  font-size: 18px;
   margin: 0 auto;
+  ${breakpoints.small} {
+    font-size: ${typographyDev.mobile.subTitle};
+  }
+  ${breakpoints.large} {
+    font-size: ${typographyDev.web.subTitle};
+  }
 `
 
 export const ErrorMessage = styled.div`

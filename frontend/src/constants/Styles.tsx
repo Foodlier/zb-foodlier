@@ -31,6 +31,21 @@ export const typography = {
   },
 }
 
+export const typographyDev = {
+  web: {
+    mainTitle: '2.6rem',
+    subTitle: '2rem',
+    content: '1.8rem',
+    desc: '1.675rem',
+  },
+  mobile: {
+    mainTitle: '2.2rem',
+    subTitle: '1.8rem',
+    content: '1.4rem',
+    desc: '1.2rem',
+  },
+}
+
 // margin
 // TODO : %, px 확정 - 최보성
 export const spacing = {

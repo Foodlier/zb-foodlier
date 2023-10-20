@@ -338,7 +338,7 @@ public class DummyDataGenerator {
                 .totalPages(searchResult.getTotalPages())
                 .content(searchResult.stream()
                         .map(recipeDocument -> RecipeCardDto.builder()
-                                .id(recipeDocument.getId())
+                                .recipeId(recipeDocument.getId())
                                 .title(recipeDocument.getTitle())
                                 .content(recipeDocument.getContent())
                                 .nickName(recipeDocument.getWriter())

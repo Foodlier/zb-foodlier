@@ -52,4 +52,9 @@ public class CommentNotify implements Notify {
     public String getReceiverEmail() {
         return this.receiver.getEmail();
     }
+
+    @Override
+    public Long getTargetId() {
+        return this.targetSubjectId;
+    }
 }

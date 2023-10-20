@@ -534,7 +534,6 @@ class RefrigeratorControllerTest {
     void success_deleteRequestForm() throws Exception {
 
         //when
-        RequestFormDto form = getRequestFormDto();
         ResultActions perform = mockMvc.perform(delete("/refrigerator/1")
                 .with(csrf()));
 

@@ -25,6 +25,7 @@ public class RequestFormDetailDto {
     private String address;
     private String addressDetail;
     private String mainImageUrl;
+    private Long recipeId;
     private String recipeTitle;
     private String recipeContent;
     private int heartCount;
