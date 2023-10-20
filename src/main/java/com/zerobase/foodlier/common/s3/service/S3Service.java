@@ -18,7 +18,7 @@ public interface S3Service {
 
     String getUpdateImageURL(MultipartFile image, String imageUrl);
 
-    public String getImageName(String imageUrl);
+    String getImageName(String imageUrl);
 
-    public boolean validImageUrl(String imageUrl);
+    boolean validImageUrl(String imageUrl);
 }

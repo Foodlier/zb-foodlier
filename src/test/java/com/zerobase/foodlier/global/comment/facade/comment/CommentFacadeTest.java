@@ -7,6 +7,7 @@ import com.zerobase.foodlier.module.member.member.domain.model.Member;
 import com.zerobase.foodlier.module.member.member.exception.MemberException;
 import com.zerobase.foodlier.module.member.member.service.MemberService;
 import com.zerobase.foodlier.module.recipe.domain.model.Recipe;
+import com.zerobase.foodlier.module.recipe.domain.vo.Summary;
 import com.zerobase.foodlier.module.recipe.exception.recipe.RecipeException;
 import com.zerobase.foodlier.module.recipe.service.recipe.RecipeService;
 import org.junit.jupiter.api.DisplayName;
@@ -54,8 +55,9 @@ class CommentFacadeTest {
                 .willReturn(member);
         given(recipeService.plusCommentCount(any()))
                 .willReturn(futureRecipe);
-        doNothing().when(commentService).createComment(any());
-
+        given(commentService.createComment(any()))
+                .willReturn(Comment.builder()
+                        .build());
         // when
 
         commentFacade.createComment(1L, "test@gmail.com", "맛있어요");
@@ -175,6 +177,10 @@ class CommentFacadeTest {
         return Recipe.builder()
                 .id(1L)
                 .commentCount(2)
+                .summary(Summary.builder()
+                        .title("제육")
+                        .content("제육 맛있다.")
+                        .build())
                 .build();
     }
 

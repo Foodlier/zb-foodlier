@@ -15,7 +15,6 @@ import com.zerobase.foodlier.module.recipe.dto.recipe.*;
 import com.zerobase.foodlier.module.recipe.service.recipe.RecipeService;
 import com.zerobase.foodlier.module.recipe.type.OrderType;
 import com.zerobase.foodlier.module.recipe.type.SearchType;
-import com.zerobase.foodlier.module.recipe.type.SortType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
@@ -37,6 +36,7 @@ public class RecipeController {
     private final RecipeService recipeService;
     private final HeartService heartService;
     private final NotificationFacade notificationFacade;
+
     @PostMapping("/image")
     public ResponseEntity<RecipeImageResponse> uploadRecipeImage(
             @Valid @ImageFile @RequestPart MultipartFile mainImage,
@@ -50,45 +50,45 @@ public class RecipeController {
             @AuthenticationPrincipal MemberAuthDto memberAuthDto,
             @Valid @ImageFile @RequestPart MultipartFile mainImage,
             @Valid @ImageFile @RequestPart List<MultipartFile> cookingOrderImageList,
-            @PathVariable(name = "recipeId") Long id) {
-        return ResponseEntity.ok(recipeFacade.updateRecipeImage(memberAuthDto.getEmail(),
-                mainImage, cookingOrderImageList, id));
+            @PathVariable(name = "recipeId") Long recipeId) {
+        return ResponseEntity.ok(recipeFacade.updateRecipeImage(memberAuthDto.getId(),
+                mainImage, cookingOrderImageList, recipeId));
     }
 
     @PostMapping
     public ResponseEntity<String> createRecipe(@AuthenticationPrincipal MemberAuthDto memberAuthDto,
                                                @RequestBody @Valid RecipeDtoRequest recipeDto) {
-        recipeFacade.createRecipe(memberAuthDto.getEmail(), recipeDto);
+        recipeFacade.createRecipe(memberAuthDto.getId(), recipeDto);
         return ResponseEntity.ok("게시글 작성을 성공했습니다.");
     }
 
     @PutMapping("/{recipeId}")
     public ResponseEntity<String> updateRecipe(@AuthenticationPrincipal MemberAuthDto memberAuthDto,
                                                @RequestBody @Valid RecipeDtoRequest recipeDto,
-                                               @PathVariable(name = "recipeId") Long id) {
-        recipeFacade.updateRecipe(memberAuthDto.getEmail(), recipeDto, id);
+                                               @PathVariable(name = "recipeId") Long recipeId) {
+        recipeFacade.updateRecipe(memberAuthDto.getId(), recipeDto, recipeId);
         return ResponseEntity.ok("게시글 수정을 성공했습니다.");
     }
 
     @GetMapping("/{recipeId}")
     public ResponseEntity<RecipeDtoResponse> getRecipe(
             @AuthenticationPrincipal MemberAuthDto memberAuthDto,
-            @PathVariable(name = "recipeId") Long id
+            @PathVariable(name = "recipeId") Long recipeId
     ) {
-        return ResponseEntity.ok(recipeService.getRecipeDetail(memberAuthDto,id));
+        return ResponseEntity.ok(recipeService.getRecipeDetail(memberAuthDto, recipeId));
     }
 
     @DeleteMapping("/{recipeId}")
     public ResponseEntity<String> deleteRecipe(@AuthenticationPrincipal MemberAuthDto memberAuthDto,
-                                               @PathVariable(name = "recipeId") Long id) {
-        recipeFacade.deleteRecipe(memberAuthDto.getEmail(), id);
+                                               @PathVariable(name = "recipeId") Long recipeId) {
+        recipeFacade.deleteRecipe(memberAuthDto.getId(), recipeId);
         return ResponseEntity.ok("레시피 삭제를 성공했습니다.");
     }
 
     @GetMapping("/permission/{recipeId}")
     public ResponseEntity<String> checkPermission(@AuthenticationPrincipal MemberAuthDto memberAuthDto,
-                                                  @PathVariable(name = "recipeId") Long id) {
-        recipeFacade.checkPermission(memberAuthDto.getEmail(), id);
+                                                  @PathVariable(name = "recipeId") Long recipeId) {
+        recipeFacade.checkPermission(memberAuthDto.getId(), recipeId);
         return ResponseEntity.ok("레시피 접근 가능합니다.");
     }
 
@@ -107,19 +107,19 @@ public class RecipeController {
         );
     }
 
-    @GetMapping("search/{searchType}/{sortType}/{pageIdx}/{pageSize}")
+    @GetMapping("search/{searchType}/{orderType}/{pageIdx}/{pageSize}")
     public ResponseEntity<ListResponse<RecipeCardDto>> getFilteredRecipeList(@AuthenticationPrincipal MemberAuthDto memberAuthDto,
                                                                              @PathVariable SearchType searchType,
                                                                              @PathVariable int pageIdx,
                                                                              @PathVariable int pageSize,
-                                                                             @PathVariable SortType sortType,
+                                                                             @PathVariable OrderType orderType,
                                                                              @RequestParam String searchText) {
         return ResponseEntity.ok(recipeService.getRecipeList(RecipeSearchRequest.builder()
                 .searchType(searchType)
                 .searchText(searchText)
                 .memberId(memberAuthDto.getId())
                 .pageable(PageRequest.of(pageIdx, pageSize))
-                .sortType(sortType)
+                .orderType(orderType)
                 .build())
         );
     }

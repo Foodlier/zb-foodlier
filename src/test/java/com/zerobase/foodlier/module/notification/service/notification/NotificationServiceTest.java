@@ -1,14 +1,17 @@
 package com.zerobase.foodlier.module.notification.service.notification;
 
-import com.zerobase.foodlier.common.aop.notification.type.ActionType;
-import com.zerobase.foodlier.common.aop.notification.type.NotifyMessage;
-import com.zerobase.foodlier.common.aop.notification.type.NotifyUrl;
+import com.zerobase.foodlier.module.notification.domain.type.ActionType;
+import com.zerobase.foodlier.module.notification.domain.type.PerformerType;
 import com.zerobase.foodlier.common.response.ListResponse;
+import com.zerobase.foodlier.module.member.chef.domain.model.ChefMember;
 import com.zerobase.foodlier.module.member.member.domain.model.Member;
 import com.zerobase.foodlier.module.notification.domain.model.Notification;
 import com.zerobase.foodlier.module.notification.domain.type.NotificationType;
 import com.zerobase.foodlier.module.notification.dto.NotificationDto;
+import com.zerobase.foodlier.module.notification.dto.notify.NotifyInfoDto;
+import com.zerobase.foodlier.module.notification.dto.notify.Impl.RequesterNotify;
 import com.zerobase.foodlier.module.notification.repository.notification.NotificationRepository;
+import com.zerobase.foodlier.module.request.domain.model.Request;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -25,7 +28,6 @@ import java.util.Arrays;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
 
 @ExtendWith(MockitoExtension.class)
@@ -37,7 +39,7 @@ class NotificationServiceTest {
 
     @BeforeEach
     void setup() {
-        notificationService = new NotificationServiceImpl(notificationRepository);
+        notificationService = new NotificationService(notificationRepository);
     }
 
     @Test
@@ -49,35 +51,43 @@ class NotificationServiceTest {
                 .id(1L)
                 .nickname("nickname")
                 .build();
-        LocalDateTime now = LocalDateTime.now();
+        ChefMember chefMember = ChefMember.builder()
+                .member(Member.builder()
+                        .nickname("셰프")
+                        .build())
+                .build();
+        Request request = Request.builder()
+                .title("제육볶음")
+                .member(member)
+                .chefMember(chefMember)
+                .id(1L)
+                .build();
+
         Notification expected = Notification.builder()
                 .id(1L)
-                .content(NotifyMessage.MESSAGE_TO_CHEF.createMessage("맛있는 제육볶음을 만들어주세요",
-                        member.getNickname(),
-                        ActionType.SEND.getKorean()))
+                .content("요청자 nickname 님이 제육볶음 요청을 보내셨습니다")
                 .notificationType(NotificationType.REQUEST)
                 .isRead(false)
-                .url(NotifyUrl.REQUEST.createUrl(1L))
-                .sendAt(now)
+
+                .sendAt(LocalDateTime.now())
                 .build();
 
         given(notificationRepository.save(any()))
                 .willReturn(expected);
-
+        RequesterNotify notify = RequesterNotify.from(request,
+                NotifyInfoDto.builder()
+                        .notificationType(NotificationType.REQUEST)
+                        .performerType(PerformerType.REQUESTER)
+                        .actionType(ActionType.SEND_RECIPE_REQUEST)
+                        .build());
         // when
-        Notification notification = notificationService.create(member,
-                NotificationType.REQUEST,
-                NotifyMessage.MESSAGE_TO_CHEF.createMessage("맛있는 제육볶음을 만들어주세요",
-                        member.getNickname(),
-                        ActionType.SEND.getKorean()),
-                NotifyUrl.REQUEST.createUrl(1L));
+        Notification notification = notificationService.create(notify);
 
         // then
         assertEquals(expected.getId(), notification.getId());
         assertEquals(expected.getMember(), notification.getMember());
         assertEquals(expected.getNotificationType(), notification.getNotificationType());
         assertEquals(expected.getContent(), notification.getContent());
-        assertEquals(expected.getUrl(), notification.getUrl());
         assertEquals(expected.getSendAt(), notification.getSendAt());
     }
 
@@ -88,7 +98,7 @@ class NotificationServiceTest {
         // given
         ArrayList<NotificationDto> expectedNotification = makeExpectedNotificationList();
 
-        given(notificationRepository.findNotificationBy(anyLong(), any()))
+        given(notificationRepository.findNotificationBy(any(), any()))
                 .willReturn(new PageImpl<>(new ArrayList<>(expectedNotification)));
 
         // when
@@ -101,8 +111,6 @@ class NotificationServiceTest {
                         notificationBy.getContent().get(0).getId()),
                 () -> assertEquals(expectedNotification.get(0).getNotificationType(),
                         notificationBy.getContent().get(0).getNotificationType()),
-                () -> assertEquals(expectedNotification.get(0).getUrl(),
-                        notificationBy.getContent().get(0).getUrl()),
                 () -> assertEquals(expectedNotification.get(0).getContent(),
                         notificationBy.getContent().get(0).getContent()),
                 () -> assertEquals(expectedNotification.get(0).getSentAt(),
@@ -113,8 +121,6 @@ class NotificationServiceTest {
                         notificationBy.getContent().get(1).getId()),
                 () -> assertEquals(expectedNotification.get(1).getNotificationType(),
                         notificationBy.getContent().get(1).getNotificationType()),
-                () -> assertEquals(expectedNotification.get(1).getUrl(),
-                        notificationBy.getContent().get(1).getUrl()),
                 () -> assertEquals(expectedNotification.get(1).getContent(),
                         notificationBy.getContent().get(1).getContent()),
                 () -> assertEquals(expectedNotification.get(1).getSentAt(),
@@ -125,31 +131,20 @@ class NotificationServiceTest {
 
 
     private static ArrayList<NotificationDto> makeExpectedNotificationList() {
-        Member member = Member.builder()
-                .id(1L)
-                .nickname("제육볶음 러버")
-                .build();
-
         return new ArrayList<>(Arrays.asList(
                 NotificationDto.builder()
                         .id(2L)
                         .sentAt(LocalDateTime.now())
-                        .url(NotifyUrl.REQUEST.createUrl(1L))
                         .isRead(false)
                         .notificationType(NotificationType.REQUEST)
-                        .content(NotifyMessage.MESSAGE_TO_CHEF.createMessage("맛있는 제육볶음을 만들어주세요",
-                                "세체요",
-                                ActionType.APPROVE.getKorean()))
+                        .content("")
                         .build(),
                 NotificationDto.builder()
                         .id(1L)
                         .sentAt(LocalDateTime.now().minusMinutes(30L))
-                        .url(NotifyUrl.REQUEST.createUrl(1L))
                         .isRead(false)
                         .notificationType(NotificationType.REQUEST)
-                        .content(NotifyMessage.MESSAGE_TO_CHEF.createMessage("맛있는 제육볶음을 만들어주세요",
-                                member.getNickname(),
-                                ActionType.SEND.getKorean()))
+                        .content("")
                         .build()
         ));
     }

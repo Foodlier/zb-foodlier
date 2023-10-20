@@ -3,7 +3,10 @@ package com.zerobase.foodlier.global.quotation.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.zerobase.foodlier.common.response.ListResponse;
 import com.zerobase.foodlier.common.security.config.SecurityConfig;
+import com.zerobase.foodlier.global.notification.facade.NotificationFacade;
 import com.zerobase.foodlier.global.quotation.facade.QuotationFacade;
+import com.zerobase.foodlier.module.member.chef.domain.model.ChefMember;
+import com.zerobase.foodlier.module.member.member.domain.model.Member;
 import com.zerobase.foodlier.module.recipe.domain.type.Difficulty;
 import com.zerobase.foodlier.module.recipe.dto.quotation.QuotationDtoRequest;
 import com.zerobase.foodlier.module.recipe.dto.quotation.QuotationTopResponse;
@@ -12,6 +15,7 @@ import com.zerobase.foodlier.module.recipe.dto.recipe.RecipeDtoRequest;
 import com.zerobase.foodlier.module.recipe.dto.recipe.RecipeIngredientDto;
 import com.zerobase.foodlier.module.recipe.service.quotation.QuotationService;
 import com.zerobase.foodlier.mockuser.WithCustomMockUser;
+import com.zerobase.foodlier.module.request.domain.model.Request;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -30,8 +34,7 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -46,6 +49,8 @@ class QuotationControllerTest {
 
     @MockBean
     private QuotationFacade quotationFacade;
+    @MockBean
+    private NotificationFacade notificationFacade;
 
     @Autowired
     private MockMvc mockMvc;
@@ -112,12 +117,28 @@ class QuotationControllerTest {
     @DisplayName("견적서 전송 성공")
     void success_sendQuotation() throws Exception {
         //when & then
+        given(quotationFacade.sendQuotation(anyLong(), any(), anyLong()))
+                .willReturn(Request.builder()
+                        .id(1L)
+                        .title("제육볶음")
+                        .content("초간단 제육볶음")
+                        .member(Member.builder()
+                                .nickname("요청자")
+                                .build())
+                        .chefMember(ChefMember.builder()
+                                .member(Member.builder()
+                                        .nickname("세체요")
+                                        .build())
+                                .build())
+                        .build());
+        doNothing().when(notificationFacade).send(any());
         mockMvc.perform(post("/quotation/send?quotationId=2&requestId=3").with(csrf()))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().string("견적서를 보냈습니다."));
 
         verify(quotationFacade, times(1)).sendQuotation(1L, 2L, 3L);
+        verify(notificationFacade, times(1)).send(any());
     }
 
     @Test
