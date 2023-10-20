@@ -1,4 +1,4 @@
-import axios from 'axios'
+import axios, { AxiosError } from 'axios'
 import { getCookie } from './Cookies'
 
 // TODO: Localhost 대신 EC2 주소로 변경 시 CORS 에러 발생 이슈 논의 필요
@@ -30,5 +30,21 @@ const axiosInstance = axios.create({
 //     throw axiosError
 //   }
 // }
+
+export async function postFormData(url: string, data: any) {
+  try {
+    const response = await axiosInstance.post(url, data, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+        accept: 'application/json;charset=UTF-8',
+      },
+    })
+    return response
+  } catch (error) {
+    const axiosError = error as AxiosError
+    // Handle errors here
+    throw axiosError
+  }
+}
 
 export default axiosInstance
