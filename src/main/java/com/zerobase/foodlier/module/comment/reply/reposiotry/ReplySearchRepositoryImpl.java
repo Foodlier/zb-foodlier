@@ -1,6 +1,7 @@
 package com.zerobase.foodlier.module.comment.reply.reposiotry;
 
 import com.querydsl.core.types.Projections;
+import com.querydsl.core.types.dsl.Wildcard;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.zerobase.foodlier.module.comment.comment.dto.CommentDto;
 import com.zerobase.foodlier.module.comment.comment.dto.MyPageCommentDto;
@@ -18,7 +19,7 @@ import java.util.Optional;
 
 @Repository
 @RequiredArgsConstructor
-public class ReplySearchRepositoryImpl implements ReplySearchRepository{
+public class ReplySearchRepositoryImpl implements ReplySearchRepository {
 
     private final JPAQueryFactory jpaQueryFactory;
 
@@ -42,13 +43,19 @@ public class ReplySearchRepositoryImpl implements ReplySearchRepository{
                 .from(reply)
                 .join(recipe)
                 .on(reply.comment.id.eq(commentId))
+                .orderBy(reply.createdAt.desc())
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
-                .orderBy(reply.createdAt.desc())
                 .fetch();
 
+        Long count = jpaQueryFactory.select(Wildcard.count)
+                .from(reply)
+                .join(recipe)
+                .on(reply.comment.id.eq(commentId))
+                .orderBy(reply.createdAt.desc())
+                .fetchFirst();
 
-        return new PageImpl<>(result);
+        return new PageImpl<>(result, pageable, count);
     }
 
     @Override
@@ -57,11 +64,15 @@ public class ReplySearchRepositoryImpl implements ReplySearchRepository{
 
         List<MyPageCommentDto> result = jpaQueryFactory.select(Projections.constructor(MyPageCommentDto.class, reply.comment.recipe.id, reply.message, reply.createdAt))
                 .from(reply).where(reply.member.id.eq(memberId))
+                .orderBy(reply.modifiedAt.desc())
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
-                .orderBy(reply.modifiedAt.desc())
                 .fetch();
 
-        return new PageImpl<>(result);
+        Long count = jpaQueryFactory.select(Wildcard.count)
+                .orderBy(reply.modifiedAt.desc())
+                .fetchFirst();
+
+        return new PageImpl<>(result, pageable, count);
     }
 }

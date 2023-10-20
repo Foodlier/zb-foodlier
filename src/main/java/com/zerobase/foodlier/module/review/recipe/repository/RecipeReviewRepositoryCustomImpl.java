@@ -23,6 +23,8 @@ public class RecipeReviewRepositoryCustomImpl implements RecipeReviewRepositoryC
         List<RecipeReview> content = queryFactory.selectFrom(recipeReview)
                 .where(recipeReview.recipe.id.eq(recipeId)
                         .and(recipeReview.member.id.ne(memberId)))
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
                 .fetch();
 
         Long count = queryFactory.select(Wildcard.count)
