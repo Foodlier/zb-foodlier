@@ -15,9 +15,7 @@ const SearchRecipeModal = ({
   setRecipeId,
 }: ModalWithoutButtonProps) => {
   const [recipeList, setRecipeList] = useState<RecipeListItem[]>([])
-  const [sortSelectValue, setSortSelectValue] = useState(
-    RECIPE_OPTION_MENU_LIST[0]
-  )
+  const [sortSelectValue] = useState(RECIPE_OPTION_MENU_LIST[0])
 
   const getRecipe = async () => {
     const pageIdx = 0
@@ -48,7 +46,7 @@ const SearchRecipeModal = ({
               key={item.recipeId}
               recipeItem={item}
               onClick={() => {
-                setRecipeId({ title: item.title, id: item.id })
+                setRecipeId({ title: item.title, id: item.recipeId })
                 setIsModalFalse()
               }}
             />

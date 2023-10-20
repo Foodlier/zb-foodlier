@@ -2,18 +2,9 @@ import * as S from '../../styles/slider/SliderCard.styled'
 import '../../reset.css'
 import useIcon from '../../hooks/useIcon'
 import { palette } from '../../constants/Styles'
+import { RecipeListItem } from '../../constants/Interfaces'
 
-interface RecipeList {
-  content: string
-  heart: boolean
-  heartCount: number
-  id: number
-  mainImageUrl: string
-  nickName: string
-  title: string
-}
-
-function SliderCard({ item }: { item: RecipeList }) {
+function SliderCard({ item }: { item: RecipeListItem }) {
   const { IcFavorite, IcFavoriteFill } = useIcon()
 
   return (
@@ -23,7 +14,7 @@ function SliderCard({ item }: { item: RecipeList }) {
         <S.FlexWrap>
           <S.Title>{item.title}</S.Title>
           <S.Like>
-            {item.heart ? (
+            {item.isHeart ? (
               <IcFavoriteFill size={2.5} color={palette.main} />
             ) : (
               <IcFavorite size={2.5} color={palette.textPrimary} />

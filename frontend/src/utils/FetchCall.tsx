@@ -16,20 +16,20 @@ const axiosInstance = axios.create({
   withCredentials: true,
 })
 
-// export async function reissueToken() {
-//   try {
-//     const response = await axiosInstance.post('/auth/reissue', null, {
-//       headers: {
-//         RefreshToken: `Bearer ${REFRESH_TOKEN}`,
-//       },
-//     })
-//     return response.data
-//   } catch (error) {
-//     const axiosError = error as AxiosError
-//     // Handle errors here
-//     throw axiosError
-//   }
-// }
+export async function reissueToken() {
+  try {
+    const response = await axiosInstance.post('/auth/reissue', null, {
+      headers: {
+        RefreshToken: `Bearer ${API_REFRESH_TOKEN}`,
+      },
+    })
+    return response.data
+  } catch (error) {
+    const axiosError = error as AxiosError
+    // Handle errors here
+    throw axiosError
+  }
+}
 
 export async function postFormData(url: string, data: any) {
   try {

@@ -125,12 +125,12 @@ const RequestDetailPage = () => {
               {requestValue?.mainImageUrl ? (
                 <RecipeItem
                   recipeItem={{
-                    id: 0, // 레시피 ID 필요
+                    recipeId: 0, // 레시피 ID 필요
                     title: requestValue?.recipeTitle,
                     mainImageUrl: requestValue?.mainImageUrl,
                     content: requestValue?.recipeContent,
                     heartCount: requestValue?.heartCount,
-                    heart: true,
+                    isHeart: true,
                   }}
                   onClick={() => console.log('레시피 클릭')}
                 />

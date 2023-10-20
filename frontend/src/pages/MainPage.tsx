@@ -6,7 +6,6 @@ import { palette } from '../constants/Styles'
 import useIcon from '../hooks/useIcon'
 import Header from '../components/Header'
 import BottomNavigation from '../components/BottomNavigation'
-// import WebSearch from '../components/search/WebSearch'
 import RecipeItem from '../components/recipe/RecipeItem'
 import ChefItem from '../components/chef/ChefItem'
 import ChefData from '../components/chef/ChefData'
@@ -71,7 +70,7 @@ const MainPage = () => {
             <RecipeItem
               key={recipeItem.recipeId}
               recipeItem={recipeItem}
-              onClick={() => navigateToRecipeDetail(recipeItem.id)}
+              onClick={() => navigateToRecipeDetail(recipeItem.recipeId)}
             />
           ))}
         </S.RecipeList>
