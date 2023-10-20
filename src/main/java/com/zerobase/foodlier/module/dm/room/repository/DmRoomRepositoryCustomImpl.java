@@ -50,6 +50,8 @@ public class DmRoomRepositoryCustomImpl implements DmRoomRepositoryCustom {
                         .and(Objects.requireNonNull(dmRoom.isChefExit).isFalse())
                         .or(request.member.id.eq(memberId)
                                 .and(Objects.requireNonNull(dmRoom.isMemberExit).isFalse())))
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
                 .fetch();
 
         Long count = queryFactory.select(Wildcard.count)
