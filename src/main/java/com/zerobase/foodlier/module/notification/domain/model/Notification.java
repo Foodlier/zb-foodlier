@@ -30,6 +30,7 @@ public class Notification {
     private boolean isRead;
     @CreatedDate
     private LocalDateTime sendAt;
+    private Long targetId;
 
     public void updateReadState(){
         if(this.isRead == UNREAD_STATUS){

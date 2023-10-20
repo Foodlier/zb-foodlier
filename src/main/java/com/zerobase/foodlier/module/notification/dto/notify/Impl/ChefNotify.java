@@ -12,7 +12,8 @@ import lombok.NoArgsConstructor;
 
 import java.util.List;
 
-import static com.zerobase.foodlier.module.notification.constant.MessageConstant.*;
+import static com.zerobase.foodlier.module.notification.constant.MessageConstant.DELIMITER;
+import static com.zerobase.foodlier.module.notification.constant.MessageConstant.HONORIFIC_TITLE;
 
 @Getter
 @AllArgsConstructor
@@ -52,5 +53,10 @@ public class ChefNotify implements Notify {
     @Override
     public String getReceiverEmail() {
         return this.receiver.getEmail();
+    }
+
+    @Override
+    public Long getTargetId() {
+        return this.targetSubjectId;
     }
 }

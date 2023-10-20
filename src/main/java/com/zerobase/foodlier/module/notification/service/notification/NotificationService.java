@@ -23,6 +23,7 @@ public class NotificationService {
                 .notificationType(notify.getNotificationType())
                 .content(notify.getMessage())
                 .isRead(false)
+                .targetId(notify.getTargetId())
                 .build());
     }
 

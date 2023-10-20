@@ -19,9 +19,10 @@ public class NotificationDto {
     private Long id;
     private String content;
     private NotificationType notificationType;
-    @JsonFormat(pattern = "yyyy:MM:ss'T'HH:mm:ss")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
     private LocalDateTime sentAt;
     private boolean isRead;
+    private Long targetId;
 
     public static NotificationDto from(Notification notification) {
 
@@ -31,6 +32,7 @@ public class NotificationDto {
                 .notificationType(notification.getNotificationType())
                 .sentAt(notification.getSendAt())
                 .isRead(notification.isRead())
+                .targetId(notification.getTargetId())
                 .build();
 
 

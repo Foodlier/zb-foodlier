@@ -28,7 +28,7 @@ public class NotificationRepositoryCustomImpl implements NotificationRepositoryC
         List<NotificationDto> content = jpaQueryFactory.select(
                 Projections.constructor(NotificationDto.class,
                         notification.id, notification.content, notification.notificationType,
-                        notification.sendAt, notification.isRead))
+                        notification.sendAt, notification.isRead, notification.targetId))
                 .from(notification)
                 .join(member)
                 .on(notification.member.eq(member))
