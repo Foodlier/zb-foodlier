@@ -1,4 +1,5 @@
 import styled from 'styled-components'
+import { palette } from '../../constants/Styles'
 
 export const ReviewedCard = styled.div`
   display: flex;
@@ -7,13 +8,14 @@ export const ReviewedCard = styled.div`
   padding: 20px;
   border-radius: 10px;
   box-shadow: 0px 2px 6px 2px rgba(89, 97, 104, 0.1);
+  cursor: pointer;
 `
 
 export const ReviewedImg = styled.img`
   width: 90px;
   height: 90px;
   border-radius: 10px;
-  background-color: yellow;
+  background-color: aliceblue;
 `
 
 export const ReviewedInfoContainer = styled.div`
@@ -60,4 +62,14 @@ export const ReviewedContent = styled.p`
 `
 export const ReviewedAt = styled.p`
   font-size: 1.2rem;
+`
+
+export const NoReviewedCard = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 140px;
+  border-radius: 10px;
+  color: ${palette.divider};
+  box-shadow: 0px 2px 6px 2px rgba(89, 97, 104, 0.1);
 `

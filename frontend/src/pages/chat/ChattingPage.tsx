@@ -20,7 +20,6 @@ const ChattingPage = () => {
       const res = await axiosInstance.get('/dm/room/0/10')
       if (res.status === 200) {
         console.log(res.data.content)
-
         setDmRoomList(res.data.content)
       }
     } catch (error) {

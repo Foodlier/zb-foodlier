@@ -13,10 +13,9 @@ import WriteRecipePage from './pages/recipe/WriteRecipePage'
 import RecipeDetailPage from './pages/recipe/RecipeDetailPage'
 import WriteReviewPage from './pages/recipe/WriteReviewPage'
 import ChattingPage from './pages/chat/ChattingPage'
-import MyProfilePage from './pages/user/MyProfilePage'
+import MyProfilePage from './pages/user/ProfilePage'
 import MyPage from './pages/user/MyPage'
-import DmTest2 from './pages/chat/DmTest2'
-import Point from './pages/point/point'
+import Point from './pages/point/Point'
 import Success from './pages/point/Success'
 
 function App() {
@@ -53,8 +52,7 @@ function App() {
         />
         <Route path="/chat" element={<ChattingPage />} />
         <Route path="/my" element={<MyPage />} />
-        <Route path="/myprofilepage" element={<MyProfilePage />} />
-        <Route path="/dmtest2" element={<DmTest2 />} />
+        <Route path="/profile/:id" element={<MyProfilePage />} />
         <Route path="/point" element={<Point />} />
         <Route path="/point/success" element={<Success />} />
         <Route path="/point/fail" element={<Success />} />

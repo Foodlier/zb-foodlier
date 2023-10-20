@@ -1,4 +1,16 @@
 import styled from 'styled-components'
+import { breakpoints, palette } from '../../constants/Styles'
+
+export const MyRecipeList = styled.div`
+  display: grid;
+  justify-items: center;
+  row-gap: 1rem;
+  grid-template-columns: 1fr 1fr;
+  ${breakpoints.large} {
+    row-gap: 0;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+  }
+`
 
 export const RecipeCard = styled.div`
   display: inline-block;
@@ -7,6 +19,7 @@ export const RecipeCard = styled.div`
   border-radius: 10px;
   padding: 16px;
   box-shadow: 0px 2px 6px 2px rgba(89, 97, 104, 0.1);
+  cursor: pointer;
 `
 
 export const RecipeImg = styled.img`
@@ -54,4 +67,13 @@ export const RecipeContent = styled.p`
   word-break: break-all;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 1;
+`
+export const NoRecipeCard = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 140px;
+  border-radius: 10px;
+  color: ${palette.divider};
+  box-shadow: 0px 2px 6px 2px rgba(89, 97, 104, 0.1);
 `
