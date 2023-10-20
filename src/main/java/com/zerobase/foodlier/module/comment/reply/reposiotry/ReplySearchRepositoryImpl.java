@@ -52,7 +52,6 @@ public class ReplySearchRepositoryImpl implements ReplySearchRepository {
                 .from(reply)
                 .join(recipe)
                 .on(reply.comment.id.eq(commentId))
-                .orderBy(reply.createdAt.desc())
                 .fetchFirst();
 
         return new PageImpl<>(result, pageable, count);
@@ -70,7 +69,6 @@ public class ReplySearchRepositoryImpl implements ReplySearchRepository {
                 .fetch();
 
         Long count = jpaQueryFactory.select(Wildcard.count)
-                .orderBy(reply.modifiedAt.desc())
                 .fetchFirst();
 
         return new PageImpl<>(result, pageable, count);

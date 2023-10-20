@@ -43,7 +43,6 @@ public class CommentSearchRepositoryImpl implements CommentSearchRepository {
                 .from(comment)
                 .join(recipe)
                 .on(comment.recipe.id.eq(recipeId))
-                .orderBy(comment.createdAt.desc())
                 .fetchFirst();
 
         return new PageImpl<>(result, pageable, count);
@@ -71,7 +70,6 @@ public class CommentSearchRepositoryImpl implements CommentSearchRepository {
                 .fetch();
 
         Long count = jpaQueryFactory.select(Wildcard.count)
-                .orderBy(comment.createdAt.desc())
                 .fetchFirst();
 
         return new PageImpl<>(result, pageable, count);
