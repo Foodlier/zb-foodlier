@@ -5,17 +5,18 @@ import styled from 'styled-components'
 import SliderCard from './SliderCard'
 import { palette } from '../../constants/Styles'
 
-interface Slide {
-  recipeId: string | number
+interface RecipeList {
+  content: string
+  heart: boolean
+  heartCount: number
+  id: number
+  mainImageUrl: string
+  nickName: string
   title: string
-  introduce: string
-  imagePath: string
-  likeCount: number
-  isLike: boolean
 }
 
 interface SlickSliderProps {
-  slides: Slide[]
+  slides: RecipeList[]
 }
 
 const SlickSliderContainer = styled.div`
@@ -90,17 +91,8 @@ function SlickSlider({ slides }: SlickSliderProps) {
         autoplay={settings.autoplay}
         autoplaySpeed={settings.autoplaySpeed}
       >
-        {slides.map(slide => (
-          <div key={`slide-${slide.recipeId}`}>
-            <SliderCard
-              // recipeId={slide.recipeId}
-              title={slide.title}
-              introduce={slide.introduce}
-              // likeCount={slide.likeCount}
-              // isLike={slide.isLike}
-              imagePath={slide.imagePath}
-            />
-          </div>
+        {slides.map(slideItem => (
+          <SliderCard key={slideItem.id} item={slideItem} />
         ))}
       </CustomSlider>
     </SlickSliderContainer>
