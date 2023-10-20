@@ -113,7 +113,8 @@ public class RequestFormService {
                 .addressDetail(requestForm.getMember().getAddress().getAddressDetail());
 
         if (!Objects.isNull(requestForm.getRecipe())) {
-            builder.mainImageUrl(requestForm.getRecipe().getMainImageUrl())
+            builder.recipeId(requestForm.getRecipe().getId())
+                    .mainImageUrl(requestForm.getRecipe().getMainImageUrl())
                     .recipeTitle(requestForm.getRecipe().getSummary().getTitle())
                     .recipeContent(requestForm.getRecipe().getSummary().getContent())
                     .heartCount(requestForm.getRecipe().getHeartCount());

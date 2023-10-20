@@ -68,7 +68,8 @@ public class RequestService {
                 .addressDetail(request.getMember().getAddress().getAddressDetail());
 
         if (!Objects.isNull(request.getRecipe())) {
-            builder.mainImageUrl(request.getRecipe().getMainImageUrl())
+            builder.recipeId(request.getRecipe().getId())
+                    .mainImageUrl(request.getRecipe().getMainImageUrl())
                     .recipeTitle(request.getRecipe().getSummary().getTitle())
                     .recipeContent(request.getRecipe().getSummary().getContent())
                     .heartCount(request.getRecipe().getHeartCount());

@@ -383,6 +383,7 @@ class RequestFormServiceTest {
                 () -> assertEquals(requestForm.getMember().getAddress().getRoadAddress(), requestFormDetailDto.getAddress()),
                 () -> assertEquals(requestForm.getMember().getAddress().getAddressDetail(), requestFormDetailDto.getAddressDetail()),
                 () -> assertEquals(requestForm.getMember().getAddress().getAddressDetail(), requestFormDetailDto.getAddressDetail()),
+                () -> assertEquals(requestForm.getRecipe().getId(), requestFormDetailDto.getRecipeId()),
                 () -> assertEquals(requestForm.getRecipe().getMainImageUrl(), requestFormDetailDto.getMainImageUrl()),
                 () -> assertEquals(requestForm.getRecipe().getSummary().getTitle(), requestFormDetailDto.getRecipeTitle()),
                 () -> assertEquals(requestForm.getRecipe().getSummary().getContent(), requestFormDetailDto.getRecipeContent()),
