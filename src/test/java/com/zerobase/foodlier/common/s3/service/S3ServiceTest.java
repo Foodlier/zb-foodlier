@@ -22,13 +22,13 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-class S3ServiceImplTest {
+class S3ServiceTest {
 
     @Mock
     private AmazonS3 amazonS3;
 
     @InjectMocks
-    private S3ServiceImpl s3Service;
+    private S3Service s3Service;
 
     @Test
     @DisplayName("s3 이미지 업로드 성공")
