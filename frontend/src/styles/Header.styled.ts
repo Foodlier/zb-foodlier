@@ -67,4 +67,18 @@ export const Icon = styled.button`
   margin-left: 1rem;
 `
 
+export const LoginButton = styled.button`
+  padding: 0.8rem 1.2rem;
+  background-color: ${palette.main};
+  color: white;
+  border-radius: 1rem;
+  margin-left: 1rem;
+  font-size: ${typography.mobile.desc};
+  font-weight: 600;
+
+  ${breakpoints.large} {
+    font-size: ${typography.web.desc};
+  }
+`
+
 export const Button = styled.button``

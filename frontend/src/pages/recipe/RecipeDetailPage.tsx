@@ -6,11 +6,11 @@ import BottomNavigation from '../../components/BottomNavigation'
 import DetailMainItem from '../../components/recipe/detail/DetailMain'
 import DetailIngredients from '../../components/recipe/detail/DetailIngredients'
 import DetailProcedure from '../../components/recipe/detail/DetailProcedure'
-import RecipeCommentList from '../../components/recipe/detail/comment/RecipeCommentList'
 import RecipeReviewList from '../../components/recipe/detail/review/RecipeReviewList'
 import axiosInstance from '../../utils/FetchCall'
 import { Recipe } from '../../constants/Interfaces'
 import DetailEditDelete from '../../components/recipe/detail/DetailEditDelete'
+import RecipeComment from '../../components/recipe/detail/comment/RecipeComment'
 
 export const DetailContainer = styled.div`
   width: 100%;
@@ -59,7 +59,7 @@ const RecipeDetailPage = () => {
         <DetailMainItem recipe={recipeData} />
         <DetailIngredients ingredients={recipeData?.recipeIngredientDtoList} />
         <DetailProcedure detail={recipeData?.recipeDetailDtoList} />
-        <RecipeCommentList recipeId={recipeData?.recipeId} />
+        <RecipeComment />
         <RecipeReviewList />
       </DetailContainer>
 
