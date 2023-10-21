@@ -1,5 +1,10 @@
 import styled from 'styled-components'
-import { breakpoints, palette } from '../../constants/Styles'
+import {
+  breakpoints,
+  palette,
+  typography,
+  weight,
+} from '../../constants/Styles'
 
 // 스타일드 컴포넌트
 export const Container = styled.div`
@@ -24,22 +29,11 @@ export const Info = styled.div`
   margin-bottom: 20px;
 `
 export const SubTitle = styled.span`
-  font-weight: bold;
-  font-size: 2rem;
-`
-
-export const SelectBox = styled.div`
-  width: 150px;
-  height: 100%;
-
-  box-sizing: border-box;
-  text-align: left;
-`
-
-export const SelectedBox = styled.div`
-  position: relative;
-  font-weight: bold;
-  font-size: 2rem;
+  font-weight: ${weight.subTitle};
+  font-size: ${typography.mobile.subTitle};
+  ${breakpoints.large} {
+    font-size: ${typography.web.subTitle};
+  }
 `
 
 export const OptionList = styled.ul<{ $toggle: boolean }>`
@@ -118,7 +112,7 @@ export const ChefTopInfo = styled.div`
   align-items: center;
   height: 20px;
   .nickName {
-    font-size: 20px;
+    font-size: ${typography.mobile.content};
     font-weight: bold;
   }
 `

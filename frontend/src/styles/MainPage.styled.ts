@@ -1,5 +1,5 @@
 import styled from 'styled-components'
-import { breakpoints, typography } from '../constants/Styles'
+import { breakpoints, typography, weight } from '../constants/Styles'
 
 export const SlickContainer = styled.section`
   margin-top: 3rem;
@@ -9,12 +9,12 @@ export const SlickContainer = styled.section`
 `
 
 export const Tit = styled.p`
-  font-size: ${typography.mobile.mainTitle};
-  font-weight: 800;
+  font-size: ${typography.mobile.subTitle};
+  font-weight: ${weight.subTitle};
   padding: 0 2%;
 
   ${breakpoints.large} {
-    font-size: ${typography.web.mainTitle};
+    font-size: ${typography.web.subTitle};
   }
 `
 
@@ -68,3 +68,5 @@ export const ChefList = styled.section`
   display: flex;
   margin: 2rem 1rem 0;
 `
+
+export const Button = styled.button``

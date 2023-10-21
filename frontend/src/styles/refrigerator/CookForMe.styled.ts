@@ -1,5 +1,10 @@
 import styled from 'styled-components'
-import { breakpoints, palette } from '../../constants/Styles'
+import {
+  breakpoints,
+  palette,
+  typography,
+  weight,
+} from '../../constants/Styles'
 
 export const Container = styled.div`
   padding: 2rem 2rem 10rem;
@@ -13,8 +18,12 @@ export const Info = styled.div`
 `
 export const SubTitle = styled.span`
   color: ${palette.textPrimary};
-  font-weight: 800;
-  font-size: 2rem;
+  font-weight: ${weight.subTitle};
+  font-size: ${typography.mobile.subTitle};
+
+  ${breakpoints.large} {
+    font-size: ${typography.web.subTitle};
+  }
 `
 
 export const SelectBox = styled.div`
@@ -23,13 +32,6 @@ export const SelectBox = styled.div`
   border-radius: 1rem;
   padding: 0.5rem 1rem;
   text-align: left;
-`
-
-export const SelectedBox = styled.div`
-  position: relative;
-  font-weight: bold;
-  font-size: 2rem;
-  color: ${palette.textSecondary};
 `
 
 export const OptionList = styled.ul<{ $toggle: boolean }>`
@@ -72,12 +74,8 @@ export const CardList = styled.ul`
 `
 
 export const WritingButton = styled.button`
-  width: 146px;
-  height: 44px;
-  line-height: 44px;
   color: ${palette.main};
-  border-radius: 5px;
-  font-weight: 800;
+  padding: 0 2rem;
 `
 
 export const ButtonList = styled.div`
@@ -85,18 +83,12 @@ export const ButtonList = styled.div`
   bottom: 0;
   left: 0;
   width: 100%;
-  /* background-color: ${palette.white}; */
   background-color: ${palette.white};
   display: flex;
   justify-content: flex-end;
-  /* gap: 10px; */
-  border-top: 1px solid #d9d9d9d9;
+  border-top: 1px solid ${palette.divider};
   padding: 2rem;
 
-  ${breakpoints.large} {
-    /* justify-content: end; */
-    /* padding: 10px 20px 0 0; */
-  }
   button {
     margin-bottom: 110px;
     ${breakpoints.large} {
