@@ -125,7 +125,7 @@ public class TransactionService {
 
     private static void validSendSuggestion(MemberAuthDto memberAuthDto, DmRoom dmRoom) {
         if (!Objects.equals(memberAuthDto.getId(),
-                dmRoom.getRequest().getChefMember().getId())) {
+                dmRoom.getRequest().getChefMember().getMember().getId())) {
             throw new TransactionException(CHEF_MEMBER_NOT_MATCH);
         }
         if (dmRoom.getSuggestion().getIsSuggested()) {
