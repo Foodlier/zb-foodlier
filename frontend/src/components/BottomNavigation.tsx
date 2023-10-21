@@ -33,7 +33,7 @@ const BottomNavigation = () => {
     {
       title: '내 정보',
       icon: <IcUserLight size={ICON_SIZE} color={palette.textPrimary} />,
-      navigate: 'login',
+      navigate: 'my',
     },
   ]
 
