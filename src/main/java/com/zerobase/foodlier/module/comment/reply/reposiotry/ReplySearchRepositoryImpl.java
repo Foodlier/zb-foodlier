@@ -43,6 +43,7 @@ public class ReplySearchRepositoryImpl implements ReplySearchRepository {
                 .from(reply)
                 .join(recipe)
                 .on(reply.comment.id.eq(commentId))
+                .where(reply.comment.id.eq(commentId))
                 .orderBy(reply.createdAt.desc())
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())

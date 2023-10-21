@@ -34,6 +34,7 @@ public class CommentSearchRepositoryImpl implements CommentSearchRepository {
                 .from(comment)
                 .join(recipe)
                 .on(comment.recipe.id.eq(recipeId))
+                .where(comment.recipe.id.eq(recipeId))
                 .orderBy(comment.createdAt.desc())
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
