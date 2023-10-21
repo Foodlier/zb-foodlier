@@ -1,29 +1,32 @@
 import styled from 'styled-components'
 import { breakpoints, palette, zindex } from '../../constants/Styles'
 
-export const SearchForm = styled.form`
-  padding: 10% 5%;
-  margin: 0 2rem 1rem 2rem;
+export const Container = styled.div`
+  display: flex;
+  align-items: center;
+`
+
+export const SearchForm = styled.div`
+  flex: 1;
+  margin: 0 2rem;
   position: relative;
   display: flex;
   align-items: center;
 
   ${breakpoints.large} {
-    margin: 3rem 0 3rem;
-    padding: 2.6%;
+    margin: 0;
+    padding: 1rem;
     border-radius: 1rem;
   }
 `
 
 export const SearchInput = styled.input`
-  position: absolute;
-  left: 0;
   width: 100%;
   flex: 1;
   outline: 0;
   border: 0.1rem solid ${palette.divider};
   border-radius: 1rem;
-  padding: 1.8rem 2rem;
+  padding: 1.2rem 2rem;
   box-shadow: 0.1rem 0.5rem 1.1rem ${palette.shadow};
 `
 
@@ -32,10 +35,6 @@ export const SearchButton = styled.button`
   right: 2rem;
 `
 export const DropdownContent = styled.ul`
-  /* position: fixed;
-  left: 50%;
-  transform: translateX(-50%);
-  top: 17rem; */
   z-index: ${zindex.header + 1};
   display: flex;
   flex-direction: column;

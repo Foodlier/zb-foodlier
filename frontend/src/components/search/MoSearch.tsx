@@ -1,5 +1,4 @@
 import * as S from '../../styles/search/MoSearch.styled'
-import SearchBar, { SearchResult } from './SearchBar'
 import useIcon from '../../hooks/useIcon'
 import { palette } from '../../constants/Styles'
 
@@ -14,10 +13,6 @@ function MoSearch({ setIsMoSearchOpen }: MoSearchProps) {
     setIsMoSearchOpen(false)
   }
 
-  const handleSearch = (results: SearchResult[]) => {
-    console.log(`MoSearch에서 검색 결과:`, results)
-  }
-
   return (
     <S.MoSearchContainer>
       <S.SearchHeader>
@@ -28,7 +23,7 @@ function MoSearch({ setIsMoSearchOpen }: MoSearchProps) {
           <p>검색</p>
         </S.SearchHeaderTxt>
       </S.SearchHeader>
-      <SearchBar onSearch={handleSearch} />
+      {/* <SearchBar onSearch={handleSearch} /> */}
     </S.MoSearchContainer>
   )
 }

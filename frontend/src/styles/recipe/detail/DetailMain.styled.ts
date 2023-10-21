@@ -1,5 +1,5 @@
 import styled from 'styled-components'
-import { palette, breakpoints } from '../../../constants/Styles'
+import { palette, breakpoints, typography } from '../../../constants/Styles'
 
 export const Container = styled.section`
   width: 100%;
@@ -68,7 +68,14 @@ export const ProfileImg = styled.img`
   object-fit: contain;
 `
 
-export const ProfileId = styled.div``
+export const ProfileId = styled.div`
+  font-size: ${typography.mobile.content};
+
+  ${breakpoints.large} {
+    font-size: ${typography.web.content};
+  }
+`
+
 // RightWrap
 export const RightWrap = styled.div`
   width: 100%;
@@ -83,7 +90,7 @@ export const Info = styled.div`
   border-radius: 1rem;
   border: 0.1rem solid ${palette.divider};
   box-shadow: 0.1rem 0.5rem 1.1rem ${palette.shadow};
-
+  font-size: ${typography.mobile.desc};
   padding: 1rem 5%;
   font-weight: 600;
 
@@ -97,6 +104,7 @@ export const Info = styled.div`
     background-color: ${palette.divider};
   }
   ${breakpoints.large} {
+    font-size: ${typography.web.desc};
   }
 `
 
@@ -128,10 +136,20 @@ export const MainTit = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  font-size: 2.4rem;
+  font-size: ${typography.mobile.mainTitle};
 
   & > svg {
     cursor: pointer;
   }
+
+  ${breakpoints.large} {
+    font-size: ${typography.web.mainTitle};
+  }
 `
-export const MainTxt = styled.div``
+export const MainTxt = styled.div`
+  font-size: ${typography.mobile.content};
+
+  ${breakpoints.large} {
+    font-size: ${typography.web.content};
+  }
+`

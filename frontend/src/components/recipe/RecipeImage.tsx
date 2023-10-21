@@ -1,5 +1,6 @@
+/* eslint-disable react/require-default-props */
 /* eslint-disable react/jsx-no-useless-fragment */
-import { ChangeEvent, useState } from 'react'
+import { ChangeEvent, useEffect, useState } from 'react'
 import * as S from '../../styles/recipe/RecipeImage.styled'
 import useIcon from '../../hooks/useIcon'
 
@@ -16,6 +17,7 @@ interface RecipeImageProps {
   formKey: string
   imageFile: ImageFile
   setImageFile: (value: ImageFile) => void
+  defaultUrl?: string
 }
 
 const RecipeImage = ({
@@ -24,6 +26,7 @@ const RecipeImage = ({
   formKey,
   imageFile,
   setImageFile,
+  defaultUrl,
 }: RecipeImageProps) => {
   const { IcAddRoundDuotone } = useIcon()
 
@@ -50,10 +53,16 @@ const RecipeImage = ({
     }
   }
 
+  useEffect(() => {
+    if (defaultUrl) {
+      setImageUrl(defaultUrl)
+    }
+  }, [defaultUrl])
+
   return (
     <>
       {imageUrl ? (
-        <S.Image src={imageUrl} />
+        <S.Image referrerPolicy="no-referrer" src={imageUrl} $size={size} />
       ) : (
         <>
           <S.Label htmlFor="file" $size={size}>

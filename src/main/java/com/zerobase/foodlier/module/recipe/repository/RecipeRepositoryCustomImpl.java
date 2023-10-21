@@ -95,6 +95,8 @@ public class RecipeRepositoryCustomImpl implements RecipeRepositoryCustom {
                         .and(request.isPaid.isTrue()))
                 .where(recipe.member.id.eq(memberId)
                         .and(recipe.isQuotation.isTrue()))
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
                 .fetch();
 
         Long count = queryFactory.select(Wildcard.count)

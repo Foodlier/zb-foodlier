@@ -24,6 +24,12 @@ const colorStyles = css<CommonButtonProps>`
       background-color: ${palette.divider};
       color: ${palette.textPrimary};
     `}
+    ${({ color }) =>
+    color === 'white' &&
+    css`
+      background-color: ${palette.white};
+      color: ${palette.white};
+    `}
 `
 
 const borderStyles = css<CommonButtonProps>`

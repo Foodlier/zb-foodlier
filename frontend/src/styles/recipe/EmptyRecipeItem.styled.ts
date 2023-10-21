@@ -1,5 +1,5 @@
 import styled from 'styled-components'
-import { breakpoints, palette } from '../../constants/Styles'
+import { breakpoints, palette, typography } from '../../constants/Styles'
 
 export const Container = styled.button`
   display: flex;
@@ -15,8 +15,12 @@ export const Container = styled.button`
 
 export const Title = styled.span`
   color: ${palette.textSecondary};
-  font-size: 1.4rem;
+  font-size: ${typography.mobile.content};
   margin-top: 1rem;
+
+  ${breakpoints.large} {
+    font-size: ${typography.web.content};
+  }
 `
 
 export const Image = styled.div`

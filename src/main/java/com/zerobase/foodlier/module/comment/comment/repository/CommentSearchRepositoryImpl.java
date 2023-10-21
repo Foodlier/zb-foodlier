@@ -1,6 +1,7 @@
 package com.zerobase.foodlier.module.comment.comment.repository;
 
 import com.querydsl.core.types.Projections;
+import com.querydsl.core.types.dsl.Wildcard;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.zerobase.foodlier.module.comment.comment.domain.model.Comment;
 import com.zerobase.foodlier.module.comment.comment.domain.model.QComment;
@@ -33,13 +34,18 @@ public class CommentSearchRepositoryImpl implements CommentSearchRepository {
                 .from(comment)
                 .join(recipe)
                 .on(comment.recipe.id.eq(recipeId))
+                .orderBy(comment.createdAt.desc())
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
-                .orderBy(comment.createdAt.desc())
                 .fetch();
 
+        Long count = jpaQueryFactory.select(Wildcard.count)
+                .from(comment)
+                .join(recipe)
+                .on(comment.recipe.id.eq(recipeId))
+                .fetchFirst();
 
-        return new PageImpl<>(result);
+        return new PageImpl<>(result, pageable, count);
     }
 
     @Override
@@ -63,6 +69,9 @@ public class CommentSearchRepositoryImpl implements CommentSearchRepository {
                 .orderBy(comment.createdAt.desc())
                 .fetch();
 
-        return new PageImpl<>(result);
+        Long count = jpaQueryFactory.select(Wildcard.count)
+                .fetchFirst();
+
+        return new PageImpl<>(result, pageable, count);
     }
 }

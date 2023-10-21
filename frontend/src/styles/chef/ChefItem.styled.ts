@@ -1,5 +1,5 @@
 import styled from 'styled-components'
-import { palette } from '../../constants/Styles'
+import { palette, breakpoints, typography } from '../../constants/Styles'
 
 export const Container = styled.section`
   display: flex;
@@ -19,4 +19,8 @@ export const Image = styled.img`
 export const Nickname = styled.p`
   margin-top: 1rem;
   font-weight: 600;
+  font-size: ${typography.mobile.content};
+  ${breakpoints.large} {
+    font-size: ${typography.web.content};
+  }
 `

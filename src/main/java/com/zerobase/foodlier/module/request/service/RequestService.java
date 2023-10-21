@@ -18,6 +18,7 @@ import com.zerobase.foodlier.module.requestform.exception.RequestFormException;
 import com.zerobase.foodlier.module.requestform.repository.RequestFormRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -29,6 +30,7 @@ import static com.zerobase.foodlier.module.requestform.exception.RequestFormErro
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class RequestService {
 
     private static final Long NOT_EXIST_CHEF_MEMBER_ID = -1L;
@@ -68,7 +70,8 @@ public class RequestService {
                 .addressDetail(request.getMember().getAddress().getAddressDetail());
 
         if (!Objects.isNull(request.getRecipe())) {
-            builder.mainImageUrl(request.getRecipe().getMainImageUrl())
+            builder.recipeId(request.getRecipe().getId())
+                    .mainImageUrl(request.getRecipe().getMainImageUrl())
                     .recipeTitle(request.getRecipe().getSummary().getTitle())
                     .recipeContent(request.getRecipe().getSummary().getContent())
                     .heartCount(request.getRecipe().getHeartCount());

@@ -1,5 +1,10 @@
 import styled from 'styled-components'
-import { palette, breakpoints } from '../../../constants/Styles'
+import {
+  palette,
+  breakpoints,
+  typography,
+  weight,
+} from '../../../constants/Styles'
 
 export const ProcedureContainer = styled.section`
   padding-bottom: 11rem;
@@ -11,13 +16,14 @@ export const ProcedureContainer = styled.section`
 
 export const MainTit = styled.h1`
   width: 100%;
-  font-size: 2.5rem;
-  font-weight: 800;
+  font-size: ${typography.mobile.mainTitle};
+  font-size: ${weight.mainTitle};
   padding: 0.5rem 2rem;
   margin: 2rem 0 2rem;
   border-bottom: 0.2rem solid ${palette.divider};
 
   ${breakpoints.large} {
+    font-size: ${typography.web.mainTitle};
     margin-top: 0;
   }
 `
@@ -59,4 +65,10 @@ export const ProcedureImg = styled.img`
   border-radius: inherit;
 `
 
-export const stepTxt = styled.p``
+export const stepTxt = styled.p`
+  font-size: ${typography.mobile.content};
+
+  ${breakpoints.large} {
+    font-size: ${typography.web.content};
+  }
+`

@@ -15,8 +15,14 @@ import WriteReviewPage from './pages/recipe/WriteReviewPage'
 import ChattingPage from './pages/chat/ChattingPage'
 import FindPasswordPage from './pages/auth/FindPasswordPage'
 import MyPage from './pages/user/MyPage'
+import ProfilePage from './pages/user/ProfilePage'
+import ProfileMorePage from './pages/user/ProfileMorePage'
+import Point from './pages/point/Point'
+import Success from './pages/point/Success'
 import KakaoLoginPage from './pages/auth/KakaoRedirectionPage'
 import NaverLoginPage from './pages/auth/NaverRedirectionPage'
+import MyLogPage from './pages/user/MyLogPage'
+import NotFoundPage from './pages/NotFoundPage'
 
 function App() {
   return (
@@ -48,13 +54,20 @@ function App() {
         <Route path="/refrigerator/" element={<RefrigeratorPage />} />
         <Route path="/recipe" element={<RecipePage />} />
         <Route path="/recipe/write" element={<WriteRecipePage />} />
-        <Route path="/recipe/detail" element={<RecipeDetailPage />} />
+        <Route path="/recipe/detail/:id" element={<RecipeDetailPage />} />
         <Route
           path="/recipe/detail/write-review"
           element={<WriteReviewPage />}
         />
         <Route path="/chat" element={<ChattingPage />} />
         <Route path="/my" element={<MyPage />} />
+        <Route path="/profile/:id" element={<ProfilePage />} />
+        <Route path="/profile/:id/more" element={<ProfileMorePage />} />
+        <Route path="/point" element={<Point />} />
+        <Route path="/point/success" element={<Success />} />
+        <Route path="/point/fail" element={<Success />} />
+        <Route path="/my/:category" element={<MyLogPage />} />
+        <Route path="*" element={<NotFoundPage />} />
       </Routes>
     </div>
   )

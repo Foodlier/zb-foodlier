@@ -38,11 +38,11 @@ const MyPage = () => {
     },
     {
       title: '내가 작성한 댓글',
-      navigate: '',
+      navigate: '/my/comment',
     },
     {
       title: '내가 좋아요 한 글',
-      navigate: '',
+      navigate: '/my/like',
       isMargin: true,
     },
     {

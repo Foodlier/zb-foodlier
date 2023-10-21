@@ -18,8 +18,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import javax.transaction.Transactional;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
@@ -30,6 +30,7 @@ import static com.zerobase.foodlier.module.requestform.exception.RequestFormErro
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class RequestFormService {
 
     private final RequestFormRepository requestFormRepository;
@@ -113,7 +114,8 @@ public class RequestFormService {
                 .addressDetail(requestForm.getMember().getAddress().getAddressDetail());
 
         if (!Objects.isNull(requestForm.getRecipe())) {
-            builder.mainImageUrl(requestForm.getRecipe().getMainImageUrl())
+            builder.recipeId(requestForm.getRecipe().getId())
+                    .mainImageUrl(requestForm.getRecipe().getMainImageUrl())
                     .recipeTitle(requestForm.getRecipe().getSummary().getTitle())
                     .recipeContent(requestForm.getRecipe().getSummary().getContent())
                     .heartCount(requestForm.getRecipe().getHeartCount());
