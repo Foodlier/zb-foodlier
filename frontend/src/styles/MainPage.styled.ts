@@ -1,5 +1,5 @@
 import styled from 'styled-components'
-import { breakpoints } from '../constants/Styles'
+import { breakpoints, typography } from '../constants/Styles'
 
 export const SlickContainer = styled.section`
   margin-top: 3rem;
@@ -9,12 +9,12 @@ export const SlickContainer = styled.section`
 `
 
 export const Tit = styled.p`
-  font-size: 2.5rem;
+  font-size: ${typography.mobile.mainTitle};
   font-weight: 800;
   padding: 0 2%;
 
   ${breakpoints.large} {
-    font-size: 3rem;
+    font-size: ${typography.web.mainTitle};
   }
 `
 

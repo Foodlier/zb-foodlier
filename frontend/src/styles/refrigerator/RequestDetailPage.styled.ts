@@ -49,7 +49,7 @@ export const ElementContents = styled.span`
   display: inline-block;
   margin-right: 10px;
   font-size: 20px;
-  font-weight: ${typography.fontWeight.medium};
+  font-weight: ${typography.mobile.content};
 `
 
 export const IngredientsBoxContainer = styled.div`

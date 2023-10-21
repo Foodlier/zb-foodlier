@@ -1,5 +1,5 @@
 import styled from 'styled-components'
-import { breakpoints, typographyDev } from '../../constants/Styles'
+import { breakpoints, typography } from '../../constants/Styles'
 
 export const inputStyles = `
   height: 55px;
@@ -9,10 +9,10 @@ export const inputStyles = `
   border-radius: 1rem;
   font-weight: 400;
   @media ${breakpoints.small} {
-    font-size: ${typographyDev.mobile.content};
+    font-size: ${typography.mobile.content};
   }
   @media ${breakpoints.large} {
-    font-size: ${typographyDev.web.content};
+    font-size: ${typography.web.content};
   }
 `
 
@@ -25,10 +25,10 @@ export const buttonStyles = `
   font-weight: 400;
   cursor: pointer;
   @media ${breakpoints.small} {
-    font-size: ${typographyDev.mobile.content};
+    font-size: ${typography.mobile.content};
   }
   @media ${breakpoints.large} {
-    font-size: ${typographyDev.web.content};
+    font-size: ${typography.web.content};
   }
 `
 
@@ -70,10 +70,10 @@ export const FindPassword = styled.div`
   color: #000;
   cursor: pointer;
   @media ${breakpoints.small} {
-    font-size: ${typographyDev.mobile.content};
+    font-size: ${typography.mobile.content};
   }
   @media ${breakpoints.large} {
-    font-size: ${typographyDev.web.content};
+    font-size: ${typography.web.content};
   }
 `
 
@@ -113,10 +113,10 @@ export const Text = styled.span`
   padding: 0 10px;
   color: #ccc;
   @media ${breakpoints.small} {
-    font-size: ${typographyDev.mobile.subTitle};
+    font-size: ${typography.mobile.subTitle};
   }
   @media ${breakpoints.large} {
-    font-size: ${typographyDev.web.subTitle};
+    font-size: ${typography.web.subTitle};
   }
 `
 

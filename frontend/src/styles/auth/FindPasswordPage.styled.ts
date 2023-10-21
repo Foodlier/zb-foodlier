@@ -1,6 +1,6 @@
 /* eslint-disable import/prefer-default-export */
 import styled from 'styled-components'
-import { breakpoints, typographyDev, palette } from '../../constants/Styles'
+import { breakpoints, typography, palette } from '../../constants/Styles'
 
 export const buttonStyles = `
   height: 55px;
@@ -10,10 +10,10 @@ export const buttonStyles = `
   border-radius: 1rem;
   font-weight: 400;
   @media ${breakpoints.small} {
-    font-size: ${typographyDev.mobile.content};
+    font-size: ${typography.mobile.content};
   }
   @media ${breakpoints.large} {
-    font-size: ${typographyDev.web.content};
+    font-size: ${typography.web.content};
   }
 `
 
@@ -25,10 +25,10 @@ export const inputStyles = `
   border-radius: 1rem;
   font-weight: 400;
   @media ${breakpoints.small} {
-    font-size: ${typographyDev.mobile.content};
+    font-size: ${typography.mobile.content};
   }
   @media ${breakpoints.large} {
-    font-size: ${typographyDev.web.content};
+    font-size: ${typography.web.content};
   }
 `
 
@@ -49,10 +49,10 @@ export const Title = styled.h1`
   font-weight: 600;
   margin-bottom: 50px;
   ${breakpoints.small} {
-    font-size: ${typographyDev.mobile.mainTitle};
+    font-size: ${typography.mobile.mainTitle};
   }
   ${breakpoints.large} {
-    font-size: ${typographyDev.web.mainTitle};
+    font-size: ${typography.web.mainTitle};
   }
 `
 
@@ -71,10 +71,10 @@ export const Label = styled.label`
   margin-bottom: 20px;
   text-align: left;
   ${breakpoints.small} {
-    font-size: ${typographyDev.mobile.subTitle};
+    font-size: ${typography.mobile.subTitle};
   }
   ${breakpoints.large} {
-    font-size: ${typographyDev.web.subTitle};
+    font-size: ${typography.web.subTitle};
   }
 `
 

@@ -1,5 +1,5 @@
 import styled from 'styled-components'
-import { breakpoints, palette } from '../../constants/Styles'
+import { breakpoints, palette, typography } from '../../constants/Styles'
 
 export const BoxContainer = styled.div`
   display: flex;
@@ -68,20 +68,20 @@ export const LikeButton = styled.button`
 
 export const Title = styled.h2`
   margin: 0.1rem 0;
-  font-size: 2rem;
+  font-size: ${typography.mobile.mainTitle};
   font-weight: 800;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 
   ${breakpoints.large} {
-    font-size: 3rem;
+    font-size: ${typography.web.mainTitle};
   }
 `
 
 export const Content = styled.p`
   margin: 1rem 0;
-  font-size: 1.4rem;
+  font-size: ${typography.mobile.content};
   overflow: hidden;
   text-overflow: ellipsis;
   display: -webkit-box;
@@ -92,7 +92,7 @@ export const Content = styled.p`
 
   ${breakpoints.large} {
     width: 100%;
-    font-size: 2rem;
+    font-size: ${typography.web.content};
     max-width: 45rem;
     -webkit-line-clamp: 3;
   }
