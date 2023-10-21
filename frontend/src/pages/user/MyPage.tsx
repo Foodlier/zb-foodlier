@@ -80,7 +80,7 @@ const MyPage = () => {
 
   // 프로필 조회 API
   const getMyProfile = async () => {
-    const response = await axiosInstance.get('/profile/private')
+    const response = await axiosInstance.get('/api/profile/private')
     console.log(response)
     if (response.status === 200) {
       setProfile(response.data)
@@ -95,7 +95,7 @@ const MyPage = () => {
         introduce: '잘 부탁드립니다.',
       }
       const response = await axiosInstance.post(
-        '/profile/private/registerchef',
+        '/api/profile/private/registerchef',
         body
       )
       console.log(response)

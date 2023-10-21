@@ -18,14 +18,14 @@ const QuotationDetailPage = () => {
   const [isCompleteModal, setIsCompleteModal] = useState(false)
 
   const getQuotation = async () => {
-    const { data } = await axiosInstance.get(`/quotation/${id}`)
+    const { data } = await axiosInstance.get(`/api/quotation/${id}`)
 
     setQuotationValue(data)
   }
 
   const acceptQuotation = async () => {
     const re = await axiosInstance.post(
-      `/refrigerator/requester/approve/${requestId}`
+      `/api/refrigerator/requester/approve/${requestId}`
     )
     setIsCompleteModal(true)
     setTimeout(() => {

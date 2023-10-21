@@ -38,15 +38,15 @@ const ChatRoom = ({ roomNum }: { roomNum: number | undefined }) => {
   const priceRef = useRef(0)
 
   // 로그인 구현시 TOKEN 따로 받아와야 함
-  const nowNickname = '요리사계정1'
+  const nowNickname = '김도빈테스트'
   const TOKEN =
-    'Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJybGFlaHFAZ21haWwuY29tIiwianRpIjoiMSIsInJvbGVzIjpbIlJPTEVfQ0hFRiJdLCJ0eXBlIjoiQVQiLCJpYXQiOjE3MjkwMzMwMjQsImV4cCI6MTcyOTA3NjIyNH0.H1nMVZGcjlcMwkSmjkSghz3EImVR5quDtwrRhXfSxZmASkDkR4ZHyQn6ZZN5LYWRM4Ent30WSaploceO2mb-Yg'
+    'Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJlaHFsczgxOEBuYXZlci5jb20iLCJqdGkiOiI4Iiwicm9sZXMiOlsiUk9MRV9VU0VSIl0sInR5cGUiOiJBVCIsImlhdCI6MTY5Nzg3ODY5MSwiZXhwIjoxNjk3ODgyMjkxfQ.sYYjrm-8-vzI1kS1MI3BIXxD8t3p48rHrNpkq6qaWVOMJ5BjmvBADh7SYJXDjKKh8EAkRg-H5iNvZcmbCDxfqQ'
 
   useEffect(() => {
     // 방 정보 새로 가져오기
     const getRoomInfo = async () => {
       try {
-        const res = await axiosInstance.get('/dm/room/0/10')
+        const res = await axiosInstance.get('/api/dm/room/0/10')
         if (res.status === 200) {
           const newRoomInfo = res.data.content.find(
             (item: RoomInfoInterface) => item.roomId === roomNum
@@ -62,7 +62,9 @@ const ChatRoom = ({ roomNum }: { roomNum: number | undefined }) => {
 
   useEffect(() => {
     // 채팅 환경설정
-    const socket = new SockJS('http://localhost:8080/ws')
+    const socket = new SockJS(
+      'http://ec2-15-165-55-217.ap-northeast-2.compute.amazonaws.com/ws'
+    )
     const stompClient = StompJs.over(socket)
     setStompClientstate(stompClient)
     stompClient.connect({ Authorization: TOKEN }, () => {
@@ -81,7 +83,7 @@ const ChatRoom = ({ roomNum }: { roomNum: number | undefined }) => {
     const getDmMessage = async () => {
       try {
         const res = await axiosInstance.get(
-          `/dm/message?roomId=${roomInfo?.roomId}&dmId=${lastDmNum}`
+          `/api/dm/message?roomId=${roomInfo?.roomId}&dmId=${lastDmNum}`
         )
         console.log(res)
 
@@ -180,7 +182,9 @@ const ChatRoom = ({ roomNum }: { roomNum: number | undefined }) => {
   // 채팅방 나가기
   const leaveRoom = async () => {
     try {
-      const res = await axiosInstance.put(`/dm/room/exit/${roomInfo?.roomId}`)
+      const res = await axiosInstance.put(
+        `/api/dm/room/exit/${roomInfo?.roomId}`
+      )
       if (res.status === 200) {
         console.log(res)
       }
@@ -206,7 +210,7 @@ const ChatRoom = ({ roomNum }: { roomNum: number | undefined }) => {
   const dealCancel = async () => {
     try {
       const res = await axiosInstance.post(
-        `/point/suggest/cancel/${roomInfo?.roomId}`
+        `/api/point/suggest/cancel/${roomInfo?.roomId}`
       )
       if (res.status === 200) {
         setIsSuggested(false)
