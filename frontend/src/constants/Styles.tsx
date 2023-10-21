@@ -16,22 +16,6 @@ export const palette = {
 }
 
 export const typography = {
-  // TODO : web, mobile 분기 - 최보성
-  fontSize: {
-    small: '12px',
-    medium: '14px',
-    large: '16px',
-    xLarge: '18px',
-  },
-  fontWeight: {
-    thin: 200,
-    regular: 400,
-    medium: 600,
-    bold: 800,
-  },
-}
-
-export const typographyDev = {
   web: {
     mainTitle: '2.6rem',
     subTitle: '2rem',
@@ -44,6 +28,13 @@ export const typographyDev = {
     content: '1.4rem',
     desc: '1.2rem',
   },
+}
+
+export const weight = {
+  mainTitle: 800,
+  subTitle: 600,
+  content: 400,
+  desc: 400,
 }
 
 // margin

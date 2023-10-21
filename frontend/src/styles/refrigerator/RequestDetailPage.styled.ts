@@ -1,5 +1,5 @@
 import styled from 'styled-components'
-import { breakpoints, palette, typography } from '../../constants/Styles'
+import { breakpoints, palette, weight } from '../../constants/Styles'
 
 export const RequestContainer = styled.div`
   display: flex;
@@ -49,7 +49,7 @@ export const ElementContents = styled.span`
   display: inline-block;
   margin-right: 10px;
   font-size: 20px;
-  font-weight: ${typography.fontWeight.medium};
+  font-weight: ${weight.content};
 `
 
 export const IngredientsBoxContainer = styled.div`
