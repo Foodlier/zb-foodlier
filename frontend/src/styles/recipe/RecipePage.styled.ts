@@ -5,6 +5,7 @@ export const Container = styled.div`
   position: relative;
   width: 100%;
   padding: 0 5%;
+  padding-bottom: 20rem;
 `
 
 export const WrapRecipeItem = styled.div`
@@ -15,6 +16,8 @@ export const WrapRecipeItem = styled.div`
 
   ${breakpoints.large} {
     flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: flex-start;
   }
 `
 

@@ -32,6 +32,7 @@ import static com.zerobase.foodlier.module.payment.exception.PaymentErrorCode.*;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class PaymentService {
     private final PaymentRepository paymentRepository;
     private final MemberRepository memberRepository;

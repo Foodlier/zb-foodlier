@@ -17,7 +17,7 @@ public class RequestDetailDto {
     private String content;
     private List<String> ingredientList;
     private Long expectedPrice;
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime expectedAt;
     private String address;
     private String addressDetail;

@@ -1,10 +1,10 @@
 export interface RecipeListItem {
-  id: number
+  recipeId: number
   title: string
   mainImageUrl: string
   content: string
   heartCount: number
-  heart: boolean
+  isHeart: boolean
 }
 
 export interface Recipe {
@@ -44,6 +44,7 @@ export interface Address {
 
 // 내 정보
 export interface Profile {
+  myMemberId: number
   address: Address
   email: string
   nickName: string
@@ -142,4 +143,18 @@ export interface MarkerItem {
   reviewCount: number
   introduce: string
   [key: string]: string | number
+}
+
+export interface NotiItem {
+  content: string
+  id: number
+  notificationType: string
+  read: boolean
+  sentAt: string
+}
+
+export interface Comment {
+  message: string
+  recipeId: number
+  createdAt: string
 }

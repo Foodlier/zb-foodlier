@@ -1,5 +1,5 @@
 import styled from 'styled-components'
-import { breakpoints, palette, zindex } from '../constants/Styles'
+import { breakpoints, palette, typography, zindex } from '../constants/Styles'
 
 export const Container = styled.div`
   position: fixed;
@@ -27,6 +27,6 @@ export const WrapIcon = styled.button`
 `
 
 export const Text = styled.span`
-  font-size: 1.3rem;
+  font-size: ${typography.mobile.content};
   margin-top: 0.5rem;
 `

@@ -11,7 +11,7 @@ interface DetailMainProps {
 
 const DetailMainItem = ({ recipe }: DetailMainProps) => {
   const navigate = useNavigate()
-  const { IcExpandRight, IcExportLight, IcTimeLight } = useIcon()
+  const { IcExpandRight, IcTimeLight } = useIcon()
 
   const goToProfile = () => {
     // 정확한 경로로 router 수정
@@ -54,7 +54,6 @@ const DetailMainItem = ({ recipe }: DetailMainProps) => {
           </S.Info>
           <S.MainTit>
             <h1>{recipe.title}</h1>
-            <IcExportLight size={3.5} color={palette.textSecondary} />
           </S.MainTit>
           <S.MainTxt>{recipe.content}</S.MainTxt>
         </S.RightWrap>
