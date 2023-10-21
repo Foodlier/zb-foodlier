@@ -12,6 +12,7 @@ import com.zerobase.foodlier.module.transaction.dto.TransactionDto;
 import com.zerobase.foodlier.module.transaction.exception.TransactionException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Objects;
 
@@ -20,6 +21,7 @@ import static com.zerobase.foodlier.module.transaction.exception.TransactionErro
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class TransactionService {
     private final DmRoomRepository dmRoomRepository;
 

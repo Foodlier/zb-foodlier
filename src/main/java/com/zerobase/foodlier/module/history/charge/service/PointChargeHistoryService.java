@@ -12,6 +12,7 @@ import com.zerobase.foodlier.module.payment.domain.model.Payment;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import static com.zerobase.foodlier.module.history.type.TransactionType.CHARGE_CANCEL;
 import static com.zerobase.foodlier.module.history.type.TransactionType.CHARGE_POINT;
@@ -19,6 +20,7 @@ import static com.zerobase.foodlier.module.member.member.exception.MemberErrorCo
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class PointChargeHistoryService {
     private final MemberRepository memberRepository;
     private final PointChargeHistoryRepository pointChargeHistoryRepository;

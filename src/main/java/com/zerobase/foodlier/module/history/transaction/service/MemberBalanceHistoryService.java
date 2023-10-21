@@ -12,6 +12,7 @@ import com.zerobase.foodlier.module.transaction.dto.TransactionDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import static com.zerobase.foodlier.module.history.type.TransactionType.POINT_RECEIVE;
 import static com.zerobase.foodlier.module.history.type.TransactionType.POINT_SEND;
@@ -19,6 +20,7 @@ import static com.zerobase.foodlier.module.member.member.exception.MemberErrorCo
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class MemberBalanceHistoryService {
     private final MemberBalanceHistoryRepository memberBalanceHistoryRepository;
     private final MemberRepository memberRepository;
