@@ -19,7 +19,7 @@ public class StompChatController {
     private final SimpMessagingTemplate template;
 
     @MessageMapping(value = "/message/{roomId}")
-    public void message(MessagePubDto message) throws InterruptedException, ExecutionException {
+    public void createMessage(MessagePubDto message) throws InterruptedException, ExecutionException {
         CompletableFuture<MessageSubDto> messageSubDto = dmService.createDm(message);
         template.convertAndSend("/sub/message/" + messageSubDto.get().getRoomId(),
                 messageSubDto.get());

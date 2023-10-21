@@ -165,6 +165,7 @@ class RequestServiceTest {
                     () -> assertEquals(requester.getAddress().getRoadAddress(), response.getAddress()),
                     () -> assertEquals(requester.getAddress().getAddressDetail(), response.getAddressDetail()),
                     () -> assertEquals(requester.getAddress().getAddressDetail(), response.getAddressDetail()),
+                    () -> assertEquals(recipe.getId(), response.getRecipeId()),
                     () -> assertEquals(recipe.getMainImageUrl(), response.getMainImageUrl()),
                     () -> assertEquals(recipe.getSummary().getTitle(), response.getRecipeTitle()),
                     () -> assertEquals(recipe.getSummary().getContent(), response.getRecipeContent()),

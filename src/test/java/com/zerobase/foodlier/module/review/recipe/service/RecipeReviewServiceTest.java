@@ -538,10 +538,7 @@ class RecipeReviewServiceTest {
                 .createdAt(LocalDateTime.now())
                 .build();
 
-        given(memberRepository.findById(anyLong()))
-                .willReturn(Optional.of(Member.builder().build()));
-
-        given(recipeReviewRepository.findByMemberOrderByCreatedAtDesc(any(), any()))
+        given(recipeReviewRepository.findByRecipeReviewForRecipeWriter(anyLong(), any()))
                 .willReturn(new PageImpl<>(List.of(recipeReview)));
 
         //when
@@ -563,22 +560,5 @@ class RecipeReviewServiceTest {
 
     }
 
-    @Test
-    @DisplayName("공개 프로필 꿀조합 후기 조회 실패 - 회원 X")
-    void fail_getRecipeReviewForProfile(){
-
-        //given
-        given(memberRepository.findById(anyLong()))
-                .willReturn(Optional.empty());
-
-        //when
-        MemberException exception = assertThrows(MemberException.class,
-                () -> recipeReviewService
-                        .getRecipeReviewForProfile(1L,
-                                PageRequest.of(0, 10)));
-
-        //then
-        assertEquals(MEMBER_NOT_FOUND, exception.getErrorCode());
-    }
 
 }
