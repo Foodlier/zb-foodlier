@@ -33,7 +33,7 @@ public class CommentSearchRepositoryImpl implements CommentSearchRepository {
                         comment.member.nickname, comment.member.profileUrl, comment.member.id))
                 .from(comment)
                 .join(recipe)
-                .on(comment.recipe.id.eq(recipeId))
+                .on(recipe.id.eq(recipeId))
                 .where(comment.recipe.id.eq(recipeId))
                 .orderBy(comment.createdAt.desc())
                 .offset(pageable.getOffset())
@@ -43,7 +43,7 @@ public class CommentSearchRepositoryImpl implements CommentSearchRepository {
         Long count = jpaQueryFactory.select(Wildcard.count)
                 .from(comment)
                 .join(recipe)
-                .on(comment.recipe.id.eq(recipeId))
+                .on(recipe.id.eq(recipeId))
                 .fetchFirst();
 
         return new PageImpl<>(result, pageable, count);
