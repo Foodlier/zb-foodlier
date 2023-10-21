@@ -3,8 +3,8 @@
 /* eslint-disable react/no-array-index-key */
 import { useEffect, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
-import 'react-datepicker/dist/react-datepicker.css'
 import { ko } from 'date-fns/esm/locale' // 한국어 설정
+import 'react-datepicker/dist/react-datepicker.css'
 
 import Header from '../../components/Header'
 import BottomNavigation from '../../components/BottomNavigation'
