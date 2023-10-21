@@ -70,6 +70,8 @@ public class ReplySearchRepositoryImpl implements ReplySearchRepository {
                 .fetch();
 
         Long count = jpaQueryFactory.select(Wildcard.count)
+                .from(reply)
+                .where(reply.member.id.eq(memberId))
                 .fetchFirst();
 
         return new PageImpl<>(result, pageable, count);

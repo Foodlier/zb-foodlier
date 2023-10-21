@@ -7,6 +7,7 @@ import com.zerobase.foodlier.module.comment.comment.domain.model.Comment;
 import com.zerobase.foodlier.module.comment.comment.domain.model.QComment;
 import com.zerobase.foodlier.module.comment.comment.dto.CommentDto;
 import com.zerobase.foodlier.module.comment.comment.dto.MyPageCommentDto;
+import com.zerobase.foodlier.module.member.member.domain.model.QMember;
 import com.zerobase.foodlier.module.recipe.domain.model.QRecipe;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -62,15 +63,17 @@ public class CommentSearchRepositoryImpl implements CommentSearchRepository {
     @Override
     public Page<MyPageCommentDto> findMyCommentList(Long memberId, Pageable pageable) {
         QComment comment = QComment.comment;
-
         List<MyPageCommentDto> result = jpaQueryFactory.select(Projections.constructor(MyPageCommentDto.class, comment.recipe.id, comment.message, comment.createdAt))
-                .from(comment).where(comment.member.id.eq(memberId))
+                .from(comment)
+                .where(comment.member.id.eq(memberId))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .orderBy(comment.createdAt.desc())
                 .fetch();
 
         Long count = jpaQueryFactory.select(Wildcard.count)
+                .from(comment)
+                .where(comment.member.id.eq(memberId))
                 .fetchFirst();
 
         return new PageImpl<>(result, pageable, count);
