@@ -124,7 +124,6 @@ public class DmControllerTest {
     @WithCustomMockUser
     void success_get_dm_list() throws Exception {
         //given
-        long id = 1L;
         long roomId = 3L;
         long dmId = 2L;
 
@@ -150,7 +149,7 @@ public class DmControllerTest {
                 .messageList(new ArrayList<>(List.of(messageSubDto1, messageSubDto2)))
                 .build();
 
-        given(dmService.getDmList(id, roomId, dmId))
+        given(dmService.getDmList(roomId, dmId))
                 .willReturn(messageResponseDto);
 
         //when
