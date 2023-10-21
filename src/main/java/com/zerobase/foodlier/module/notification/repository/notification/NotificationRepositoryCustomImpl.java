@@ -1,6 +1,7 @@
 package com.zerobase.foodlier.module.notification.repository.notification;
 
 import com.querydsl.core.types.Projections;
+import com.querydsl.core.types.dsl.Wildcard;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.zerobase.foodlier.module.member.member.domain.model.QMember;
 import com.zerobase.foodlier.module.notification.domain.model.Notification;
@@ -17,26 +18,35 @@ import java.util.Optional;
 
 @Repository
 @RequiredArgsConstructor
-public class NotificationRepositoryCustomImpl implements NotificationRepositoryCustom{
+public class NotificationRepositoryCustomImpl implements NotificationRepositoryCustom {
     private static final boolean NOT_READ = false;
     private final JPAQueryFactory jpaQueryFactory;
+
     @Override
     public Page<NotificationDto> findNotificationBy(Long memberId, Pageable pageable) {
         QNotification notification = QNotification.notification;
         QMember member = QMember.member;
 
         List<NotificationDto> content = jpaQueryFactory.select(
-                Projections.constructor(NotificationDto.class,
-                        notification.id, notification.content, notification.notificationType,
-                        notification.sendAt, notification.isRead, notification.targetId))
+                        Projections.constructor(NotificationDto.class,
+                                notification.id, notification.content, notification.notificationType,
+                                notification.sendAt, notification.isRead, notification.targetId))
                 .from(notification)
                 .join(member)
-                .on(notification.member.eq(member))
+                .on(member.id.eq(memberId))
+                .where(notification.member.id.eq(memberId))
                 .orderBy(notification.sendAt.desc())
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
-        return new PageImpl<>(content);
+
+        Long count = jpaQueryFactory.select(Wildcard.count)
+                .from(notification)
+                .join(member)
+                .on(notification.member.eq(member))
+                .fetchFirst();
+
+        return new PageImpl<>(content, pageable, count);
     }
 
     @Override

@@ -49,15 +49,17 @@ public class MemberRepositoryCustomImpl implements MemberRepositoryCustom {
                 .on(request.chefMember.id.eq(chefMember.id)
                         .and(request.isPaid.isFalse())
                         .and(request.dmRoom.isNull()
-                        .and(request.isFinished.isFalse())))
+                                .and(request.isFinished.isFalse())))
                 .join(member)
                 .on(request.member.id.eq(member.id))
                 .leftJoin(recipe)
                 .on(request.recipe.id.eq(recipe.id)
                         .and(request.recipe.isNull()
-                        .or(request.recipe.isQuotation.isTrue())))
+                                .or(request.recipe.isQuotation.isTrue())))
                 .where(chefMember.id.eq(chefMemberId))
                 .orderBy(orderBy.asc())
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
                 .fetch();
 
         Long count = queryFactory.select(Wildcard.count)
@@ -66,7 +68,7 @@ public class MemberRepositoryCustomImpl implements MemberRepositoryCustom {
                 .on(request.chefMember.id.eq(chefMember.id)
                         .and(request.isPaid.isFalse())
                         .and(request.dmRoom.isNull()
-                        .and(request.isFinished.isFalse())))
+                                .and(request.isFinished.isFalse())))
                 .join(member)
                 .on(request.member.id.eq(member.id))
                 .leftJoin(recipe)
@@ -98,6 +100,6 @@ public class MemberRepositoryCustomImpl implements MemberRepositoryCustom {
                         .and(recipe.isDeleted.isFalse()))
                 .where(member.id.eq(memberId))
                 .groupBy(member.id, member.nickname, member.profileUrl, chefMember.id)
-                .fetchFirst();
+                .fetchOne();
     }
 }

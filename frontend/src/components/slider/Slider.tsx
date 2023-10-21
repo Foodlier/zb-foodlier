@@ -4,18 +4,10 @@ import 'slick-carousel/slick/slick-theme.css'
 import styled from 'styled-components'
 import SliderCard from './SliderCard'
 import { palette } from '../../constants/Styles'
-
-interface Slide {
-  recipeId: string | number
-  title: string
-  introduce: string
-  imagePath: string
-  likeCount: number
-  isLike: boolean
-}
+import { RecipeListItem } from '../../constants/Interfaces'
 
 interface SlickSliderProps {
-  slides: Slide[]
+  slides: RecipeListItem[]
 }
 
 const SlickSliderContainer = styled.div`
@@ -90,17 +82,8 @@ function SlickSlider({ slides }: SlickSliderProps) {
         autoplay={settings.autoplay}
         autoplaySpeed={settings.autoplaySpeed}
       >
-        {slides.map(slide => (
-          <div key={`slide-${slide.recipeId}`}>
-            <SliderCard
-              // recipeId={slide.recipeId}
-              title={slide.title}
-              introduce={slide.introduce}
-              // likeCount={slide.likeCount}
-              // isLike={slide.isLike}
-              imagePath={slide.imagePath}
-            />
-          </div>
+        {slides.map(slideItem => (
+          <SliderCard key={slideItem.recipeId} item={slideItem} />
         ))}
       </CustomSlider>
     </SlickSliderContainer>

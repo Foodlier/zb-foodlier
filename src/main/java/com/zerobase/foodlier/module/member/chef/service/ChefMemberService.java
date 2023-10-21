@@ -18,8 +18,8 @@ import com.zerobase.foodlier.module.recipe.repository.RecipeRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import javax.transaction.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -27,6 +27,7 @@ import static com.zerobase.foodlier.module.member.chef.exception.ChefMemberError
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class ChefMemberService {
 
     private static final int EXPERIENCE_MULTIPLIER = 100; //경험치 배수

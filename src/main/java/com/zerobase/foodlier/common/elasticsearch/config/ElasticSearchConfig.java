@@ -1,7 +1,6 @@
 package com.zerobase.foodlier.common.elasticsearch.config;
 
 import com.zerobase.foodlier.module.recipe.repository.RecipeSearchRepository;
-import lombok.RequiredArgsConstructor;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -13,7 +12,6 @@ import org.springframework.data.elasticsearch.core.ElasticsearchRestTemplate;
 import org.springframework.data.elasticsearch.repository.config.EnableElasticsearchRepositories;
 
 @Configuration
-@RequiredArgsConstructor
 @EnableElasticsearchRepositories(basePackageClasses = RecipeSearchRepository.class)
 public class ElasticSearchConfig extends AbstractElasticsearchConfiguration {
 
@@ -31,9 +29,9 @@ public class ElasticSearchConfig extends AbstractElasticsearchConfiguration {
     public RestHighLevelClient elasticsearchClient() {
 
         final ClientConfiguration clientConfiguration = ClientConfiguration.builder()
-                        .connectedTo(connection)
-                        .withBasicAuth(username, password)
-                        .build();
+                .connectedTo(connection)
+                .withBasicAuth(username, password)
+                .build();
 
         return RestClients.create(clientConfiguration).rest();
     }

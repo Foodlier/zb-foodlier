@@ -1,5 +1,5 @@
 import styled from 'styled-components'
-import { palette, breakpoints, typographyDev } from '../../constants/Styles'
+import { palette, breakpoints, typography } from '../../constants/Styles'
 
 // 회원가입 페이지 스타일 컴포넌트
 const inputStyles = `
@@ -10,10 +10,10 @@ const inputStyles = `
   border-radius: 1rem;
   font-weight: 400;
   ${breakpoints.small} {
-    font-size: ${typographyDev.mobile.content};
+    font-size: ${typography.mobile.content};
   }
   ${breakpoints.large} {
-    font-size: ${typographyDev.web.content};
+    font-size: ${typography.web.content};
   }
 `
 
@@ -25,10 +25,10 @@ const buttonStyles = `
   border-radius: 1rem;
   cursor: pointer;
   ${breakpoints.small} {
-    font-size: ${typographyDev.mobile.content};
+    font-size: ${typography.mobile.content};
   }
   ${breakpoints.large} {
-    font-size: ${typographyDev.web.content};
+    font-size: ${typography.web.content};
   }
 `
 
@@ -84,10 +84,10 @@ export const InputInfo = styled.span`
 export const Title = styled.h1`
   margin-bottom: 10px;
   ${breakpoints.small} {
-    font-size: ${typographyDev.mobile.mainTitle};
+    font-size: ${typography.mobile.mainTitle};
   }
   ${breakpoints.large} {
-    font-size: ${typographyDev.web.mainTitle};
+    font-size: ${typography.web.mainTitle};
   }
 `
 
@@ -134,10 +134,10 @@ export const ConfirmButton = styled.button`
   color: #fff;
   margin: 0 auto;
   ${breakpoints.small} {
-    font-size: ${typographyDev.mobile.subTitle};
+    font-size: ${typography.mobile.subTitle};
   }
   ${breakpoints.large} {
-    font-size: ${typographyDev.web.subTitle};
+    font-size: ${typography.web.subTitle};
   }
 `
 
@@ -149,10 +149,10 @@ export const DisabledButton = styled.button`
   color: #fff;
   margin: 0 auto;
   ${breakpoints.small} {
-    font-size: ${typographyDev.mobile.subTitle};
+    font-size: ${typography.mobile.subTitle};
   }
   ${breakpoints.large} {
-    font-size: ${typographyDev.web.subTitle};
+    font-size: ${typography.web.subTitle};
   }
 `
 

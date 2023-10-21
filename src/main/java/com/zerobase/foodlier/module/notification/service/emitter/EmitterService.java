@@ -36,8 +36,8 @@ public class EmitterService {
                     .name(EVENT_NAME)
                     .data(data));
         } catch (IOException exception) {
-            emitter.complete();
             emitterRepository.deleteById(emitterId);
+            emitter.complete();
             throw new NotificationException(NotificationErrorCode.NO_SUCH_EMITTER);
         }
     }

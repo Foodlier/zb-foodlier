@@ -6,4 +6,6 @@ import org.springframework.data.domain.Pageable;
 
 public interface RecipeReviewRepositoryCustom {
     Page<RecipeReview> findRecipe(Long recipeId, Long memberId, Pageable pageable);
+
+    Page<RecipeReview> findByRecipeReviewForRecipeWriter(Long memberId, Pageable pageable);
 }

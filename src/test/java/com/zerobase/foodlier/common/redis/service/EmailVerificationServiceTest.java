@@ -23,13 +23,13 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
-class EmailVerificationServiceImplTest {
+class EmailVerificationServiceTest {
 
     @Mock
     private EmailVerificationRepository emailVerificationRepository;
 
     @InjectMocks
-    private EmailVerificationServiceImpl emailVerificationService;
+    private EmailVerificationService emailVerificationService;
 
     //====================== SUCCESS CASES ====================================
     @Test

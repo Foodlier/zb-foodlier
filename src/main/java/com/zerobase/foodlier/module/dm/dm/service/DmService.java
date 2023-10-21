@@ -17,6 +17,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -29,6 +30,7 @@ import static com.zerobase.foodlier.module.dm.room.exception.DmRoomErrorCode.DM_
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class DmService {
 
     private final DmRepository dmRepository;

@@ -1,5 +1,11 @@
 import styled from 'styled-components'
-import { breakpoints, palette, zindex } from '../../constants/Styles'
+import {
+  breakpoints,
+  palette,
+  typography,
+  weight,
+  zindex,
+} from '../../constants/Styles'
 
 export const GreyBackground = styled.div`
   position: fixed;
@@ -39,16 +45,15 @@ export const ModalHeader = styled.div`
   display: flex;
   justify-content: space-between;
   margin-bottom: 20px;
-  span,
-  button {
-    font-size: 2rem;
-    font-weight: bold;
-  }
 `
 
 export const ModalTitle = styled.span`
-  font-size: 2rem;
-  font-weight: bold;
+  font-size: ${typography.mobile.subTitle};
+  font-weight: ${weight.subTitle};
+
+  ${breakpoints.large} {
+    font-size: ${typography.web.subTitle};
+  }
 `
 
 export const CloseButton = styled.button``
@@ -81,15 +86,7 @@ export const ElImg = styled.img`
   height: 70px;
   background-color: yellowgreen;
 `
-export const ElTitle = styled.p`
-  font-size: 1.8rem;
-  font-weight: bold;
-  display: -webkit-box;
-  overflow: hidden;
-  word-break: break-all;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 1;
-`
+
 export const ElContents = styled.p`
   display: -webkit-box;
   overflow: hidden;

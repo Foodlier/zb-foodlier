@@ -1,9 +1,10 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable import/no-extraneous-dependencies */
 /* eslint-disable react/no-array-index-key */
 import { useEffect, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
-import 'react-datepicker/dist/react-datepicker.css'
 import { ko } from 'date-fns/esm/locale' // 한국어 설정
+import 'react-datepicker/dist/react-datepicker.css'
 
 import Header from '../../components/Header'
 import BottomNavigation from '../../components/BottomNavigation'
@@ -12,6 +13,7 @@ import axiosInstance from '../../utils/FetchCall'
 import { palette } from '../../constants/Styles'
 import useIcon from '../../hooks/useIcon'
 import ModalWithoutButton from '../../components/ui/ModalWithoutButton'
+import SearchRecipeModal from '../../components/refrigerator/SearchRecipeModal'
 
 interface RequestValue {
   title: string
@@ -30,6 +32,7 @@ const WriteRequestPage = () => {
 
   const isEdit = Boolean(requestFormId)
   const [isCompleteModal, setIsCompleteModal] = useState(false)
+  const [isSearchModal, setIsSearchModal] = useState(false)
   const [completeContent, setIsCompleteContent] = useState('')
   const [selectedDate, setSelectedDate] = useState<Date | null>(new Date())
   const [errorValue, setErrorValue] = useState({
@@ -46,6 +49,7 @@ const WriteRequestPage = () => {
     expectedAt: new Date(),
     recipeId: 0,
   })
+  const [recipeId, setRecipeId] = useState({ title: '', id: 0 })
 
   // 재료 개수 추가하는 함수
   const ingredientPlus = (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -109,14 +113,15 @@ const WriteRequestPage = () => {
 
     const validations = [
       {
-        condition: !requestValue.title,
+        condition:
+          requestValue.title.length < 2 || requestValue.title.length > 20,
         key: 'title',
-        message: '제목을 입력해주세요.',
+        message: '제목을  2자 이상, 20자 이하로 입력해주세요.',
       },
       {
-        condition: !requestValue.content,
+        condition: requestValue.content.length < 2,
         key: 'content',
-        message: '내용을 입력해주세요.',
+        message: '내용을 2자 이상 입력해주세요.',
       },
       {
         condition: !requestValue.ingredientList.some(
@@ -126,9 +131,9 @@ const WriteRequestPage = () => {
         message: '재료를 입력해주세요.',
       },
       {
-        condition: !requestValue.expectedPrice,
+        condition: requestValue.expectedPrice < 100,
         key: 'expectedPrice',
-        message: '가격을 입력해주세요.',
+        message: '가격을 100원 이상 입력해주세요.',
       },
     ]
 
@@ -161,8 +166,9 @@ const WriteRequestPage = () => {
       ingredientList: data.ingredientList,
       expectedPrice: data.expectedPrice,
       expectedAt: new Date(data.expectedAt),
-      recipeId: 0,
+      recipeId: data.recipeId,
     })
+    setRecipeId({ id: data.recipeId, title: data.recipeTitle })
     setSelectedDate(new Date(data.expectedAt))
   }
 
@@ -253,7 +259,6 @@ const WriteRequestPage = () => {
                 minDate={new Date()}
                 selected={selectedDate}
                 onChange={date => {
-                  console.log(date)
                   setSelectedDate(date)
                   if (date) {
                     setRequestValue({
@@ -268,8 +273,18 @@ const WriteRequestPage = () => {
             <S.WrapForm>
               <S.Title>게시물 검색</S.Title>
               <S.FlexWrap>
-                <S.Input type="button" $width={30} />
-                <S.SearchButton type="button">게시물 검색</S.SearchButton>
+                <S.Input
+                  type="text"
+                  value={recipeId.title}
+                  readOnly
+                  $width={30}
+                />
+                <S.SearchButton
+                  type="button"
+                  onClick={() => setIsSearchModal(true)}
+                >
+                  게시물 검색
+                </S.SearchButton>
               </S.FlexWrap>
             </S.WrapForm>
           </S.RequestFormList>
@@ -289,6 +304,13 @@ const WriteRequestPage = () => {
         <ModalWithoutButton
           content={completeContent}
           setIsModalFalse={() => setIsCompleteModal(false)}
+        />
+      )}
+
+      {isSearchModal && (
+        <SearchRecipeModal
+          setIsModalFalse={() => setIsSearchModal(false)}
+          setRecipeId={setRecipeId}
         />
       )}
 

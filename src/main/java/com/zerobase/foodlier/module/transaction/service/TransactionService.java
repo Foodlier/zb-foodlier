@@ -12,6 +12,7 @@ import com.zerobase.foodlier.module.transaction.dto.TransactionDto;
 import com.zerobase.foodlier.module.transaction.exception.TransactionException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Objects;
 
@@ -20,6 +21,7 @@ import static com.zerobase.foodlier.module.transaction.exception.TransactionErro
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class TransactionService {
     private final DmRoomRepository dmRoomRepository;
 
@@ -123,7 +125,7 @@ public class TransactionService {
 
     private static void validSendSuggestion(MemberAuthDto memberAuthDto, DmRoom dmRoom) {
         if (!Objects.equals(memberAuthDto.getId(),
-                dmRoom.getRequest().getChefMember().getId())) {
+                dmRoom.getRequest().getChefMember().getMember().getId())) {
             throw new TransactionException(CHEF_MEMBER_NOT_MATCH);
         }
         if (dmRoom.getSuggestion().getIsSuggested()) {
