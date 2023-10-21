@@ -15,7 +15,7 @@ const Login = () => {
   const navigate = useNavigate()
   // TODO : env 파일로 옮기기
   const REST_API_KEY = '316fd79d7772bc7314aae06a9013ff8a'
-  const REDIRECT_URI = 'http://localhost:5173/naver/callback'
+  const REDIRECT_URI = 'http://localhost:5173/kakao/callback'
   const KAKAO_AUTH_URI = `https://kauth.kakao.com/oauth/authorize?client_id=${REST_API_KEY}&redirect_uri=${REDIRECT_URI}&response_type=code`
 
   const NAVER_CLIENT_ID = 'wLMPcSoz4xbMttqmCXVD'
