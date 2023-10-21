@@ -160,7 +160,9 @@ const WriteRequestPage = () => {
   }
 
   const getRequestInfo = async () => {
-    const { data } = await axiosInstance.get(`/refrigerator/${requestFormId}`)
+    const { data } = await axiosInstance.get(
+      `/api/refrigerator/${requestFormId}`
+    )
 
     setRequestValue({
       ...requestValue,

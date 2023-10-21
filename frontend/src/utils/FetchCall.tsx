@@ -13,7 +13,6 @@ const axiosInstance = axios.create({
   // baseURL 빼고 작업해야 CORS
   // baseURL: API_BASE_URL,
   headers: {
-    // Authorization: `Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJybGFlaHFAZ21haWwuY29tIiwianRpIjoiMSIsInJvbGVzIjpbIlJPTEVfQ0hFRiJdLCJ0eXBlIjoiQVQiLCJpYXQiOjE3MjkwMzMwMjQsImV4cCI6MTcyOTA3NjIyNH0.H1nMVZGcjlcMwkSmjkSghz3EImVR5quDtwrRhXfSxZmASkDkR4ZHyQn6ZZN5LYWRM4Ent30WSaploceO2mb-Yg`,
     Authorization: `Bearer ${API_ACCESS_TOKEN}`,
     RefreshToken: `Bearer ${API_REFRESH_TOKEN}`,
   },

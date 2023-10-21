@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, KeyboardEvent } from 'react'
 import SockJS from 'sockjs-client'
 import StompJs from 'stompjs'
+import { log } from 'console'
 import { palette } from '../../constants/Styles'
 import useIcon from '../../hooks/useIcon'
 import * as S from '../../styles/chat/ChatRoom.styled'
@@ -10,6 +11,7 @@ import ModalWithTwoButton from '../ui/ModalWithTwoButton'
 import getTime from '../../utils/getTime'
 import axiosInstance from '../../utils/FetchCall'
 import DealModal from '../point/DealModal'
+import { getCookie } from '../../utils/Cookies'
 
 interface DmMessage {
   roomId: number
@@ -27,6 +29,7 @@ const ChatRoom = ({ roomNum }: { roomNum: number | undefined }) => {
   const [isExitModalOpen, setIsExitModalOpen] = useState(false)
   const [dmMessageList, setDmMessageList] = useState<DmMessage[]>([])
   const [message, setMessage] = useState('')
+  const [messageHasNext, setMessageHasNext] = useState(true)
   const [stompClientstate, setStompClientstate] = useState<StompJs.Client>()
   const [roomInfo, setRoomInfo] = useState<RoomInfoInterface>()
   const [isSuggested, setIsSuggested] = useState(roomInfo?.suggested)
@@ -39,8 +42,10 @@ const ChatRoom = ({ roomNum }: { roomNum: number | undefined }) => {
 
   // 로그인 구현시 TOKEN 따로 받아와야 함
   const nowNickname = '김도빈테스트'
-  const TOKEN =
-    'Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJlaHFsczgxOEBuYXZlci5jb20iLCJqdGkiOiI4Iiwicm9sZXMiOlsiUk9MRV9VU0VSIl0sInR5cGUiOiJBVCIsImlhdCI6MTY5Nzg3ODY5MSwiZXhwIjoxNjk3ODgyMjkxfQ.sYYjrm-8-vzI1kS1MI3BIXxD8t3p48rHrNpkq6qaWVOMJ5BjmvBADh7SYJXDjKKh8EAkRg-H5iNvZcmbCDxfqQ'
+  const LoginTOKEN = getCookie('refreshToken')
+  const socketTOKEN = `Bearer ${LoginTOKEN}`
+
+  console.log(dmMessageList)
 
   useEffect(() => {
     // 방 정보 새로 가져오기
@@ -67,7 +72,7 @@ const ChatRoom = ({ roomNum }: { roomNum: number | undefined }) => {
     )
     const stompClient = StompJs.over(socket)
     setStompClientstate(stompClient)
-    stompClient.connect({ Authorization: TOKEN }, () => {
+    stompClient.connect({ Authorization: socketTOKEN }, () => {
       // 채팅방 번호 설정
       const roomNum = roomInfo?.roomId
       stompClient.subscribe(`/sub/message/${roomNum}`, comeMessage => {
@@ -85,8 +90,8 @@ const ChatRoom = ({ roomNum }: { roomNum: number | undefined }) => {
         const res = await axiosInstance.get(
           `/api/dm/message?roomId=${roomInfo?.roomId}&dmId=${lastDmNum}`
         )
-        console.log(res)
-
+        console.log('요요요요요', res.data.hasNext)
+        setMessageHasNext(res.data.hasNext)
         if (res.status === 200) {
           setDmMessageList(prevMessages =>
             prevMessages.concat(res.data.messageList)
@@ -106,7 +111,10 @@ const ChatRoom = ({ roomNum }: { roomNum: number | undefined }) => {
       entries => {
         if (entries[0].isIntersecting) {
           setTimeout(() => {
-            getDmMessage()
+            if (messageHasNext) {
+              console.log(messageHasNext)
+              getDmMessage()
+            }
           }, 500)
         }
       },
@@ -126,6 +134,7 @@ const ChatRoom = ({ roomNum }: { roomNum: number | undefined }) => {
       // 디엠방 리셋
       setDmMessageList([])
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [roomInfo])
 
   // 채팅방 입장시 첫 번째 채팅방 선택되어 있게끔 만들기
