@@ -1,5 +1,5 @@
 import styled from 'styled-components'
-import { palette } from '../../constants/Styles'
+import { breakpoints, palette, typography } from '../../constants/Styles'
 
 export const Label = styled.label<{ $size: number }>`
   display: flex;
@@ -8,6 +8,9 @@ export const Label = styled.label<{ $size: number }>`
   justify-content: center;
   width: ${props => props.$size || 0}rem;
   height: ${props => props.$size || 0}rem;
+  min-width: ${props => props.$size || 0}rem;
+  min-height: ${props => props.$size || 0}rem;
+
   border-radius: 1rem;
   background-color: #f3f3f3;
   border: 1px solid ${palette.divider};
@@ -19,9 +22,13 @@ export const ImageButton = styled.input<{ $size: number }>`
 `
 
 export const SubText = styled.span`
-  font-size: 1.2rem;
+  font-size: ${typography.mobile.desc};
   color: ${palette.textSecondary};
   margin-top: 2rem;
+
+  ${breakpoints.large} {
+    font-size: ${typography.web.desc};
+  }
 `
 
 export const EmptyImage = styled.button<{ $size: number }>`
@@ -31,14 +38,20 @@ export const EmptyImage = styled.button<{ $size: number }>`
   justify-content: center;
   width: ${props => props.$size || 0}rem;
   height: ${props => props.$size || 0}rem;
+  min-width: ${props => props.$size || 0}rem;
+  min-height: ${props => props.$size || 0}rem;
+  object-fit: cover;
   border-radius: 1rem;
   background-color: #f3f3f3;
   border: 1px solid ${palette.divider};
 `
 
-export const Image = styled.img`
-  width: 20rem;
-  height: 20rem;
+export const Image = styled.img<{ $size: number }>`
+  width: ${props => props.$size || 0}rem;
+  height: ${props => props.$size || 0}rem;
+  min-width: ${props => props.$size || 0}rem;
+  min-height: ${props => props.$size || 0}rem;
+  object-fit: contain;
   border: 1px solid ${palette.divider};
   border-radius: 1rem;
 `

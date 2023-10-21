@@ -1,19 +1,24 @@
 import styled from 'styled-components'
-import { palette } from '../../constants/Styles'
+import { breakpoints, palette } from '../../constants/Styles'
 
 export const Container = styled.div`
   position: relative;
   display: flex;
   align-items: center;
-  width: 20rem;
+  width: 30%;
+  /* width: 20rem; */
   min-height: 5rem;
   max-height: 5rem;
   border: 1px solid ${palette.divider};
   border-radius: 1.2rem;
   padding: 0 1rem;
+
   background-color: ${palette.white};
   box-shadow: 0px 4px 4px ${palette.shadow};
   cursor: pointer;
+  ${breakpoints.large} {
+    max-width: 20%;
+  }
 `
 
 export const Label = styled.label``
