@@ -19,7 +19,7 @@ public class RecipeReviewResponseDto {
     private String content;
     private int star;
     private String cookUrl;
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createdAt;
 
     public static RecipeReviewResponseDto from(RecipeReview recipeReview){

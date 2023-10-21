@@ -19,7 +19,7 @@ public class NotificationDto {
     private Long id;
     private String content;
     private NotificationType notificationType;
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime sentAt;
     private boolean isRead;
     private Long targetId;

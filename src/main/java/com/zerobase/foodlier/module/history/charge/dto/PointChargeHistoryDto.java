@@ -16,7 +16,7 @@ import java.time.LocalDateTime;
 public class PointChargeHistoryDto {
     private String paymentKey;
     private Long chargePoint;
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime chargeAt;
     private String description;
 

@@ -150,7 +150,7 @@ public class DmControllerTest {
                 .messageList(new ArrayList<>(List.of(messageSubDto1, messageSubDto2)))
                 .build();
 
-        given(dmService.getDmList(id, roomId, dmId))
+        given(dmService.getDmList(roomId, dmId))
                 .willReturn(messageResponseDto);
 
         //when
