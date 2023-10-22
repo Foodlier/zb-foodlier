@@ -74,6 +74,11 @@ export const RejectButton = styled.button`
   background-color: ${palette.divider};
   border-radius: 0 0 0 10px;
 `
+export const closeButton = styled.button`
+  width: 100%;
+  background-color: ${palette.divider};
+  border-radius: 0 0 10px 10px;
+`
 
 export const AcceptButton = styled.button`
   width: 50%;
