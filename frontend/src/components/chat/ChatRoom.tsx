@@ -1,7 +1,6 @@
 import { useState, useEffect, useRef, KeyboardEvent } from 'react'
 import SockJS from 'sockjs-client'
 import StompJs from 'stompjs'
-import { log } from 'console'
 import { palette } from '../../constants/Styles'
 import useIcon from '../../hooks/useIcon'
 import * as S from '../../styles/chat/ChatRoom.styled'
@@ -23,20 +22,24 @@ interface DmMessage {
 }
 
 const ChatRoom = ({ roomNum }: { roomNum: number | undefined }) => {
-  const { IcImgBoxLight } = useIcon()
+  const { IcImgBoxLight, InitialUserImg } = useIcon()
   const [isProposalModalOpen, setIsProposalModalOpen] = useState(false)
   const [isDealModalOpen, setIsDealModalOpen] = useState(false)
+  const [isRejectModalOpen, setIsRejectModalOpen] = useState(false)
   const [isExitModalOpen, setIsExitModalOpen] = useState(false)
   const [dmMessageList, setDmMessageList] = useState<DmMessage[]>([])
   const [message, setMessage] = useState('')
   const [messageHasNext, setMessageHasNext] = useState(true)
+  const [lastDmNum, setLastDmNum] = useState(0)
   const [stompClientstate, setStompClientstate] = useState<StompJs.Client>()
   const [roomInfo, setRoomInfo] = useState<RoomInfoInterface>()
   const [isSuggested, setIsSuggested] = useState(roomInfo?.suggested)
   // 옵저버 관찰 대상
   const observerEl = useRef<HTMLDivElement>(null!)
-  // 가장 마지막 채팅 Ref
-  const lastDmRef = useRef<HTMLInputElement>(null!)
+  // 스크롤
+  const scrollRef = useRef<HTMLDivElement>(null!)
+  // 채팅창
+  const inputllRef = useRef<HTMLInputElement>(null!)
   // 거래 금액 저장
   const priceRef = useRef(0)
 
@@ -45,26 +48,76 @@ const ChatRoom = ({ roomNum }: { roomNum: number | undefined }) => {
   const LoginTOKEN = getCookie('refreshToken')
   const socketTOKEN = `Bearer ${LoginTOKEN}`
 
-  console.log(dmMessageList)
+  // 방 정보 가져오기
+  const getRoomInfo = async () => {
+    try {
+      const res = await axiosInstance.get('/api/dm/room/0/10')
+      if (res.status === 200) {
+        const newRoomInfo = res.data.content.find(
+          (item: RoomInfoInterface) => item.roomId === roomNum
+        )
+        setRoomInfo(newRoomInfo)
+      }
+    } catch (error) {
+      console.log(error)
+    }
+  }
 
+  // 방 정보 새로 가져오기(방 클릭시 마다)
   useEffect(() => {
-    // 방 정보 새로 가져오기
-    const getRoomInfo = async () => {
+    getRoomInfo()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isSuggested])
+  // isSuggested는 왜 필요한건지 의문
+
+  //  DM 리스트 가져오기
+  const getDmMessage = async () => {
+    if (messageHasNext) {
       try {
-        const res = await axiosInstance.get('/api/dm/room/0/10')
+        const res = await axiosInstance.get(
+          `/api/dm/message?roomId=${roomNum}&dmId=${lastDmNum}`
+        )
+
         if (res.status === 200) {
-          const newRoomInfo = res.data.content.find(
-            (item: RoomInfoInterface) => item.roomId === roomNum
+          setMessageHasNext(res.data.hasNext)
+          setDmMessageList(prevMessages =>
+            prevMessages.concat(res.data.messageList)
           )
-          setRoomInfo(newRoomInfo)
+          setLastDmNum(
+            res.data.messageList[res.data.messageList.length - 1].dmId
+          )
         }
       } catch (error) {
         console.log(error)
       }
     }
-    getRoomInfo()
-  }, [roomNum, isSuggested])
+  }
 
+  // 최초 DM 리스트 가져오기
+  const firstGetDm = async () => {
+    try {
+      const res = await axiosInstance.get(
+        `/api/dm/message?roomId=${roomNum}&dmId=${0}`
+      )
+      setMessageHasNext(res.data.hasNext)
+      if (res.status === 200) {
+        setDmMessageList(prevMessages =>
+          prevMessages.concat(res.data.messageList)
+        )
+        setLastDmNum(res.data.messageList[res.data.messageList.length - 1].dmId)
+      }
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  // 채팅 전 나눴던 DM 리스트 맨처음 부분 가져오기 (방 클릭시 마다)
+  useEffect(() => {
+    firstGetDm()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [roomNum])
+
+  // 방 정보 새로 업데이트 될 때 마다(방 클릭시 마다)
   useEffect(() => {
     // 채팅 환경설정
     const socket = new SockJS(
@@ -72,104 +125,114 @@ const ChatRoom = ({ roomNum }: { roomNum: number | undefined }) => {
     )
     const stompClient = StompJs.over(socket)
     setStompClientstate(stompClient)
-    stompClient.connect({ Authorization: socketTOKEN }, () => {
-      // 채팅방 번호 설정
-      const roomNum = roomInfo?.roomId
-      stompClient.subscribe(`/sub/message/${roomNum}`, comeMessage => {
+    // 메세지 수신
+    stompClient?.connect({ Authorization: socketTOKEN }, () => {
+      // 채팅방 번호 입력
+      // const roomNum = roomInfo?.roomId
+      stompClient?.subscribe(`/sub/message/${roomNum}`, comeMessage => {
         // 새로운 메시지 도착 시 호출될 콜백 함수
         const newMessage = JSON.parse(comeMessage.body)
         setDmMessageList(prevMessages => [newMessage, ...prevMessages])
+        // 여기에 스크롤바 하단 고정 메소드 추가
       })
     })
 
-    let lastDmNum: number = 0
+    return () => {
+      // 소켓 리셋
+      socket.close()
 
-    // 채팅 전 나눴던 DM 리스트 가져오기
-    const getDmMessage = async () => {
-      try {
-        const res = await axiosInstance.get(
-          `/api/dm/message?roomId=${roomInfo?.roomId}&dmId=${lastDmNum}`
-        )
-        console.log('요요요요요', res.data.hasNext)
-        setMessageHasNext(res.data.hasNext)
-        if (res.status === 200) {
-          setDmMessageList(prevMessages =>
-            prevMessages.concat(res.data.messageList)
-          )
-          lastDmNum = res.data.messageList[res.data.messageList.length - 1].dmId
-          console.log(lastDmNum)
-        }
-      } catch (error) {
-        console.log(error)
-      }
+      // 디엠방 리셋
+      setDmMessageList([])
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [roomNum])
 
-    getDmMessage()
-
+  // 메세지 로딩시 필요
+  useEffect(() => {
     // 무한 스크롤 옵저버
     const observer = new IntersectionObserver(
-      entries => {
+      (entries, observe) => {
         if (entries[0].isIntersecting) {
-          setTimeout(() => {
-            if (messageHasNext) {
-              console.log(messageHasNext)
-              getDmMessage()
-            }
-          }, 500)
+          if (messageHasNext) {
+            getDmMessage()
+          }
+          observe.unobserve(entries[0].target)
         }
       },
       { threshold: 1 }
     )
 
-    // // 관찰 대상 지정
-    observer.observe(observerEl.current)
-
-    const obeserveElCopy = observerEl.current
-
-    return () => {
-      // 소켓 리셋
-      socket.close()
-      // 옵저버 리셋
-      observer.unobserve(obeserveElCopy)
-      // 디엠방 리셋
-      setDmMessageList([])
+    if (dmMessageList.length > 0) {
+      // // 관찰 대상 지정
+      observer.observe(observerEl.current)
     }
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [roomInfo])
-
-  // 채팅방 입장시 첫 번째 채팅방 선택되어 있게끔 만들기
-  useEffect(() => {
-    if (dmMessageList.length > 0 && lastDmRef.current) {
-      lastDmRef.current.focus()
-    }
   }, [dmMessageList])
 
   // 메시지 전송
-  const sendMessage = () => {
-    const roomNum = roomInfo?.roomId
-    const newMessage = {
-      content: message,
+  const sendMessage = (answer: string) => {
+    let newMessage = {
+      content: '',
       sender: nowNickname,
     }
-    if (stompClientstate && message !== '') {
-      stompClientstate.send(
-        `/pub/message/${roomNum}`,
-        {},
-        JSON.stringify({
-          roomId: roomNum,
-          message: newMessage.content,
-          writer: newMessage.sender,
-          // 정형화
-          messageType: 'CHAT',
-        })
-      )
+    if (answer === 'reject') {
+      newMessage.content = '해당 제안을 거절하였습니다'
+      if (stompClientstate) {
+        stompClientstate.send(
+          `/pub/message/${roomNum}`,
+          {},
+          JSON.stringify({
+            roomId: roomNum,
+            message: newMessage.content,
+            writer: newMessage.sender,
+            // 정형화
+            messageType: 'CHAT',
+          })
+        )
+      }
+    } else if (answer === 'approve') {
+      newMessage.content = '해당 제안을 수락하였습니다'
+      if (stompClientstate) {
+        stompClientstate.send(
+          `/pub/message/${roomNum}`,
+          {},
+          JSON.stringify({
+            roomId: roomNum,
+            message: newMessage.content,
+            writer: newMessage.sender,
+            // 정형화
+            messageType: 'CHAT',
+          })
+        )
+      }
+    } else {
+      newMessage = {
+        content: message,
+        sender: nowNickname,
+      }
+      if (stompClientstate && message !== '') {
+        stompClientstate.send(
+          `/pub/message/${roomNum}`,
+          {},
+          JSON.stringify({
+            roomId: roomNum,
+            message: newMessage.content,
+            writer: newMessage.sender,
+            // 정형화
+            messageType: 'CHAT',
+          })
+        )
+      }
     }
+    // 채팅시 스크롤 맨 밑으로 고정시키기
+    scrollRef.current.scrollTop = scrollRef.current.scrollHeight
     setMessage('')
+    inputllRef.current.focus()
   }
 
   // 가격 제안
   const sendSuggestion = (price: number) => {
-    const roomNum = roomInfo?.roomId
     const newMessage = {
       content: price,
       sender: nowNickname,
@@ -202,10 +265,10 @@ const ChatRoom = ({ roomNum }: { roomNum: number | undefined }) => {
     }
   }
 
-  // 엔터로 메세지 보내기
+  // Enter로 메세지 보내기
   const handleKeyUp = (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
-      sendMessage()
+      sendMessage('message')
     }
   }
 
@@ -215,75 +278,63 @@ const ChatRoom = ({ roomNum }: { roomNum: number | undefined }) => {
     setIsDealModalOpen(true)
   }
 
-  // 거래 제안 취소하기
-  const dealCancel = async () => {
-    try {
-      const res = await axiosInstance.post(
-        `/api/point/suggest/cancel/${roomInfo?.roomId}`
-      )
-      if (res.status === 200) {
-        setIsSuggested(false)
-        console.log('거래 취소에 대한 응답 : ', res)
-      }
-    } catch (error) {
-      console.log('거래 취소에 대한 에러 : ', error)
-    }
-  }
-
-  console.log('룸 정보 : ', roomInfo)
-  console.log('룸 suggest 정보 : ', isSuggested)
-
   return (
     <S.Container>
       <S.ChattingHeader>
         <S.FlexAlignCenter>
-          <S.ProfileImage src={roomInfo?.profileUrl} $size={4} />
+          {roomInfo?.profileUrl ? (
+            <S.ProfileImage src={roomInfo?.profileUrl} $size={4} />
+          ) : (
+            <InitialUserImg size={4} />
+          )}
+
           <S.Nickname>{roomInfo?.nickname}</S.Nickname>
         </S.FlexAlignCenter>
         <S.FlexAlignCenter>
-          <S.ProposalButton onClick={() => setIsProposalModalOpen(true)}>
-            제안하기
-          </S.ProposalButton>
+          {roomInfo?.role === 'requester' && (
+            <S.ProposalButton onClick={() => setIsProposalModalOpen(true)}>
+              제안하기
+            </S.ProposalButton>
+          )}
           <S.ExitButton onClick={() => setIsExitModalOpen(true)}>
             채팅방 나가기
           </S.ExitButton>
         </S.FlexAlignCenter>
       </S.ChattingHeader>
-      <S.ChattingMessage>
+      <S.ChattingMessage className="Here" ref={scrollRef}>
         {roomInfo?.exit && (
           <S.ExitMessage>
             상대방이 존재하지 않아 채팅이 불가합니다.
           </S.ExitMessage>
         )}
-        {dmMessageList.map((item, index) => (
+        {dmMessageList.map(item => (
           <S.WrapMessage key={item.dmId} $isMe={item.writer === nowNickname}>
             {item.messageType === 'CHAT' ? (
               <S.Wrap>
-                {!(item.writer === nowNickname) && (
-                  <S.ProfileImage src={roomInfo?.profileUrl} $size={3} />
-                )}
+                {!(item.writer === nowNickname) &&
+                  (roomInfo?.profileUrl ? (
+                    <S.ProfileImage src={roomInfo?.profileUrl} $size={4} />
+                  ) : (
+                    <InitialUserImg size={4} />
+                  ))}
                 <S.Message $isMe={item.writer === nowNickname}>
                   {item.message}
-                  <S.FocusInput
-                    ref={index === 0 ? lastDmRef : null}
-                    type="text"
-                  />
                 </S.Message>
               </S.Wrap>
             ) : (
               <S.Wrap>
-                {!(item.writer === nowNickname) && (
-                  <S.ProfileImage src={roomInfo?.profileUrl} $size={3} />
-                )}
+                {!(item.writer === nowNickname) &&
+                  (roomInfo?.profileUrl ? (
+                    <S.ProfileImage src={roomInfo?.profileUrl} $size={4} />
+                  ) : (
+                    <InitialUserImg size={4} />
+                  ))}
                 {item.writer === nowNickname && (
                   <S.Suggestion $isMe={item.writer === nowNickname}>
                     <S.SuggestionTitle>
                       {item.message}원을 제안하셨습니다.
                     </S.SuggestionTitle>
                     <p>상대방이 수락 혹은 거절할 수 있어요!</p>
-                    <button type="button" onClick={dealCancel}>
-                      취소하기
-                    </button>
                   </S.Suggestion>
                 )}
                 {item.writer !== nowNickname && (
@@ -291,7 +342,11 @@ const ChatRoom = ({ roomNum }: { roomNum: number | undefined }) => {
                     <S.SuggestionTitle>
                       {item.message}원을 제안하셨습니다.
                     </S.SuggestionTitle>
-                    <S.SuggestionButton type="button" $isAccept={false}>
+                    <S.SuggestionButton
+                      type="button"
+                      $isAccept={false}
+                      onClick={() => setIsRejectModalOpen(true)}
+                    >
                       거절
                     </S.SuggestionButton>
                     <S.SuggestionButton
@@ -309,7 +364,7 @@ const ChatRoom = ({ roomNum }: { roomNum: number | undefined }) => {
           </S.WrapMessage>
         ))}
         {/* <S.WrapDate>2023.09.02</S.WrapDate> */}
-        <S.ObserverDiv ref={observerEl} />
+        {dmMessageList.length > 0 && <S.ObserverDiv ref={observerEl} />}
       </S.ChattingMessage>
       <S.WrapInput>
         <IcImgBoxLight size={3.5} color={palette.textPrimary} />
@@ -318,8 +373,14 @@ const ChatRoom = ({ roomNum }: { roomNum: number | undefined }) => {
           onChange={e => setMessage(e.target.value)}
           onKeyUp={e => handleKeyUp(e)}
           disabled={roomInfo?.exit}
+          ref={inputllRef}
         />
-        <S.Button onClick={sendMessage} disabled={roomInfo?.exit}>
+        <S.Button
+          onClick={() => {
+            sendMessage('message')
+          }}
+          disabled={roomInfo?.exit}
+        >
           전송
         </S.Button>
       </S.WrapInput>
@@ -345,7 +406,15 @@ const ChatRoom = ({ roomNum }: { roomNum: number | undefined }) => {
         <DealModal
           price={priceRef.current}
           roomId={roomInfo?.roomId}
+          sendMessage={sendMessage}
           setIsDealModalOpen={setIsDealModalOpen}
+        />
+      )}
+      {isRejectModalOpen && (
+        <RejectModal
+          roomId={roomInfo?.roomId}
+          setIsRejectModalOpen={setIsRejectModalOpen}
+          sendMessage={sendMessage}
         />
       )}
     </S.Container>
