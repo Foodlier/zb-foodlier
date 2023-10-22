@@ -39,7 +39,7 @@ export const WrapInput = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  margin: 2rem 0;
+  margin: 1rem 0;
   font-size: 1.4rem;
 `
 
@@ -53,6 +53,11 @@ export const Input = styled.input`
   ${breakpoints.large} {
     width: 100%;
   }
+`
+
+export const Alert = styled.p`
+  color: red;
+  margin-bottom: 1rem;
 `
 
 export const Button = styled.button`
