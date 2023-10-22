@@ -32,9 +32,7 @@ const ChattingPage = () => {
   }, [])
 
   useEffect(() => {
-    if (dmRoomList.length > 0) {
-      setIsLoading(true)
-    }
+    setIsLoading(true)
     if (dmRoomList.length > 0 && firstDmRoomRef.current) {
       firstDmRoomRef.current.click()
     }

@@ -34,7 +34,6 @@ const ChatRoom = ({ roomNum }: { roomNum: number | undefined }) => {
   const [lastDmNum, setLastDmNum] = useState(0)
   const [stompClientstate, setStompClientstate] = useState<StompJs.Client>()
   const [roomInfo, setRoomInfo] = useState<RoomInfoInterface>()
-  const [isSuggested, setIsSuggested] = useState(roomInfo?.suggested)
   // 옵저버 관찰 대상
   const observerEl = useRef<HTMLDivElement>(null!)
   // 스크롤
@@ -68,7 +67,7 @@ const ChatRoom = ({ roomNum }: { roomNum: number | undefined }) => {
   useEffect(() => {
     getRoomInfo()
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isSuggested])
+  }, [])
   // isSuggested는 왜 필요한건지 의문
 
   //  DM 리스트 가져오기
@@ -78,7 +77,6 @@ const ChatRoom = ({ roomNum }: { roomNum: number | undefined }) => {
         const res = await axiosInstance.get(
           `/api/dm/message?roomId=${roomNum}&dmId=${lastDmNum}`
         )
-
         if (res.status === 200) {
           setMessageHasNext(res.data.hasNext)
           setDmMessageList(prevMessages =>
@@ -140,8 +138,7 @@ const ChatRoom = ({ roomNum }: { roomNum: number | undefined }) => {
 
     return () => {
       // 소켓 리셋
-      socket.close()
-
+      // socket.close()
       // 디엠방 리셋
       setDmMessageList([])
     }
@@ -390,7 +387,6 @@ const ChatRoom = ({ roomNum }: { roomNum: number | undefined }) => {
           setIsProposalModalOpen={setIsProposalModalOpen}
           sendSuggestion={sendSuggestion}
           roomId={roomInfo?.roomId}
-          setIsSuggested={setIsSuggested}
         />
       )}
       {isExitModalOpen && (
