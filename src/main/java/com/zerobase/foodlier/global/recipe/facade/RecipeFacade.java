@@ -5,6 +5,7 @@ import com.zerobase.foodlier.module.member.member.domain.model.Member;
 import com.zerobase.foodlier.module.member.member.service.MemberService;
 import com.zerobase.foodlier.module.recipe.domain.model.Recipe;
 import com.zerobase.foodlier.module.recipe.dto.recipe.ImageUrlDto;
+import com.zerobase.foodlier.module.recipe.dto.recipe.RecipeDetailDto;
 import com.zerobase.foodlier.module.recipe.dto.recipe.RecipeDtoRequest;
 import com.zerobase.foodlier.module.recipe.dto.recipe.RecipeImageResponse;
 import com.zerobase.foodlier.module.recipe.exception.recipe.RecipeException;
@@ -14,7 +15,10 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 import static com.zerobase.foodlier.module.recipe.exception.recipe.RecipeErrorCode.NO_PERMISSION;
 
@@ -77,9 +81,30 @@ public class RecipeFacade {
     @Transactional
     public void updateRecipe(Long id, RecipeDtoRequest recipeDtoRequest, Long recipeId) {
         checkPermission(id, recipeId);
-        ImageUrlDto imageUrlDto = recipeService.getBeforeImageUrl(recipeId);
+        ImageUrlDto beforeImageUrlDto = recipeService.getBeforeImageUrl(recipeId);
+
+        ImageUrlDto.ImageUrlDtoBuilder builder = ImageUrlDto.builder();
+        if (!beforeImageUrlDto.getMainImageUrl().equals(recipeDtoRequest.getMainImageUrl())) {
+            builder.mainImageUrl(beforeImageUrlDto.getMainImageUrl());
+        }
+
+        List<String> afterImageUrlList = recipeDtoRequest.getRecipeDetailDtoList().stream()
+                .map(RecipeDetailDto::getCookingOrderImageUrl).collect(Collectors.toList());
+        List<String> deleteImageUrlList = beforeImageUrlDto.getCookingOrderImageUrlList()
+                .stream()
+                .filter(url -> !afterImageUrlList.contains(url))
+                .collect(Collectors.toList());
+
+        if (!deleteImageUrlList.isEmpty()) {
+            builder.cookingOrderImageUrlList(deleteImageUrlList);
+        }
+
         recipeService.updateRecipe(recipeDtoRequest, recipeId);
-        deleteRecipeImage(imageUrlDto);
+
+        ImageUrlDto deleteImageUrlDto = builder.build();
+        if (!Objects.isNull(deleteImageUrlDto)) {
+            deleteRecipeImage(deleteImageUrlDto);
+        }
     }
 
     /**
@@ -101,8 +126,14 @@ public class RecipeFacade {
      * 꿀조합 게시글 삭제 및 수정 후 s3이미지 삭제
      */
     private void deleteRecipeImage(ImageUrlDto imageUrlDto) {
-        s3Service.deleteImage(imageUrlDto.getMainImageUrl());
-        imageUrlDto.getCookingOrderImageUrlList().forEach(s3Service::deleteImage);
+        if (!Objects.isNull(imageUrlDto.getMainImageUrl())) {
+            s3Service.deleteImage(imageUrlDto.getMainImageUrl());
+        }
+
+        if (!Objects.isNull(imageUrlDto.getCookingOrderImageUrlList())) {
+            imageUrlDto.getCookingOrderImageUrlList().stream()
+                    .filter(s -> !Objects.isNull(s)).forEach(s3Service::deleteImage);
+        }
     }
 
     /**

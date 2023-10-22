@@ -18,7 +18,7 @@ public class MemberBalanceHistoryDto {
     private int currentPoint;
     private  String sender;
     private String description;
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime transactionAt;
 
     public static MemberBalanceHistoryDto from(MemberBalanceHistory memberBalanceHistory) {

@@ -16,7 +16,7 @@ import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
 
 @ExtendWith(MockitoExtension.class)
-class RedissonLockServiceImplTest {
+class RedissonLockServiceTest {
     @Mock
     private RedissonClient redissonClient;
 
@@ -24,7 +24,7 @@ class RedissonLockServiceImplTest {
     private RLock rLock;
 
     @InjectMocks
-    private RedissonLockServiceImpl redissonLockService;
+    private RedissonLockService redissonLockService;
 
     @Test
     @DisplayName("lock 성공")

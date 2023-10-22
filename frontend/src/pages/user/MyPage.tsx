@@ -12,6 +12,7 @@ import axiosInstance, { reissueToken } from '../../utils/FetchCall'
 import { myInfoState } from '../../store/recoilState'
 import ModalWithoutButton from '../../components/ui/ModalWithoutButton'
 import defaultProfile from '../../../public/images/default_profile.png'
+import { removeCookie } from '../../utils/Cookies'
 
 interface MenuListInterface {
   title: string
@@ -182,7 +183,11 @@ const MyPage = () => {
         <ModalWithTwoButton
           content="정말 로그아웃하시겠어요?"
           setIsModalFalse={() => setIsLogoutModal(false)}
-          modalEvent={() => console.log('로그아웃 API 연동')}
+          modalEvent={() => {
+            removeCookie('accessToken')
+            removeCookie('refreshToken')
+            navigate('/login')
+          }}
         />
       )}
 
@@ -190,7 +195,7 @@ const MyPage = () => {
       {isWithdrawModal && (
         <ModalWithTwoButton
           content="정말 탈퇴하시겠어요?"
-          subContent="탈퇴 버튼 선택 시, 계정은 
+          subContent="탈퇴 버튼 선택 시, 계정은
       삭제되며 복구되지 않습니다."
           setIsModalFalse={() => setIsWithdrawModal(false)}
           modalEvent={() => console.log('탈퇴하기 API 연동')}

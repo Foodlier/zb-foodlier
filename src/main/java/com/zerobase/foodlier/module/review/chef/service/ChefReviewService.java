@@ -18,6 +18,7 @@ import com.zerobase.foodlier.module.review.chef.repository.ChefReviewRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Objects;
 
@@ -28,6 +29,7 @@ import static com.zerobase.foodlier.module.review.chef.exception.ChefReviewError
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class ChefReviewService {
 
     private final ChefReviewRepository chefReviewRepository;
