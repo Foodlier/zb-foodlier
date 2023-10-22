@@ -10,6 +10,7 @@ import ModalWithTwoButton from '../ui/ModalWithTwoButton'
 import getTime from '../../utils/getTime'
 import axiosInstance from '../../utils/FetchCall'
 import DealModal from '../point/DealModal'
+import RejectModal from '../point/RejectModal'
 import { getCookie } from '../../utils/Cookies'
 
 interface DmMessage {
