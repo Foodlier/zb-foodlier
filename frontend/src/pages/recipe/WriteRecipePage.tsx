@@ -182,7 +182,7 @@ const WriteRecipePage = () => {
         formData.append('cookingOrderImageList', image)
       )
 
-      const { data, status } = await postFormData('/recipe/image', formData)
+      const { data, status } = await postFormData('/api/recipe/image', formData)
       if (status === 200) {
         const body = { ...recipeValue }
         const { cookingOrderImageList, mainImage } = data
