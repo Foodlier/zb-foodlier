@@ -4,7 +4,7 @@ import BottomNavigation from '../../components/BottomNavigation'
 import * as S from '../../styles/point/TradeHistoryPage.styled'
 import axiosInstance from '../../utils/FetchCall'
 
-const TradeHistortPage = () => {
+const TradeHistoryPage = () => {
   const pageIdx = 0
   const pageSize = 20
 
@@ -34,4 +34,4 @@ const TradeHistortPage = () => {
   )
 }
 
-export default TradeHistortPage
+export default TradeHistoryPage

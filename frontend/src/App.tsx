@@ -23,7 +23,7 @@ import KakaoLoginPage from './pages/auth/KakaoRedirectionPage'
 import NaverLoginPage from './pages/auth/NaverRedirectionPage'
 import MyLogPage from './pages/user/MyLogPage'
 import NotFoundPage from './pages/NotFoundPage'
-import TradeHistortPage from './pages/point/TradeHistortPage'
+import TradeHistoryPage from './pages/point/TradeHistoryPage'
 
 function App() {
   return (
@@ -67,7 +67,7 @@ function App() {
         <Route path="/point" element={<PointPage />} />
         <Route path="/point/success" element={<SuccessPage />} />
         <Route path="/point/fail" element={<SuccessPage />} />
-        <Route path="/trade-history" element={<TradeHistortPage />} />
+        <Route path="/trade-history" element={<TradeHistoryPage />} />
         <Route path="/my/:category" element={<MyLogPage />} />
         <Route path="*" element={<NotFoundPage />} />
       </Routes>
