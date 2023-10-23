@@ -1,22 +1,42 @@
-import React, { useEffect } from 'react'
+import { useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import Header from '../../components/Header'
 import BottomNavigation from '../../components/BottomNavigation'
 import * as S from '../../styles/point/TradeHistoryPage.styled'
 import axiosInstance from '../../utils/FetchCall'
 
+interface HistoryType {
+  changePoint: number
+  currentPoint: number
+  description: string
+  sender: string
+  transactionAt: string
+}
+
 const TradeHistoryPage = () => {
-  const pageIdx = 0
-  const pageSize = 20
+  const [history, setHistory] = useState<HistoryType[]>([])
+  const navigate = useNavigate()
 
   const getTradeHistory = async () => {
+    const pageIdx = 0
+    const pageSize = 20
     try {
       const res = await axiosInstance.get(
-        `/api/point/transaction/${pageIdx}/${pageSize}`
+        `/point/transaction/${pageIdx}/${pageSize}`
       )
-      console.log(res.data)
+      setHistory(res.data.content)
     } catch (error) {
       console.log(error)
     }
+  }
+
+  const goToReview = (name: string, requestId: number) => {
+    const body = {
+      requestId,
+      name,
+    }
+    // 후기 작성 페이지 경로 수정 해줘야함
+    navigate('/경로', { state: body })
   }
 
   useEffect(() => {
@@ -28,6 +48,45 @@ const TradeHistoryPage = () => {
       <Header />
       <S.Container>
         <S.Title>거래내역</S.Title>
+        {history.length > 0 ? (
+          history.map(el => (
+            <S.HistoryWrap key={el.transactionAt}>
+              <S.HistoryLeftWrap>
+                <S.HistoryPartWrap>
+                  <S.HistoryPartTitle>거래 일시</S.HistoryPartTitle>
+                  <S.HistoryPartDes>{el.transactionAt}</S.HistoryPartDes>
+                </S.HistoryPartWrap>
+                <S.HistoryPartWrap>
+                  <S.HistoryPartTitle>{el.description}</S.HistoryPartTitle>
+                  <S.HistoryPartDes>{el.changePoint}</S.HistoryPartDes>
+                </S.HistoryPartWrap>
+                <S.HistoryPartWrap>
+                  <S.HistoryPartTitle>상대방 닉네임</S.HistoryPartTitle>
+                  <S.HistoryPartDes>{el.sender}</S.HistoryPartDes>
+                </S.HistoryPartWrap>
+                <S.HistoryPartWrap>
+                  <S.HistoryPartTitle>이후 포인트</S.HistoryPartTitle>
+                  <S.HistoryPartDes>{el.currentPoint}</S.HistoryPartDes>
+                </S.HistoryPartWrap>
+              </S.HistoryLeftWrap>
+              {el.description === '포인트 출금' && (
+                <S.HistoryRightWrap>
+                  <S.ReviewButton
+                    type="button"
+                    onClick={() => {
+                      // 번호 자리에 el.requestId 넣어줘야 해요 현재 백에서 PR 올라감
+                      goToReview(el.sender, 1)
+                    }}
+                  >
+                    후기 작성
+                  </S.ReviewButton>
+                </S.HistoryRightWrap>
+              )}
+            </S.HistoryWrap>
+          ))
+        ) : (
+          <S.NoHistoryCard>내역 없음</S.NoHistoryCard>
+        )}
       </S.Container>
       <BottomNavigation />
     </>
