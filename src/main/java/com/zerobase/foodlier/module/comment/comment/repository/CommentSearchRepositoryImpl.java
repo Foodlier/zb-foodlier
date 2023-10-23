@@ -45,6 +45,7 @@ public class CommentSearchRepositoryImpl implements CommentSearchRepository {
                 .from(comment)
                 .join(recipe)
                 .on(recipe.id.eq(recipeId))
+                .where(comment.recipe.id.eq(recipeId))
                 .fetchFirst();
 
         return new PageImpl<>(result, pageable, count);
