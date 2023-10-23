@@ -8,4 +8,8 @@ import java.lang.annotation.*;
 public @interface RedissonLock {
     String key() default "";
     String group() default "";
+
+    long waitTime() default 3L;
+
+    long leaseTime() default 2L;
 }
