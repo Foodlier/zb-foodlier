@@ -13,6 +13,7 @@ import { myInfoState } from '../../store/recoilState'
 import ModalWithoutButton from '../../components/ui/ModalWithoutButton'
 import defaultProfile from '../../../public/images/default_profile.png'
 import { removeCookie } from '../../utils/Cookies'
+import ChargeModal from '../../components/point/ChargeModal'
 
 interface MenuListInterface {
   title: string
@@ -31,6 +32,7 @@ const MyPage = () => {
   const [chefCompleteContent, setChefCompleteContent] = useState('')
   const [isLogoutModal, setIsLogoutModal] = useState(false)
   const [isWithdrawModal, setIsWithdrawModal] = useState(false)
+  const [isChargeModal, setIsChargeModal] = useState(false)
 
   const MENU_LIST = [
     {
@@ -138,8 +140,10 @@ const MyPage = () => {
             {/* <IcArrowDropRight size={2.5} color={palette.textPrimary} /> */}
           </S.PointDetailButton>
           <S.PointChargeButton>
-            <S.ChargeBadge>충전</S.ChargeBadge>
-            10,000 P
+            <S.ChargeBadge onClick={() => setIsChargeModal(true)}>
+              충전
+            </S.ChargeBadge>
+            {profile?.point} P
           </S.PointChargeButton>
         </S.WrapMyPoint>
         <S.NavigateButtonList>
@@ -202,6 +206,8 @@ const MyPage = () => {
         />
       )}
 
+      {/* 충전 Modal */}
+      {isChargeModal && <ChargeModal setIsChargeModal={setIsChargeModal} />}
       <BottomNavigation />
     </>
   )

@@ -9,6 +9,8 @@ import * as S from '../../styles/point/Charge.styled'
 const Point = () => {
   const paymentWidgetRef = useRef<PaymentWidgetInstance | null>(null)
   const location = useLocation()
+  console.log(location)
+
   const {
     amount,
     orderId: orderID,
@@ -17,7 +19,7 @@ const Point = () => {
     customerNickName: customerNAME,
   } = location.state
   const clientKey = 'test_ck_Z1aOwX7K8meEABdJQeW8yQxzvNPG'
-  const customerKey = orderID
+  const customerKey = 'd-b'
 
   const pay = async () => {
     const paymentWidget = paymentWidgetRef.current

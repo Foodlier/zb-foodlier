@@ -3,7 +3,7 @@ import * as S from '../../styles/point/Success.styled'
 import success from '../../../public/images/success.gif'
 import axiosInstance from '../../utils/FetchCall'
 
-function Success() {
+const Success = () => {
   const [searchParams] = useSearchParams()
   const orderId = searchParams.get('orderId')
   const paymentKey = searchParams.get('paymentKey')
@@ -16,7 +16,7 @@ function Success() {
         `/api/point/success?orderId=${orderId}&paymentKey=${paymentKey}&amount=${amount}`
       )
       console.log(res)
-      navigate('/chat')
+      navigate('/')
     } catch (error) {
       console.log(error)
     }
