@@ -30,7 +30,8 @@ public class ProfileFacade {
         String imageUrl = form.getProfileImage() != null ?
                 s3Service.getImageUrl(form.getProfileImage()) :
                 member.getProfileUrl();
-        if (!imageUrl.equals(member.getProfileUrl())) {
+        if (!imageUrl.equals(member.getProfileUrl())
+                && member.getProfileUrl() != null) {
             s3Service.deleteImage(member.getProfileUrl());
         }
         memberService.updatePrivateProfile(
