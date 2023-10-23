@@ -13,6 +13,7 @@ import { myInfoState } from '../../store/recoilState'
 import ModalWithoutButton from '../../components/ui/ModalWithoutButton'
 import defaultProfile from '../../../public/images/default_profile.png'
 import { removeCookie } from '../../utils/Cookies'
+import ChargeModal from '../../components/point/ChargeModal'
 
 interface MenuListInterface {
   title: string
@@ -31,6 +32,7 @@ const MyPage = () => {
   const [chefCompleteContent, setChefCompleteContent] = useState('')
   const [isLogoutModal, setIsLogoutModal] = useState(false)
   const [isWithdrawModal, setIsWithdrawModal] = useState(false)
+  const [isChargeModal, setIsChargeModal] = useState(false)
 
   const MENU_LIST = [
     {
@@ -45,6 +47,10 @@ const MyPage = () => {
       title: '내가 좋아요 한 글',
       navigate: '/my/like',
       isMargin: true,
+    },
+    {
+      title: '내 거래 내역',
+      navigate: '/trade-history',
     },
     {
       title: '내 정보 수정',
@@ -81,7 +87,7 @@ const MyPage = () => {
 
   // 프로필 조회 API
   const getMyProfile = async () => {
-    const response = await axiosInstance.get('/profile/private')
+    const response = await axiosInstance.get('/api/profile/private')
     console.log(response)
     if (response.status === 200) {
       setProfile(response.data)
@@ -96,7 +102,7 @@ const MyPage = () => {
         introduce: '잘 부탁드립니다.',
       }
       const response = await axiosInstance.post(
-        '/profile/private/registerchef',
+        '/api/profile/private/registerchef',
         body
       )
       console.log(response)
@@ -138,8 +144,10 @@ const MyPage = () => {
             {/* <IcArrowDropRight size={2.5} color={palette.textPrimary} /> */}
           </S.PointDetailButton>
           <S.PointChargeButton>
-            <S.ChargeBadge>충전</S.ChargeBadge>
-            10,000 P
+            <S.ChargeBadge onClick={() => setIsChargeModal(true)}>
+              충전
+            </S.ChargeBadge>
+            {profile?.point} P
           </S.PointChargeButton>
         </S.WrapMyPoint>
         <S.NavigateButtonList>
@@ -202,6 +210,8 @@ const MyPage = () => {
         />
       )}
 
+      {/* 충전 Modal */}
+      {isChargeModal && <ChargeModal setIsChargeModal={setIsChargeModal} />}
       <BottomNavigation />
     </>
   )

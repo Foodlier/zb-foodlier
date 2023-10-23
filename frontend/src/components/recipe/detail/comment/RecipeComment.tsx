@@ -38,7 +38,7 @@ const RecipeComment = () => {
   const getComment = async () => {
     // recipeId - 1 / pageIdx - 0 / pageSize - 5 (추후 recipeId는 useParam 쓰기)
     const res = await axiosInstance.get(
-      `/comment/${recipeId}/${pageIdx}/${pageSize}`
+      `/api/comment/${recipeId}/${pageIdx}/${pageSize}`
     )
 
     if (res.status === 200) {
@@ -62,7 +62,9 @@ const RecipeComment = () => {
     event.preventDefault()
 
     try {
-      const res = await axiosInstance.post(`/comment/${recipeId}?message=${commentValue}`)
+      const res = await axiosInstance.post(
+        `/api/comment/${recipeId}?message=${commentValue}`
+      )
       if (res.status === 200) {
         console.log('res.config.data', res.config.data)
         getComment()
@@ -73,7 +75,7 @@ const RecipeComment = () => {
       console.error('새 댓글 등록 중 오류 발생:', error)
     }
   }
-  
+
   const handleClick = (event: React.ChangeEvent<HTMLInputElement>) => {
     // 해당 변화에 따라 commentValue 상태를 업데이트하는 setCommentValue 함수
     setCommentValue(event.currentTarget.value)
@@ -114,7 +116,9 @@ const RecipeComment = () => {
   const handleConfirmDelete = async () => {
     // console.log('확인중입니다', commentId)
 
-    const res = await axiosInstance.delete(`/comment/${recipeId}/${commentId}`)
+    const res = await axiosInstance.delete(
+      `/api/comment/${recipeId}/${commentId}`
+    )
     try {
       if (res.status === 200) {
         console.log('삭제성공?!')
@@ -133,7 +137,7 @@ const RecipeComment = () => {
       const body = {
         modifiedMessage: editValue,
       }
-      const res = await axiosInstance.put(`/comment/${commentId}`, body)
+      const res = await axiosInstance.put(`/api/comment/${commentId}`, body)
       if (res.status === 200) {
         // console.log('댓글 수정 성공', editValue)
 

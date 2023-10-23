@@ -1,10 +1,5 @@
 import styled from 'styled-components'
-import {
-  zindex,
-  palette,
-  typography,
-  breakpoints,
-} from '../../constants/Styles'
+import { zindex, palette, breakpoints } from '../../constants/Styles'
 
 export const GreyBackground = styled.div`
   position: fixed;
@@ -55,15 +50,15 @@ export const ShowCurrentInfo = styled.div`
 `
 
 export const MainInfo = styled.p`
-  font-weight: ${typography.fontWeight.bold};
-  font-size: ${typography.fontSize.xLarge};
+  font-weight: 600;
+  font-size: 1.6rem;
 `
 
 export const MoreInfo = styled.p``
 
 export const MoreMoney = styled.span`
   color: ${palette.main};
-  font-weight: ${typography.fontWeight.bold};
+  font-weight: 600;
 `
 
 export const PointInfo = styled.p``
@@ -78,6 +73,11 @@ export const RejectButton = styled.button`
   width: 50%;
   background-color: ${palette.divider};
   border-radius: 0 0 0 10px;
+`
+export const closeButton = styled.button`
+  width: 100%;
+  background-color: ${palette.divider};
+  border-radius: 0 0 10px 10px;
 `
 
 export const AcceptButton = styled.button`

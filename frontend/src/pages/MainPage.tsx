@@ -25,8 +25,8 @@ const MainPage = () => {
 
   const getRecipe = async () => {
     try {
-      const mainRecipe = await axiosInstance.get('/recipe/main')
-      const recommendRecipe = await axiosInstance.get('/recipe/recommended')
+      const mainRecipe = await axiosInstance.get('/api/recipe/main')
+      const recommendRecipe = await axiosInstance.get('/api/recipe/recommended')
 
       setRecipeList(mainRecipe.data)
       setRecommendList(recommendRecipe.data)
