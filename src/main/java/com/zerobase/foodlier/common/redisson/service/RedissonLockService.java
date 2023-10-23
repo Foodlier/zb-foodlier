@@ -17,15 +17,13 @@ import static com.zerobase.foodlier.common.redisson.exception.RedissonErrorCode.
 public class RedissonLockService {
     private final RedissonClient redissonClient;
 
-    private final long WAIT_TIME = 3L;
-    private final long LEASE_TIME = 1L;
     private final TimeUnit TIME_UNIT = TimeUnit.SECONDS;
 
-    public void lock(String group, String key) {
+    public void lock(String group, String key, long waitTime, long leaseTime) {
         RLock lock = redissonClient.getLock(getLockKey(group, key));
 
         try {
-            boolean isLock = lock.tryLock(WAIT_TIME, LEASE_TIME, TIME_UNIT);
+            boolean isLock = lock.tryLock(waitTime, leaseTime, TIME_UNIT);
             if (!isLock) {
                 throw new RedissonException(LOCK_ERROR);
             }
@@ -37,7 +35,14 @@ public class RedissonLockService {
     }
 
     public void unlock(String group, String key) {
-        redissonClient.getLock(getLockKey(group, key)).unlock();
+        RLock lock = redissonClient.getLock(getLockKey(group, key));
+        try {
+            if (lock.isLocked() && lock.isHeldByCurrentThread()) {
+                lock.unlock();
+            }
+        } catch (IllegalMonitorStateException e) {
+            log.error("Redisson unlock failed");
+        }
     }
 
     private static String getLockKey(String group, String key) {

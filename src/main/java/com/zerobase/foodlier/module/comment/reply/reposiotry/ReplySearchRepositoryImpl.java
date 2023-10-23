@@ -3,11 +3,11 @@ package com.zerobase.foodlier.module.comment.reply.reposiotry;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.Wildcard;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import com.zerobase.foodlier.module.comment.comment.domain.model.QComment;
 import com.zerobase.foodlier.module.comment.comment.dto.CommentDto;
 import com.zerobase.foodlier.module.comment.comment.dto.MyPageCommentDto;
 import com.zerobase.foodlier.module.comment.reply.domain.model.QReply;
 import com.zerobase.foodlier.module.comment.reply.domain.model.Reply;
-import com.zerobase.foodlier.module.recipe.domain.model.QRecipe;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -35,14 +35,15 @@ public class ReplySearchRepositoryImpl implements ReplySearchRepository {
 
     @Override
     public Page<CommentDto> findReplyList(Long commentId, Pageable pageable) {
-        QRecipe recipe = QRecipe.recipe;
         QReply reply = QReply.reply;
+        QComment comment = QComment.comment;
         List<CommentDto> result = jpaQueryFactory.select(Projections.constructor(CommentDto.class,
                         reply.id, reply.message, reply.createdAt, reply.modifiedAt,
                         reply.member.nickname, reply.member.profileUrl, reply.member.id))
                 .from(reply)
-                .join(recipe)
-                .on(reply.comment.id.eq(commentId))
+                .join(comment)
+                .on(comment.id.eq(commentId))
+                .where(reply.comment.id.eq(commentId))
                 .orderBy(reply.createdAt.desc())
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
@@ -50,8 +51,9 @@ public class ReplySearchRepositoryImpl implements ReplySearchRepository {
 
         Long count = jpaQueryFactory.select(Wildcard.count)
                 .from(reply)
-                .join(recipe)
-                .on(reply.comment.id.eq(commentId))
+                .join(comment)
+                .on(comment.id.eq(commentId))
+                .where(reply.comment.id.eq(commentId))
                 .fetchFirst();
 
         return new PageImpl<>(result, pageable, count);
@@ -69,6 +71,8 @@ public class ReplySearchRepositoryImpl implements ReplySearchRepository {
                 .fetch();
 
         Long count = jpaQueryFactory.select(Wildcard.count)
+                .from(reply)
+                .where(reply.member.id.eq(memberId))
                 .fetchFirst();
 
         return new PageImpl<>(result, pageable, count);

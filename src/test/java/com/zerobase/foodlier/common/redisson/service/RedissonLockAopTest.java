@@ -13,6 +13,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -33,7 +34,7 @@ class RedissonLockAopTest {
     private RedissonLockAop redissonLockAop;
 
     static class TestService {
-        @RedissonLock(key = "#key", group = "group")
+        @RedissonLock(key = "#key", group = "group", waitTime = 15L, leaseTime = 2L)
         public String testMethod() {
             return "Result";
         }
@@ -68,7 +69,7 @@ class RedissonLockAopTest {
 
         //then
         verify(redissonLockService, times(1))
-                .lock(lockCaptorGroup.capture(), lockCaptorKey.capture());
+                .lock(lockCaptorGroup.capture(), lockCaptorKey.capture(), anyLong(), anyLong());
         verify(redissonLockService, times(1))
                 .unlock(unlockCaptorGroup.capture(), unlockCaptorKey.capture());
 

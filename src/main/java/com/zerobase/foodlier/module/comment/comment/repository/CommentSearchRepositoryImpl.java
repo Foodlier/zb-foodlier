@@ -33,7 +33,8 @@ public class CommentSearchRepositoryImpl implements CommentSearchRepository {
                         comment.member.nickname, comment.member.profileUrl, comment.member.id))
                 .from(comment)
                 .join(recipe)
-                .on(comment.recipe.id.eq(recipeId))
+                .on(recipe.id.eq(recipeId))
+                .where(comment.recipe.id.eq(recipeId))
                 .orderBy(comment.createdAt.desc())
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
@@ -42,7 +43,8 @@ public class CommentSearchRepositoryImpl implements CommentSearchRepository {
         Long count = jpaQueryFactory.select(Wildcard.count)
                 .from(comment)
                 .join(recipe)
-                .on(comment.recipe.id.eq(recipeId))
+                .on(recipe.id.eq(recipeId))
+                .where(comment.recipe.id.eq(recipeId))
                 .fetchFirst();
 
         return new PageImpl<>(result, pageable, count);
@@ -61,15 +63,17 @@ public class CommentSearchRepositoryImpl implements CommentSearchRepository {
     @Override
     public Page<MyPageCommentDto> findMyCommentList(Long memberId, Pageable pageable) {
         QComment comment = QComment.comment;
-
         List<MyPageCommentDto> result = jpaQueryFactory.select(Projections.constructor(MyPageCommentDto.class, comment.recipe.id, comment.message, comment.createdAt))
-                .from(comment).where(comment.member.id.eq(memberId))
+                .from(comment)
+                .where(comment.member.id.eq(memberId))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .orderBy(comment.createdAt.desc())
                 .fetch();
 
         Long count = jpaQueryFactory.select(Wildcard.count)
+                .from(comment)
+                .where(comment.member.id.eq(memberId))
                 .fetchFirst();
 
         return new PageImpl<>(result, pageable, count);
