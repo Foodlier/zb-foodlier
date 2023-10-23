@@ -32,10 +32,8 @@ function App() {
         {getCookie('accessToken') ? (
           <Route path="/" element={<MainPage />} />
         ) : (
-          <Route path="/" element={<LoginPage />} />
+          <Route path="/login" element={<LoginPage />} />
         )}
-        {/* <Route path="/" element={<MainPage />} /> */}
-        <Route path="/login" element={<LoginPage />} />
         <Route path="/find-password" element={<FindPasswordPage />} />
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/kakao/callback" element={<KakaoLoginPage />} />
