@@ -49,6 +49,10 @@ const MyPage = () => {
       isMargin: true,
     },
     {
+      title: '내 거래 내역',
+      navigate: '/trade-history',
+    },
+    {
       title: '내 정보 수정',
       navigate: '',
     },

@@ -4,9 +4,9 @@ import {
   PaymentWidgetInstance,
 } from '@tosspayments/payment-widget-sdk'
 import { useLocation } from 'react-router-dom'
-import * as S from '../../styles/point/Charge.styled'
+import * as S from '../../styles/point/PointPage.styled'
 
-const Point = () => {
+const PointPage = () => {
   const paymentWidgetRef = useRef<PaymentWidgetInstance | null>(null)
   const location = useLocation()
   console.log(location)
@@ -57,4 +57,4 @@ const Point = () => {
   )
 }
 
-export default Point
+export default PointPage

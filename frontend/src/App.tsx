@@ -17,12 +17,13 @@ import FindPasswordPage from './pages/auth/FindPasswordPage'
 import MyPage from './pages/user/MyPage'
 import ProfilePage from './pages/user/ProfilePage'
 import ProfileMorePage from './pages/user/ProfileMorePage'
-import Point from './pages/point/Point'
-import Success from './pages/point/Success'
+import PointPage from './pages/point/PointPage'
+import SuccessPage from './pages/point/SuccessPage'
 import KakaoLoginPage from './pages/auth/KakaoRedirectionPage'
 import NaverLoginPage from './pages/auth/NaverRedirectionPage'
 import MyLogPage from './pages/user/MyLogPage'
 import NotFoundPage from './pages/NotFoundPage'
+import TradeHistortPage from './pages/point/TradeHistortPage'
 
 function App() {
   return (
@@ -63,9 +64,10 @@ function App() {
         <Route path="/my" element={<MyPage />} />
         <Route path="/profile/:id" element={<ProfilePage />} />
         <Route path="/profile/:id/more" element={<ProfileMorePage />} />
-        <Route path="/point" element={<Point />} />
-        <Route path="/point/success" element={<Success />} />
-        <Route path="/point/fail" element={<Success />} />
+        <Route path="/point" element={<PointPage />} />
+        <Route path="/point/success" element={<SuccessPage />} />
+        <Route path="/point/fail" element={<SuccessPage />} />
+        <Route path="/trade-history" element={<TradeHistortPage />} />
         <Route path="/my/:category" element={<MyLogPage />} />
         <Route path="*" element={<NotFoundPage />} />
       </Routes>

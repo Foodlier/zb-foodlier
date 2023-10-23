@@ -190,7 +190,7 @@ const ChatRoom = ({ roomNum }: { roomNum: number | undefined }) => {
         )
       }
     } else if (answer === 'approve') {
-      newMessage.content = '해당 제안을 수락하였습니다'
+      newMessage.content = '해당 제안을 수락하였습니다 (거래 성립)'
       if (stompClientstate) {
         stompClientstate.send(
           `/pub/message/${roomNum}`,

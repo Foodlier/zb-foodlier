@@ -1,9 +1,9 @@
 import { useSearchParams, useNavigate } from 'react-router-dom'
-import * as S from '../../styles/point/Success.styled'
+import * as S from '../../styles/point/SuccessPage.styled'
 import success from '../../../public/images/success.gif'
 import axiosInstance from '../../utils/FetchCall'
 
-const Success = () => {
+const SuccessPage = () => {
   const [searchParams] = useSearchParams()
   const orderId = searchParams.get('orderId')
   const paymentKey = searchParams.get('paymentKey')
@@ -38,4 +38,4 @@ const Success = () => {
   )
 }
 
-export default Success
+export default SuccessPage
