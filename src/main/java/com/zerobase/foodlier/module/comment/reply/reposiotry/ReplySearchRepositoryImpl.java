@@ -53,6 +53,7 @@ public class ReplySearchRepositoryImpl implements ReplySearchRepository {
                 .from(reply)
                 .join(comment)
                 .on(comment.id.eq(commentId))
+                .where(reply.comment.id.eq(commentId))
                 .fetchFirst();
 
         return new PageImpl<>(result, pageable, count);

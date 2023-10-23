@@ -10,6 +10,8 @@ import org.springframework.expression.ExpressionParser;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.expression.spel.support.StandardEvaluationContext;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.lang.reflect.Method;
 
@@ -20,6 +22,7 @@ public class RedissonLockAop {
     private final RedissonLockService redissonLockService;
 
     @Around("@annotation(com.zerobase.foodlier.common.aop.RedissonLock)")
+    @Transactional(propagation = Propagation.REQUIRES_NEW, timeout = 1)
     public Object lock(
             final ProceedingJoinPoint joinPoint
     ) throws Throwable {
@@ -33,7 +36,8 @@ public class RedissonLockAop {
         String key = getKey(keyExpression, joinPoint);
         String group = redissonLock.group();
 
-        redissonLockService.lock(group, key);
+        redissonLockService.lock(group, key, redissonLock.waitTime(),
+                redissonLock.leaseTime());
         try {
             return joinPoint.proceed();
         } finally {

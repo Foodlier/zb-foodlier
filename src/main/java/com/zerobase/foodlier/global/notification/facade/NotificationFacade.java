@@ -8,6 +8,7 @@ import com.zerobase.foodlier.module.notification.dto.notify.Notify;
 import com.zerobase.foodlier.module.notification.service.notification.NotificationService;
 import com.zerobase.foodlier.module.notification.service.emitter.EmitterService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
@@ -47,7 +48,7 @@ public class NotificationFacade {
         emitter.onError(throwable -> emitter.complete());
         return emitter;
     }
-
+    @Async
     public void send(Notify notify) {
         Notification notification = notificationService.create(notify);
         String receiverEmail = notify.getReceiverEmail();
@@ -61,8 +62,5 @@ public class NotificationFacade {
             }
         }
     }
-
-
-
 }
 

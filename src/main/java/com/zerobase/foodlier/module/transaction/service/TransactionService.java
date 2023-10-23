@@ -98,6 +98,7 @@ public class TransactionService {
                 .requestMember(requestMember)
                 .chefMember(chefMember.getMember())
                 .changePoint(suggestedPrice)
+                .requestId(dmRoom.getRequest().getId())
                 .build();
     }
 

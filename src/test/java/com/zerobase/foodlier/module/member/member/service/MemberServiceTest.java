@@ -440,7 +440,7 @@ class MemberServiceTest {
                         .lat(38.0)
                         .lnt(127.1)
                         .build(), Member.builder()
-                        .nickname("test")
+                        .nickname("test2")
                         .email("test@test.com")
                         .password("password")
                         .phoneNumber("010-1234-5678")
@@ -485,7 +485,7 @@ class MemberServiceTest {
                         .nickname("test")
                         .email("test@test.com")
                         .password("password")
-                        .phoneNumber("010-1234-5678")
+                        .phoneNumber("010-1234-5679")
                         .profileUrl("/image/default.png")
                         .address(
                                 Address.builder()

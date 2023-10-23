@@ -415,7 +415,7 @@ class TransactionServiceTest {
                         .chefMember(ChefMember.builder()
                                 .id(1L)
                                 .member(Member.builder()
-                                        .id(2L)
+                                        .id(1L)
                                         .build())
                                 .build())
                         .build())
