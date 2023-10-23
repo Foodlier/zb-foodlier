@@ -4,18 +4,17 @@ import axiosInstance from '../../utils/FetchCall'
 
 interface ProposalModalProps {
   setIsProposalModalOpen: React.Dispatch<React.SetStateAction<boolean>>
-  setIsSuggested: React.Dispatch<React.SetStateAction<boolean | undefined>>
   sendSuggestion: (price: number) => void
   roomId: number | undefined
 }
 
 const ProposalModal = ({
   setIsProposalModalOpen,
-  setIsSuggested,
   sendSuggestion,
   roomId,
 }: ProposalModalProps) => {
   const [price, setPrice] = useState(0)
+  const [alert, setAlert] = useState(false)
 
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { value } = e.target
@@ -31,9 +30,12 @@ const ProposalModal = ({
   const suggest = async () => {
     try {
       const res = await axiosInstance.post(`/point/suggest/${roomId}`, body)
+      sendSuggestion(price)
+      setIsProposalModalOpen(false)
       console.log('제안 요청에 대한 반응 : ', res)
     } catch (error) {
-      console.log('제안 요청에 대한 반응 : ', error)
+      console.log('제안 요청에 대한 에러 : ', error)
+      setAlert(true)
     }
   }
 
@@ -44,11 +46,9 @@ const ProposalModal = ({
         <S.WrapInput>
           <S.Input type="text" value={price} onChange={onChange} />원
         </S.WrapInput>
+        {alert && <S.Alert>이미 제안 됐거나 종료되었습니다.</S.Alert>}
         <S.Button
           onClick={() => {
-            sendSuggestion(price)
-            setIsProposalModalOpen(false)
-            setIsSuggested(true)
             suggest()
           }}
         >

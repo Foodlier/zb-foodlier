@@ -1,5 +1,6 @@
 import * as S from '../../styles/chat/RoomListItem.styled'
 import returnPriceWithComma from '../../utils/returnPriceWithComma'
+import useIcon from '../../hooks/useIcon'
 
 export interface RoomInfoInterface {
   roomId: number
@@ -13,10 +14,17 @@ export interface RoomInfoInterface {
 }
 
 const RoomListItem = ({ roomInfo }: { roomInfo: RoomInfoInterface }) => {
+  const { InitialUserImg } = useIcon()
+
   return (
     <S.WrapChatItem>
       <S.Wrap>
-        <S.ProfileImage src={roomInfo.profileUrl} />
+        {roomInfo.profileUrl ? (
+          <S.ProfileImage src={roomInfo.profileUrl} />
+        ) : (
+          <InitialUserImg size={4.5} />
+        )}
+
         <S.WrapProfileText>
           <S.Nickname>{roomInfo.nickname}</S.Nickname>
           <S.Price>{returnPriceWithComma(roomInfo.expectedPrice)}</S.Price>

@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import Header from '../../components/Header'
 import BottomNavigation from '../../components/BottomNavigation'
 import * as S from '../../styles/chat/ChattingPage.styled'
@@ -7,19 +8,18 @@ import RoomListItem, {
   RoomInfoInterface,
 } from '../../components/chat/RoomListItem'
 import axiosInstance from '../../utils/FetchCall'
-import DmTest2 from './DmTest2'
 
 const ChattingPage = () => {
   const [currentChat, setCurrentChat] = useState(1)
   const [dmRoomList, setDmRoomList] = useState<RoomInfoInterface[]>([])
   const [isLoading, setIsLoading] = useState(false)
   const firstDmRoomRef = useRef<HTMLButtonElement>(null)
+  const navigate = useNavigate()
 
   const getDmRoomList = async () => {
     try {
-      const res = await axiosInstance.get('/dm/room/0/10')
+      const res = await axiosInstance.get('/api/dm/room/0/10')
       if (res.status === 200) {
-        console.log(res.data.content)
         setDmRoomList(res.data.content)
       }
     } catch (error) {
@@ -32,9 +32,7 @@ const ChattingPage = () => {
   }, [])
 
   useEffect(() => {
-    if (dmRoomList.length > 0) {
-      setIsLoading(true)
-    }
+    setIsLoading(true)
     if (dmRoomList.length > 0 && firstDmRoomRef.current) {
       firstDmRoomRef.current.click()
     }
@@ -50,7 +48,15 @@ const ChattingPage = () => {
               <S.WrapChatList>
                 {dmRoomList.map((item, index) => (
                   <S.Wrap key={item.roomId}>
-                    <S.ReqireButton>요청서 보기</S.ReqireButton>
+                    <S.ReqireButton
+                      onClick={() => {
+                        navigate(
+                          `/refrigerator/request/detail/${item.requestId}`
+                        )
+                      }}
+                    >
+                      요청서 보기
+                    </S.ReqireButton>
                     <S.RoomListButton
                       ref={index === 0 ? firstDmRoomRef : null}
                       onClick={() => setCurrentChat(item.roomId)}
@@ -73,8 +79,6 @@ const ChattingPage = () => {
           )}
         </S.Container>
       )}
-
-      <DmTest2 />
       <BottomNavigation />
     </>
   )

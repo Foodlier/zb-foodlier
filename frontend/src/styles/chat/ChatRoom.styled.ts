@@ -85,14 +85,6 @@ export const Message = styled.div<{ $isMe: boolean }>`
   }
 `
 
-export const FocusInput = styled.input`
-  position: absolute;
-  bottom: 0;
-  width: 0px;
-  height: 0px;
-  opacity: 0;
-`
-
 export const Suggestion = styled.div<{ $isMe: boolean }>`
   max-width: 25rem;
   border: 2px solid ${palette.yellow};
@@ -186,11 +178,13 @@ export const Button = styled.button`
 
 export const Wrap = styled.div`
   display: flex;
+  gap: 10px;
   align-items: center;
 `
 
 export const FlexAlignCenter = styled.div`
   display: flex;
+  gap: 10px;
   align-items: center;
 `
 
@@ -228,8 +222,9 @@ export const ExitButton = styled.button`
 export const ObserverDiv = styled.div`
   width: 50px;
   height: 50px;
+  border-radius: 100%;
   background-color: white;
-  opacity: 0;
+  opacity: 0.5;
 `
 
 export const ExitMessage = styled.p`
