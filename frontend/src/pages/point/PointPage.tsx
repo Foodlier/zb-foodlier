@@ -4,11 +4,13 @@ import {
   PaymentWidgetInstance,
 } from '@tosspayments/payment-widget-sdk'
 import { useLocation } from 'react-router-dom'
-import * as S from '../../styles/point/Charge.styled'
+import * as S from '../../styles/point/PointPage.styled'
 
-const Point = () => {
+const PointPage = () => {
   const paymentWidgetRef = useRef<PaymentWidgetInstance | null>(null)
   const location = useLocation()
+  console.log(location)
+
   const {
     amount,
     orderId: orderID,
@@ -17,7 +19,7 @@ const Point = () => {
     customerNickName: customerNAME,
   } = location.state
   const clientKey = 'test_ck_Z1aOwX7K8meEABdJQeW8yQxzvNPG'
-  const customerKey = orderID
+  const customerKey = 'd-b'
 
   const pay = async () => {
     const paymentWidget = paymentWidgetRef.current
@@ -27,7 +29,6 @@ const Point = () => {
         orderName: orderNAME,
         customerName: customerNAME,
         customerEmail: customerEMAIL,
-        customerMobilePhone: '01025145147',
         successUrl: `${window.location.origin}/point/success`,
         failUrl: `${window.location.origin}/point/fail`,
       })
@@ -50,10 +51,10 @@ const Point = () => {
     <S.PaymentContainer>
       <S.PaymentWidget id="payment-widget" />
       <S.ChargeButton type="button" onClick={pay}>
-        결제하기
+        toss 결제하기
       </S.ChargeButton>
     </S.PaymentContainer>
   )
 }
 
-export default Point
+export default PointPage

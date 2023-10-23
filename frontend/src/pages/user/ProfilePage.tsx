@@ -30,7 +30,7 @@ const ProfilePage = () => {
   const getUserInfo = async () => {
     try {
       // 유저 기본 정보 가져오기
-      const res = await axiosInstance.get(`/profile/public/${userId}`)
+      const res = await axiosInstance.get(`/api/profile/public/${userId}`)
       console.log('기본 정보', res.data)
       setUser(res.data)
       setIsUserLoading(true)
@@ -49,7 +49,7 @@ const ProfilePage = () => {
       nickname,
       id,
     }
-    navigate(`/profile/${userId}/more`, { state: Info })
+    navigate(`/api/profile/${userId}/more`, { state: Info })
   }
 
   useEffect(() => {

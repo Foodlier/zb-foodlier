@@ -28,9 +28,8 @@ const UserReviewedItem: React.FC<UserRecipeItemProps> = ({ EA, memberId }) => {
   const getRecipefReview = async () => {
     try {
       const chefReviewRes = await axiosInstance.get(
-        `/profile/public/recipereview/${0}/${EA}/${memberId}`
+        `/api/profile/public/recipereview/${0}/${EA}/${memberId}`
       )
-      console.log('레시피 리뷰', chefReviewRes.data.content)
       setReviewedItem(chefReviewRes.data.content)
     } catch (error) {
       console.log(error)
