@@ -51,7 +51,7 @@ export const ShowCurrentInfo = styled.div`
 
 export const MainInfo = styled.p`
   font-weight: 600;
-  font-size: 1.6rem;
+  font-size: 2rem;
 `
 
 export const MoreInfo = styled.p``

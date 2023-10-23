@@ -1,25 +1,25 @@
 import styled from 'styled-components'
-import { palette } from '../../constants/Styles'
+import { breakpoints, palette, typography } from '../../constants/Styles'
 
 export const ReviewedCard = styled.div`
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 20px;
-  border-radius: 10px;
+  gap: 1rem;
+  padding: 2rem;
+  border-radius: 1rem;
   box-shadow: 0px 2px 6px 2px rgba(89, 97, 104, 0.1);
   cursor: pointer;
 `
 
 export const ReviewedImg = styled.img`
-  width: 90px;
-  height: 90px;
-  border-radius: 10px;
+  width: 9rem;
+  height: 9rem;
+  border-radius: 1rem;
   background-color: aliceblue;
 `
 
 export const ReviewedInfoContainer = styled.div`
-  height: 80px;
+  height: 8rem;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -28,18 +28,18 @@ export const ReviewedInfoContainer = styled.div`
 export const ReviewedTopInfo = styled.div`
   display: flex;
   align-items: center;
-  gap: 20px;
+  gap: 1.5rem;
 `
 
 export const ReviewedUserInfo = styled.div`
   display: flex;
-  gap: 10px;
+  gap: 1rem;
   align-items: center;
 `
 
 export const ReviewedUserImg = styled.img`
-  width: 30px;
-  height: 30px;
+  width: 3rem;
+  height: 3rem;
   border-radius: 100%;
   background-color: aliceblue;
 `
@@ -61,15 +61,19 @@ export const ReviewedContent = styled.p`
   -webkit-line-clamp: 1;
 `
 export const ReviewedAt = styled.p`
-  font-size: 1.2rem;
+  font-size: ${typography.mobile.desc};
+
+  ${breakpoints.large} {
+    font-size: ${typography.web.desc};
+  }
 `
 
 export const NoReviewedCard = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 140px;
-  border-radius: 10px;
+  height: 14rem;
+  border-radius: 1rem;
   color: ${palette.divider};
   box-shadow: 0px 2px 6px 2px rgba(89, 97, 104, 0.1);
 `

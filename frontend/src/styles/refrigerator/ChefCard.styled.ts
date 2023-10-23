@@ -16,7 +16,7 @@ export const Card = styled.li`
 `
 export const CardInfo = styled.div`
   display: flex;
-  gap: 20px;
+  gap: 1.5rem;
   .mainImg {
     width: 90px;
     height: 90px;

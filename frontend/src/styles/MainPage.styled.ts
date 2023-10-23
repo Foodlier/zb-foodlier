@@ -54,6 +54,7 @@ export const RecipeList = styled.section`
     padding: 0 0.5rem;
     justify-content: center;
     margin-top: 3rem;
+    justify-content: space-around;
   }
 `
 export const ChefContainer = styled.section`

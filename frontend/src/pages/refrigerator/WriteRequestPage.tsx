@@ -119,7 +119,7 @@ const WriteRequestPage = () => {
         condition:
           requestValue.title.length < 2 || requestValue.title.length > 20,
         key: 'title',
-        message: '제목을  2자 이상, 20자 이하로 입력해주세요.',
+        message: '제목을 2자 이상, 20자 이하로 입력해주세요.',
       },
       {
         condition: requestValue.content.length < 2,

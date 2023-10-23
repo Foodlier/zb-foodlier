@@ -26,8 +26,7 @@ export const Title = styled.span`
 export const Image = styled.div`
   width: 30%;
   height: 10rem;
-  /* background-color: ${palette.divider}; */
-  border: 1px solid ${palette.divider};
+  border: 0.1rem solid ${palette.divider};
   box-shadow: 1px 1px 1px ${palette.shadow};
   margin-right: 1rem;
   border-radius: 1rem;

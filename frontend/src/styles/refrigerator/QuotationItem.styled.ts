@@ -1,5 +1,10 @@
 import styled from 'styled-components'
-import { breakpoints, palette, zindex } from '../../constants/Styles'
+import {
+  breakpoints,
+  palette,
+  typography,
+  zindex,
+} from '../../constants/Styles'
 
 export const GreyBackground = styled.div`
   position: fixed;
@@ -23,7 +28,7 @@ export const ModalScreen = styled.div`
   transform: translate(-50%, -50%);
   width: 90%;
   height: 80%;
-  max-width: 1000px;
+  max-width: 100rem;
   background-color: ${palette.white};
   padding: 5%;
   border-radius: 10px;
@@ -38,7 +43,7 @@ export const ModalScreen = styled.div`
 export const ModalTop = styled.div`
   display: flex;
   justify-content: space-between;
-  margin-bottom: 20px;
+  margin-bottom: 2rem;
   span,
   button {
     font-size: 2rem;
@@ -49,16 +54,16 @@ export const ElContainer = styled.ul`
   display: flex;
   flex: 1;
   flex-direction: column;
-  gap: 20px;
+  gap: 1.5rem;
   padding-left: 0;
 `
 
 export const El = styled.li`
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  padding: 20px;
-  border-radius: 5px;
+  gap: 1rem;
+  padding: 2rem;
+  border-radius: 0.5rem;
   box-shadow: 0px 2px 6px 2px rgba(89, 97, 104, 0.1);
   ${breakpoints.large} {
     flex-direction: row;
@@ -68,19 +73,23 @@ export const El = styled.li`
 `
 
 export const ElImg = styled.img`
-  width: 70px;
-  min-width: 70px;
-  height: 70px;
-  background-color: yellowgreen;
+  width: 7rem;
+  min-width: 7rem;
+  height: 7rem;
+  background-color: ${palette.yellow};
 `
 export const ElTitle = styled.p`
-  font-size: 1.8rem;
+  font-size: ${typography.mobile.content};
   font-weight: bold;
   display: -webkit-box;
   overflow: hidden;
   word-break: break-all;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 1;
+
+  ${breakpoints.large} {
+    font-size: ${typography.web.content};
+  }
 `
 export const ElContents = styled.p`
   display: -webkit-box;
@@ -91,9 +100,9 @@ export const ElContents = styled.p`
 `
 export const ButtonContainer = styled.div`
   display: flex;
-  gap: 5px;
+  gap: 0.5rem;
   button {
-    height: 30px;
+    height: 3rem;
   }
   ${breakpoints.large} {
     flex-direction: column-reverse;
@@ -105,9 +114,9 @@ export const RequestButton = styled.button`
   width: 80%;
   color: ${palette.white};
   background-color: ${palette.main};
-  border-radius: 5px;
+  border-radius: 0.5rem;
   ${breakpoints.large} {
-    width: 120px;
+    width: 12rem;
   }
 `
 

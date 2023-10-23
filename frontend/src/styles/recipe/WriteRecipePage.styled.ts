@@ -67,7 +67,7 @@ export const Input = styled.input<{
 }>`
   width: ${props => props.$width || 100}%;
   border: 1px solid ${palette.divider};
-  border-radius: 0.6rem;
+  border-radius: 0.5rem;
   padding: 1rem;
   font-size: ${typography.mobile.content};
   color: ${palette.textPrimary};
@@ -98,7 +98,7 @@ export const DeleteItem = styled.button`
   font-size: ${typography.mobile.content};
   background-color: ${palette.dim};
   color: ${palette.white};
-  padding: 0.5rem 1rem;
+  padding: 1rem;
   border-radius: 1rem;
 
   ${breakpoints.large} {
@@ -115,7 +115,7 @@ export const ItemInput = styled.input<{ $width: number; $radius: string }>`
   border-radius: ${props => props.$radius};
   font-size: ${typography.mobile.content};
   color: ${palette.textPrimary};
-  padding: 0.5rem 1rem;
+  padding: 1rem;
 
   ${breakpoints.large} {
     font-size: ${typography.web.content};
@@ -146,7 +146,7 @@ export const WrapDifficultyButton = styled.div`
 export const Difficulty = styled.button<{ $isActive?: boolean }>`
   font-size: ${typography.mobile.content};
   padding: 0.7rem 2rem;
-  border-radius: 0.6rem;
+  border-radius: 0.5rem;
   margin-right: 1rem;
   background-color: ${props => (props.$isActive ? palette.main : 'white')};
   color: ${props => (props.$isActive ? 'white' : palette.textPrimary)};
@@ -176,15 +176,15 @@ export const WrapOrder = styled.div`
 export const RequestButton = styled.button`
   width: 80%;
   background-color: ${palette.main};
-  color: white;
-  font-size: ${typography.mobile.content};
+  color: ${palette.white};
+  font-size: ${typography.mobile.desc};
   font-weight: 800;
-  border-radius: 1rem;
+  border-radius: 0.5rem;
   padding: 1rem;
   margin: 2rem 0;
 
   ${breakpoints.large} {
-    font-size: ${typography.web.content};
+    font-size: ${typography.web.desc};
   }
 `
 

@@ -22,7 +22,7 @@ export const NormalInfoContainer = styled.div`
 
 export const UserContainer = styled.div`
   display: flex;
-  gap: 20px;
+  gap: 1.5rem;
   align-items: center;
 `
 
