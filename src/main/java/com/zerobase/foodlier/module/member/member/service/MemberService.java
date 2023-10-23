@@ -37,6 +37,7 @@ public class MemberService {
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider tokenProvider;
     private static final String DEL_PREFIX = "DEL";
+    private static final String EMPTY_URL = null;
 
     public void register(MemberRegisterDto memberRegisterDto) {
         validateRegister(memberRegisterDto);
@@ -256,7 +257,7 @@ public class MemberService {
                         .registrationType(oAuthInfoResponse.getRegistrationType())
                         .address(Address.builder().build())
                         .phoneNumber(randomCode)
-                        .profileUrl(null)
+                        .profileUrl(EMPTY_URL)
                         .isTemp(true)
                         .roles(new ArrayList<>(
                                 List.of(RoleType.ROLE_USER.name())

@@ -11,6 +11,8 @@ import com.zerobase.foodlier.module.member.member.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import java.util.Objects;
+
 @Component
 @RequiredArgsConstructor
 public class ProfileFacade {
@@ -24,14 +26,14 @@ public class ProfileFacade {
     ) {
         Member member = memberService.findById(memberAuthDto.getId());
         CoordinateResponseDto coordinateResponseDto = localService.getCoordinate(
-                form.getRoadAddress() != null ? form.getRoadAddress() :
+                Objects.nonNull(form.getRoadAddress()) ? form.getRoadAddress() :
                         member.getAddress().getRoadAddress()
         );
-        String imageUrl = form.getProfileImage() != null ?
+        String imageUrl = Objects.nonNull(form.getProfileImage()) ?
                 s3Service.getImageUrl(form.getProfileImage()) :
                 member.getProfileUrl();
         if (!imageUrl.equals(member.getProfileUrl())
-                && member.getProfileUrl() != null) {
+                && Objects.nonNull(member.getProfileUrl())) {
             s3Service.deleteImage(member.getProfileUrl());
         }
         memberService.updatePrivateProfile(
