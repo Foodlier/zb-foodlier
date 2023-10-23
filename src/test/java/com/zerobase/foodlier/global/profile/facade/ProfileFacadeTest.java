@@ -1,6 +1,7 @@
 package com.zerobase.foodlier.global.profile.facade;
 
 import com.zerobase.foodlier.common.s3.service.S3Service;
+import com.zerobase.foodlier.common.security.provider.dto.MemberAuthDto;
 import com.zerobase.foodlier.module.member.member.domain.model.Member;
 import com.zerobase.foodlier.module.member.member.domain.vo.Address;
 import com.zerobase.foodlier.module.member.member.local.dto.CoordinateResponseDto;
@@ -46,6 +47,7 @@ class ProfileFacadeTest {
     void success_deleteProfileUrlAndGetAddressUpdateProfile() {
         //given
         Member member = Member.builder()
+                .id(1L)
                 .email("test@test.com")
                 .password("1")
                 .phoneNumber("010-1234-5678")
@@ -75,7 +77,7 @@ class ProfileFacadeTest {
         CoordinateResponseDto coordinateResponseDto =
                 new CoordinateResponseDto(38.0, 127.1);
 
-        given(memberService.findByEmail(anyString()))
+        given(memberService.findById(any()))
                 .willReturn(member);
         given(s3Service.getImageUrl(any()))
                 .willReturn("https://test.s3/s3Image2.png");
@@ -88,8 +90,10 @@ class ProfileFacadeTest {
                 ArgumentCaptor.forClass(Member.class);
 
         //when
-        profileFacade.deleteProfileUrlAndGetAddressUpdateProfile(member.getEmail(),
-                form);
+        profileFacade.deleteProfileUrlAndGetAddressUpdateProfile(MemberAuthDto.builder()
+                .id(1L)
+                .email("test@test.com")
+                .build(), form);
 
         //then
         verify(memberService, times(1))

@@ -14,15 +14,17 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @Builder
 public class MemberBalanceHistoryDto {
+    private Long requestId;
     private int changePoint;
     private int currentPoint;
-    private  String sender;
+    private String sender;
     private String description;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime transactionAt;
 
     public static MemberBalanceHistoryDto from(MemberBalanceHistory memberBalanceHistory) {
         return MemberBalanceHistoryDto.builder()
+                .requestId(memberBalanceHistory.getRequestId())
                 .changePoint(memberBalanceHistory.getChangePoint())
                 .currentPoint(memberBalanceHistory.getCurrentPoint())
                 .sender(memberBalanceHistory.getSender())

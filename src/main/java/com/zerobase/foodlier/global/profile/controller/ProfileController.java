@@ -96,7 +96,7 @@ public class ProfileController {
             @ModelAttribute @Valid MemberPrivateProfileForm form
     ) {
         profileFacade.deleteProfileUrlAndGetAddressUpdateProfile(
-                memberAuthDto.getEmail(), form);
+                memberAuthDto, form);
         return ResponseEntity.ok("내 정보 수정 완료");
     }
 
