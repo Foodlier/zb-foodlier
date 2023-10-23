@@ -38,7 +38,7 @@ class RedissonLockServiceTest {
         //when
 
         //then
-        assertDoesNotThrow(() -> redissonLockService.lock("heart", "1"));
+        assertDoesNotThrow(() -> redissonLockService.lock("heart", "1", 2L, 1L));
     }
 
     @Test
@@ -52,7 +52,7 @@ class RedissonLockServiceTest {
 
         //when
         RedissonException redissonException = assertThrows(RedissonException.class,
-                () -> redissonLockService.lock("heart", "1"));
+                () -> redissonLockService.lock("heart", "1",2L,1L));
 
         //then
         assertEquals(LOCK_ERROR, redissonException.getErrorCode());

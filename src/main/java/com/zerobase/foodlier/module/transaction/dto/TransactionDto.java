@@ -14,4 +14,5 @@ public class TransactionDto {
     private Member requestMember;
     private Member chefMember;
     private Integer changePoint;
+    private Long requestId;
 }

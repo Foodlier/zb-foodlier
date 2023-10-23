@@ -38,6 +38,7 @@ public class MemberBalanceHistoryService {
                 .currentPoint((int) requestMember.getPoint())
                 .sender(transactionDto.getChefMember().getNickname())
                 .transactionType(POINT_SEND)
+                .requestId(transactionDto.getRequestId())
                 .build());
     }
 
@@ -54,6 +55,7 @@ public class MemberBalanceHistoryService {
                 .currentPoint((int) chefMember.getPoint())
                 .sender(transactionDto.getRequestMember().getNickname())
                 .transactionType(POINT_RECEIVE)
+                .requestId(transactionDto.getRequestId())
                 .build());
     }
 

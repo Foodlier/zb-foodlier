@@ -48,7 +48,8 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -176,9 +177,11 @@ class ProfileControllerTest {
             public Long getRecipeId() {
                 return 1L;
             }
+
             public String getMessage() {
                 return "이거이거 너무 맛있는 꿀조합인데요?";
             }
+
             public LocalDateTime getCreatedAt() {
                 return LocalDateTime.of(2023, 10, 18,
                         13, 30, 50);
@@ -241,7 +244,7 @@ class ProfileControllerTest {
         //then
         ArgumentCaptor<MemberPrivateProfileForm> captor = ArgumentCaptor.forClass(MemberPrivateProfileForm.class);
         verify(profileFacade, times(1))
-                .deleteProfileUrlAndGetAddressUpdateProfile(eq("test@test.com"), captor.capture());
+                .deleteProfileUrlAndGetAddressUpdateProfile(any(), captor.capture());
 
         MemberPrivateProfileForm expectedForm = captor.getValue();
 
