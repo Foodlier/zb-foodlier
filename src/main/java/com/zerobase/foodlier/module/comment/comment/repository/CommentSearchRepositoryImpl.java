@@ -7,7 +7,6 @@ import com.zerobase.foodlier.module.comment.comment.domain.model.Comment;
 import com.zerobase.foodlier.module.comment.comment.domain.model.QComment;
 import com.zerobase.foodlier.module.comment.comment.dto.CommentDto;
 import com.zerobase.foodlier.module.comment.comment.dto.MyPageCommentDto;
-import com.zerobase.foodlier.module.member.member.domain.model.QMember;
 import com.zerobase.foodlier.module.recipe.domain.model.QRecipe;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
