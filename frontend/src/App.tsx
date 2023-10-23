@@ -62,7 +62,7 @@ function App() {
         <Route path="/recipe/write" element={<WriteRecipePage />} />
         <Route path="/recipe/detail/:id" element={<RecipeDetailPage />} />
         <Route
-          path="/recipe/detail/write-review"
+          path="/recipe/detail/write-review/:id"
           element={<WriteReviewPage />}
         />
         <Route path="/chat" element={<ChattingPage />} />
