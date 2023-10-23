@@ -125,10 +125,14 @@ public class MemberService {
      * 프로필 정보를 수정합니다.
      */
     public void updatePrivateProfile(MemberUpdateDto memberUpdateDto, Member member) {
-        validateUpdateProfile(memberUpdateDto);
+        validateUpdatePrivateProfile(memberUpdateDto, member);
 
-        member.updateNickname(memberUpdateDto.getNickName());
-        member.updatePhoneNumber(memberUpdateDto.getPhoneNumber());
+        if (!member.getNickname().equals(memberUpdateDto.getNickName())) {
+            member.updateNickname(memberUpdateDto.getNickName());
+        }
+        if (!member.getPhoneNumber().equals(memberUpdateDto.getPhoneNumber())) {
+            member.updatePhoneNumber(memberUpdateDto.getPhoneNumber());
+        }
         member.updateTemp();
         member.updateAddress(memberUpdateDto);
         member.updateProfileUrl(memberUpdateDto.getProfileUrl());
@@ -252,7 +256,7 @@ public class MemberService {
                         .registrationType(oAuthInfoResponse.getRegistrationType())
                         .address(Address.builder().build())
                         .phoneNumber(randomCode)
-                        .profileUrl(randomCode)
+                        .profileUrl(null)
                         .isTemp(true)
                         .roles(new ArrayList<>(
                                 List.of(RoleType.ROLE_USER.name())
@@ -297,20 +301,22 @@ public class MemberService {
         }
     }
 
-    private void validateUpdateProfile(MemberUpdateDto memberUpdateDto) {
-        if (StringUtils.hasText(memberUpdateDto.getNickName())
-                && memberRepository.existsByNickname(memberUpdateDto.getNickName())) {
-            throw new MemberException(NICKNAME_IS_ALREADY_EXIST);
-        }
-        if (StringUtils.hasText(memberUpdateDto.getPhoneNumber())
-                && memberRepository.existsByPhoneNumber(memberUpdateDto.getPhoneNumber())) {
-            throw new MemberException(PHONE_NUMBER_IS_ALREADY_EXIST);
-        }
-    }
-
     private void validateGetRequestedMemberList(Member member) {
         if (member.getChefMember() == NOT_CHEF_MEMBER) {
             throw new MemberException(MEMBER_IS_NOT_CHEF);
+        }
+    }
+
+    private void validateUpdatePrivateProfile(MemberUpdateDto memberUpdateDto, Member member) {
+        if (StringUtils.hasText(memberUpdateDto.getNickName())
+                && memberRepository.existsByNickname(memberUpdateDto.getNickName())
+                && !member.getNickname().equals(memberUpdateDto.getNickName())) {
+            throw new MemberException(NICKNAME_IS_ALREADY_EXIST);
+        }
+        if (StringUtils.hasText(memberUpdateDto.getPhoneNumber())
+                && memberRepository.existsByPhoneNumber(memberUpdateDto.getPhoneNumber())
+                && !member.getPhoneNumber().equals(memberUpdateDto.getPhoneNumber())) {
+            throw new MemberException(PHONE_NUMBER_IS_ALREADY_EXIST);
         }
     }
 }

@@ -1,6 +1,7 @@
 package com.zerobase.foodlier.global.profile.facade;
 
 import com.zerobase.foodlier.common.s3.service.S3Service;
+import com.zerobase.foodlier.common.security.provider.dto.MemberAuthDto;
 import com.zerobase.foodlier.module.member.member.domain.model.Member;
 import com.zerobase.foodlier.module.member.member.local.dto.CoordinateResponseDto;
 import com.zerobase.foodlier.module.member.member.local.service.LocalService;
@@ -18,10 +19,10 @@ public class ProfileFacade {
     private final LocalService localService;
 
     public void deleteProfileUrlAndGetAddressUpdateProfile(
-            String email,
+            MemberAuthDto memberAuthDto,
             MemberPrivateProfileForm form
     ) {
-        Member member = memberService.findByEmail(email);
+        Member member = memberService.findById(memberAuthDto.getId());
         CoordinateResponseDto coordinateResponseDto = localService.getCoordinate(
                 form.getRoadAddress() != null ? form.getRoadAddress() :
                         member.getAddress().getRoadAddress()

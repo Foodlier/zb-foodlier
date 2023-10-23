@@ -32,5 +32,6 @@ public class MemberBalanceHistory extends Audit {
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private TransactionType transactionType;
-
+    @Column(nullable = false)
+    private Long requestId;
 }

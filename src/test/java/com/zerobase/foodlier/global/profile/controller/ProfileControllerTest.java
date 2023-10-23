@@ -3,6 +3,7 @@ package com.zerobase.foodlier.global.profile.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.zerobase.foodlier.common.response.ListResponse;
 import com.zerobase.foodlier.common.security.config.SecurityConfig;
+import com.zerobase.foodlier.common.security.provider.dto.MemberAuthDto;
 import com.zerobase.foodlier.global.profile.facade.ProfileFacade;
 import com.zerobase.foodlier.mockuser.WithCustomMockUser;
 import com.zerobase.foodlier.module.comment.comment.dto.MyPageCommentDto;
@@ -176,9 +177,11 @@ class ProfileControllerTest {
             public Long getRecipeId() {
                 return 1L;
             }
+
             public String getMessage() {
                 return "이거이거 너무 맛있는 꿀조합인데요?";
             }
+
             public LocalDateTime getCreatedAt() {
                 return LocalDateTime.of(2023, 10, 18,
                         13, 30, 50);
@@ -241,7 +244,7 @@ class ProfileControllerTest {
         //then
         ArgumentCaptor<MemberPrivateProfileForm> captor = ArgumentCaptor.forClass(MemberPrivateProfileForm.class);
         verify(profileFacade, times(1))
-                .deleteProfileUrlAndGetAddressUpdateProfile(eq("test@test.com"), captor.capture());
+                .deleteProfileUrlAndGetAddressUpdateProfile(any(), captor.capture());
 
         MemberPrivateProfileForm expectedForm = captor.getValue();
 
