@@ -44,7 +44,7 @@ const ChatRoom = ({ roomNum }: { roomNum: number | undefined }) => {
   const priceRef = useRef(0)
 
   // 로그인 구현시 TOKEN 따로 받아와야 함
-  const nowNickname = '김도빈테스트'
+  const nowNickname = '상추는귀여워'
   const LoginTOKEN = getCookie('refreshToken')
   const socketTOKEN = `Bearer ${LoginTOKEN}`
 
@@ -138,7 +138,7 @@ const ChatRoom = ({ roomNum }: { roomNum: number | undefined }) => {
 
     return () => {
       // 소켓 리셋
-      // socket.close()
+      socket.close()
       // 디엠방 리셋
       setDmMessageList([])
     }
