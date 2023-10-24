@@ -59,8 +59,8 @@ const RecipeDetailPage = () => {
         <DetailMainItem recipe={recipeData} />
         <DetailIngredients ingredients={recipeData?.recipeIngredientDtoList} />
         <DetailProcedure detail={recipeData?.recipeDetailDtoList} />
-        <RecipeComment />
-        <RecipeReviewList />
+        <RecipeComment recipeId={recipeData?.recipeId || 0} />
+        <RecipeReviewList recipeId={recipeData?.recipeId || 0} />
       </DetailContainer>
 
       <BottomNavigation />

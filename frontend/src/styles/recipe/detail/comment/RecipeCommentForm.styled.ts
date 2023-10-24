@@ -1,7 +1,11 @@
 // /* eslint-disable import/prefer-default-export */
 import styled from 'styled-components'
-import { palette } from '../../../../constants/Styles'
-// import { palette, breakpoints } from '../../../../constants/Styles'
+import {
+  breakpoints,
+  palette,
+  typography,
+  weight,
+} from '../../../../constants/Styles'
 
 export const CommentForm = styled.div`
   width: 100%;
@@ -26,6 +30,10 @@ export const CommentSubmit = styled.button`
   width: 20%;
   max-width: 10rem;
   color: ${palette.white};
-  font-weight: 600;
-  font-size: 1.6rem;
+  font-weight: ${weight.subTitle};
+  font-size: ${typography.mobile.desc};
+
+  ${breakpoints.large} {
+    font-size: ${typography.web.desc};
+  }
 `

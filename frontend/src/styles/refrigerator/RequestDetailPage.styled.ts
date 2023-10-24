@@ -1,5 +1,10 @@
 import styled from 'styled-components'
-import { breakpoints, palette, weight } from '../../constants/Styles'
+import {
+  breakpoints,
+  palette,
+  typography,
+  weight,
+} from '../../constants/Styles'
 
 export const RequestContainer = styled.div`
   display: flex;
@@ -15,8 +20,12 @@ export const RequestHeader = styled.h2`
   text-align: center;
   padding-bottom: 1%;
   margin-bottom: 3%;
-  font-size: 2.4rem;
+  font-size: ${typography.mobile.mainTitle};
   border-bottom: 1px solid ${palette.divider};
+
+  ${breakpoints.large} {
+    font-size: ${typography.web.mainTitle};
+  }
 `
 
 export const RequestForm = styled.form`
@@ -29,52 +38,52 @@ export const RequestFormList = styled.ul`
   margin: 0 auto;
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 1.5rem;
   padding-left: 0;
 `
 export const RequestFormEl = styled.li`
-  padding-bottom: 10px;
-  border-bottom: 1px solid ${palette.divider};
+  padding-bottom: 1rem;
+  border-bottom: 0.1rem solid ${palette.divider};
   &:last-of-type {
     border-bottom: none;
   }
 `
 
 export const ElementTitle = styled.p`
-  font-weight: 600;
-  margin-bottom: 10px;
+  font-weight: ${weight.subTitle};
+  margin-bottom: 1rem;
   color: ${palette.textSecondary};
 `
 export const ElementContents = styled.span`
   display: inline-block;
-  margin-right: 10px;
-  font-size: 20px;
+  margin-right: 1rem;
+  font-size: ${typography.mobile.subTitle};
   font-weight: ${weight.content};
 `
 
 export const IngredientsBoxContainer = styled.div`
   display: flex;
-  gap: 20px;
+  gap: 1.5rem;
 `
 
 export const IngredientsBox = styled.div`
-  padding: 10px 14px;
-  border: 1px solid ${palette.divider};
-  border-radius: 10px;
+  padding: 1rem 1.4rem;
+  border: 0.1rem solid ${palette.divider};
+  border-radius: 1rem;
 `
 
 export const TaggedRecipe = styled.div`
-  width: 200px;
-  height: 240px;
-  border-radius: 10px;
-  border: 1px solid ${palette.divider};
+  width: 20rem;
+  height: 2.4rem;
+  border-radius: 1rem;
+  border: 0.1rem solid ${palette.divider};
 `
 
 export const TaggedImg = styled.img`
   width: 100%;
   height: 50%;
   background-color: teal;
-  border-radius: 10px 10px 0 0;
+  border-radius: 1rem 1rem 0 0;
 `
 
 export const TaggedInfo = styled.div`
@@ -82,7 +91,7 @@ export const TaggedInfo = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  padding: 10px;
+  padding: 1rem;
 `
 
 export const TaggedTopInfo = styled.div`
@@ -99,55 +108,63 @@ export const TaggedLike = styled.div`
   flex-direction: column;
   align-items: center;
   span {
-    font-size: 1.2rem;
+    font-size: ${typography.mobile.desc};
+  }
+
+  ${breakpoints.large} {
+    font-size: ${typography.web.desc};
   }
 `
 
 export const TaggedBottomInfo = styled.p`
-  font-size: 1.4rem;
+  font-size: ${typography.mobile.desc};
+
+  ${breakpoints.large} {
+    font-size: ${typography.web.desc};
+  }
 `
 
 export const ButtonList = styled.div`
-  margin: 50px 0;
+  margin: 5rem 0;
   display: flex;
   justify-content: center;
-  gap: 10px;
+  gap: 1rem;
 
   ${breakpoints.large} {
-    margin: 50px 0;
+    margin: 5rem 0;
   }
 `
 
 export const RejectButton = styled.button`
-  width: 120px;
-  height: 36px;
-  line-height: 36px;
+  width: 12rem;
+  height: 3.6rem;
+  line-height: 3.6rem;
   text-align: center;
   background-color: ${palette.white};
   color: ${palette.main};
-  border: 1px solid ${palette.main};
-  font-weight: 600;
-  border-radius: 5px;
+  border: 0.1rem solid ${palette.main};
+  font-weight: ${weight.subTitle};
+  border-radius: 0.5rem;
 `
 
 export const AcceptButton = styled.button<{ $isActive: boolean }>`
-  width: 120px;
-  height: 36px;
-  line-height: 36px;
+  width: 12rem;
+  height: 3.6rem;
+  line-height: 3.6rem;
   text-align: center;
   background-color: ${props =>
     props.$isActive ? palette.main : palette.divider};
   color: ${props =>
     props.$isActive ? palette.white : palette.textDisablePlace};
 
-  font-weight: 600;
-  border-radius: 5px;
+  font-weight: ${weight.subTitle};
+  border-radius: 0.5rem;
 `
 export const SpacingDiv = styled.div`
   width: 100%;
-  height: 110px;
+  height: 11rem;
   ${breakpoints.large} {
-    height: 20px;
+    height: 2rem;
   }
 `
 
@@ -166,6 +183,10 @@ export const QuotationButton = styled.button`
 export const ErrorMessage = styled.span`
   margin-top: 1rem;
   color: ${palette.main};
-  font-size: 1.4rem;
-  font-weight: 800;
+  font-size: ${typography.mobile.desc};
+  font-weight: ${weight.mainTitle};
+
+  ${breakpoints.large} {
+    font-size: ${typography.web.desc};
+  }
 `

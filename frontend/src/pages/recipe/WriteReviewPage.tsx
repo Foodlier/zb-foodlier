@@ -1,18 +1,31 @@
-import { useState, ChangeEvent, FormEvent } from 'react'
-import { Link } from 'react-router-dom'
+import { useState, ChangeEvent, FormEvent, useRef } from 'react'
+import { Link, useParams, useNavigate } from 'react-router-dom'
 import useIcon from '../../hooks/useIcon'
 import { palette } from '../../constants/Styles'
 import * as S from '../../styles/recipe/WriteReviewPage.styled'
 import CommonButton from '../../components/ui/Button'
 import Header from '../../components/Header'
 import BottomNavigation from '../../components/BottomNavigation'
+import axiosInstance from '../../utils/FetchCall'
+import ModalWithoutButton from '../../components/ui/ModalWithoutButton'
 
 function ReviewForm() {
+  const id = useParams()
+  const navigate = useNavigate()
   const { StarFill, StarLight } = useIcon()
   const [rating, setRating] = useState(5)
   const [memo, setMemo] = useState('')
-  const [attachment, setAttachment] = useState<File | null>(null)
   const { IcAddRoundDuotone } = useIcon()
+  const [reviewImage, setReviewImage] = useState<File | null>(null)
+  const [reviewModal, setReviewModal] = useState(false)
+  const [reviewModalContent, setReviewModalContent] = useState('')
+  const reviewImgRef = useRef<HTMLInputElement | null>(null)
+
+  const handleAttachmentChange = (e: ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files) {
+      setReviewImage(e.target.files[0])
+    }
+  }
 
   const handleRatingChange = (newRating: number) => {
     if (newRating >= 1 && newRating <= 5) {
@@ -24,43 +37,46 @@ function ReviewForm() {
     setMemo(e.target.value)
   }
 
-  const uploadFile = async (file: File) => {
-    try {
-      const formData = new FormData()
-      formData.append('file', file)
-      const response = await fetch('your-upload-api-endpoint', {
-        method: 'POST',
-        body: formData,
-      })
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
 
-      if (response.ok) {
-        console.log('파일 업로드 성공')
-      } else {
-        console.error('파일 업로드 실패')
+    if (!reviewImage) {
+      alert('이미지를 업로드해 주세요.')
+      return
+    }
+
+    try {
+      const reviewImgData = new FormData()
+      reviewImgData.append('cookImage', reviewImage)
+      reviewImgData.append('content', memo)
+      reviewImgData.append('star', String(rating))
+
+      const res = await axiosInstance.post(
+        `/api/review/recipe/${id.id}`,
+        reviewImgData
+      )
+
+      if (res.status === 200) {
+        setRating(5)
+        setMemo('')
+        setReviewImage(null)
+        // console.log('게시글 작성됐나?', reviewModal, reviewModalContent)
+
+        setReviewModalContent('게시글 작성이 완료되었습니다.')
       }
     } catch (error) {
-      console.error('파일 업로드 중 오류 발생', error)
+      console.error('review 등록 중 오류:', error)
+      setReviewModalContent('게시글 작성에 실패하였습니다.')
     }
-  }
-
-  const handleAttachmentChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const selectedFile = e.target.files ? e.target.files[0] : null
-    if (selectedFile) {
-      uploadFile(selectedFile)
-      setAttachment(selectedFile)
-    }
-  }
-
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
+    setReviewModal(true)
+    setTimeout(() => {
+      setReviewModal(false)
+      navigate(-1)
+    }, 1500)
 
     console.log('별점:', rating)
     console.log('후기 내용:', memo)
-    console.log('첨부 파일:', attachment)
-
-    setRating(5)
-    setMemo('')
-    setAttachment(null)
+    console.log('첨부 파일:', reviewImage)
   }
 
   const handleStarClick = (starValue: number) => {
@@ -73,17 +89,33 @@ function ReviewForm() {
 
       <S.ReviewWriteContainer>
         <S.ReviewWriteTit>레시피 후기 작성하기</S.ReviewWriteTit>
-        <S.ReviewWriteForm onSubmit={handleSubmit}>
+        <S.ReviewWriteForm
+          onSubmit={handleSubmit}
+          encType="multipart/form-data"
+        >
           <S.ReviewWriteWrap>
             <S.ReviewWriteTxt>사진 업로드</S.ReviewWriteTxt>
-            <S.ReviewFileLabel htmlFor="attachment">
-              <IcAddRoundDuotone size={4} />
-            </S.ReviewFileLabel>
-            <S.ReviewWriteInput
-              type="file"
-              id="attachment"
-              onChange={handleAttachmentChange}
-            />
+            {/* {JSON.stringify(reviewImage)} */}
+            {reviewImage ? (
+              <S.ReviewImage
+                src={reviewImage ? URL.createObjectURL(reviewImage) : ''}
+                alt=""
+              />
+            ) : (
+              <>
+                <S.ReviewFileLabel htmlFor="reviewImg">
+                  <IcAddRoundDuotone size={4} />
+                </S.ReviewFileLabel>
+
+                <S.ReviewWriteInput
+                  type="file"
+                  accept="image/*"
+                  id="reviewImg"
+                  onChange={handleAttachmentChange}
+                  ref={reviewImgRef}
+                />
+              </>
+            )}
           </S.ReviewWriteWrap>
 
           <S.ReviewWriteWrap>
@@ -133,6 +165,12 @@ function ReviewForm() {
           </S.MoreButtonBox>
         </S.ReviewWriteForm>
       </S.ReviewWriteContainer>
+      {reviewModal && (
+        <ModalWithoutButton
+          content={reviewModalContent}
+          setIsModalFalse={() => setReviewModal(false)}
+        />
+      )}
 
       <BottomNavigation />
     </>

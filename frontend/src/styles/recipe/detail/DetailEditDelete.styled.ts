@@ -11,7 +11,7 @@ export const WrapButton = styled.div`
 export const Button = styled.button`
   color: ${palette.textSecondary};
   border-radius: 1rem;
-  padding: 0.5rem 1rem;
+  padding: 1rem;
   margin-left: 1rem;
   font-size: ${typography.mobile.content};
 

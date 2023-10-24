@@ -28,22 +28,27 @@ export const SubTitle = styled.span`
 
 export const SelectBox = styled.div`
   width: 15rem;
-  border: 1px solid ${palette.divider};
-  border-radius: 1rem;
-  padding: 0.5rem 1rem;
+  border: 0.1rem solid ${palette.divider};
+  border-radius: 0.5rem;
+  padding: 1rem;
   text-align: left;
+  font-size: ${typography.mobile.desc};
+
+  ${breakpoints.large} {
+    font-size: ${typography.web.desc};
+  }
 `
 
 export const OptionList = styled.ul<{ $toggle: boolean }>`
   display: ${props => (props.$toggle ? 'block' : 'none')};
   width: 100%;
   position: absolute;
-  top: 30px;
+  top: 3rem;
   left: 0;
   background-color: ${palette.white};
   border: 1px solid ${palette.divider};
   padding-left: 0;
-  border-radius: 5px;
+  border-radius: 0.5rem;
 `
 
 export const Option = styled.li`
@@ -58,14 +63,14 @@ export const OptionButton = styled.button`
   width: 100%;
   height: 100%;
   text-align: right;
-  padding: 0 4px;
+  padding: 0 0.5rem;
 `
 
 export const CardList = styled.ul`
   display: flex;
   flex-direction: column;
   width: 100%;
-  height: 500px;
+  height: 50rem;
   overflow: auto;
   padding-left: 0;
   &::-webkit-scrollbar {
@@ -86,13 +91,13 @@ export const ButtonList = styled.div`
   background-color: ${palette.white};
   display: flex;
   justify-content: flex-end;
-  border-top: 1px solid ${palette.divider};
+  border-top: 0.1rem solid ${palette.divider};
   padding: 2rem;
 
   button {
-    margin-bottom: 110px;
+    margin-bottom: 11rem;
     ${breakpoints.large} {
-      margin-bottom: 10px;
+      margin-bottom: 1rem;
     }
   }
 `

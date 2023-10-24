@@ -75,7 +75,7 @@ export const ReviewUserInfo = styled.div`
 
 export const ReviewStar = styled.div`
   display: flex;
-  padding-left: 1rem;
+  padding-left: 0.7rem;
 `
 
 export const UserImg = styled.img`
@@ -105,4 +105,37 @@ export const ReviewDate = styled.p`
   display: flex;
   align-items: center;
   color: ${palette.textSecondary};
+`
+
+export const ReviewEdit = styled.form`
+  width: 100%;
+  padding: 1rem 0;
+`
+export const ReviewEditInput = styled.textarea`
+  width: 100%;
+  height: 10rem;
+  max-height: auto;
+  flex: 1 1 auto;
+  padding: 1rem 2rem;
+  border-radius: 1rem;
+  margin: 0 0 1rem;
+  border: 0.1rem solid ${palette.divider};
+`
+
+export const ReviewActions = styled.div`
+  width: 100%;
+`
+export const ReviewReplyForm = styled.div`
+  width: 100%;
+`
+export const ReviewReplies = styled.div`
+  width: 100%;
+`
+
+export const ReviewWriteStar = styled.div`
+  display: inline-flex;
+`
+
+export const changeReviewStar = styled.div`
+  padding-left: 0.3rem;
 `

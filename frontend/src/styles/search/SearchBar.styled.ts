@@ -8,14 +8,14 @@ export const Container = styled.div`
 
 export const SearchForm = styled.div`
   flex: 1;
-  margin: 0 2rem;
+  margin: 0 0 0 2rem;
   position: relative;
   display: flex;
   align-items: center;
 
   ${breakpoints.large} {
     margin: 0;
-    padding: 1rem;
+    padding: 0 0 0 1rem;
     border-radius: 1rem;
   }
 `
@@ -27,7 +27,7 @@ export const SearchInput = styled.input`
   border: 0.1rem solid ${palette.divider};
   border-radius: 1rem;
   padding: 1.2rem 2rem;
-  box-shadow: 0.1rem 0.5rem 1.1rem ${palette.shadow};
+  box-shadow: 0 0.4rem 0.4rem ${palette.shadow};
 `
 
 export const SearchButton = styled.button`
