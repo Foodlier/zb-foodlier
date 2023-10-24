@@ -31,7 +31,7 @@ const FindPasswordPage = () => {
   const handleSubmitFindPassword = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     axiosInstance
-      .post('/api/auth/findPassword', userInputs)
+      .post('/auth/findPassword', userInputs)
       .then(res => {
         Swal.fire({
           icon: 'success',
