@@ -51,7 +51,7 @@ const UserReviewedItem: React.FC<UserRecipeItemProps> = ({ EA, memberId }) => {
         key={el.recipeId}
         onClick={() => goToReciepe(el.recipeId)}
       >
-        <S.ReviewedImg src="" alt="메인 이미지" />
+        <S.ReviewedImg src={el.cookUrl} alt="메인 이미지" />
         <S.ReviewedInfoContainer>
           <S.ReviewedTopInfo>
             <S.ReviewedUserInfo>
