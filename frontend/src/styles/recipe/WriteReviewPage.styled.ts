@@ -1,5 +1,5 @@
 import styled from 'styled-components'
-import { palette } from '../../constants/Styles'
+import { palette, typography, weight } from '../../constants/Styles'
 
 export const ReviewWriteContainer = styled.div`
   width: 100%;
@@ -21,6 +21,7 @@ export const MoreButtonBox = styled.div`
   display: flex;
   justify-content: center;
   margin-top: 10rem;
+  margin-bottom: 15rem;
 `
 export const ReviewWriteImage = styled.section`
   width: 100%;
@@ -35,9 +36,9 @@ export const ReviewWriteWrap = styled.div`
 `
 
 export const ReviewWriteTxt = styled.h2`
-  font-size: 1.8rem;
-  margin-bottom: 1rem;
-  font-weight: 600;
+  font-size: ${typography.mobile.subTitle};
+  font-weight: ${weight.subTitle};
+  margin-bottom: 1.5rem;
 `
 
 export const ReviewWriteLabel = styled.label`
@@ -74,10 +75,21 @@ export const ReviewWriteTextarea = styled.textarea`
     outline: none;
   }
 `
+
 export const ReviewWriteStar = styled.div`
   display: inline-flex;
 `
 
 export const ReviewStar = styled.span`
   width: 100%;
+`
+
+export const ReviewImage = styled.img`
+  width: 10rem;
+  height: 10rem;
+  background: #000;
+  border-radius: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 `

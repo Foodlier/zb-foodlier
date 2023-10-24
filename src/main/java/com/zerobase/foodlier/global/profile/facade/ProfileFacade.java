@@ -10,11 +10,13 @@ import com.zerobase.foodlier.module.member.member.profile.dto.MemberUpdateDto;
 import com.zerobase.foodlier.module.member.member.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Objects;
 
 @Component
 @RequiredArgsConstructor
+@Transactional
 public class ProfileFacade {
     private final MemberService memberService;
     private final S3Service s3Service;

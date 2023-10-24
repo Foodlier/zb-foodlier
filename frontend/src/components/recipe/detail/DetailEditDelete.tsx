@@ -14,7 +14,7 @@ const DetailEditDelete = ({ recipeId }: { recipeId: number }) => {
 
   const deleteRecipe = async () => {
     try {
-      const { status } = await axiosInstance.delete(`/recipe/${recipeId}`)
+      const { status } = await axiosInstance.delete(`/api/recipe/${recipeId}`)
       if (status === 200) {
         setModalContent('삭제가 완료되었습니다.')
       }

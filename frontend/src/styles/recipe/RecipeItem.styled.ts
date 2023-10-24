@@ -13,10 +13,10 @@ export const Container = styled.div`
 
   ${breakpoints.large} {
     flex-direction: column;
-    width: 32%;
+    width: 31.4%;
     padding: 0;
-    margin-bottom: 5rem;
-    margin-right: 1%;
+    margin-right: 1.3rem;
+    margin-bottom: 3rem;
   }
 `
 
@@ -55,6 +55,7 @@ export const Title = styled.span`
 `
 
 export const Introduce = styled.span`
+  width: 90%;
   font-size: ${typography.mobile.desc};
   color: ${palette.textSecondary};
   margin: 0.6rem 0;

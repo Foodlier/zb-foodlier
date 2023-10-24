@@ -31,7 +31,7 @@ const CookForYou = ({
     const pageIdx = 0
     const pageSize = 10
     const res = await axiosInstance.get(
-      `/refrigerator/requester/${pageIdx}/${pageSize}`,
+      `/api/refrigerator/requester/${pageIdx}/${pageSize}`,
       { params: { type: currentSelectValue.value } }
     )
     console.log(res)

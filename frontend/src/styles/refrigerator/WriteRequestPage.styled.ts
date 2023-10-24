@@ -1,7 +1,12 @@
 /* eslint-disable import/no-extraneous-dependencies */
 import DatePicker from 'react-datepicker'
 import styled from 'styled-components'
-import { breakpoints, palette } from '../../constants/Styles'
+import {
+  breakpoints,
+  palette,
+  typography,
+  weight,
+} from '../../constants/Styles'
 
 export const RequestContainer = styled.div`
   display: flex;
@@ -18,110 +23,126 @@ export const RequestForm = styled.form`
 export const RequestFormList = styled.ul`
   display: flex;
   flex-direction: column;
-  /* gap: 30px; */
   padding-left: 0;
 `
 
 export const ElementTitle = styled.span`
-  font-size: 1.8rem;
+  font-size: ${typography.mobile.content};
   color: ${palette.textPrimary};
+
+  ${breakpoints.large} {
+    font-size: ${typography.web.content};
+  }
 `
 
 export const ElementInput = styled.input`
   width: 100%;
   border-radius: 1rem;
-  border: 1px solid ${palette.divider};
+  border: 0.1rem solid ${palette.divider};
   padding: 0 2rem;
 
   &::placeholder {
-    font-size: 1.6rem;
+    font-size: ${typography.mobile.desc};
   }
   &:focus {
     outline: none;
   }
   ${breakpoints.large} {
     padding: 1rem;
-    font-size: 1.6rem;
+    font-size: ${typography.web.desc};
   }
 `
 
 export const ElementSourceInput = styled.input`
   width: 100%;
-  border-radius: 10px;
-  border: 1px solid ${palette.divider};
-  font-size: 2rem;
-  margin-right: 0px;
+  border-radius: 1rem;
+  border: 0.5rem solid ${palette.divider};
+  font-size: ${typography.mobile.content};
+  margin-right: 0;
   box-sizing: border-box;
   &:focus {
     outline: none;
   }
   ${breakpoints.large} {
+    font-size: ${typography.web.content};
   }
 `
 
 export const LikeInputDiv = styled.div`
   display: flex;
   width: 100%;
-  border-radius: 10px;
-  border: 1px solid ${palette.divider};
+  border-radius: 1rem;
+  border: 0.1rem solid ${palette.divider};
   box-sizing: border-box;
-  padding: 0 20px;
-  font-size: 20px;
-  gap: 10px;
+  padding: 0 2rem;
+  font-size: ${typography.mobile.subTitle};
+  gap: 1rem;
   align-items: center;
   ${breakpoints.large} {
+    font-size: ${typography.web.subTitle};
   }
 `
 export const InvisibleInput = styled.input`
   width: 100%;
   border-radius: 1rem;
   padding: 0 2rem;
+  font-size: ${typography.mobile.content};
   &:focus {
     outline: none;
   }
   ${breakpoints.large} {
     padding: 1rem;
-    font-size: 1.6rem;
+    font-size: ${typography.web.content};
   }
 `
 
 export const ElementSpan = styled.span`
-  font-size: 2rem;
+  font-size: ${typography.mobile.subTitle};
+
+  ${breakpoints.large} {
+    font-size: ${typography.web.subTitle};
+  }
 `
 
 export const PlusButton = styled.button`
-  border: 1px solid ${palette.divider};
-  border-radius: 10px;
-  font-size: 24px;
+  border: 0.1rem solid ${palette.divider};
+  border-radius: 0.5rem;
+  font-size: ${typography.mobile.mainTitle};
   ${breakpoints.large} {
     padding: 1rem;
+    font-size: ${typography.web.mainTitle};
   }
 `
 
 export const ButtonList = styled.div`
   display: flex;
   justify-content: center;
-  gap: 2rem;
+  gap: 1.5rem;
   width: auto;
   margin: 0 auto;
-  /* margin: 50px 0; */
+
   ${breakpoints.large} {
-    /* margin-top: 300px; */
     margin: 3rem 0;
   }
 `
 
 export const WritingButton = styled.button`
-  width: 146px;
-  height: 44px;
-  line-height: 44px;
+  width: 15rem;
+  height: 4rem;
+  line-height: 1.5;
   text-align: center;
+  font-size: ${typography.mobile.desc};
+  font-weight: ${weight.mainTitle};
   background-color: ${palette.main};
   color: ${palette.white};
-  border-radius: 5px;
-  margin-bottom: 95px;
+  border-radius: 0.5rem;
+  margin-bottom: 15rem;
+  margin-top: 2rem;
+
   ${breakpoints.large} {
-    margin-bottom: 0px;
+    margin-bottom: 0;
+    margin-top: 5rem;
+    font-size: ${typography.web.desc};
   }
 `
 
@@ -130,13 +151,13 @@ export const WrapForm = styled.div`
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  margin: 0 auto 1rem;
+  margin: 0 auto 2rem;
 `
 
 export const Title = styled.span`
-  font-size: 1.4rem;
-  font-weight: 600;
-  margin-bottom: 1rem;
+  font-size: ${typography.mobile.subTitle};
+  font-weight: ${weight.subTitle};
+  margin-bottom: 1.5rem;
 `
 export const Input = styled.input<{
   $width?: number
@@ -144,46 +165,59 @@ export const Input = styled.input<{
   $marginLf?: number
   $marginBt?: number
 }>`
-  width: ${props => props.$width || 100}%;
-  border: 1px solid ${palette.divider};
-  border-radius: 0.6rem;
-  padding: 0.5rem 1rem;
-  font-size: 1.2rem;
+  width: 100%;
+  border: 0.1rem solid ${palette.divider};
+  border-radius: 0.5rem;
+  padding: 1rem;
+  font-size: ${typography.mobile.desc};
   color: ${palette.textPrimary};
   margin-right: ${props => props.$marginRi || 0}rem;
   margin-left: ${props => props.$marginLf || 0}rem;
   margin-bottom: ${props => props.$marginBt || 0}rem;
 
   &::placeholder {
-    font-size: 1.2rem;
+    font-size: ${typography.mobile.desc};
     color: ${palette.textDisablePlace};
+  }
+
+  ${breakpoints.large} {
+    width: ${props => props.$width || 100}%;
   }
 `
 
 export const AddButton = styled.button<{ $width: number }>`
-  width: 15%;
+  width: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.2rem;
+  font-size: ${typography.mobile.desc};
   padding: 0.4rem 1.2rem;
-  border: 1px solid ${palette.divider};
-  border-radius: 0.8rem;
+  border: 0.1rem solid ${palette.divider};
+  border-radius: 0.5rem;
   background-color: #f3f3f3;
   color: ${palette.textSecondary};
-  /* margin-top: 1rem; */
+
+  ${breakpoints.large} {
+    width: 20%;
+    font-size: ${typography.web.desc};
+  }
 `
 
 export const SearchButton = styled.button`
-  width: 15%;
+  width: 20rem;
+  max-width: 20rem;
   color: ${palette.main};
-  border: 1px solid ${palette.main};
-  border-radius: 0.6rem;
-  padding: 0.5rem 1rem;
+  border: 0.1rem solid ${palette.main};
+  border-radius: 0.5rem;
+  padding: 1rem;
   margin-left: 1rem;
+  height: 4rem;
+  line-height: 1;
+  font-size: ${typography.mobile.desc};
 
   ${breakpoints.large} {
-    font-size: 1.2rem;
+    font-size: ${typography.web.desc};
+    max-width: 20rem;
   }
 `
 
@@ -194,16 +228,16 @@ export const FlexWrap = styled.div`
 `
 
 export const StyledDatePicker = styled(DatePicker)`
-  border: 1px solid ${palette.divider};
-  border-radius: 0.6rem;
-  padding: 0.5rem 1rem;
-  font-size: 1.2rem;
+  border: 0.1rem solid ${palette.divider};
+  border-radius: 0.5rem;
+  padding: 1rem;
+  font-size: ${typography.mobile.desc};
   color: ${palette.textSecondary};
 `
 
 export const ErrorMessage = styled.span`
   margin-top: 1rem;
   color: ${palette.main};
-  font-size: 1.2rem;
-  font-weight: 600;
+  font-size: ${typography.mobile.desc};
+  font-weight: ${weight.subTitle};
 `

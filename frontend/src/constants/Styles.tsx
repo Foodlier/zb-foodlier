@@ -37,15 +37,6 @@ export const weight = {
   desc: 400,
 }
 
-// margin
-// TODO : %, px 확정 - 최보성
-export const spacing = {
-  // small: '4px',
-  // medium: '8px',
-  // large: '16px',
-  // xLarge: '32px',
-}
-
 export const zindex = {
   base: 1,
   header: 10,
