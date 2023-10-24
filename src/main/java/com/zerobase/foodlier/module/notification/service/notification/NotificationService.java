@@ -8,8 +8,12 @@ import com.zerobase.foodlier.module.notification.exception.NotificationErrorCode
 import com.zerobase.foodlier.module.notification.exception.NotificationException;
 import com.zerobase.foodlier.module.notification.repository.notification.NotificationRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -28,8 +32,24 @@ public class NotificationService {
     }
 
     public ListResponse<NotificationDto> getNotificationBy(Long memberId, Pageable pageable) {
-        return ListResponse.from(
-                notificationRepository.findNotificationBy(memberId, pageable));
+        Page<NotificationDto> notificationBy = notificationRepository.findNotificationBy(memberId, pageable);
+
+        return ListResponse.<NotificationDto>builder()
+                .totalPages(notificationBy.getTotalPages())
+                .totalElements(notificationBy.getTotalElements())
+                .hasNextPage(notificationBy.hasNext())
+                .content(notificationBy.getContent()
+                        .stream()
+                        .map(notification -> NotificationDto.builder()
+                                .id(notification.getId())
+                                .sentAt(notification.getSentAt())
+                                .content(notification.getContent())
+                                .notificationType(notification.getNotificationType())
+                                .isRead(notification.isRead())
+                                .targetId(notification.getTargetId())
+                                .build())
+                        .collect(Collectors.toList()))
+                .build();
     }
 
     public Long countUnreadNotification(Long memberId) {

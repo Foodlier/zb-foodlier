@@ -43,7 +43,8 @@ public class NotificationRepositoryCustomImpl implements NotificationRepositoryC
         Long count = jpaQueryFactory.select(Wildcard.count)
                 .from(notification)
                 .join(member)
-                .on(notification.member.eq(member))
+                .on(member.id.eq(memberId))
+                .where(notification.member.id.eq(memberId))
                 .fetchFirst();
 
         return new PageImpl<>(content, pageable, count);
@@ -56,7 +57,7 @@ public class NotificationRepositoryCustomImpl implements NotificationRepositoryC
 
         return jpaQueryFactory.select(notification.count())
                 .from(notification)
-                .leftJoin(member)
+                .join(member)
                 .on(member.id.eq(memberId))
                 .where(notification.member.id.eq(memberId).and(notification.isRead.eq(NOT_READ)))
                 .fetchOne();
