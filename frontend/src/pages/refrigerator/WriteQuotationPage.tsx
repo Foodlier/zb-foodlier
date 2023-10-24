@@ -105,7 +105,7 @@ const WriteQuotationPage = () => {
   const getQuotation = async () => {
     try {
       const { data, status } = await axiosInstance.get(
-        `/api/quotation/${quotationId}`
+        `/quotation/${quotationId}`
       )
       if (status === 200) {
         setRecipeValue({
@@ -126,7 +126,7 @@ const WriteQuotationPage = () => {
   const editQuotation = async () => {
     try {
       const { status } = await axiosInstance.put(
-        `/api/quotation/${quotationId}`,
+        `/quotation/${quotationId}`,
         recipeValue
       )
       if (status === 200) {
@@ -144,7 +144,7 @@ const WriteQuotationPage = () => {
 
   const postQuotation = async () => {
     try {
-      const { status } = await axiosInstance.post('/api/quotation', recipeValue)
+      const { status } = await axiosInstance.post('/quotation', recipeValue)
       if (status === 200) {
         setCompleteModalContent('견적서 작성이 완료되었습니다.')
       }

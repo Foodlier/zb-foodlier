@@ -42,7 +42,7 @@ const RecipePage = () => {
       orderType: sortSelectValue.value,
     }
     const { data } = await axiosInstance.get(
-      `/api/recipe/default/${pageIdx}/${pageSize}`,
+      `/recipe/default/${pageIdx}/${pageSize}`,
       {
         params: body,
       }
@@ -57,7 +57,7 @@ const RecipePage = () => {
     const pageSize = 20
 
     const res = await axiosInstance.get(
-      `/api/recipe/search/${typeSelectValue.value}/${sortSelectValue.value}/${pageIdx}/${pageSize}`,
+      `/recipe/search/${typeSelectValue.value}/${sortSelectValue.value}/${pageIdx}/${pageSize}`,
       {
         params: { searchText: searchValue },
       }

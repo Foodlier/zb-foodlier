@@ -51,7 +51,7 @@ const RequestDetailPage = () => {
   const getRequestDetail = async () => {
     try {
       const { data, status } = await axiosInstance.get(
-        `/api/refrigerator/request/${id}`
+        `/refrigerator/request/${id}`
       )
       console.log(data)
       if (status === 200) {
@@ -64,13 +64,13 @@ const RequestDetailPage = () => {
 
   // 요청서 수락
   const approveRequest = () => {
-    const res = axiosInstance.post(`/api/refrigerator/chef/approve/${id}`)
+    const res = axiosInstance.post(`/refrigerator/chef/approve/${id}`)
     console.log(res)
   }
 
   // 요청서 거절
   const rejectRequest = () => {
-    const res = axiosInstance.patch(`/api/refrigerator/reject/${id}`)
+    const res = axiosInstance.patch(`/refrigerator/reject/${id}`)
     console.log(res)
   }
 
@@ -83,7 +83,7 @@ const RequestDetailPage = () => {
 
     try {
       const response = axiosInstance.post(
-        `/api/quotation/send?quotationId=${isSelectedRequestId}&requestId=${requestValue?.requestId}`
+        `/quotation/send?quotationId=${isSelectedRequestId}&requestId=${requestValue?.requestId}`
       )
       console.log(response)
       navigate(-1)

@@ -30,7 +30,7 @@ const QuotationItem = ({
 
   const deleteQuotation = async () => {
     if (!('quotationId' in item)) return
-    const res = await axiosInstance.delete(`/api/quotation/${item.quotationId}`)
+    const res = await axiosInstance.delete(`/quotation/${item.quotationId}`)
     console.log(res)
     setIsDeleteModal(false)
     refresh()

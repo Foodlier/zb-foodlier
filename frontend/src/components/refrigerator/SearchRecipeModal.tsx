@@ -24,7 +24,7 @@ const SearchRecipeModal = ({
       orderType: sortSelectValue.value,
     }
     const { data } = await axiosInstance.get(
-      `/api/recipe/default/${pageIdx}/${pageSize}`,
+      `/recipe/default/${pageIdx}/${pageSize}`,
       {
         params: body,
       }

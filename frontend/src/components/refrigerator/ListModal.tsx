@@ -45,7 +45,7 @@ const ListModal: React.FC<ModalProps> = ({
 
     try {
       const res = await axiosInstance.get(
-        `/api/refrigerator/${pageIdx}/${pageSize}`
+        `/refrigerator/${pageIdx}/${pageSize}`
       )
       console.log(res)
       setList(res.data.content)
@@ -60,9 +60,7 @@ const ListModal: React.FC<ModalProps> = ({
     const pageSize = 10
 
     try {
-      const res = await axiosInstance.get(
-        `/api/quotation/${pageIdx}/${pageSize}`
-      )
+      const res = await axiosInstance.get(`/quotation/${pageIdx}/${pageSize}`)
       console.log(res)
       setList(res.data.content)
     } catch (error) {

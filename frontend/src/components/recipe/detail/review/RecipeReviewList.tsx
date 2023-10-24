@@ -27,7 +27,7 @@ function RecipeReviewList({ recipeId }: { recipeId: number }) {
 
   // 나의 리뷰
   const fetchMyReviewData = async () => {
-    const res = await axiosInstance.get(`/api/review/recipe/me/${recipeId}
+    const res = await axiosInstance.get(`/review/recipe/me/${recipeId}
     `)
 
     let myReviewData
@@ -45,7 +45,7 @@ function RecipeReviewList({ recipeId }: { recipeId: number }) {
     const pageSize = 4
 
     const res = await axiosInstance.get(
-      `/api/review/recipe/${pageIdx}/${pageSize}/${recipeId}`
+      `/review/recipe/${pageIdx}/${pageSize}/${recipeId}`
     )
 
     if (res.status === 200) {
