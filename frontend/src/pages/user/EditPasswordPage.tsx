@@ -45,14 +45,12 @@ const EditPasswordPage = () => {
         navigate(-1)
       }, 1500)
       console.log(res)
-    } catch (error) {
-      if (error.response.data.errorCode === 'MEMBER_NOT_FOUND') {
-        setIsCompleteModal(true)
-        setModalContent('잘못 된 비밀번호입니다.')
-        setTimeout(() => {
-          setIsCompleteModal(false)
-        }, 1500)
-      }
+    } catch (err) {
+      setIsCompleteModal(true)
+      setModalContent('잘못 된 비밀번호입니다.')
+      setTimeout(() => {
+        setIsCompleteModal(false)
+      }, 1500)
     }
   }
 

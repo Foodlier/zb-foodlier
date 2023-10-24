@@ -26,7 +26,7 @@ const ProfileEditPage = () => {
   const [isEditAble, setIsEditAble] = useState(false)
 
   const [originPhone, setOriginPhone] = useState('')
-  const [profileImage, setProfileImage] = useState(null)
+  const [profileImage, setProfileImage] = useState<File>()
   const [profileValue, setProfileValue] = useState({
     nickName: '',
     addressDetail: '',

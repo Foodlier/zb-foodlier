@@ -151,6 +151,7 @@ export interface NotiItem {
   notificationType: string
   read: boolean
   sentAt: string
+  targetId: number
 }
 
 export interface Comment {

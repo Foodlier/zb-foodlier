@@ -3,7 +3,7 @@ import styled from 'styled-components'
 import { palette, zindex } from '../constants/Styles'
 
 // 스타일드 컴포넌트를 사용하여 알림 스타일을 정의
-const NotificationWrapper = styled.div<{ $show: boolean; $index: number }>`
+const NotificationWrapper = styled.div<{ $show: boolean }>`
   width: 30rem;
   position: fixed;
   top: 10rem;
@@ -28,7 +28,7 @@ interface NotificationProps {
   setShow: (value: boolean) => void
 }
 
-const Notification: React.FC<NotificationProps> = ({ text, show, setShow }) => {
+const Notification: React.FC<NotificationProps> = ({ text, show }) => {
   return <NotificationWrapper $show={show}>{text}</NotificationWrapper>
 }
 

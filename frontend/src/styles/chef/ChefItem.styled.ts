@@ -1,5 +1,5 @@
 import styled from 'styled-components'
-import { palette, breakpoints, typography } from '../../constants/Styles'
+import { breakpoints, typography } from '../../constants/Styles'
 
 export const Container = styled.section`
   display: flex;
