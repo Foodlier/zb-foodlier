@@ -51,7 +51,7 @@ const Login = () => {
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     axios
-      .post('/api/auth/signin', userInputs)
+      .post('/auth/signin', userInputs)
       .then(res => {
         onLoginSuccess(res)
         navigate('/')
