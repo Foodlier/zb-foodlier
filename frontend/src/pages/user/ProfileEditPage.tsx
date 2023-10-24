@@ -76,7 +76,7 @@ const ProfileEditPage = () => {
   }
 
   const getProfile = async () => {
-    const { data } = await axiosInstance.get('/profile/private')
+    const { data } = await axiosInstance.get('/api/profile/private')
     console.log(data)
     setOriginNickName(data.nickName)
     setOriginPhone(data.phoneNumber)
@@ -90,7 +90,7 @@ const ProfileEditPage = () => {
   }
 
   const setMyProfile = async () => {
-    const response = await axiosInstance.get('/profile/private')
+    const response = await axiosInstance.get('/api/profile/private')
     console.log(response)
     if (response.status === 200) {
       setProfile(response.data)
@@ -110,7 +110,7 @@ const ProfileEditPage = () => {
     }
 
     try {
-      await putFormData('/profile/private', form)
+      await putFormData('/api/profile/private', form)
       setMyProfile()
       setModalContent('프로필 수정이 완료되었습니다.')
     } catch (error) {

@@ -144,7 +144,7 @@ const WriteQuotationPage = () => {
 
   const postQuotation = async () => {
     try {
-      const { status } = await axiosInstance.post('/quotation', recipeValue)
+      const { status } = await axiosInstance.post('/api/quotation', recipeValue)
       if (status === 200) {
         setCompleteModalContent('견적서 작성이 완료되었습니다.')
       }
