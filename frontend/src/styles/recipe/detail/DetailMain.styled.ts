@@ -8,7 +8,7 @@ export const Container = styled.section`
 
   ${breakpoints.large} {
     flex-direction: row;
-    margin-bottom: 5rem;
+    margin-bottom: 2rem;
   }
 `
 // LeftWrap
