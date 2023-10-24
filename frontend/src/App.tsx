@@ -91,11 +91,7 @@ function App() {
   return (
     <div>
       <Routes>
-        {getCookie('accessToken') ? (
-          <Route path="/" element={<MainPage />} />
-        ) : (
-          <Route path="/login" element={<LoginPage />} />
-        )}
+        <Route path="/" element={<MainPage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/find-password" element={<FindPasswordPage />} />
         <Route path="/register" element={<RegisterPage />} />
