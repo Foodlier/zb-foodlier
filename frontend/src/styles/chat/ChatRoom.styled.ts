@@ -8,10 +8,11 @@ export const Container = styled.div`
   justify-content: space-between;
   width: 100%;
   border-left: 1px solid ${palette.divider};
-  padding-bottom: 10rem;
-
+  /* padding-bottom: 6rem; */
+  max-height: calc(100% - 260px);
   ${breakpoints.large} {
     padding-bottom: 0;
+    max-height: fit-content;
   }
 `
 
@@ -53,12 +54,10 @@ export const ChattingMessage = styled.div`
   align-items: center;
   /* justify-content: flex-end; */
   padding: 1rem 3rem;
-  /* max-height: 50rem; */
   overflow-y: auto;
-  padding-bottom: 10rem;
-
   ${breakpoints.large} {
     padding-bottom: 0;
+    height: calc(100% -163px);
   }
 `
 
@@ -144,13 +143,13 @@ export const Input = styled.input`
   border: 1px solid ${palette.divider};
   padding: 0.8rem;
   border-radius: 1rem;
-  width: 68%;
+  width: 84%;
   font-size: 1.2rem;
 
   ${breakpoints.large} {
     font-size: 1.4rem;
     padding: 1rem;
-    width: 80%;
+    width: 86%;
   }
 `
 
@@ -222,9 +221,7 @@ export const ExitButton = styled.button`
 export const ObserverDiv = styled.div`
   width: 50px;
   height: 50px;
-  border-radius: 100%;
-  background-color: white;
-  opacity: 0.5;
+  background-color: red;
 `
 
 export const ExitMessage = styled.p`
