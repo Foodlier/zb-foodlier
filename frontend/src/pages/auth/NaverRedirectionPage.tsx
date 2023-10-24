@@ -14,7 +14,7 @@ const NaverRedirection = () => {
 
   useEffect(() => {
     axiosInstance
-      .post('/api/auth/oauth2/naver', {
+      .post('/auth/oauth2/naver', {
         authorizationCode,
         state,
       })

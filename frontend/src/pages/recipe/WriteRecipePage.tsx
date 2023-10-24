@@ -159,7 +159,7 @@ const WriteRecipePage = () => {
 
   const postRecipe = async (body: Recipe) => {
     try {
-      const { status } = await axiosInstance.post('/api/recipe', body)
+      const { status } = await axiosInstance.post('/recipe', body)
       if (status === 200) {
         setModalContent('게시글 작성이 완료되었습니다.')
       }
@@ -182,7 +182,7 @@ const WriteRecipePage = () => {
         formData.append('cookingOrderImageList', image)
       )
 
-      const { data, status } = await postFormData('/api/recipe/image', formData)
+      const { data, status } = await postFormData('/recipe/image', formData)
       if (status === 200) {
         const body = { ...recipeValue }
         const { cookingOrderImageList, mainImage } = data
