@@ -45,7 +45,10 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
 
         httpSecurity.csrf().disable();
-        httpSecurity.cors().configurationSource(corsConfigurationSource());
+//        httpSecurity.cors().configurationSource(corsConfigurationSource());
+        httpSecurity.httpBasic().disable()
+                .cors().disable()
+                .headers().frameOptions().disable();
         httpSecurity.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
         httpSecurity
                 .addFilterBefore(
