@@ -51,19 +51,20 @@ const Login = () => {
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     axios
-      .post('/api/auth/signin', userInputs)
+      .post('/api/auth/signin', userInputs, {})
       .then(res => {
         onLoginSuccess(res)
-      })
-      .then(() => {
-        Swal.fire({
-          icon: 'success',
-          title: '로그인 성공',
-          text: '환영합니다.',
-          confirmButtonColor: `${palette.main}`,
-        }).then(() => {
-          navigate('/')
-        })
+        setTimeout(() => {
+          Swal.fire({
+            icon: 'success',
+            title: '로그인 성공',
+            text: '환영합니다.',
+            confirmButtonColor: `${palette.main}`,
+          }).then(() => {
+            navigate('/')
+            window.location.reload()
+          })
+        }, 1000)
       })
       .catch(err => {
         console.log(err.response.data)
