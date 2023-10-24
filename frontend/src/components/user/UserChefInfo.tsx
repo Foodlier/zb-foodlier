@@ -48,7 +48,7 @@ const UserChefInfo: React.FC<ChefInfo> = ({
   const getChefReview = async () => {
     try {
       const chefReviewRes = await axiosInstance.get(
-        `/profile/public/chefreview/${0}/${EA}/${chefMemberId}`
+        `/api/profile/public/chefreview/${0}/${EA}/${chefMemberId}`
       )
       // console.log('쉐프 리뷰', chefReviewRes.data.content)
       setChefReview(chefReviewRes.data.content)
@@ -62,7 +62,7 @@ const UserChefInfo: React.FC<ChefInfo> = ({
   const getChefGrade = async () => {
     try {
       const chefGradeRes = await axiosInstance.get(
-        `/profile/public/chef/${chefMemberId}`
+        `/api/profile/public/chef/${chefMemberId}`
       )
       // console.log('쉐프등급', chefGradeRes.data)
       setChefGrade(chefGradeRes.data)

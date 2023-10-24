@@ -52,7 +52,7 @@ function ReviewForm() {
       reviewImgData.append('star', String(rating))
 
       const res = await axiosInstance.post(
-        `/review/recipe/${id.id}`,
+        `/api/review/recipe/${id.id}`,
         reviewImgData
       )
 
