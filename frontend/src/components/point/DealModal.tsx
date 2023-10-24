@@ -40,7 +40,7 @@ const DealModal: React.FC<Price> = ({
 
   const getPoint = async () => {
     try {
-      const res = await axiosInstance.get('/profile/private')
+      const res = await axiosInstance.get('/api/profile/private')
       setPoint(res.data.point)
       setIsLoading(true)
     } catch (error) {
@@ -80,7 +80,7 @@ const DealModal: React.FC<Price> = ({
 
   const goToCharge = async () => {
     try {
-      const res = await axiosInstance.post('/point/charge', body)
+      const res = await axiosInstance.post('/api/point/charge', body)
       console.log(res.data)
       navigate('/point', { state: res.data })
     } catch (error) {

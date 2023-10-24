@@ -330,7 +330,7 @@ const Register = () => {
       return
     }
 
-    const endpoint = '/auth/signup'
+    const endpoint = '/api/auth/signup'
 
     const formDataToSend = new FormData()
     formDataToSend.append('addressDetail', formData.addressDetail)
