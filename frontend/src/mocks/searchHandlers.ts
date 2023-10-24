@@ -6,7 +6,7 @@ import { rest } from 'msw'
 // MSW 핸들러 등록
 const handlers = [
   // GET /api/recipe/:id 요청에 대한 핸들러
-  rest.get('/api/recipe/:id', (req, res, ctx) => {
+  rest.get('/recipe/:id', (req, res, ctx) => {
     // 요청에서 ":id" 부분을 가져옵니다.
     const { id } = req.params
 

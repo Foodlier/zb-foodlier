@@ -18,7 +18,7 @@ const ChattingPage = () => {
 
   const getDmRoomList = async () => {
     try {
-      const res = await axiosInstance.get('/api/dm/room/0/10')
+      const res = await axiosInstance.get('/dm/room/0/10')
       if (res.status === 200) {
         setDmRoomList(res.data.content)
       }

@@ -36,7 +36,7 @@ const MyLogPage = () => {
     const pageSize = 20
 
     const res = await axiosInstance.get(
-      `/api/profile/public/recipe/${pageIdx}/${pageSize}/${profile.myMemberId}`
+      `/profile/public/recipe/${pageIdx}/${pageSize}/${profile.myMemberId}`
     )
 
     setMyRecipeList(res.data.content)
@@ -48,7 +48,7 @@ const MyLogPage = () => {
     const pageSize = 20
 
     const res = await axiosInstance.get(
-      `/api/profile/private/comment/${pageIdx}/${pageSize}`
+      `/profile/private/comment/${pageIdx}/${pageSize}`
     )
     setMyCommentList(res.data.content)
     setTotalCount(res.data.totalElements)
@@ -59,7 +59,7 @@ const MyLogPage = () => {
     const pageSize = 20
 
     const res = await axiosInstance.get(
-      `/api/profile/private/heart/${pageIdx}/${pageSize}`
+      `/profile/private/heart/${pageIdx}/${pageSize}`
     )
     setMyLikeList(res.data.content)
     setTotalCount(res.data.totalElements)

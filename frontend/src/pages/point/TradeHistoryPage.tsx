@@ -22,7 +22,7 @@ const TradeHistoryPage = () => {
     const pageSize = 20
     try {
       const res = await axiosInstance.get(
-        `/api/point/transaction/${pageIdx}/${pageSize}`
+        `/point/transaction/${pageIdx}/${pageSize}`
       )
       setHistory(res.data.content)
     } catch (error) {
