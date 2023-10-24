@@ -35,7 +35,7 @@ const EditPasswordPage = () => {
 
     try {
       const res = await axiosInstance.put(
-        '/api/profile/private/password',
+        '/profile/private/password',
         passwordValue
       )
       setIsCompleteModal(true)
