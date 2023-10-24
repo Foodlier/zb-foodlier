@@ -33,43 +33,44 @@ function RecipeReviewList({ recipeId }: { recipeId: number }) {
     let myReviewData
     if (res.status === 200) {
       myReviewData = res.data
+      console.log('내꺼 리뷰 확인 :', myReviewData)
       setMyReview(myReviewData)
     } else {
-      console.log('내꺼리뷰 가져오는거 실패')
+      console.log('내꺼리뷰 가져오는거실패 ')
     }
   }
 
   // 리뷰 리스트
-  const fetchReviewData = async (idx: number) => {
+  const fetchReviewData = async () => {
     const pageSize = 4
 
     const res = await axiosInstance.get(
-      `/api/review/recipe/${idx}/${pageSize}/${recipeId}`
+      `/api/review/recipe/${pageIdx}/${pageSize}/${recipeId}`
     )
 
     if (res.status === 200) {
       const reviewData = res.data.content
-      // console.log('리뷰 확인 :', res, res.data.hasNextPage)
+      console.log('리뷰 확인 :', res, res.data.hasNextPage)
       setHasNextReviewPage(res.data.hasNextPage)
 
-      if (idx === 0) {
+      if (pageIdx === 0) {
         setReviewList(reviewData)
       } else {
         setReviewList(prevReviewList => [...prevReviewList, ...reviewData])
       }
 
-      // console.log('데이터 넣고나서 :: ', reviewList)
     }
-  }
-  const handleShowMore = () => {
-    fetchReviewData(pageIdx + 1)
-    setPageIdx(pageIdx + 1)
   }
 
   useEffect(() => {
     fetchMyReviewData()
-    fetchReviewData(0)
+    fetchReviewData()
   }, [])
+
+  const handleShowMore = async () => {
+    await fetchReviewData()
+    setPageIdx(pageIdx + 1)
+  }
 
   return (
     <S.ReviewContainer>
@@ -101,7 +102,7 @@ function RecipeReviewList({ recipeId }: { recipeId: number }) {
             color={hasNextReviewPage ? 'main' : 'white'}
             border={hasNextReviewPage ? 'border' : 'borderNone'}
           >
-            {hasNextReviewPage ? '댓글 더보기' : ''}
+            댓글 더보기
           </CommonButton>
         )}
       </S.MoreButtonBox>

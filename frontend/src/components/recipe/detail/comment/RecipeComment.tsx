@@ -33,6 +33,7 @@ const RecipeComment = ({ recipeId }: { recipeId: number }) => {
     const res = await axiosInstance.get(
       `/api/comment/${recipeId}/${idx}/${pageSize}`
     )
+    console.log('끝인지 확인하는거 ::: ', res)
 
     if (res.status === 200) {
       const commentData = res.data.content
@@ -74,13 +75,14 @@ const RecipeComment = ({ recipeId }: { recipeId: number }) => {
 
   // 수정 버튼 누르면
   const handleEditComment = (
-    commentIdParams: number,
-    modifiedMessageParams: string
+    commentIdParams: number, // 수정할 댓글의 고유 식별자
+    modifiedMessageParams: string // 수정할 메시지 내용인 문자열
   ) => {
-    setIsEditing(true)
-    setEditValue(modifiedMessageParams)
-    setWillModifyCommentId(commentIdParams)
-    setCommentId(commentIdParams)
+    setIsEditing(true) // 댓글 수정 모드에 들어갔음
+    setEditValue(modifiedMessageParams) // 수정할 댓글의 내용을 저장
+    setWillModifyCommentId(commentIdParams) // 나중에 댓글을 실제로 수정할 때 어떤 댓글을 수정할 것인지 나타내는데 사용
+    setCommentId(commentIdParams) // commentId 상태를 commentIdParams 값으로 설정
+    console.log('수정버튼누르면', modifiedMessageParams, commentIdParams)
   }
 
   // 댓글 수정 취소
@@ -133,7 +135,6 @@ const RecipeComment = ({ recipeId }: { recipeId: number }) => {
   }, [])
 
   useEffect(() => {
-    // console.log('commentList 콘솔', commentList)
   }, [commentList])
 
   return (

@@ -27,8 +27,8 @@ function RecipeReviewItem({ review }: ReviewItemProps) {
   const [reviewEditValue, setReviewEditValue] = useState('')
   const [isEditing, setIsEditing] = useState(false)
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
-  const [reviewId, setReviewId] = useState<number | null>(null)
-  const [willModifyReviewId, setWillModifyReviewId] = useState(0)
+
+
   const [myNickname, setMyNickname] = useState('')
   const [rating, setRating] = useState(0)
 
@@ -37,10 +37,8 @@ function RecipeReviewItem({ review }: ReviewItemProps) {
 
     if (res.status === 200) {
       const commentData = res
-      // console.log('check확인  !!!!! ::: ', commentData.data.nickName)
       const fetchedNickname = commentData.data.nickName
       setMyNickname(fetchedNickname)
-      // console.log('nickName check :: ', myNickname)
     }
   }
 
@@ -82,13 +80,12 @@ function RecipeReviewItem({ review }: ReviewItemProps) {
   ) => {
     setIsEditing(true)
     setReviewEditValue(modifiedContentParams)
-    setWillModifyReviewId(reviewIdParams)
-    setReviewId(reviewIdParams)
+
     console.log('수정버튼누르면', modifiedContentParams, reviewIdParams)
   }
 
   // 삭제 버튼 누름
-  const handleDeleteComment = (reviewIdParams: number) => {
+  const handleDeleteComment = () => {
     setIsDeleteModalOpen(true)
   }
 
@@ -111,7 +108,6 @@ function RecipeReviewItem({ review }: ReviewItemProps) {
   }
 
   useEffect(() => {
-    // 댓글 가져오는(get) 함수 실행
     getProfile()
   }, [])
 
@@ -143,27 +139,26 @@ function RecipeReviewItem({ review }: ReviewItemProps) {
 
           {isEditing ? (
             <S.ReviewEdit>
-              <S.ReviewEditInput
-                value={reviewEditValue}
-                onChange={e => setReviewEditValue(e.target.value)}
-              />
-
               <S.ReviewWriteStar>
                 {[1, 2, 3, 4, 5].map(starValue => (
-                  <S.changeReviewStar
+                  <S.ReviewStar
                     key={starValue}
                     onClick={() => handleStarClick(starValue)}
                     role="button"
                     tabIndex={0}
                   >
                     {starValue <= rating ? (
-                      <StarFill size={3} color={palette.yellow} />
+                      <StarFill size={5} color={palette.yellow} />
                     ) : (
-                      <StarLight size={3} color={palette.divider} />
+                      <StarLight size={5} color={palette.divider} />
                     )}
-                  </S.changeReviewStar>
+                  </S.ReviewStar>
                 ))}
               </S.ReviewWriteStar>
+              <S.ReviewEditInput
+                value={reviewEditValue}
+                onChange={e => setReviewEditValue(e.target.value)}
+              />
               <S.ReviewButtonWrap>
                 <CommonButton
                   size="small"
@@ -205,7 +200,7 @@ function RecipeReviewItem({ review }: ReviewItemProps) {
                   <CommonButton
                     size="small"
                     color="divider"
-                    onClick={() => handleDeleteComment(review?.recipeReviewId)}
+                    onClick={() => handleDeleteComment()}
                   >
                     삭제
                   </CommonButton>
