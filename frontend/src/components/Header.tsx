@@ -29,10 +29,6 @@ const Header = () => {
   // 모바일 검색 - 토글
   const [isMoSearchOpen, setIsMoSearchOpen] = useState(false)
 
-  const toggleMoSearch = () => {
-    setIsMoSearchOpen(!isMoSearchOpen)
-  }
-
   const HEADER_MENU_LIST = [
     {
       title: '꿀조합',
@@ -54,7 +50,7 @@ const Header = () => {
       </S.LogoButton>
       {/* mobile */}
       <S.WrapIcon>
-        <S.Icon onClick={toggleMoSearch}>
+        <S.Icon onClick={() => navigate('/recipe')}>
           <IcSearch size={3} color={palette.textPrimary} />
         </S.Icon>
       </S.WrapIcon>
