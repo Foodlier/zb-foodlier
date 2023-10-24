@@ -1,5 +1,5 @@
-import { useState, ChangeEvent, FormEvent, useRef } from 'react'
-import { Link, useParams, useNavigate } from 'react-router-dom'
+import { useState, ChangeEvent, useRef } from 'react'
+import { useParams, useNavigate } from 'react-router-dom'
 import useIcon from '../../hooks/useIcon'
 import { palette } from '../../constants/Styles'
 import * as S from '../../styles/recipe/WriteReviewPage.styled'
@@ -37,9 +37,7 @@ function ReviewForm() {
     setMemo(e.target.value)
   }
 
-  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
-
+  const handleSubmit = async () => {
     if (!reviewImage) {
       alert('이미지를 업로드해 주세요.')
       return
@@ -154,16 +152,19 @@ function ReviewForm() {
               ))}
             </S.ReviewWriteStar>
           </S.ReviewWriteWrap>
-
-          <S.MoreButtonBox>
-            <CommonButton color="divider" size="large">
-              <Link to="/recipe/detail">취소하기</Link>
-            </CommonButton>
-            <CommonButton color="main" size="large">
-              후기 등록하기
-            </CommonButton>
-          </S.MoreButtonBox>
         </S.ReviewWriteForm>
+        <S.MoreButtonBox>
+          <CommonButton
+            color="divider"
+            size="large"
+            onClick={() => navigate(-1)}
+          >
+            취소하기
+          </CommonButton>
+          <CommonButton color="main" size="large" onClick={handleSubmit}>
+            후기 등록하기
+          </CommonButton>
+        </S.MoreButtonBox>
       </S.ReviewWriteContainer>
       {reviewModal && (
         <ModalWithoutButton
