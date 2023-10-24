@@ -34,6 +34,7 @@ const ChatRoom = ({ roomNum }: { roomNum: number | undefined }) => {
   const [lastDmNum, setLastDmNum] = useState(0)
   const [stompClientstate, setStompClientstate] = useState<StompJs.Client>()
   const [roomInfo, setRoomInfo] = useState<RoomInfoInterface>()
+  const [nowNickname, setNowNickName] = useState('')
   // 옵저버 관찰 대상
   const observerEl = useRef<HTMLDivElement>(null!)
   // 스크롤
@@ -44,9 +45,20 @@ const ChatRoom = ({ roomNum }: { roomNum: number | undefined }) => {
   const priceRef = useRef(0)
 
   // 로그인 구현시 TOKEN 따로 받아와야 함
-  const nowNickname = '상추는귀여워'
   const LoginTOKEN = getCookie('refreshToken')
   const socketTOKEN = `Bearer ${LoginTOKEN}`
+
+  // 내 정보 가져오기
+  const getMyInfo = async () => {
+    try {
+      const res = await axiosInstance.get('/api/profile/private')
+      if (res.status === 200) {
+        setNowNickName(res.data.nickName)
+      }
+    } catch (error) {
+      console.log(error)
+    }
+  }
 
   // 방 정보 가져오기
   const getRoomInfo = async () => {
@@ -66,6 +78,7 @@ const ChatRoom = ({ roomNum }: { roomNum: number | undefined }) => {
   // 방 정보 새로 가져오기(방 클릭시 마다)
   useEffect(() => {
     getRoomInfo()
+    getMyInfo()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [roomNum])
   // isSuggested는 왜 필요한건지 의문
@@ -365,7 +378,6 @@ const ChatRoom = ({ roomNum }: { roomNum: number | undefined }) => {
         {dmMessageList.length > 0 && <S.ObserverDiv ref={observerEl} />}
       </S.ChattingMessage>
       <S.WrapInput>
-        <IcImgBoxLight size={3.5} color={palette.textPrimary} />
         <S.Input
           value={message}
           onChange={e => setMessage(e.target.value)}
