@@ -4,7 +4,7 @@ import { setCookie, removeCookie } from '../utils/Cookies'
 
 const onSilentRefresh = () => {
   axios
-    .post('/auth/reissue')
+    .post('/api/auth/reissue')
     .then(onLoginSuccess)
     .catch(err => {
       console.log(err)

@@ -13,7 +13,7 @@ const SuccessPage = () => {
   const complete = async () => {
     try {
       const res = await axiosInstance.get(
-        `/point/success?orderId=${orderId}&paymentKey=${paymentKey}&amount=${amount}`
+        `/api/point/success?orderId=${orderId}&paymentKey=${paymentKey}&amount=${amount}`
       )
       console.log(res)
       navigate('/')

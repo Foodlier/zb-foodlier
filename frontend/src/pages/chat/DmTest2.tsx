@@ -66,7 +66,7 @@ const DmTest2 = () => {
   const leaveRoom = async () => {
     try {
       sendMessage('상대방이 채팅방을 퇴장하셨습니다.')
-      const res = await axiosInstance.put(`/dm/room/exit/1`)
+      const res = await axiosInstance.put(`/api/dm/room/exit/1`)
       if (res.status === 200) {
         console.log(res)
       }

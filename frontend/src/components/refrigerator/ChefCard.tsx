@@ -28,7 +28,7 @@ const ChefCard: React.FC<ChefCardProps> = ({
 
   const cancelRequest = async () => {
     const response = await axiosInstance.patch(
-      `/refrigerator/cancel/${chefItem.requestId}`
+      `/api/refrigerator/cancel/${chefItem.requestId}`
     )
     refresh()
     console.log(response)

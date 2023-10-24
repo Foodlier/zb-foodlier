@@ -51,7 +51,7 @@ const ChatRoom = ({ roomNum }: { roomNum: number | undefined }) => {
   // 방 정보 가져오기
   const getRoomInfo = async () => {
     try {
-      const res = await axiosInstance.get('/dm/room/0/10')
+      const res = await axiosInstance.get('/api/dm/room/0/10')
       if (res.status === 200) {
         const newRoomInfo = res.data.content.find(
           (item: RoomInfoInterface) => item.roomId === roomNum
@@ -75,7 +75,7 @@ const ChatRoom = ({ roomNum }: { roomNum: number | undefined }) => {
     if (messageHasNext) {
       try {
         const res = await axiosInstance.get(
-          `/dm/message?roomId=${roomNum}&dmId=${lastDmNum}`
+          `/api/dm/message?roomId=${roomNum}&dmId=${lastDmNum}`
         )
         if (res.status === 200) {
           setMessageHasNext(res.data.hasNext)
@@ -96,7 +96,7 @@ const ChatRoom = ({ roomNum }: { roomNum: number | undefined }) => {
   const firstGetDm = async () => {
     try {
       const res = await axiosInstance.get(
-        `/dm/message?roomId=${roomNum}&dmId=${0}`
+        `/api/dm/message?roomId=${roomNum}&dmId=${0}`
       )
       setMessageHasNext(res.data.hasNext)
       if (res.status === 200) {
@@ -252,7 +252,9 @@ const ChatRoom = ({ roomNum }: { roomNum: number | undefined }) => {
   // 채팅방 나가기
   const leaveRoom = async () => {
     try {
-      const res = await axiosInstance.put(`/dm/room/exit/${roomInfo?.roomId}`)
+      const res = await axiosInstance.put(
+        `/api/dm/room/exit/${roomInfo?.roomId}`
+      )
       if (res.status === 200) {
         console.log(res)
       }
