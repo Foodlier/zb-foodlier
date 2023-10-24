@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, KeyboardEvent } from 'react'
 import SockJS from 'sockjs-client'
 import StompJs from 'stompjs'
+import { useNavigate } from 'react-router-dom'
 import { palette } from '../../constants/Styles'
 import useIcon from '../../hooks/useIcon'
 import * as S from '../../styles/chat/ChatRoom.styled'
@@ -23,7 +24,7 @@ interface DmMessage {
 }
 
 const ChatRoom = ({ roomNum }: { roomNum: number | undefined }) => {
-  const { IcImgBoxLight, InitialUserImg } = useIcon()
+  const { InitialUserImg } = useIcon()
   const [isProposalModalOpen, setIsProposalModalOpen] = useState(false)
   const [isDealModalOpen, setIsDealModalOpen] = useState(false)
   const [isRejectModalOpen, setIsRejectModalOpen] = useState(false)
@@ -81,7 +82,6 @@ const ChatRoom = ({ roomNum }: { roomNum: number | undefined }) => {
     getMyInfo()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [roomNum])
-  // isSuggested는 왜 필요한건지 의문
 
   //  DM 리스트 가져오기
   const getDmMessage = async () => {
@@ -217,6 +217,21 @@ const ChatRoom = ({ roomNum }: { roomNum: number | undefined }) => {
           })
         )
       }
+    } else if (answer === 'out') {
+      newMessage.content = '상대방이 채팅방을 나가셨습니다.'
+      if (stompClientstate) {
+        stompClientstate.send(
+          `/pub/message/${roomNum}`,
+          {},
+          JSON.stringify({
+            roomId: roomNum,
+            message: newMessage.content,
+            writer: newMessage.sender,
+            // 정형화
+            messageType: 'CHAT',
+          })
+        )
+      }
     } else {
       newMessage = {
         content: message,
@@ -263,13 +278,15 @@ const ChatRoom = ({ roomNum }: { roomNum: number | undefined }) => {
   }
 
   // 채팅방 나가기
+  const navigate = useNavigate()
   const leaveRoom = async () => {
     try {
+      sendMessage('out')
       const res = await axiosInstance.put(
         `/api/dm/room/exit/${roomInfo?.roomId}`
       )
       if (res.status === 200) {
-        console.log(res)
+        navigate('/')
       }
     } catch (error) {
       console.log(error)
