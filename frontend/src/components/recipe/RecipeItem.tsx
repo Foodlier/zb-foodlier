@@ -17,15 +17,13 @@ function RecipeItem({ recipeItem, onClick }: RecipeItemProps) {
   const [likeCount, setLikeCount] = useState(recipeItem.heartCount)
 
   const postLike = async () => {
-    const res = await axiosInstance.post(
-      `/api/recipe/heart/${recipeItem.recipeId}`
-    )
+    const res = await axiosInstance.post(`/recipe/heart/${recipeItem.recipeId}`)
     console.log(res)
   }
 
   const deleteLike = async () => {
     const res = await axiosInstance.delete(
-      `/api/recipe/heart/${recipeItem.recipeId}`
+      `/recipe/heart/${recipeItem.recipeId}`
     )
     console.log(res)
   }

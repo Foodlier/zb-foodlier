@@ -32,7 +32,7 @@ function RecipeReviewItem({ review }: ReviewItemProps) {
   const [rating, setRating] = useState(0)
 
   const getProfile = async () => {
-    const res = await axiosInstance.get(`/api/profile/private`)
+    const res = await axiosInstance.get(`/profile/private`)
 
     if (res.status === 200) {
       const commentData = res
@@ -56,7 +56,7 @@ function RecipeReviewItem({ review }: ReviewItemProps) {
     try {
       const res = await axiosInstance.put(
         // 해당 리뷰의 id, 바꿀 content, 바꿀 star
-        `/api/review/recipe/${review?.recipeReviewId}?content=${reviewEditValue}!&star=${rating}`
+        `/review/recipe/${review?.recipeReviewId}?content=${reviewEditValue}!&star=${rating}`
       )
       if (res.status === 200) {
         console.log('리뷰 수정 성공')
@@ -91,7 +91,7 @@ function RecipeReviewItem({ review }: ReviewItemProps) {
   // 삭제 모달 확인 버튼
   const handleConfirmDelete = async () => {
     const res = await axiosInstance.delete(
-      `/api/review/recipe/${review?.recipeReviewId}`
+      `/review/recipe/${review?.recipeReviewId}`
     )
     try {
       if (res.status === 200) {

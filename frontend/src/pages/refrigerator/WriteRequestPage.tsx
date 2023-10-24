@@ -70,7 +70,7 @@ const WriteRequestPage = () => {
   const editRequest = async () => {
     try {
       const { status } = await axiosInstance.put(
-        `/api/refrigerator/${requestFormId}`,
+        `/refrigerator/${requestFormId}`,
         requestValue
       )
       if (status === 200) {
@@ -88,10 +88,7 @@ const WriteRequestPage = () => {
 
   const postRequest = async () => {
     try {
-      const { status } = await axiosInstance.post(
-        '/api/refrigerator',
-        requestValue
-      )
+      const { status } = await axiosInstance.post('/refrigerator', requestValue)
       if (status === 200) {
         setIsCompleteContent('요청서 작성이 완료되었습니다.')
       }
@@ -160,9 +157,7 @@ const WriteRequestPage = () => {
   }
 
   const getRequestInfo = async () => {
-    const { data } = await axiosInstance.get(
-      `/api/refrigerator/${requestFormId}`
-    )
+    const { data } = await axiosInstance.get(`/refrigerator/${requestFormId}`)
 
     setRequestValue({
       ...requestValue,

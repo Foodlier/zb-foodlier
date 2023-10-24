@@ -34,7 +34,7 @@ const RequestItem = ({
     if (!('requestFormId' in item)) return
 
     const res = await axiosInstance.delete(
-      `/api/refrigerator/${item.requestFormId}`
+      `/refrigerator/${item.requestFormId}`
     )
     console.log(res)
     setIsDeleteModal(false)

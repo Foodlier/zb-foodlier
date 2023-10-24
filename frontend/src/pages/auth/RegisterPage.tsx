@@ -73,7 +73,7 @@ const Register = () => {
     setIsCodeInput(true)
     // API : 인증번호 전송 요청
     axios
-      .post(`/api/auth/verification/send/${formData.email}`)
+      .post(`/auth/verification/send/${formData.email}`)
       .then(function () {
         Swal.fire({
           icon: 'success',
@@ -263,7 +263,7 @@ const Register = () => {
     // API : 확인 버튼 누르면 인증번호 일치 여부 확인
     axios
       .post(
-        `/api/auth/verify`,
+        `/auth/verify`,
         {},
         {
           params: {
@@ -330,7 +330,7 @@ const Register = () => {
       return
     }
 
-    const endpoint = '/api/auth/signup'
+    const endpoint = '/auth/signup'
 
     const formDataToSend = new FormData()
     formDataToSend.append('addressDetail', formData.addressDetail)

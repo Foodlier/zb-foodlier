@@ -40,7 +40,7 @@ const DealModal: React.FC<Price> = ({
 
   const getPoint = async () => {
     try {
-      const res = await axiosInstance.get('/api/profile/private')
+      const res = await axiosInstance.get('/profile/private')
       setPoint(res.data.point)
       setIsLoading(true)
     } catch (error) {
@@ -80,7 +80,7 @@ const DealModal: React.FC<Price> = ({
 
   const goToCharge = async () => {
     try {
-      const res = await axiosInstance.post('/api/point/charge', body)
+      const res = await axiosInstance.post('/point/charge', body)
       console.log(res.data)
       navigate('/point', { state: res.data })
     } catch (error) {
@@ -90,9 +90,7 @@ const DealModal: React.FC<Price> = ({
 
   const approve = async () => {
     try {
-      const res = await axiosInstance.patch(
-        `/api/point/suggest/approve/${roomId}`
-      )
+      const res = await axiosInstance.patch(`/point/suggest/approve/${roomId}`)
       if (res.status === 200) {
         sendMessage('approve')
         setIsDealModalOpen(false)
