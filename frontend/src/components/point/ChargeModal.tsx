@@ -28,7 +28,7 @@ const ChargeModal: React.FC<ChargeModalProps> = ({ setIsChargeModal }) => {
 
   const goToCharge = async () => {
     try {
-      const res = await axiosInstance.post('/point/charge', body)
+      const res = await axiosInstance.post('/api/point/charge', body)
       if (res.status === 200) {
         navigate('/point', { state: res.data })
       }

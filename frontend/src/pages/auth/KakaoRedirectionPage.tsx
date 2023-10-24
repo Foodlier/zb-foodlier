@@ -13,7 +13,7 @@ const KakaoRedirection = () => {
 
   useEffect(() => {
     axiosInstance
-      .post('/auth/oauth2/kakao', {
+      .post('/api/auth/oauth2/kakao', {
         authorizationCode,
       })
       .then(res => {
