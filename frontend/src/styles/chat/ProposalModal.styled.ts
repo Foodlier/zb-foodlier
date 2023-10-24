@@ -1,5 +1,10 @@
 import styled from 'styled-components'
-import { breakpoints, palette, zindex } from '../../constants/Styles'
+import {
+  breakpoints,
+  palette,
+  typography,
+  zindex,
+} from '../../constants/Styles'
 
 export const ModalBackdrop = styled.div`
   z-index: ${zindex.modal};
@@ -39,8 +44,12 @@ export const WrapInput = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  margin: 1rem 0;
-  font-size: 1.4rem;
+  margin: 2rem 0;
+  font-size: ${typography.mobile.desc};
+
+  ${breakpoints.large} {
+    font-size: ${typography.web.desc};
+  }
 `
 
 export const Input = styled.input`
@@ -49,8 +58,10 @@ export const Input = styled.input`
   border-radius: 1rem;
   margin-right: 0.5rem;
   padding: 1rem;
-  font-size: 1.4rem;
+  font-size: ${typography.mobile.desc};
+
   ${breakpoints.large} {
+    font-size: ${typography.web.desc};
     width: 100%;
   }
 `
@@ -64,6 +75,10 @@ export const Button = styled.button`
   background-color: ${palette.main};
   color: ${palette.white};
   padding: 1rem 2rem;
-  border-radius: 1rem;
-  font-size: 1.4rem;
+  border-radius: 0.5rem;
+  font-size: ${typography.mobile.desc};
+
+  ${breakpoints.large} {
+    font-size: ${typography.web.desc};
+  }
 `

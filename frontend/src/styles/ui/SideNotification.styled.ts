@@ -1,5 +1,5 @@
 import styled from 'styled-components'
-import { palette } from '../../constants/Styles'
+import { palette, zindex } from '../../constants/Styles'
 
 export const SideBar = styled.div`
   background-color: ${palette.white};
@@ -10,7 +10,7 @@ export const SideBar = styled.div`
   transition: 0.4s ease;
   border-left: 1px solid ${palette.divider};
   height: 100%;
-  z-index: 99;
+  z-index: ${zindex.header};
 `
 
 export const Button = styled.button`
@@ -18,12 +18,11 @@ export const Button = styled.button`
   left: -7rem;
   top: 2rem;
   padding: 1rem;
-  z-index: 10000;
+  z-index: ${zindex.modal};
   transition: 0.8s ease;
-  /* border: 1px solid ${palette.textSecondary}; */
   border-radius: 100%;
   overflow: hidden;
-  background-color: white;
+  background-color: transparent;
 `
 
 export const Content = styled.div`

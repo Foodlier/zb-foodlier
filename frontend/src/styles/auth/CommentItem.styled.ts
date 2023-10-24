@@ -8,7 +8,7 @@ export const Container = styled.button`
   align-items: center;
   justify-content: space-between;
   padding: 2rem;
-  border-radius: 1rem;
+  border-radius: 0.5rem;
   box-shadow: 1px 1px 4px ${palette.shadow};
   margin-bottom: 1rem;
 `

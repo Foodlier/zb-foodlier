@@ -11,7 +11,7 @@ const NotificationWrapper = styled.div<{ $show: boolean; $index: number }>`
   background-color: ${palette.white};
   color: ${palette.textPrimary};
   border: 1px solid ${palette.divider};
-  border-radius: 1rem;
+  border-radius: 0.5rem;
   padding: 2rem;
   z-index: ${zindex.modal}; /* 알림이 화면 위에 나타나도록 함 */
   transition: all 0.3s ease-in-out;

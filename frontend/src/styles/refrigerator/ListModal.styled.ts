@@ -62,15 +62,15 @@ export const ElContainer = styled.ul`
   display: flex;
   flex: 1;
   flex-direction: column;
-  gap: 20px;
+  gap: 1.5rem;
   padding-left: 0;
 `
 
 export const El = styled.li`
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  padding: 20px;
+  gap: 1rem;
+  padding: 2rem;
   border-radius: 5px;
   box-shadow: 0px 2px 6px 2px rgba(89, 97, 104, 0.1);
   ${breakpoints.large} {

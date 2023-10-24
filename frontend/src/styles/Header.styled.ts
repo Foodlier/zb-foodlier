@@ -71,7 +71,7 @@ export const LoginButton = styled.button`
   padding: 0.8rem 1.2rem;
   background-color: ${palette.main};
   color: white;
-  border-radius: 1rem;
+  border-radius: 0.5rem;
   margin-left: 1rem;
   font-size: ${typography.mobile.desc};
   font-weight: 600;

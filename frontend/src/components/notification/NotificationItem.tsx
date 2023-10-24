@@ -38,7 +38,7 @@ const NotificationItem = ({ item }: { item: NotiItem }) => {
   const navigate = useNavigate()
 
   const readNoti = async () => {
-    const res = await axiosInstance.patch(`/notification/read/${item.id}`)
+    const res = await axiosInstance.patch(`/api/notification/read/${item.id}`)
     console.log(res)
   }
 

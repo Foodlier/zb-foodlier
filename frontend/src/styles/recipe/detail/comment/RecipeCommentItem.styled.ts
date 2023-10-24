@@ -66,14 +66,3 @@ export const CommentReplyForm = styled.div`
 export const CommentReplies = styled.div`
   width: 100%;
 `
-// export const ReplyContainer = styled.div`
-//   max-height: 0;
-//   overflow: hidden;
-//   transition: max-height 0.3s ease-in-out;
-
-//   ${props =>
-//     props.isReplyContainerOpen &&
-//     css`
-//       max-height: 500px;
-//     `}
-// `

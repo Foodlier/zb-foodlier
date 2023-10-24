@@ -158,3 +158,14 @@ export interface Comment {
   recipeId: number
   createdAt: string
 }
+
+// 댓글
+export interface CommentItem {
+  createdAt: string
+  id: number
+  memberId: number
+  message: string
+  modifiedAt: string
+  nickname: string
+  profileImageUrl: string
+}

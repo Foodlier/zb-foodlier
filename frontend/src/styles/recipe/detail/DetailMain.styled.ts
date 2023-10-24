@@ -36,11 +36,16 @@ export const MainImgWrap = styled.section`
 `
 
 export const MainImg = styled.img`
-  min-width: 40rem;
   width: 100%;
   height: 30rem;
   border: 1px solid ${palette.divider};
   border-radius: inherit;
+  object-fit: cover;
+
+  ${breakpoints.large} {
+    margin: 0 0 1rem 0;
+    min-width: 40rem;
+  }
 `
 
 export const ProfileWrap = styled.button`

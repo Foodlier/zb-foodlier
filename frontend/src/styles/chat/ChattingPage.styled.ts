@@ -1,5 +1,5 @@
 import styled from 'styled-components'
-import { breakpoints, palette } from '../../constants/Styles'
+import { breakpoints, palette, typography } from '../../constants/Styles'
 
 export const Container = styled.div`
   position: relative;
@@ -61,7 +61,7 @@ export const ReqireButton = styled.button`
 
   ${breakpoints.large} {
     width: 30%;
-    font-size: 1.4rem;
+    font-size: ${typography.web.desc};
   }
 `
 export const Wrap = styled.div`
@@ -76,9 +76,9 @@ export const NoRoom = styled.div`
   left: 50%;
   transform: translate(-50%, calc(-50% - 50px));
   padding: 1%;
-  border-radius: 10px;
+  border-radius: 1rem;
   background-color: ${palette.divider};
-  min-width: 220px;
+  min-width: 22rem;
   text-align: center;
   ${breakpoints.large} {
     transform: translate(-50%, -50%);
