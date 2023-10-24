@@ -109,6 +109,7 @@ const MyPage = () => {
       setChefCompleteContent('요리사 등록이 완료되었습니다.')
       // 요리사 등록 시 refresh token으로 토큰 재발급 후 새로운 토큰으로 저장해야 한다.
       const NEW_TOKEN = reissueToken()
+      removeCookie('accessToken')
       setCookie('accessToken', JSON.stringify(NEW_TOKEN), { path: '/' })
     } catch (error) {
       console.log(error)

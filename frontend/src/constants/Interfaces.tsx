@@ -102,6 +102,7 @@ export interface RequestDetail {
   heartCount: number
   ingredientList: string[]
   mainImageUrl: string
+  recipeId: number
   recipeContent: string
   recipeTitle: string
   requestId: number
