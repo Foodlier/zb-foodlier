@@ -221,7 +221,9 @@ export const ExitButton = styled.button`
 export const ObserverDiv = styled.div`
   width: 50px;
   height: 50px;
-  background-color: red;
+  background-color: white;
+  border-radius: 50%;
+  opacity: 0.1;
 `
 
 export const ExitMessage = styled.p`
