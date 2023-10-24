@@ -57,13 +57,11 @@ public class ChefMemberRepositoryCustomImpl implements ChefMemberRepositoryCusto
                                 "ROUND(ST_Distance_Sphere(point({0}, {1}), point({2}, {3}))/1000, 2)",
                                 member.address.lnt, member.address.lat, lnt, lat).as("distance")
                         , JPAExpressions.select(recipe.count().as("recipeCount"))
-                                .from(chefMember)
-                                .join(member)
-                                .on(chefMember.member.id.eq(member.id))
-                                .join(recipe)
-                                .on(recipe.member.id.eq(member.id))
-                                .where(recipe.isQuotation.isFalse().and(recipe.isDeleted.isFalse()).and(recipe.isPublic.isTrue()))
-                                .groupBy(chefMember.id)))
+                                .from(recipe)
+                                .where(recipe.member.id.eq(chefMember.member.id)
+                                        .and(recipe.isQuotation.isFalse())
+                                        .and(recipe.isDeleted.isFalse())
+                                        .and(recipe.isPublic.isTrue()))))
                 .from(chefMember)
                 .join(member)
                 .on(chefMember.member.id.eq(member.id))
@@ -121,13 +119,11 @@ public class ChefMemberRepositoryCustomImpl implements ChefMemberRepositoryCusto
                                 requestMember.address.lnt, requestMember.address.lat,
                                 chefsMember.address.lnt, chefsMember.address.lat).as("distance"),
                         JPAExpressions.select(recipe.count().as("recipeCount"))
-                                .from(chefMember)
-                                .join(chefsMember)
-                                .on(chefMember.member.id.eq(chefsMember.id))
-                                .join(recipe)
-                                .on(recipe.member.id.eq(chefsMember.id))
-                                .where(recipe.isQuotation.isFalse().and(recipe.isDeleted.isFalse()).and(recipe.isPublic.isTrue()))
-                                .groupBy(chefMember.id),
+                                .from(recipe)
+                                .where(recipe.member.id.eq(chefMember.member.id)
+                                        .and(recipe.isQuotation.isFalse())
+                                        .and(recipe.isDeleted.isFalse())
+                                        .and(recipe.isPublic.isTrue())),
                         request.id,
                         Expressions.booleanTemplate("COALESCE({0}, false)",
                                 recipe.isQuotation), recipe.id))
