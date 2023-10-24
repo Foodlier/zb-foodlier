@@ -134,9 +134,6 @@ const RecipeComment = ({ recipeId }: { recipeId: number }) => {
     getComment(0)
   }, [])
 
-  useEffect(() => {
-  }, [commentList])
-
   return (
     <S.CommentContainer>
       <S.CommentTit>댓글</S.CommentTit>

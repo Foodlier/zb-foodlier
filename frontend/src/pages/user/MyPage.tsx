@@ -12,7 +12,7 @@ import axiosInstance, { reissueToken } from '../../utils/FetchCall'
 import { myInfoState } from '../../store/recoilState'
 import ModalWithoutButton from '../../components/ui/ModalWithoutButton'
 import defaultProfile from '../../../public/images/default_profile.png'
-import { removeCookie } from '../../utils/Cookies'
+import { removeCookie, setCookie } from '../../utils/Cookies'
 import ChargeModal from '../../components/point/ChargeModal'
 
 interface MenuListInterface {
@@ -54,11 +54,11 @@ const MyPage = () => {
     },
     {
       title: '내 정보 수정',
-      navigate: '',
+      navigate: '/my/edit',
     },
     {
       title: '비밀번호 변경',
-      navigate: '',
+      navigate: '/my/edit/password',
     },
     {
       title: '로그아웃',
@@ -109,7 +109,7 @@ const MyPage = () => {
       setChefCompleteContent('요리사 등록이 완료되었습니다.')
       // 요리사 등록 시 refresh token으로 토큰 재발급 후 새로운 토큰으로 저장해야 한다.
       const NEW_TOKEN = reissueToken()
-      localStorage.setItem('TOKEN', JSON.stringify(NEW_TOKEN))
+      setCookie('accessToken', JSON.stringify(NEW_TOKEN), { path: '/' })
     } catch (error) {
       console.log(error)
       setChefCompleteContent('작성한 게시물이 3개 이하입니다.')

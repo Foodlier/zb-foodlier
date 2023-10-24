@@ -3,6 +3,7 @@ import styled from 'styled-components'
 import { breakpoints, palette, typography } from '../../constants/Styles'
 import { NotiItem } from '../../constants/Interfaces'
 import axiosInstance from '../../utils/FetchCall'
+import formatDateTime from '../../utils/returnDate'
 
 const Container = styled.button<{ $isRead: boolean }>`
   display: flex;
@@ -17,12 +18,12 @@ const Container = styled.button<{ $isRead: boolean }>`
 
 const Title = styled.span`
   text-align: left;
-  font-size: ${typography.mobile.content};
+  font-size: ${typography.mobile.desc};
   color: ${palette.textPrimary};
-  margin-bottom: 1rem;
+  margin-top: 1rem;
 
   ${breakpoints.large} {
-    font-size: ${typography.web.content};
+    font-size: ${typography.web.desc};
   }
 `
 
@@ -48,7 +49,7 @@ const NotificationItem = ({ item }: { item: NotiItem }) => {
     if (item.notificationType === 'REQUEST') {
       navigate('/refrigerator')
     } else {
-      navigate(`/recipe/detail/22`)
+      navigate(`/recipe/detail/${item.targetId}`)
     }
   }
 
@@ -56,8 +57,9 @@ const NotificationItem = ({ item }: { item: NotiItem }) => {
 
   return (
     <Container onClick={onClickNoti} $isRead={item.read}>
+      <Date>{formatDateTime(item.sentAt)}</Date>
+
       <Title>{item.content}</Title>
-      <Date>{item.sentAt}</Date>
     </Container>
   )
 }
