@@ -198,6 +198,8 @@ const WriteRequestPage = () => {
                 onChange={e =>
                   setRequestValue({ ...requestValue, title: e.target.value })
                 }
+                $width={50}
+                // $marginBt={1}
               />
               <S.ErrorMessage>{errorValue.title}</S.ErrorMessage>
             </S.WrapForm>
@@ -211,29 +213,33 @@ const WriteRequestPage = () => {
                 onChange={e =>
                   setRequestValue({ ...requestValue, content: e.target.value })
                 }
+                $width={50}
+                // $marginBt={1}
               />
               <S.ErrorMessage>{errorValue.content}</S.ErrorMessage>
             </S.WrapForm>
 
             <S.WrapForm>
               <S.Title>보유 재료</S.Title>
-              {requestValue.ingredientList.map((item, index) => (
-                <S.Input
-                  key={`key-${index}`}
-                  type="text"
-                  placeholder="재료 이름"
-                  value={item}
-                  onChange={e => ingredientInputChange(e.target.value, index)}
-                  $width={30}
-                  $marginBt={1}
-                />
-              ))}
+              <S.Content>
+                {requestValue.ingredientList.map((item, index) => (
+                  <S.Input
+                    key={`key-${index}`}
+                    type="text"
+                    placeholder="재료 이름"
+                    value={item}
+                    onChange={e => ingredientInputChange(e.target.value, index)}
+                    $width={150}
+                    $marginBt={1}
+                  />
+                ))}
 
-              <S.AddButton onClick={ingredientPlus} $width={50}>
-                <IcAddRound size={1.2} color={palette.textSecondary} />
-                재료 추가
-              </S.AddButton>
-              <S.ErrorMessage>{errorValue.ingredientList}</S.ErrorMessage>
+                <S.AddButton onClick={ingredientPlus} $width={50}>
+                  <IcAddRound size={1.2} color={palette.textSecondary} />
+                  재료 추가
+                </S.AddButton>
+                <S.ErrorMessage>{errorValue.ingredientList}</S.ErrorMessage>
+              </S.Content>
             </S.WrapForm>
 
             <S.WrapForm>
