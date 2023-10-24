@@ -1,5 +1,5 @@
 import styled from 'styled-components'
-import { breakpoints, palette } from '../../constants/Styles'
+import { breakpoints, palette, typography } from '../../constants/Styles'
 
 export const Container = styled.div`
   flex: 1;
@@ -40,10 +40,10 @@ export const ProfileImage = styled.img<{ $size: number }>`
 `
 
 export const Nickname = styled.span`
-  font-size: 1.4rem;
+  font-size: ${typography.mobile.content};
 
   ${breakpoints.large} {
-    font-size: 1.8rem;
+    font-size: ${typography.web.content};
   }
 `
 
@@ -76,7 +76,7 @@ export const Message = styled.div<{ $isMe: boolean }>`
   color: ${props => (props.$isMe ? palette.white : palette.textPrimary)};
   padding: 1rem;
   border-radius: 1rem;
-  font-size: 1.2rem;
+  font-size: ${typography.mobile.desc};
 
   ${breakpoints.large} {
     max-width: 40rem;
@@ -90,7 +90,7 @@ export const Suggestion = styled.div<{ $isMe: boolean }>`
   background-color: ${palette.white};
   padding: 1rem;
   border-radius: 10px;
-  font-size: 1.2rem;
+  font-size: ${typography.mobile.desc};
   box-sizing: content-box;
   box-shadow: 0px 2px 6px 2px rgba(89, 97, 104, 0.1);
   ${breakpoints.large} {
@@ -118,7 +118,7 @@ export const MessageTime = styled.span`
   color: ${palette.textSecondary};
 
   ${breakpoints.large} {
-    font-size: 1.2rem;
+    font-size: ${typography.mobile.desc};
     margin: 0 1rem;
   }
 `
@@ -144,7 +144,7 @@ export const Input = styled.input`
   padding: 0.8rem;
   border-radius: 1rem;
   width: 84%;
-  font-size: 1.2rem;
+  font-size: ${typography.mobile.desc};
 
   ${breakpoints.large} {
     font-size: 1.4rem;
@@ -159,7 +159,7 @@ export const WrapDate = styled.div`
   border: 1px solid ${palette.divider};
   padding: 0.5rem 2rem;
   border-radius: 1.5rem;
-  font-size: 1.2rem;
+  font-size: ${typography.mobile.desc};
 `
 
 export const Button = styled.button`
@@ -167,7 +167,7 @@ export const Button = styled.button`
   color: ${palette.white};
   border-radius: 1rem;
   padding: 0.8rem 1.5rem;
-  font-size: 1.2rem;
+  font-size: ${typography.mobile.desc};
 
   ${breakpoints.large} {
     padding: 1rem 2rem;
