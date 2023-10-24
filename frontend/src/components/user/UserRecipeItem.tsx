@@ -49,7 +49,7 @@ const UserRecipeItem: React.FC<UserRecipeItemProps> = ({ EA, memberId }) => {
           key={el.recipeId}
           onClick={() => goToReciepe(el.recipeId)}
         >
-          <S.RecipeImg src="" alt="" />
+          <S.RecipeImg src={el.mainImageUrl} alt="" />
           <S.RecipeInfo>
             <S.RecipeTopInfo>
               <S.RecipeTitle>{el.title}</S.RecipeTitle>
