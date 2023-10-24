@@ -34,7 +34,7 @@ public class NotificationRepositoryCustomImpl implements NotificationRepositoryC
                 .from(notification)
                 .join(member)
                 .on(member.id.eq(memberId))
-                .where(notification.member.id.eq(memberId))
+                .where(notification.member.id.eq(memberId).and(notification.isRead.eq(NOT_READ)))
                 .orderBy(notification.sendAt.desc())
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
