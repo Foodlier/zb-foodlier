@@ -21,6 +21,7 @@ public class ProfileFacade {
     private final MemberService memberService;
     private final S3Service s3Service;
     private final LocalService localService;
+    private static final String NO_IMAGE = "empty";
 
     public void deleteProfileUrlAndGetAddressUpdateProfile(
             MemberAuthDto memberAuthDto,
@@ -33,8 +34,9 @@ public class ProfileFacade {
         );
         String imageUrl = Objects.nonNull(form.getProfileImage()) ?
                 s3Service.getImageUrl(form.getProfileImage()) :
-                member.getProfileUrl();
-        if (!imageUrl.equals(member.getProfileUrl())
+                Objects.isNull(member.getProfileUrl()) ? NO_IMAGE :
+                        member.getProfileUrl();
+        if (!imageUrl.equals(NO_IMAGE)
                 && Objects.nonNull(member.getProfileUrl())) {
             s3Service.deleteImage(member.getProfileUrl());
         }
