@@ -28,7 +28,6 @@ function RecipeReviewItem({ review }: ReviewItemProps) {
   const [isEditing, setIsEditing] = useState(false)
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
 
-
   const [myNickname, setMyNickname] = useState('')
   const [rating, setRating] = useState(0)
 

@@ -51,4 +51,20 @@ export async function postFormData(url: string, data: any) {
   }
 }
 
+export async function putFormData(url: string, data: any) {
+  try {
+    const response = await axiosInstance.put(url, data, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+        accept: 'application/json;charset=UTF-8',
+      },
+    })
+    return response
+  } catch (error) {
+    const axiosError = error as AxiosError
+    // Handle errors here
+    throw axiosError
+  }
+}
+
 export default axiosInstance

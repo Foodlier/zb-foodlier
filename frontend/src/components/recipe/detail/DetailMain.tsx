@@ -15,7 +15,7 @@ const DetailMainItem = ({ recipe }: DetailMainProps) => {
 
   const goToProfile = () => {
     // 정확한 경로로 router 수정
-    navigate(`profile/${recipe?.memberId}`)
+    navigate(`/profile/${recipe?.memberId}`)
   }
 
   if (!recipe) return null
