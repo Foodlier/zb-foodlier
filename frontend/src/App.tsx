@@ -1,5 +1,8 @@
 import './reset.css'
+import { useEffect, useState } from 'react'
+import { EventSourcePolyfill, NativeEventSource } from 'event-source-polyfill'
 import { Routes, Route } from 'react-router-dom'
+import { getCookie } from './utils/Cookies'
 import RefrigeratorPage from './pages/refrigerator/RefrigeratorPage'
 import WriteRequestPage from './pages/refrigerator/WriteRequestPage'
 import RequestDetailPage from './pages/refrigerator/RequestDetailPage'
@@ -24,9 +27,67 @@ import NaverLoginPage from './pages/auth/NaverRedirectionPage'
 import MyLogPage from './pages/user/MyLogPage'
 import NotFoundPage from './pages/NotFoundPage'
 import TradeHistoryPage from './pages/point/TradeHistoryPage'
-import { getCookie } from './utils/Cookies'
+import Notification from './components/Notification'
+import ProfileEditPage from './pages/user/ProfileEditPage'
+import EditPasswordPage from './pages/user/EditPasswordPage'
 
 function App() {
+  const [isNoti, setIsNoti] = useState(false)
+  const [show, setShow] = useState(false)
+  const [message, setMessage] = useState('')
+
+  useEffect(() => {
+    const connect = () => {
+      if (getCookie('accessToken')) {
+        const EventSource = EventSourcePolyfill || NativeEventSource
+
+        const eventSource = new EventSource(
+          'http://ec2-15-165-55-217.ap-northeast-2.compute.amazonaws.com/notification/subscribe',
+          {
+            headers: {
+              Authorization: `Bearer ${getCookie('accessToken')}`,
+            },
+            heartbeatTimeout: 86400000,
+            // withCredentials: true,
+          }
+        )
+
+        // connection되면
+        eventSource.addEventListener('open', function (e) {
+          console.log('event open - connect')
+          console.log(e)
+          // Connection was opened.
+        })
+
+        // error 나면
+        eventSource.addEventListener('error', function (e) {
+          console.log('event error')
+          console.log(e)
+        })
+
+        eventSource.addEventListener('sse', (e: any) => {
+          const noti = JSON.parse(e.data)
+          setIsNoti(true)
+          setShow(true)
+          setMessage(noti.content)
+          setTimeout(() => {
+            setShow(false)
+          }, 5000)
+          setTimeout(() => {
+            setIsNoti(false)
+          }, 6000)
+          console.log(e)
+          console.log('json:', JSON.parse(e.data))
+        })
+
+        return () => {
+          console.log('연결이 끊어졌습니다.')
+          eventSource.close()
+        }
+      }
+    }
+    connect()
+  }, [])
   return (
     <div>
       <Routes>
@@ -74,8 +135,11 @@ function App() {
         <Route path="/point/fail" element={<SuccessPage />} />
         <Route path="/trade-history" element={<TradeHistoryPage />} />
         <Route path="/my/:category" element={<MyLogPage />} />
+        <Route path="/my/edit" element={<ProfileEditPage />} />
+        <Route path="/my/edit/password" element={<EditPasswordPage />} />
         <Route path="*" element={<NotFoundPage />} />
       </Routes>
+      {isNoti && <Notification text={message} show={show} setShow={setShow} />}
     </div>
   )
 }

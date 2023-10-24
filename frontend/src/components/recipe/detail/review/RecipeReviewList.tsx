@@ -58,7 +58,6 @@ function RecipeReviewList({ recipeId }: { recipeId: number }) {
       } else {
         setReviewList(prevReviewList => [...prevReviewList, ...reviewData])
       }
-
     }
   }
 

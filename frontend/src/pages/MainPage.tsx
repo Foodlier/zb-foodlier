@@ -7,8 +7,7 @@ import useIcon from '../hooks/useIcon'
 import Header from '../components/Header'
 import BottomNavigation from '../components/BottomNavigation'
 import RecipeItem from '../components/recipe/RecipeItem'
-import ChefItem from '../components/chef/ChefItem'
-import ChefData from '../components/chef/ChefData'
+import ChefItem, { MainChef } from '../components/chef/ChefItem'
 import axiosInstance from '../utils/FetchCall'
 import { RecipeListItem } from '../constants/Interfaces'
 
@@ -18,6 +17,7 @@ const MainPage = () => {
 
   const [recipeList, setRecipeList] = useState<RecipeListItem[]>([])
   const [recommendList, setRecommendList] = useState<RecipeListItem[]>([])
+  const [topChefList, setTopChefList] = useState<MainChef[]>([])
 
   const navigateToRecipeDetail = (id: number) => {
     navigate(`/recipe/detail/${id}`)
@@ -27,9 +27,11 @@ const MainPage = () => {
     try {
       const mainRecipe = await axiosInstance.get('/api/recipe/main')
       const recommendRecipe = await axiosInstance.get('/api/recipe/recommended')
+      const chefList = await axiosInstance.get('/api/profile/public/topchef')
 
       setRecipeList(mainRecipe.data)
       setRecommendList(recommendRecipe.data)
+      setTopChefList(chefList.data)
     } catch (error) {
       console.log(error)
     }
@@ -82,18 +84,12 @@ const MainPage = () => {
           <S.Tit>TOP 요리사</S.Tit>
         </S.ChefTit>
         <S.ChefList>
-          {ChefData.map(data => (
-            <ChefItem
-              key={`chef-${data.chefId}`}
-              chefId={data.chefId}
-              nickname={data.nickname}
-              profileUrl={data.profileUrl}
-            />
+          {topChefList.map(item => (
+            <ChefItem key={item.memberId} item={item} />
           ))}
         </S.ChefList>
       </S.ChefContainer>
 
-      {/* BottomNavigation */}
       <BottomNavigation />
     </>
   )

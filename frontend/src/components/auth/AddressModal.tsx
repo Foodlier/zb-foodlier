@@ -16,6 +16,8 @@ const ModalWrapper = styled.div`
 
 const ModalContent = styled.div`
   width: 50rem;
+  max-height: 50vh;
+  overflow-y: scroll;
   background-color: white;
   padding: 20px;
   border-radius: 8px;
