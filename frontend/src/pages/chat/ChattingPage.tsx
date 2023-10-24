@@ -51,7 +51,10 @@ const ChattingPage = () => {
                     <S.ReqireButton
                       onClick={() => {
                         navigate(
-                          `/refrigerator/request/detail/${item.requestId}`
+                          `/refrigerator/request/detail/${item.requestId}`,
+                          {
+                            state: { isChat: true },
+                          }
                         )
                       }}
                     >
