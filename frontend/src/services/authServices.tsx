@@ -12,7 +12,7 @@ const onSilentRefresh = () => {
 }
 
 const onLoginSuccess = (res: any) => {
-  const JWT_EXPIRY_TIME = 24 * 3600 * 1000 // 24 hours
+  const JWT_EXPIRY_TIME = 3600000 // 1시간
   const { accessToken, refreshToken } = res.data
 
   axios.defaults.headers.common.Authorization = `Bearer ${accessToken}`

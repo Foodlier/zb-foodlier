@@ -112,7 +112,7 @@ public class ChefMemberRepositoryCustomImpl implements ChefMemberRepositoryCusto
         List<RequestedChefDto> content = queryFactory.select(Projections.constructor(RequestedChefDto.class,
                         chefMember.id, chefMember.introduce,
                         chefMember.starAvg, chefMember.reviewCount,
-                        requestMember.profileUrl, requestMember.nickname,
+                        chefsMember.profileUrl, chefsMember.nickname,
                         chefsMember.address.lat, chefsMember.address.lnt,
                         Expressions.numberTemplate(Double.class,
                                 "ROUND(ST_Distance_Sphere(point({0}, {1}), point({2}, {3}))/1000, 2)",

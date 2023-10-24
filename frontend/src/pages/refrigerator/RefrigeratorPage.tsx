@@ -1,18 +1,17 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useState } from 'react'
-import { useRecoilValue } from 'recoil'
 import * as S from '../../styles/refrigerator/RefrigeratorPage.styled'
 import Header from '../../components/Header'
 import BottomNavigation from '../../components/BottomNavigation'
 import CookForMe from '../../components/refrigerator/CookForMe'
 import CookForYou from '../../components/refrigerator/CookForYou'
 
-import { myInfoState } from '../../store/recoilState'
 import RefrigeratorMap from '../../components/refrigerator/RefrigeratorMap'
 import { MarkerItem } from '../../constants/Interfaces'
 
 const RefrigeratorPage = () => {
-  const profile = useRecoilValue(myInfoState)
+  const localProfile = localStorage.getItem('PROFILE')
+  const profile = localProfile ? JSON.parse(localProfile) : {}
   const [userType, setUserType] = useState('user')
   const [mapMarkerList, setMapMarkerList] = useState<MarkerItem[]>([])
 

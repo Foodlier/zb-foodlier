@@ -1,3 +1,4 @@
+import { useRecoilState } from 'recoil'
 import { useNavigate } from 'react-router-dom'
 import { useEffect, useState } from 'react'
 import * as S from '../styles/MainPage.styled'
@@ -10,11 +11,13 @@ import RecipeItem from '../components/recipe/RecipeItem'
 import ChefItem, { MainChef } from '../components/chef/ChefItem'
 import axiosInstance from '../utils/FetchCall'
 import { RecipeListItem } from '../constants/Interfaces'
+import { myInfoState } from '../store/recoilState'
 
 const MainPage = () => {
   const { IcAddLight } = useIcon()
   const navigate = useNavigate()
 
+  const [, setProfile] = useRecoilState(myInfoState)
   const [recipeList, setRecipeList] = useState<RecipeListItem[]>([])
   const [recommendList, setRecommendList] = useState<RecipeListItem[]>([])
   const [topChefList, setTopChefList] = useState<MainChef[]>([])
@@ -37,8 +40,18 @@ const MainPage = () => {
     }
   }
 
+  // 프로필 조회 API
+  const getMyProfile = async () => {
+    const response = await axiosInstance.get('/api/profile/private')
+    if (response.status === 200) {
+      setProfile(response.data)
+      localStorage.setItem('PROFILE', JSON.stringify(response.data))
+    }
+  }
+
   useEffect(() => {
     getRecipe()
+    getMyProfile()
   }, [])
 
   return (
