@@ -67,7 +67,7 @@ const ChatRoom = ({ roomNum }: { roomNum: number | undefined }) => {
   useEffect(() => {
     getRoomInfo()
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  }, [roomNum])
   // isSuggested는 왜 필요한건지 의문
 
   //  DM 리스트 가져오기
