@@ -25,7 +25,7 @@ const UserRecipeItem: React.FC<UserRecipeItemProps> = ({ EA, memberId }) => {
   const getUserRecipe = async () => {
     try {
       const res = await axiosInstance.get(
-        `/profile/public/recipe/${0}/${EA}/${memberId}`
+        `/api/profile/public/recipe/${0}/${EA}/${memberId}`
       )
       setUserRecipes(res.data.content)
     } catch (error) {
