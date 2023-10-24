@@ -71,6 +71,7 @@ const WriteRecipePage = () => {
   // 레시피 재료 or 순서 추가
   const addItem = (key: string) => {
     if (key === 'ingredient') {
+      if (recipeValue.recipeIngredientDtoList.length > 4) return
       const updateValue = [
         ...recipeValue.recipeIngredientDtoList,
         {
