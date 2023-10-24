@@ -49,7 +49,7 @@ const ProfilePage = () => {
       nickname,
       id,
     }
-    navigate(`/api/profile/${userId}/more`, { state: Info })
+    navigate(`/profile/${userId}/more`, { state: Info })
   }
 
   useEffect(() => {
