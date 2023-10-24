@@ -121,6 +121,8 @@ const MyPage = () => {
     }, 1500)
   }
 
+  console.log(profile)
+
   useEffect(() => {
     getMyProfile()
   }, [])
@@ -129,7 +131,9 @@ const MyPage = () => {
     <>
       <Header />
       <S.Container>
-        <S.ProfileButton>
+        <S.ProfileButton
+          onClick={() => navigate(`/profile/${profile?.myMemberId}`)}
+        >
           <S.ProfileImage src={profile?.profileUrl || defaultProfile} />
           <S.PrifileInfo>
             {profile?.isChef && <S.ChefBadge>요리사</S.ChefBadge>}
