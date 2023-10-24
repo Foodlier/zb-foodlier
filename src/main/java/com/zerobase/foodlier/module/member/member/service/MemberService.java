@@ -38,6 +38,7 @@ public class MemberService {
     private final JwtTokenProvider tokenProvider;
     private static final String DEL_PREFIX = "DEL";
     private static final String EMPTY_URL = null;
+    private static final String NO_IMAGE = "empty";
 
     public void register(MemberRegisterDto memberRegisterDto) {
         validateRegister(memberRegisterDto);
@@ -136,7 +137,9 @@ public class MemberService {
         }
         member.updateTemp();
         member.updateAddress(memberUpdateDto);
-        member.updateProfileUrl(memberUpdateDto.getProfileUrl());
+        if (!memberUpdateDto.getProfileUrl().equals(NO_IMAGE)) {
+            member.updateProfileUrl(memberUpdateDto.getProfileUrl());
+        }
 
         memberRepository.save(member);
     }

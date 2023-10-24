@@ -54,7 +54,16 @@ const Login = () => {
       .post('/api/auth/signin', userInputs)
       .then(res => {
         onLoginSuccess(res)
-        navigate('/')
+      })
+      .then(() => {
+        Swal.fire({
+          icon: 'success',
+          title: '로그인 성공',
+          text: '환영합니다.',
+          confirmButtonColor: `${palette.main}`,
+        }).then(() => {
+          navigate('/')
+        })
       })
       .catch(err => {
         console.log(err.response.data)
