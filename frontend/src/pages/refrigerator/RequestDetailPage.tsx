@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable no-nested-ternary */
 import { useEffect, useState } from 'react'
-import { useNavigate, useParams } from 'react-router-dom'
+import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import Header from '../../components/Header'
 import BottomNavigation from '../../components/BottomNavigation'
 import * as S from '../../styles/refrigerator/RequestDetailPage.styled'
@@ -14,6 +14,8 @@ import ListModal from '../../components/refrigerator/ListModal'
 const RequestDetailPage = () => {
   const { id } = useParams()
   const navigate = useNavigate()
+  const { state } = useLocation()
+  const isChat = state?.recipeId || 0
 
   const [requestValue, setRequestValue] = useState<RequestDetail>()
   const [isQuotationListModal, setIsQuotationListModal] = useState(false)
@@ -122,18 +124,22 @@ const RequestDetailPage = () => {
             <S.RequestFormEl>
               <S.ElementTitle>태그된 레시피</S.ElementTitle>
 
-              {requestValue?.mainImageUrl ? (
-                <RecipeItem
-                  recipeItem={{
-                    recipeId: 0, // 레시피 ID 필요
-                    title: requestValue?.recipeTitle,
-                    mainImageUrl: requestValue?.mainImageUrl,
-                    content: requestValue?.recipeContent,
-                    heartCount: requestValue?.heartCount,
-                    isHeart: true,
-                  }}
-                  onClick={() => console.log('레시피 클릭')}
-                />
+              {requestValue?.recipeId ? (
+                requestValue?.mainImageUrl ? (
+                  <RecipeItem
+                    recipeItem={{
+                      recipeId: requestValue?.recipeId, // 레시피 ID 필요
+                      title: requestValue?.recipeTitle,
+                      mainImageUrl: requestValue?.mainImageUrl,
+                      content: requestValue?.recipeContent,
+                      heartCount: requestValue?.heartCount,
+                      isHeart: true,
+                    }}
+                    onClick={() => console.log('레시피 클릭')}
+                  />
+                ) : (
+                  <div>{requestValue.recipeTitle}</div>
+                )
               ) : isSelectedRequestId ? (
                 <div>{isSelectedRequestId}</div>
               ) : (
@@ -149,28 +155,30 @@ const RequestDetailPage = () => {
               )}
             </S.RequestFormEl>
           </S.RequestFormList>
-          <S.ButtonList>
-            <S.RejectButton type="button" onClick={rejectRequest}>
-              거절하기
-            </S.RejectButton>
-            {requestValue?.mainImageUrl ? (
-              <S.AcceptButton
-                type="button"
-                onClick={approveRequest}
-                $isActive={Boolean(requestValue.mainImageUrl)}
-              >
-                수락하기
-              </S.AcceptButton>
-            ) : (
-              <S.AcceptButton
-                type="button"
-                onClick={sendQuotation}
-                $isActive={Boolean(isSelectedRequestId)}
-              >
-                견적서 보내기
-              </S.AcceptButton>
-            )}
-          </S.ButtonList>
+          {!isChat && (
+            <S.ButtonList>
+              <S.RejectButton type="button" onClick={rejectRequest}>
+                거절하기
+              </S.RejectButton>
+              {requestValue?.mainImageUrl ? (
+                <S.AcceptButton
+                  type="button"
+                  onClick={approveRequest}
+                  $isActive={Boolean(requestValue.mainImageUrl)}
+                >
+                  수락하기
+                </S.AcceptButton>
+              ) : (
+                <S.AcceptButton
+                  type="button"
+                  onClick={sendQuotation}
+                  $isActive={Boolean(isSelectedRequestId)}
+                >
+                  견적서 보내기
+                </S.AcceptButton>
+              )}
+            </S.ButtonList>
+          )}
         </S.RequestForm>
 
         <S.SpacingDiv />
