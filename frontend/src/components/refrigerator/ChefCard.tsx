@@ -57,7 +57,7 @@ const ChefCard: React.FC<ChefCardProps> = ({
         <span>{chefItem.distance}m</span>
         {isRequest ? (
           <S.FlexWrap>
-            {chefItem?.quotationId && (
+            {chefItem?.isQuotation && (
               <S.RequestedButton
                 type="button"
                 onClick={() =>
