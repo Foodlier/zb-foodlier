@@ -19,7 +19,7 @@ const RecipeComment = ({ recipeId }: { recipeId: number }) => {
   const [memberId, setMemberId] = useState(0)
 
   const getProfile = async () => {
-    const res = await axiosInstance.get(`/profile/private`)
+    const res = await axiosInstance.get(`/api/profile/private`)
 
     if (res.status === 200) {
       const commentData = res
@@ -31,7 +31,7 @@ const RecipeComment = ({ recipeId }: { recipeId: number }) => {
   const getComment = async (idx: number) => {
     const pageSize = 5
     const res = await axiosInstance.get(
-      `/comment/${recipeId}/${idx}/${pageSize}`
+      `/api/comment/${recipeId}/${idx}/${pageSize}`
     )
     console.log('끝인지 확인하는거 ::: ', res)
 
@@ -58,7 +58,7 @@ const RecipeComment = ({ recipeId }: { recipeId: number }) => {
 
     try {
       const res = await axiosInstance.post(
-        `/comment/${recipeId}?message=${commentValue}`
+        `/api/comment/${recipeId}?message=${commentValue}`
       )
       if (res.status === 200) {
         getComment(0)
@@ -99,7 +99,9 @@ const RecipeComment = ({ recipeId }: { recipeId: number }) => {
 
   // 삭제 모달 확인 버튼
   const handleConfirmDelete = async () => {
-    const res = await axiosInstance.delete(`/comment/${recipeId}/${commentId}`)
+    const res = await axiosInstance.delete(
+      `/api/comment/${recipeId}/${commentId}`
+    )
     try {
       if (res.status === 200) {
         console.log('삭제성공?!')
@@ -116,7 +118,7 @@ const RecipeComment = ({ recipeId }: { recipeId: number }) => {
   const handleEditConfirmClick = async () => {
     try {
       const res = await axiosInstance.put(
-        `/comment/${commentId}?modifiedMessage=${editValue}`
+        `/api/comment/${commentId}?modifiedMessage=${editValue}`
       )
       if (res.status === 200) {
         setIsEditing(false)

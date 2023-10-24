@@ -42,7 +42,9 @@ const SideNotification = () => {
   const getNoti = async () => {
     const pageIdx = 0
     const pageSize = 20
-    const res = await axiosInstance.get(`/notification/${pageIdx}/${pageSize}`)
+    const res = await axiosInstance.get(
+      `/api/notification/${pageIdx}/${pageSize}`
+    )
 
     setNotiList(res.data.content)
   }

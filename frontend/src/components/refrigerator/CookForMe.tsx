@@ -45,7 +45,7 @@ const CookForMe = ({
   const postRequest = async (requestFormId: number) => {
     try {
       const res = await axiosInstance.patch(
-        `/refrigerator/send?chefMemberId=${requireChefId}&requestFormId=${requestFormId}`
+        `/api/refrigerator/send?chefMemberId=${requireChefId}&requestFormId=${requestFormId}`
       )
       console.log(res)
     } catch (error) {
@@ -58,12 +58,12 @@ const CookForMe = ({
   const getChef = async () => {
     try {
       const chefList = await axiosInstance.get(
-        `/refrigerator/chef/${pageIdx}/${pageSize}`,
+        `/api/refrigerator/chef/${pageIdx}/${pageSize}`,
         { params: { type: currentSelectValue.value } }
       )
 
       const requestdChefList = await axiosInstance.get(
-        `/refrigerator/chef/requested/${pageIdx}/${pageSize}`,
+        `/api/refrigerator/chef/requested/${pageIdx}/${pageSize}`,
         { params: { type: currentSelectValue.value } }
       )
       setChefList(chefList.data.content)
