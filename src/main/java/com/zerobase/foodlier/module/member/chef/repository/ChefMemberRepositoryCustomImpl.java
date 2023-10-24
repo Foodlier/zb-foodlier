@@ -1,8 +1,9 @@
 package com.zerobase.foodlier.module.member.chef.repository;
 
+import com.querydsl.core.types.ExpressionUtils;
+import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.Expressions;
-import com.querydsl.core.types.dsl.StringPath;
 import com.querydsl.core.types.dsl.Wildcard;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -24,6 +25,7 @@ import java.util.List;
 @Repository
 @RequiredArgsConstructor
 public class ChefMemberRepositoryCustomImpl implements ChefMemberRepositoryCustom {
+    private static final OrderSpecifier<?> INITIAL_ORDER_BY = null;
     private final JPAQueryFactory queryFactory;
 
     @Override
@@ -33,19 +35,19 @@ public class ChefMemberRepositoryCustomImpl implements ChefMemberRepositoryCusto
         QRecipe recipe = QRecipe.recipe;
         QRequest request = QRequest.request;
 
-        StringPath orderBy = null;
+        OrderSpecifier<?> orderBy = INITIAL_ORDER_BY;
         switch (type) {
             case STAR:
-                orderBy = Expressions.stringPath("star");
+                orderBy = Expressions.stringPath("star").desc();
                 break;
             case REVIEW:
-                orderBy = Expressions.stringPath("review");
+                orderBy = Expressions.stringPath("review").desc();
                 break;
             case RECIPE:
-                orderBy = Expressions.stringPath("recipeCount");
+                orderBy = Expressions.stringPath("recipeCount").desc();
                 break;
             case DISTANCE:
-                orderBy = Expressions.stringPath("distance");
+                orderBy = Expressions.stringPath("distance").asc();
                 break;
         }
 
@@ -56,12 +58,12 @@ public class ChefMemberRepositoryCustomImpl implements ChefMemberRepositoryCusto
                         Expressions.numberTemplate(Double.class,
                                 "ROUND(ST_Distance_Sphere(point({0}, {1}), point({2}, {3}))/1000, 2)",
                                 member.address.lnt, member.address.lat, lnt, lat).as("distance")
-                        , JPAExpressions.select(recipe.count().as("recipeCount"))
+                        , ExpressionUtils.as(JPAExpressions.select(recipe.count())
                                 .from(recipe)
                                 .where(recipe.member.id.eq(chefMember.member.id)
                                         .and(recipe.isQuotation.isFalse())
                                         .and(recipe.isDeleted.isFalse())
-                                        .and(recipe.isPublic.isTrue()))))
+                                        .and(recipe.isPublic.isTrue())), "recipeCount")))
                 .from(chefMember)
                 .join(member)
                 .on(chefMember.member.id.eq(member.id))
@@ -76,7 +78,7 @@ public class ChefMemberRepositoryCustomImpl implements ChefMemberRepositoryCusto
                                 .join(chefMember)
                                 .on(request.chefMember.id.eq(chefMember.id))
                                 .where(member.id.eq(memberId)))))
-                .orderBy(orderBy.asc())
+                .orderBy(orderBy)
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
