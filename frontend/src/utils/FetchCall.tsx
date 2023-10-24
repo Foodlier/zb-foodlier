@@ -22,7 +22,7 @@ const axiosInstance = axios.create({
 
 export async function reissueToken() {
   try {
-    const response = await axiosInstance.post('/auth/reissue', null, {
+    const response = await axiosInstance.post('/api/auth/reissue', null, {
       headers: {
         RefreshToken: `Bearer ${API_REFRESH_TOKEN}`,
       },
