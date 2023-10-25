@@ -26,7 +26,7 @@ const NaverRedirection = () => {
           showConfirmButton: false,
           timer: 1500,
         })
-        onLoginSuccess(res)
+        onAuthLoginSuccess(res)
         navigate('/')
       })
       .catch(() => {
