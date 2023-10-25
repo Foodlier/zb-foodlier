@@ -37,6 +37,7 @@ export const ProfileImage = styled.img<{ $size: number }>`
   border-radius: 5rem;
   margin-right: 1rem;
   border: 1px solid black;
+  object-fit: cover;
 `
 
 export const Nickname = styled.span`

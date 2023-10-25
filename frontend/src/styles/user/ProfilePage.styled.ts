@@ -35,6 +35,7 @@ export const UserImg = styled.img`
   width: 60px;
   height: 60px;
   background-color: yellowgreen;
+  object-fit: cover;
 `
 
 export const UserIsCooker = styled.div`
