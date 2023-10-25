@@ -51,7 +51,7 @@ export const Image = styled.img<{ $size: number }>`
   height: ${props => props.$size || 0}rem;
   min-width: ${props => props.$size || 0}rem;
   min-height: ${props => props.$size || 0}rem;
-  object-fit: contain;
+  object-fit: cover;
   border: 1px solid ${palette.divider};
   border-radius: 1rem;
 `
