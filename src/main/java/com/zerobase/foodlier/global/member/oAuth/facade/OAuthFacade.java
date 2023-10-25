@@ -11,11 +11,13 @@ import com.zerobase.foodlier.module.member.member.social.dto.OAuthLoginParams;
 import com.zerobase.foodlier.module.member.member.social.dto.SocialLoginResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 
 @Component
 @RequiredArgsConstructor
+@Transactional
 public class OAuthFacade {
     private final OAuthInfoService oAuthInfoService;
     private final MemberService memberService;
