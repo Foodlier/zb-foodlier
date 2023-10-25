@@ -22,7 +22,7 @@ export const Button = styled.button`
   transition: 0.8s ease;
   border-radius: 100%;
   overflow: hidden;
-  background-color: transparent;
+  background-color: ${palette.white};
 `
 
 export const Content = styled.div`

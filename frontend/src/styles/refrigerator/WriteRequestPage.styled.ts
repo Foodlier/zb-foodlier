@@ -11,13 +11,18 @@ import {
 export const RequestContainer = styled.div`
   display: flex;
   flex-direction: column;
-  padding: 2rem 0;
+  padding: 3rem 3% 0;
   margin: 0 auto;
+
+  ${breakpoints.large} {
+    font-size: ${typography.web.content};
+    padding: 5rem 0 0;
+  }
 `
 
 export const RequestForm = styled.form`
   width: 100%;
-  padding: 0 2%;
+  padding: 0 5%;
 `
 
 export const RequestFormList = styled.ul`
@@ -127,16 +132,15 @@ export const ButtonList = styled.div`
 `
 
 export const WritingButton = styled.button`
-  width: 15rem;
-  height: 4rem;
+  width: 20rem;
+  height: 4.7rem;
   line-height: 1.5;
   text-align: center;
-  font-size: ${typography.mobile.desc};
   font-weight: ${weight.mainTitle};
   background-color: ${palette.main};
   color: ${palette.white};
   border-radius: 0.5rem;
-  margin-bottom: 15rem;
+  margin-bottom: 10rem;
   margin-top: 2rem;
 
   ${breakpoints.large} {
@@ -147,40 +151,62 @@ export const WritingButton = styled.button`
 `
 
 export const WrapForm = styled.div`
-  width: 80%;
+  width: 100%;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  margin: 0 auto 2rem;
+  justify-content: flex-start;
+  margin: 0 auto 2.5rem;
+
+  ${breakpoints.large} {
+    flex-direction: row;
+  }
 `
 
 export const Title = styled.span`
   font-size: ${typography.mobile.subTitle};
   font-weight: ${weight.subTitle};
-  margin-bottom: 1.5rem;
+  margin-top: 1rem;
+  margin-right: 2rem;
+  margin-bottom: 1rem;
+  white-space: nowrap;
+
+  ${breakpoints.large} {
+    margin-bottom: 0;
+  }
 `
+
+export const Content = styled.span`
+  /* font-size: ${typography.mobile.subTitle};
+  font-weight: ${weight.subTitle};
+  margin-right: 2rem;
+  white-space: nowrap; */
+`
+
 export const Input = styled.input<{
   $width?: number
   $marginRi?: number
   $marginLf?: number
   $marginBt?: number
 }>`
+  display: flex;
+  flex-direction: column;
   width: 100%;
   border: 0.1rem solid ${palette.divider};
   border-radius: 0.5rem;
   padding: 1rem;
-  font-size: ${typography.mobile.desc};
   color: ${palette.textPrimary};
   margin-right: ${props => props.$marginRi || 0}rem;
   margin-left: ${props => props.$marginLf || 0}rem;
   margin-bottom: ${props => props.$marginBt || 0}rem;
 
   &::placeholder {
-    font-size: ${typography.mobile.desc};
     color: ${palette.textDisablePlace};
+    /* font-size: ${typography.mobile.desc}; */
   }
 
   ${breakpoints.large} {
+    font-size: ${typography.web.desc};
     width: ${props => props.$width || 100}%;
   }
 `
@@ -198,7 +224,7 @@ export const AddButton = styled.button<{ $width: number }>`
   color: ${palette.textSecondary};
 
   ${breakpoints.large} {
-    width: 20%;
+    width: 100%;
     font-size: ${typography.web.desc};
   }
 `
@@ -211,9 +237,9 @@ export const SearchButton = styled.button`
   border-radius: 0.5rem;
   padding: 1rem;
   margin-left: 1rem;
-  height: 4rem;
+  height: 4.6rem;
   line-height: 1;
-  font-size: ${typography.mobile.desc};
+  /* font-size: ${typography.mobile.desc}; */
 
   ${breakpoints.large} {
     font-size: ${typography.web.desc};
@@ -231,8 +257,7 @@ export const StyledDatePicker = styled(DatePicker)`
   border: 0.1rem solid ${palette.divider};
   border-radius: 0.5rem;
   padding: 1rem;
-  font-size: ${typography.mobile.desc};
-  color: ${palette.textSecondary};
+  color: ${palette.textDisablePlace};
 `
 
 export const ErrorMessage = styled.span`

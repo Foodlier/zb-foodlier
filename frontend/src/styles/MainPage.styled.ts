@@ -67,6 +67,7 @@ export const ChefContainer = styled.section`
 export const ChefTit = styled.section``
 export const ChefList = styled.section`
   display: flex;
+  flex-wrap: wrap;
   margin: 2rem 1rem 0;
 `
 
