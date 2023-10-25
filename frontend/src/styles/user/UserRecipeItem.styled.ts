@@ -28,6 +28,7 @@ export const RecipeImg = styled.img`
   margin-bottom: 16px;
   border-radius: 10px 10px 0 0;
   background-color: aliceblue;
+  object-fit: cover;
 `
 
 export const RecipeInfo = styled.div`
