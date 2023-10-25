@@ -105,6 +105,7 @@ export const ReviewImg = styled.img`
   border-radius: 100%;
   background-color: yellowgreen;
   margin-right: 6px;
+  object-fit: cover;
 `
 
 export const ReviewNickName = styled.span`

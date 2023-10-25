@@ -70,7 +70,7 @@ export const ProfileImg = styled.img`
   border-radius: 100%;
   padding: 0.5rem;
   margin-right: 1rem;
-  object-fit: contain;
+  object-fit: cover;
 `
 
 export const ProfileId = styled.div`

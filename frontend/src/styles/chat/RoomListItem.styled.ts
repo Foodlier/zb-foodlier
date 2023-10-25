@@ -34,7 +34,7 @@ export const ProfileImage = styled.img`
   height: 4rem;
   border-radius: 2rem;
   border: 1px solid black;
-
+  object-fit: cover;
   ${breakpoints.large} {
     width: 5rem;
     height: 5rem;

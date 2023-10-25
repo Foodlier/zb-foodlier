@@ -13,8 +13,10 @@ import {
 import profileDefault from '../../../public/images/default_profile.png'
 import ModalWithoutButton from '../../components/ui/ModalWithoutButton'
 import { myInfoState } from '../../store/recoilState'
+import { useNavigate } from 'react-router-dom'
 
 const ProfileEditPage = () => {
+  const navigate = useNavigate()
   const [, setProfile] = useRecoilState(myInfoState)
 
   const [isChecked, setIsChecked] = useState(false)
@@ -106,7 +108,7 @@ const ProfileEditPage = () => {
     form.append('roadAddress', profileValue.roadAddress)
     form.append('addressDetail', profileValue.addressDetail)
     if (profileImage) {
-      form.append('profileUrl', profileImage)
+      form.append('profileImage', profileImage as Blob)
     }
 
     try {
@@ -120,6 +122,7 @@ const ProfileEditPage = () => {
     setIsAlertModal(true)
     setTimeout(() => {
       setIsAlertModal(false)
+      navigate(-1)
     }, 1500)
   }
 

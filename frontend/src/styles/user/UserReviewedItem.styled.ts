@@ -16,6 +16,7 @@ export const ReviewedImg = styled.img`
   height: 9rem;
   border-radius: 1rem;
   background-color: aliceblue;
+  object-fit: cover;
 `
 
 export const ReviewedInfoContainer = styled.div`
