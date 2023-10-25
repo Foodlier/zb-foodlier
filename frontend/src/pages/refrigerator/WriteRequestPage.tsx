@@ -71,7 +71,10 @@ const WriteRequestPage = () => {
     try {
       const { status } = await axiosInstance.put(
         `/api/refrigerator/${requestFormId}`,
-        requestValue
+        {
+          ...requestValue,
+          recipeId: recipeId.id,
+        }
       )
       if (status === 200) {
         setIsCompleteContent('요청서 수정이 완료되었습니다.')

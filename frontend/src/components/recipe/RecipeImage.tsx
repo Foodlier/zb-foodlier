@@ -3,6 +3,7 @@
 import { ChangeEvent, useEffect, useState } from 'react'
 import * as S from '../../styles/recipe/RecipeImage.styled'
 import useIcon from '../../hooks/useIcon'
+import ModalWithoutButton from '../ui/ModalWithoutButton'
 
 // size : 해당 component width, height (1:1)
 // isText : '대표 이미지를 등록해주세요' 텍스트 노출 여부
@@ -31,9 +32,18 @@ const RecipeImage = ({
   const { IcAddRoundDuotone } = useIcon()
 
   const [imageUrl, setImageUrl] = useState('')
+  const [isModal, setIsModal] = useState(false)
 
   const uploadImage = (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
+
+    if (file && file.size > 500000) {
+      setIsModal(true)
+      setTimeout(() => {
+        setIsModal(false)
+      }, 1500)
+      return
+    }
     if (file) {
       if (formKey === 'cookingOrderImageList') {
         const updatedCookingOrderImageList = [
@@ -77,6 +87,12 @@ const RecipeImage = ({
             $size={size}
           />
         </>
+      )}
+      {isModal && (
+        <ModalWithoutButton
+          content="파일은 500kb 이하여야합니다."
+          setIsModalFalse={() => setIsModal(false)}
+        />
       )}
     </>
   )

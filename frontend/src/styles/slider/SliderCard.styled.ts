@@ -52,7 +52,7 @@ export const FlexWrap = styled.div`
   justify-content: space-between;
 `
 
-export const Like = styled.div`
+export const Like = styled.button`
   background: none;
   border: none;
   display: flex;
