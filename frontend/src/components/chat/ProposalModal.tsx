@@ -29,7 +29,7 @@ const ProposalModal = ({
 
   const suggest = async () => {
     try {
-      const res = await axiosInstance.post(`/point/suggest/${roomId}`, body)
+      const res = await axiosInstance.post(`/api/point/suggest/${roomId}`, body)
       sendSuggestion(price)
       setIsProposalModalOpen(false)
       console.log('제안 요청에 대한 반응 : ', res)

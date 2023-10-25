@@ -117,7 +117,7 @@ const UserChefInfo: React.FC<ChefInfo> = ({
       <S.ReviewContainer>
         {!onlyReview && (
           <S.ReviewIntro>
-            <S.ReviewTitle>{nickName}님의 받은 최근 후기</S.ReviewTitle>
+            <S.ReviewTitle>{nickName}님이 받은 요청 후기</S.ReviewTitle>
             <S.ReviewMoreBtn
               type="button"
               onClick={() => {

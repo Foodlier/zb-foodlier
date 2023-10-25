@@ -71,6 +71,7 @@ const WriteRecipePage = () => {
   // 레시피 재료 or 순서 추가
   const addItem = (key: string) => {
     if (key === 'ingredient') {
+      if (recipeValue.recipeIngredientDtoList.length > 4) return
       const updateValue = [
         ...recipeValue.recipeIngredientDtoList,
         {
@@ -311,6 +312,7 @@ const WriteRecipePage = () => {
             onChange={e =>
               setRecipeValue({ ...recipeValue, title: e.target.value })
             }
+            // $width={80}
           />
           <S.ErrorText>{errorValue.title}</S.ErrorText>
         </S.WrapForm>
@@ -323,42 +325,45 @@ const WriteRecipePage = () => {
             onChange={e =>
               setRecipeValue({ ...recipeValue, content: e.target.value })
             }
+            // $width={80}
           />
           <S.ErrorText>{errorValue.content}</S.ErrorText>
         </S.WrapForm>
 
         <S.WrapForm>
           <S.Title>재료</S.Title>
-          {recipeValue.recipeIngredientDtoList.map((item, index) => (
-            <S.FlexWrap key={`key-${index}`}>
-              <S.WrapIngredient>
-                <S.WrapItemInput>
-                  {INGREDIENT_LIST.map(ingredientItem => (
-                    <S.ItemInput
-                      key={ingredientItem.value}
-                      placeholder={ingredientItem.placeholder}
-                      onChange={e =>
-                        updateIngredient(e, index, ingredientItem.value)
-                      }
-                      value={item[ingredientItem.value]}
-                      $width={ingredientItem.width}
-                      $radius={ingredientItem.radius}
-                    />
-                  ))}
-                </S.WrapItemInput>
-              </S.WrapIngredient>
-              {Boolean(index) && (
-                <S.DeleteItem onClick={() => deleteItem(index, 'ingredient')}>
-                  삭제
-                </S.DeleteItem>
-              )}
-            </S.FlexWrap>
-          ))}
-          <S.AddButton onClick={() => addItem('ingredient')} $width={50}>
-            <IcAddRound size={1.2} color={palette.textSecondary} />
-            재료 추가
-          </S.AddButton>
-          <S.ErrorText>{errorValue.recipeIngredientDtoList}</S.ErrorText>
+          <S.Content>
+            {recipeValue.recipeIngredientDtoList.map((item, index) => (
+              <S.FlexWrap key={`key-${index}`}>
+                <S.WrapIngredient>
+                  <S.WrapItemInput>
+                    {INGREDIENT_LIST.map(ingredientItem => (
+                      <S.ItemInput
+                        key={ingredientItem.value}
+                        placeholder={ingredientItem.placeholder}
+                        onChange={e =>
+                          updateIngredient(e, index, ingredientItem.value)
+                        }
+                        value={item[ingredientItem.value]}
+                        $width={ingredientItem.width}
+                        $radius={ingredientItem.radius}
+                      />
+                    ))}
+                  </S.WrapItemInput>
+                </S.WrapIngredient>
+                {Boolean(index) && (
+                  <S.DeleteItem onClick={() => deleteItem(index, 'ingredient')}>
+                    삭제
+                  </S.DeleteItem>
+                )}
+              </S.FlexWrap>
+            ))}
+            <S.AddButton onClick={() => addItem('ingredient')} $width={50}>
+              <IcAddRound size={1.2} color={palette.textSecondary} />
+              재료 추가
+            </S.AddButton>
+            <S.ErrorText>{errorValue.recipeIngredientDtoList}</S.ErrorText>
+          </S.Content>
         </S.WrapForm>
 
         <S.WrapForm>
@@ -403,39 +408,40 @@ const WriteRecipePage = () => {
 
         <S.WrapForm>
           <S.Title>순서</S.Title>
-          {recipeValue.recipeDetailDtoList.map((item, index) => (
-            <S.FlexWrap key={`key-${index}`}>
-              <S.WrapOrder>
-                <RecipeImage
-                  size={7}
-                  isText={false}
-                  formKey="cookingOrderImageList"
-                  imageFile={imageFile}
-                  setImageFile={setImageFile}
-                  defaultUrl={item.cookingOrderImageUrl}
-                />
-                <S.Input
-                  onChange={e => updateOrder(e, index)}
-                  placeholder="조리 순서를 입력해주세요."
-                  value={item.cookingOrder}
-                  $width={100}
-                  $marginLf={1}
-                />
-              </S.WrapOrder>
-              {Boolean(index) && (
-                <S.DeleteItem onClick={() => deleteItem(index, 'detail')}>
-                  삭제
-                </S.DeleteItem>
-              )}
-            </S.FlexWrap>
-          ))}
+          <S.Content>
+            {recipeValue.recipeDetailDtoList.map((item, index) => (
+              <S.FlexWrap key={`key-${index}`}>
+                <S.WrapOrder>
+                  <RecipeImage
+                    size={7}
+                    isText={false}
+                    formKey="cookingOrderImageList"
+                    imageFile={imageFile}
+                    setImageFile={setImageFile}
+                    defaultUrl={item.cookingOrderImageUrl}
+                  />
+                  <S.Input
+                    onChange={e => updateOrder(e, index)}
+                    placeholder="조리 순서를 입력해주세요."
+                    value={item.cookingOrder}
+                    // $width={150}
+                    $marginLf={1}
+                  />
+                </S.WrapOrder>
+                {Boolean(index) && (
+                  <S.DeleteItem onClick={() => deleteItem(index, 'detail')}>
+                    삭제
+                  </S.DeleteItem>
+                )}
+              </S.FlexWrap>
+            ))}
 
-          <S.AddButton onClick={() => addItem('order')} $width={50}>
-            <IcAddRound size={1.2} color={palette.textSecondary} />
-            조리 내용 추가
-          </S.AddButton>
-
-          <S.ErrorText>{errorValue.recipeDetailDtoList}</S.ErrorText>
+            <S.AddButton onClick={() => addItem('order')} $width={50}>
+              <IcAddRound size={1.2} color={palette.textSecondary} />
+              조리 내용 추가
+            </S.AddButton>
+            <S.ErrorText>{errorValue.recipeDetailDtoList}</S.ErrorText>
+          </S.Content>
         </S.WrapForm>
 
         <S.RequestButton onClick={checkForm}>

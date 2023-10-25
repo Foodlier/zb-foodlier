@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, KeyboardEvent } from 'react'
 import SockJS from 'sockjs-client'
 import StompJs from 'stompjs'
-import { palette } from '../../constants/Styles'
+import { useNavigate } from 'react-router-dom'
 import useIcon from '../../hooks/useIcon'
 import * as S from '../../styles/chat/ChatRoom.styled'
 import ProposalModal from './ProposalModal'
@@ -23,7 +23,7 @@ interface DmMessage {
 }
 
 const ChatRoom = ({ roomNum }: { roomNum: number | undefined }) => {
-  const { IcImgBoxLight, InitialUserImg } = useIcon()
+  const { InitialUserImg } = useIcon()
   const [isProposalModalOpen, setIsProposalModalOpen] = useState(false)
   const [isDealModalOpen, setIsDealModalOpen] = useState(false)
   const [isRejectModalOpen, setIsRejectModalOpen] = useState(false)
@@ -34,6 +34,7 @@ const ChatRoom = ({ roomNum }: { roomNum: number | undefined }) => {
   const [lastDmNum, setLastDmNum] = useState(0)
   const [stompClientstate, setStompClientstate] = useState<StompJs.Client>()
   const [roomInfo, setRoomInfo] = useState<RoomInfoInterface>()
+  const [nowNickname, setNowNickName] = useState('')
   // 옵저버 관찰 대상
   const observerEl = useRef<HTMLDivElement>(null!)
   // 스크롤
@@ -44,9 +45,20 @@ const ChatRoom = ({ roomNum }: { roomNum: number | undefined }) => {
   const priceRef = useRef(0)
 
   // 로그인 구현시 TOKEN 따로 받아와야 함
-  const nowNickname = '김도빈테스트'
   const LoginTOKEN = getCookie('refreshToken')
   const socketTOKEN = `Bearer ${LoginTOKEN}`
+
+  // 내 정보 가져오기
+  const getMyInfo = async () => {
+    try {
+      const res = await axiosInstance.get('/api/profile/private')
+      if (res.status === 200) {
+        setNowNickName(res.data.nickName)
+      }
+    } catch (error) {
+      console.log(error)
+    }
+  }
 
   // 방 정보 가져오기
   const getRoomInfo = async () => {
@@ -66,9 +78,9 @@ const ChatRoom = ({ roomNum }: { roomNum: number | undefined }) => {
   // 방 정보 새로 가져오기(방 클릭시 마다)
   useEffect(() => {
     getRoomInfo()
+    getMyInfo()
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
-  // isSuggested는 왜 필요한건지 의문
+  }, [roomNum])
 
   //  DM 리스트 가져오기
   const getDmMessage = async () => {
@@ -138,7 +150,7 @@ const ChatRoom = ({ roomNum }: { roomNum: number | undefined }) => {
 
     return () => {
       // 소켓 리셋
-      // socket.close()
+      socket.close()
       // 디엠방 리셋
       setDmMessageList([])
     }
@@ -190,7 +202,22 @@ const ChatRoom = ({ roomNum }: { roomNum: number | undefined }) => {
         )
       }
     } else if (answer === 'approve') {
-      newMessage.content = '해당 제안을 수락하였습니다 (거래 성립)'
+      newMessage.content = '해당 제안을 수락하였습니다.'
+      if (stompClientstate) {
+        stompClientstate.send(
+          `/pub/message/${roomNum}`,
+          {},
+          JSON.stringify({
+            roomId: roomNum,
+            message: newMessage.content,
+            writer: newMessage.sender,
+            // 정형화
+            messageType: 'CHAT',
+          })
+        )
+      }
+    } else if (answer === 'out') {
+      newMessage.content = '상대방이 채팅방을 나가셨습니다.'
       if (stompClientstate) {
         stompClientstate.send(
           `/pub/message/${roomNum}`,
@@ -250,13 +277,15 @@ const ChatRoom = ({ roomNum }: { roomNum: number | undefined }) => {
   }
 
   // 채팅방 나가기
+  const navigate = useNavigate()
   const leaveRoom = async () => {
     try {
+      sendMessage('out')
       const res = await axiosInstance.put(
         `/api/dm/room/exit/${roomInfo?.roomId}`
       )
       if (res.status === 200) {
-        console.log(res)
+        navigate('/')
       }
     } catch (error) {
       console.log(error)
@@ -365,7 +394,6 @@ const ChatRoom = ({ roomNum }: { roomNum: number | undefined }) => {
         {dmMessageList.length > 0 && <S.ObserverDiv ref={observerEl} />}
       </S.ChattingMessage>
       <S.WrapInput>
-        <IcImgBoxLight size={3.5} color={palette.textPrimary} />
         <S.Input
           value={message}
           onChange={e => setMessage(e.target.value)}

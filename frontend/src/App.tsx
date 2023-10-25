@@ -67,17 +67,18 @@ function App() {
 
         eventSource.addEventListener('sse', (e: any) => {
           const noti = JSON.parse(e.data)
-          setIsNoti(true)
-          setShow(true)
-          setMessage(noti.content)
-          setTimeout(() => {
-            setShow(false)
-          }, 5000)
-          setTimeout(() => {
-            setIsNoti(false)
-          }, 6000)
-          console.log(e)
-          console.log('json:', JSON.parse(e.data))
+
+          if (noti.id > 0) {
+            setIsNoti(true)
+            setShow(true)
+            setMessage(noti.content)
+            setTimeout(() => {
+              setShow(false)
+            }, 5000)
+            setTimeout(() => {
+              setIsNoti(false)
+            }, 6000)
+          }
         })
 
         return () => {

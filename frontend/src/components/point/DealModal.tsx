@@ -26,7 +26,7 @@ const DealModal: React.FC<Price> = ({
   // 방 정보 가져오기
   const getRoomInfo = async () => {
     try {
-      const res = await axiosInstance.get('/dm/room/0/10')
+      const res = await axiosInstance.get('/api/dm/room/0/10')
       if (res.status === 200) {
         const newRoomInfo = res.data.content.find(
           (item: RoomInfoInterface) => item.roomId === roomId

@@ -18,7 +18,7 @@ const PointPage = () => {
     customerEmail: customerEMAIL,
     customerNickName: customerNAME,
   } = location.state
-  const clientKey = 'test_ck_Z1aOwX7K8meEABdJQeW8yQxzvNPG'
+  const clientKey = 'test_ck_PBal2vxj81PyjdLKoOAr5RQgOAND'
   const customerKey = 'd-b'
 
   const pay = async () => {

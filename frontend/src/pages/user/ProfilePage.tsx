@@ -49,7 +49,7 @@ const ProfilePage = () => {
       nickname,
       id,
     }
-    navigate(`/api/profile/${userId}/more`, { state: Info })
+    navigate(`/profile/${userId}/more`, { state: Info })
   }
 
   useEffect(() => {
@@ -112,7 +112,7 @@ const ProfilePage = () => {
         <S.MyReviewedContainer>
           <S.MyReviewedInto>
             <S.MyReviewedTitle>
-              {user?.nickname}님의 레시피 후기
+              {user?.nickname}님이 받은 레시피 후기
             </S.MyReviewedTitle>
             <S.ReviewedMoreBtn
               type="button"

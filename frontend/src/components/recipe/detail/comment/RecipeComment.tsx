@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
 import * as S from '../../../../styles/recipe/detail/comment/RecipeComment.styled'
 import axiosInstance from '../../../../utils/FetchCall'
 import CommonButton from '../../../ui/Button'
@@ -17,6 +18,7 @@ const RecipeComment = ({ recipeId }: { recipeId: number }) => {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
   const [willModifyCommentId, setWillModifyCommentId] = useState(0)
   const [memberId, setMemberId] = useState(0)
+  const navigate = useNavigate()
 
   const getProfile = async () => {
     const res = await axiosInstance.get(`/api/profile/private`)
@@ -150,7 +152,9 @@ const RecipeComment = ({ recipeId }: { recipeId: number }) => {
         {commentList.map((commentItem, idx) => (
           <S.CommentItemWrapper key={commentItem.id && idx}>
             <S.CommentHeader>
-              <S.CommentUserInfo>
+              <S.CommentUserInfo
+                onClick={() => navigate(`/profile/${commentItem.memberId}`)}
+              >
                 <S.UserImg
                   src={commentItem.profileImageUrl || defaultProfile}
                   alt={commentItem.nickname}

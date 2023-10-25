@@ -5,9 +5,13 @@ export const Container = styled.section`
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin-right: 3rem;
+  margin-right: 0.5rem;
 
   cursor: pointer;
+
+  ${breakpoints.large} {
+    margin-right: 3rem;
+  }
 `
 export const Image = styled.img`
   width: 10rem;

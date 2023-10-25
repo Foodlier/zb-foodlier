@@ -147,9 +147,9 @@ function RecipeReviewItem({ review }: ReviewItemProps) {
                     tabIndex={0}
                   >
                     {starValue <= rating ? (
-                      <StarFill size={5} color={palette.yellow} />
+                      <StarFill size={3} color={palette.yellow} />
                     ) : (
-                      <StarLight size={5} color={palette.divider} />
+                      <StarLight size={3} color={palette.divider} />
                     )}
                   </S.ReviewStar>
                 ))}
