@@ -37,7 +37,8 @@ public class ProfileFacade {
                 Objects.isNull(member.getProfileUrl()) ? NO_IMAGE :
                         member.getProfileUrl();
         if (!imageUrl.equals(NO_IMAGE)
-                && Objects.nonNull(member.getProfileUrl())) {
+                && Objects.nonNull(member.getProfileUrl())
+                && !imageUrl.equals(member.getProfileUrl())) {
             s3Service.deleteImage(member.getProfileUrl());
         }
         memberService.updatePrivateProfile(
