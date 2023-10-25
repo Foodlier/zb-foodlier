@@ -2,7 +2,7 @@
 import { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import Swal from 'sweetalert2'
-import { onLoginSuccess } from '../../services/authServices'
+import { onAuthLoginSuccess } from '../../services/authServices'
 import axiosInstance from '../../utils/FetchCall'
 
 const KakaoRedirection = () => {
@@ -24,7 +24,7 @@ const KakaoRedirection = () => {
           showConfirmButton: false,
           timer: 1500,
         })
-        onLoginSuccess(res)
+        onAuthLoginSuccess(res)
         navigate('/')
       })
       .catch(() => {
