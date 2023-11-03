@@ -21,7 +21,6 @@ export const Container = styled.header`
 
   ${breakpoints.large} {
     padding: 2%;
-    width: 100vw;
   }
 `
 
