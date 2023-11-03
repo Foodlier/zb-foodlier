@@ -27,6 +27,7 @@ import NaverLoginPage from './pages/auth/NaverRedirectionPage'
 import MyLogPage from './pages/user/MyLogPage'
 import NotFoundPage from './pages/NotFoundPage'
 import TradeHistoryPage from './pages/point/TradeHistoryPage'
+import ChargeHistoryPage from './pages/point/ChargeHistoryPage'
 import Notification from './components/Notification'
 import ProfileEditPage from './pages/user/ProfileEditPage'
 import EditPasswordPage from './pages/user/EditPasswordPage'
@@ -131,6 +132,7 @@ function App() {
         <Route path="/point/success" element={<SuccessPage />} />
         <Route path="/point/fail" element={<SuccessPage />} />
         <Route path="/trade-history" element={<TradeHistoryPage />} />
+        <Route path="/charge-history" element={<ChargeHistoryPage />} />
         <Route path="/my/:category" element={<MyLogPage />} />
         <Route path="/my/edit" element={<ProfileEditPage />} />
         <Route path="/my/edit/password" element={<EditPasswordPage />} />

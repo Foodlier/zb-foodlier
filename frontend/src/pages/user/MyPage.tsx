@@ -53,6 +53,10 @@ const MyPage = () => {
       navigate: '/trade-history',
     },
     {
+      title: '내 충전 내역',
+      navigate: '/trade-history',
+    },
+    {
       title: '내 정보 수정',
       navigate: '/my/edit',
     },
