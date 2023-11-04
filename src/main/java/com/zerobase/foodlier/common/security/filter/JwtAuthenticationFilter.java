@@ -14,6 +14,8 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Date;
+import java.util.List;
 
 import static com.zerobase.foodlier.common.security.constants.AuthorizationConstants.*;
 import static com.zerobase.foodlier.common.security.exception.JwtErrorCode.*;
@@ -22,7 +24,7 @@ import static com.zerobase.foodlier.common.security.exception.JwtErrorCode.*;
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
-
+    private final List<String> MAIN_PAGE_URLS = List.of("/recipe/detail/", "/recipe/search", "/recipe/main", "/recipe/default", "/recipe/recommended");
     private final JwtTokenProvider tokenProvider;
 
 
@@ -32,14 +34,18 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                                     @NonNull FilterChain filterChain)
             throws ServletException, IOException {
 
-        if(request.getRequestURI().contains("reissue")){
+        String uri = request.getRequestURI();
+
+        if (uri.contains("reissue")) {
             String refreshToken = this.resolveTokenFromRequest(request, REFRESH_HEADER);
-            if(!StringUtils.hasText(refreshToken)){
+            if (!StringUtils.hasText(refreshToken)) {
                 throw new JwtException(EMPTY_TOKEN);
             }
             setSecurityContext(refreshToken);
-        }
-        else{
+        } else if (isMainPageUrl(uri)) {
+            String accessToken = this.resolveTokenFromRequestWhenPublic(request);
+            setSecurityContext(accessToken);
+        } else {
             String accessToken = this.resolveTokenFromRequest(request, TOKEN_HEADER);
 
             if (this.tokenProvider.isTokenExpired(accessToken)
@@ -47,13 +53,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 throw new JwtException(ALL_TOKEN_EXPIRED);
             }
 
-            if (this.tokenProvider.isTokenExpired(accessToken)){
+            if (this.tokenProvider.isTokenExpired(accessToken)) {
                 throw new JwtException(ACCESS_TOKEN_EXPIRED);
             }
             setSecurityContext(accessToken);
         }
 
-        filterChain.doFilter(request,response);
+        filterChain.doFilter(request, response);
     }
 
     private String resolveTokenFromRequest(@NonNull HttpServletRequest request,
@@ -71,10 +77,39 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         return token.substring(TOKEN_PREFIX.length());
     }
 
+    private String resolveTokenFromRequestWhenPublic(@NonNull HttpServletRequest request)
+    {
+        String token = request.getHeader(TOKEN_HEADER);
+
+        if (!StringUtils.hasText(token)) {
+            return this.tokenProvider.createVisitorToken(new Date());
+        }
+
+        if (ObjectUtils.isEmpty(token)) {
+            throw new JwtException(EMPTY_TOKEN);
+        }
+
+        if (!token.startsWith(TOKEN_PREFIX)) {
+            throw new JwtException(MALFORMED_JWT_REQUEST);
+        }
+
+        return token.substring(TOKEN_PREFIX.length());
+    }
+
     private void setSecurityContext(String accessToken) {
         SecurityContextHolder
                 .getContext()
                 .setAuthentication(this.tokenProvider
                         .getAuthentication(accessToken));
+    }
+
+    private boolean isMainPageUrl(String uri) {
+
+        for (String mainPageUrl : MAIN_PAGE_URLS) {
+            if (uri.startsWith(mainPageUrl)) {
+                return true;
+            }
+        }
+        return false;
     }
 }

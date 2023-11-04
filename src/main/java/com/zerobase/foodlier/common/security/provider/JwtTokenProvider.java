@@ -7,6 +7,7 @@ import com.zerobase.foodlier.common.security.exception.JwtException;
 import com.zerobase.foodlier.common.security.provider.constants.TokenExpiredConstant;
 import com.zerobase.foodlier.common.security.provider.dto.MemberAuthDto;
 import com.zerobase.foodlier.common.security.provider.dto.TokenDto;
+import com.zerobase.foodlier.module.member.member.type.RoleType;
 import io.jsonwebtoken.*;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -71,6 +72,23 @@ public class JwtTokenProvider {
                 .setClaims(claims)
                 .setIssuedAt(date)
                 .setExpiration(tokenExpiredConstant.getRefreshTokenExpiredDate(date))
+                .signWith(SignatureAlgorithm.HS512, accessSecretKey)
+                .compact();
+    }
+
+    /**
+     * 방문자용 토큰 발급
+     */
+
+    public String createVisitorToken(Date date) {
+        Claims claims = Jwts.claims().setSubject("visitor@gmail.com");
+        claims.setId(String.valueOf(-1));
+        claims.put(KEY_ROLES, List.of(RoleType.ROLE_VISITOR));
+        claims.put(TOKEN_TYPE, ACCESS_TOKEN);
+        return Jwts.builder()
+                .setClaims(claims)
+                .setExpiration(date)
+                .setIssuedAt(date)
                 .signWith(SignatureAlgorithm.HS512, accessSecretKey)
                 .compact();
     }
