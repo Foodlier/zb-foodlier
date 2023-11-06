@@ -20,30 +20,25 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.zerobase.foodlier.common.security.constants.AuthorizationConstants.*;
 import static com.zerobase.foodlier.common.security.exception.JwtErrorCode.*;
 import static com.zerobase.foodlier.common.security.provider.constants.TokenType.ACCESS_TOKEN;
 import static com.zerobase.foodlier.common.security.provider.constants.TokenType.REFRESH_TOKEN;
 
 @Component
-public class JwtTokenProvider {
+public class JwtProvider {
 
-    private static final String KEY_ROLES = "roles";
-    private static final String TOKEN_TYPE = "type";
-    private static final String VISITOR_EMAIL = "visitor@gmail.com";
-    private static final String VISITOR_ID = "-1";
-    private final String VISITOR_TOKEN;
     private final TokenExpiredConstant tokenExpiredConstant;
     private final RefreshTokenService refreshTokenService;
     private final String accessSecretKey;
 
 
-    public JwtTokenProvider(@Value("${spring.jwt.secret}") String accessSecretKey,
-                            TokenExpiredConstant tokenExpiredConstant,
-                            RefreshTokenService refreshTokenService) {
+    public JwtProvider(@Value("${spring.jwt.secret}") String accessSecretKey,
+                       TokenExpiredConstant tokenExpiredConstant,
+                       RefreshTokenService refreshTokenService) {
         this.accessSecretKey = accessSecretKey;
         this.refreshTokenService = refreshTokenService;
         this.tokenExpiredConstant = tokenExpiredConstant;
-        VISITOR_TOKEN = this.createVisitorToken(new Date());
     }
 
     /**
@@ -84,7 +79,7 @@ public class JwtTokenProvider {
     /**
      * 방문자용 토큰 발급
      */
-    private String createVisitorToken(Date date) {
+    public String createVisitorToken(Date date) {
         Claims claims = Jwts.claims().setSubject(VISITOR_EMAIL);
         claims.setId(VISITOR_ID);
         claims.put(KEY_ROLES, List.of(RoleType.ROLE_VISITOR));
@@ -97,9 +92,6 @@ public class JwtTokenProvider {
                 .compact();
     }
 
-    public String getVisitorToken(){
-        return this.VISITOR_TOKEN;
-    }
 
     /**
      * 작성자: 이종욱
