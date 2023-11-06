@@ -15,7 +15,7 @@ import com.zerobase.foodlier.module.recipe.dto.recipe.*;
 import com.zerobase.foodlier.module.recipe.service.recipe.RecipeService;
 import com.zerobase.foodlier.module.recipe.type.OrderType;
 import com.zerobase.foodlier.module.recipe.type.SearchType;
-import com.zerobase.foodlier.module.recipe.validator.ValidOrder;
+import com.zerobase.foodlier.module.recipe.validation.ValidOrder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
