@@ -29,9 +29,13 @@ public class JwtTokenProvider {
 
     private static final String KEY_ROLES = "roles";
     private static final String TOKEN_TYPE = "type";
+    private static final String VISITOR_EMAIL = "visitor@gmail.com";
+    private static final String VISITOR_ID = "-1";
+    private final String VISITOR_TOKEN;
     private final TokenExpiredConstant tokenExpiredConstant;
     private final RefreshTokenService refreshTokenService;
     private final String accessSecretKey;
+
 
     public JwtTokenProvider(@Value("${spring.jwt.secret}") String accessSecretKey,
                             TokenExpiredConstant tokenExpiredConstant,
@@ -39,6 +43,7 @@ public class JwtTokenProvider {
         this.accessSecretKey = accessSecretKey;
         this.refreshTokenService = refreshTokenService;
         this.tokenExpiredConstant = tokenExpiredConstant;
+        VISITOR_TOKEN = this.createVisitorToken(new Date());
     }
 
     /**
@@ -79,10 +84,9 @@ public class JwtTokenProvider {
     /**
      * 방문자용 토큰 발급
      */
-
-    public String createVisitorToken(Date date) {
-        Claims claims = Jwts.claims().setSubject("visitor@gmail.com");
-        claims.setId(String.valueOf(-1));
+    private String createVisitorToken(Date date) {
+        Claims claims = Jwts.claims().setSubject(VISITOR_EMAIL);
+        claims.setId(VISITOR_ID);
         claims.put(KEY_ROLES, List.of(RoleType.ROLE_VISITOR));
         claims.put(TOKEN_TYPE, ACCESS_TOKEN);
         return Jwts.builder()
@@ -91,6 +95,10 @@ public class JwtTokenProvider {
                 .setIssuedAt(date)
                 .signWith(SignatureAlgorithm.HS512, accessSecretKey)
                 .compact();
+    }
+
+    public String getVisitorToken(){
+        return this.VISITOR_TOKEN;
     }
 
     /**
