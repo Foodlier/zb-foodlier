@@ -159,25 +159,6 @@ public class RecipeService {
     public ListResponse<RecipeCardDto> searchRecipeListBy(RecipeSearchRequest recipeSearchRequest) {
         Page<RecipeDocument> result = recipeSearchRepository.searchBy(recipeSearchRequest.getSearchType(),
                 recipeSearchRequest.getSearchText(), recipeSearchRequest.getPageable());
-        if (isNotMember(recipeSearchRequest.getMemberId())) {
-            return ListResponse.<RecipeCardDto>builder()
-                    .totalPages(result.getTotalPages())
-                    .totalElements(result.getTotalElements())
-                    .hasNextPage(result.hasNext())
-                    .content(result.stream()
-                            .map(recipeDocument -> RecipeCardDto.builder()
-                                    .recipeId(recipeDocument.getId())
-                                    .title(recipeDocument.getTitle())
-                                    .content(recipeDocument.getContent())
-                                    .mainImageUrl(recipeDocument.getMainImageUrl())
-                                    .nickName(recipeDocument.getWriter())
-                                    .heartCount((int) recipeDocument.getNumberOfHeart())
-                                    .isHeart(false)
-                                    .build()).collect(Collectors.toList()))
-                    .build();
-        }
-        Member member = memberRepository.findById(recipeSearchRequest.getMemberId())
-                .orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
         return ListResponse.<RecipeCardDto>builder()
                 .totalPages(result.getTotalPages())
                 .totalElements(result.getTotalElements())
@@ -190,13 +171,26 @@ public class RecipeService {
                                 .mainImageUrl(recipeDocument.getMainImageUrl())
                                 .nickName(recipeDocument.getWriter())
                                 .heartCount((int) recipeDocument.getNumberOfHeart())
-                                .isHeart(heartRepository.existsHeart(recipeDocument.getId(), member))
+                                .isHeart(getIsHeartWhenSearch(recipeSearchRequest.getMemberId(), recipeDocument.getId()))
                                 .build()).collect(Collectors.toList()))
                 .build();
 
     }
+    private boolean getIsHeartWhenSearch(Long memberId, Long recipeId){
+
+        if(isNotMember(memberId)){
+            return false;
+        }
+        return heartRepository.existsHeart(recipeId, getMember(memberId));
+    }
+
     private boolean isNotMember(Long memberId){
         return memberId < MINIMUM_MEMBER_ID;
+    }
+
+    private Member getMember(Long memberId){
+        return memberRepository.findById(memberId)
+                .orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
     }
 
     /**
@@ -315,32 +309,17 @@ public class RecipeService {
      * 메인 페이지에서 생성된 순으로 3개를 조회해 옵니다.
      */
     public List<RecipeCardDto> getRecentRecipeList(MemberAuthDto memberAuthDto) {
-        if (memberAuthDto.getRoles().contains(ROLE_VISITOR.name())) {
-            return recipeRepository.findTop3ByIsPublicIsTrueOrderByCreatedAtDesc()
-                    .stream()
-                    .map(r -> RecipeCardDto.builder()
-                            .recipeId(r.getId())
-                            .nickName(r.getMember().getNickname())
-                            .title(r.getSummary().getTitle())
-                            .mainImageUrl(r.getMainImageUrl())
-                            .content(r.getSummary().getContent())
-                            .heartCount(r.getHeartCount())
-                            .isHeart(false)
-                            .build())
-                    .collect(Collectors.toList());
-        }
-        Member member = memberRepository.findById(memberAuthDto.getId())
-                .orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
+
         return recipeRepository.findTop3ByIsPublicIsTrueOrderByCreatedAtDesc()
                 .stream()
-                .map(r -> RecipeCardDto.builder()
-                        .recipeId(r.getId())
-                        .nickName(r.getMember().getNickname())
-                        .title(r.getSummary().getTitle())
-                        .mainImageUrl(r.getMainImageUrl())
-                        .content(r.getSummary().getContent())
-                        .heartCount(r.getHeartCount())
-                        .isHeart(heartRepository.existsByRecipeAndMember(r, member))
+                .map(recipe -> RecipeCardDto.builder()
+                        .recipeId(recipe.getId())
+                        .nickName(recipe.getMember().getNickname())
+                        .title(recipe.getSummary().getTitle())
+                        .mainImageUrl(recipe.getMainImageUrl())
+                        .content(recipe.getSummary().getContent())
+                        .heartCount(recipe.getHeartCount())
+                        .isHeart(getIsHeartWhenSearch(memberAuthDto.getId(), recipe.getId()))
                         .build())
                 .collect(Collectors.toList());
     }
@@ -370,41 +349,20 @@ public class RecipeService {
                 break;
         }
 
-        if (memberAuthDto.getRoles().contains(ROLE_VISITOR.name())) {
-            return ListResponse.<RecipeCardDto>builder()
-                    .totalPages(recipePage.getTotalPages())
-                    .hasNextPage(recipePage.hasNext())
-                    .totalElements(recipePage.getTotalElements())
-                    .content(
-                            recipePage.stream()
-                                    .map(r -> RecipeCardDto.builder()
-                                            .recipeId(r.getId())
-                                            .nickName(r.getMember().getNickname())
-                                            .mainImageUrl(r.getMainImageUrl())
-                                            .title(r.getSummary().getTitle())
-                                            .content(r.getSummary().getContent())
-                                            .heartCount(r.getHeartCount())
-                                            .build())
-                                    .collect(Collectors.toList()))
-                    .build();
-        }
-        Member member = memberRepository.findById(memberAuthDto.getId())
-                .orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
-
         return ListResponse.<RecipeCardDto>builder()
                 .totalPages(recipePage.getTotalPages())
                 .hasNextPage(recipePage.hasNext())
                 .totalElements(recipePage.getTotalElements())
                 .content(
                         recipePage.stream()
-                                .map(r -> RecipeCardDto.builder()
-                                        .recipeId(r.getId())
-                                        .nickName(r.getMember().getNickname())
-                                        .mainImageUrl(r.getMainImageUrl())
-                                        .title(r.getSummary().getTitle())
-                                        .content(r.getSummary().getContent())
-                                        .heartCount(r.getHeartCount())
-                                        .isHeart(heartRepository.existsByRecipeAndMember(r, member))
+                                .map(recipe -> RecipeCardDto.builder()
+                                        .recipeId(recipe.getId())
+                                        .nickName(recipe.getMember().getNickname())
+                                        .mainImageUrl(recipe.getMainImageUrl())
+                                        .title(recipe.getSummary().getTitle())
+                                        .content(recipe.getSummary().getContent())
+                                        .heartCount(recipe.getHeartCount())
+                                        .isHeart(getIsHeartWhenSearch(memberAuthDto.getId(), recipe.getId()))
                                         .build())
                                 .collect(Collectors.toList()))
                 .build();
@@ -416,34 +374,18 @@ public class RecipeService {
      * 오늘 생성된 레시피 중 좋아요 높은 순으로 5개를 조회해 옵니다.
      */
     public List<RecipeCardDto> getRecommendedRecipeList(MemberAuthDto memberAuthDto) {
-        if (memberAuthDto.getRoles().contains(ROLE_VISITOR.name())) {
-            return recipeRepository.findTop5ByIsPublicIsTrueAndCreatedAtAfterOrderByHeartCountDesc(
-                            LocalDate.now().atStartOfDay())
-                    .stream()
-                    .map(r -> RecipeCardDto.builder()
-                            .recipeId(r.getId())
-                            .nickName(r.getMember().getNickname())
-                            .title(r.getSummary().getTitle())
-                            .mainImageUrl(r.getMainImageUrl())
-                            .content(r.getSummary().getContent())
-                            .heartCount(r.getHeartCount())
-                            .build())
-                    .collect(Collectors.toList());
-        }
-        Member member = memberRepository.findById(memberAuthDto.getId())
-                .orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
 
         return recipeRepository.findTop5ByIsPublicIsTrueAndCreatedAtAfterOrderByHeartCountDesc(
                         LocalDate.now().atStartOfDay())
                 .stream()
-                .map(r -> RecipeCardDto.builder()
-                        .recipeId(r.getId())
-                        .nickName(r.getMember().getNickname())
-                        .title(r.getSummary().getTitle())
-                        .mainImageUrl(r.getMainImageUrl())
-                        .content(r.getSummary().getContent())
-                        .heartCount(r.getHeartCount())
-                        .isHeart(heartRepository.existsByRecipeAndMember(r, member))
+                .map(recipe -> RecipeCardDto.builder()
+                        .recipeId(recipe.getId())
+                        .nickName(recipe.getMember().getNickname())
+                        .title(recipe.getSummary().getTitle())
+                        .mainImageUrl(recipe.getMainImageUrl())
+                        .content(recipe.getSummary().getContent())
+                        .heartCount(recipe.getHeartCount())
+                        .isHeart(getIsHeartWhenSearch(memberAuthDto.getId(), recipe.getId()))
                         .build())
                 .collect(Collectors.toList());
     }
