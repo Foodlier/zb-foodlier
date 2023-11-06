@@ -3,6 +3,8 @@ package com.zerobase.foodlier.module.recipe.type;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+import java.util.Arrays;
+
 @Getter
 @RequiredArgsConstructor
 public enum OrderType {
@@ -12,4 +14,12 @@ public enum OrderType {
     INVALID_TYPE("invalid");
 
     private final String orderKey;
+
+    public static boolean isInvalidType(OrderType orderType){
+        return Arrays.stream(OrderType.values())
+                .filter(type -> type.equals(orderType))
+                .findFirst()
+                .isEmpty();
+    }
+
 }
