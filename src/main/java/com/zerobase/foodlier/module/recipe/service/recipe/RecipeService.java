@@ -30,13 +30,16 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static com.zerobase.foodlier.module.member.member.exception.MemberErrorCode.MEMBER_NOT_FOUND;
-import static com.zerobase.foodlier.module.recipe.exception.recipe.RecipeErrorCode.*;
+import static com.zerobase.foodlier.module.member.member.type.RoleType.ROLE_VISITOR;
+import static com.zerobase.foodlier.module.recipe.exception.recipe.RecipeErrorCode.NO_SUCH_RECIPE;
+import static com.zerobase.foodlier.module.recipe.exception.recipe.RecipeErrorCode.NO_SUCH_RECIPE_DOCUMENT;
 
 @Service
 @RequiredArgsConstructor
 @Transactional
 public class RecipeService {
     private static final String DELIMITER = " ";
+    private static final Long MINIMUM_MEMBER_ID = 0L;
     private final RecipeRepository recipeRepository;
     private final RecipeSearchRepository recipeSearchRepository;
     private final MemberRepository memberRepository;
@@ -126,15 +129,13 @@ public class RecipeService {
         Recipe recipe = recipeRepository.findById(id)
                 .orElseThrow(() -> new RecipeException(NO_SUCH_RECIPE));
 
-        Member member = memberRepository.findById(memberAuthDto.getId())
-                .orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
-
-        RecipeDtoResponse recipeDtoResponse =
-                RecipeDtoResponse.fromEntity(recipe);
-
-        recipeDtoResponse.updateHeart(heartRepository
-                .existsByRecipeAndMember(recipe, member));
-
+        RecipeDtoResponse recipeDtoResponse = RecipeDtoResponse.fromEntity(recipe);
+        if (!memberAuthDto.getRoles().contains(ROLE_VISITOR.name())) {
+            Member member = memberRepository.findById(memberAuthDto.getId())
+                    .orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
+            recipeDtoResponse.updateHeart(heartRepository
+                    .existsByRecipeAndMember(recipe, member));
+        }
         return recipeDtoResponse;
     }
 
@@ -155,13 +156,28 @@ public class RecipeService {
         recipeSearchRepository.deleteById(id);
     }
 
-    public ListResponse<RecipeCardDto> getRecipeList(RecipeSearchRequest recipeSearchRequest) {
-
-        Member member = memberRepository.findById(recipeSearchRequest.getMemberId())
-                .orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
+    public ListResponse<RecipeCardDto> searchRecipeListBy(RecipeSearchRequest recipeSearchRequest) {
         Page<RecipeDocument> result = recipeSearchRepository.searchBy(recipeSearchRequest.getSearchType(),
                 recipeSearchRequest.getSearchText(), recipeSearchRequest.getPageable());
-
+        if (isNotMember(recipeSearchRequest.getMemberId())) {
+            return ListResponse.<RecipeCardDto>builder()
+                    .totalPages(result.getTotalPages())
+                    .totalElements(result.getTotalElements())
+                    .hasNextPage(result.hasNext())
+                    .content(result.stream()
+                            .map(recipeDocument -> RecipeCardDto.builder()
+                                    .recipeId(recipeDocument.getId())
+                                    .title(recipeDocument.getTitle())
+                                    .content(recipeDocument.getContent())
+                                    .mainImageUrl(recipeDocument.getMainImageUrl())
+                                    .nickName(recipeDocument.getWriter())
+                                    .heartCount((int) recipeDocument.getNumberOfHeart())
+                                    .isHeart(false)
+                                    .build()).collect(Collectors.toList()))
+                    .build();
+        }
+        Member member = memberRepository.findById(recipeSearchRequest.getMemberId())
+                .orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
         return ListResponse.<RecipeCardDto>builder()
                 .totalPages(result.getTotalPages())
                 .totalElements(result.getTotalElements())
@@ -179,7 +195,9 @@ public class RecipeService {
                 .build();
 
     }
-
+    private boolean isNotMember(Long memberId){
+        return memberId < MINIMUM_MEMBER_ID;
+    }
 
     /**
      * 업데이트 시 기존의 이미지 반환
@@ -296,10 +314,23 @@ public class RecipeService {
      * 작성일 : 2023-10-10
      * 메인 페이지에서 생성된 순으로 3개를 조회해 옵니다.
      */
-    public List<RecipeCardDto> getMainPageRecipeList(MemberAuthDto memberAuthDto) {
+    public List<RecipeCardDto> getRecentRecipeList(MemberAuthDto memberAuthDto) {
+        if (memberAuthDto.getRoles().contains(ROLE_VISITOR.name())) {
+            return recipeRepository.findTop3ByIsPublicIsTrueOrderByCreatedAtDesc()
+                    .stream()
+                    .map(r -> RecipeCardDto.builder()
+                            .recipeId(r.getId())
+                            .nickName(r.getMember().getNickname())
+                            .title(r.getSummary().getTitle())
+                            .mainImageUrl(r.getMainImageUrl())
+                            .content(r.getSummary().getContent())
+                            .heartCount(r.getHeartCount())
+                            .isHeart(false)
+                            .build())
+                    .collect(Collectors.toList());
+        }
         Member member = memberRepository.findById(memberAuthDto.getId())
                 .orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
-
         return recipeRepository.findTop3ByIsPublicIsTrueOrderByCreatedAtDesc()
                 .stream()
                 .map(r -> RecipeCardDto.builder()
@@ -317,49 +348,53 @@ public class RecipeService {
     /**
      * 작성자 : 이승현
      * 작성일 : 2023-10-10
-     * 레시피 페이지에서 레시피를 orderTpye에 따라서 조회해 옵니다.
+     * 레시피 페이지에서 레시피를 orderType에 따라서 조회해 옵니다.
      */
-    public ListResponse<RecipeCardDto> getRecipePageRecipeList(MemberAuthDto memberAuthDto,
-                                                               Pageable pageable,
-                                                               OrderType orderType) {
-        Member member = memberRepository.findById(memberAuthDto.getId())
-                .orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
-
-        Page<Recipe> recipePage;
-        int totalPages;
-        long totalElements;
-        boolean hasNext;
+    public ListResponse<RecipeCardDto> getDefaultRecipeList(MemberAuthDto memberAuthDto,
+                                                            Pageable pageable,
+                                                            OrderType orderType) {
+        Page<Recipe> recipePage = null;
 
         switch (orderType) {
             case CREATED_AT:
                 recipePage = recipeRepository
                         .findByIsPublicIsTrueOrderByCreatedAtDesc(pageable);
-                totalElements = recipePage.getTotalElements();
-                totalPages = recipePage.getTotalPages();
-                hasNext = recipePage.hasNext();
                 break;
             case HEART_COUNT:
                 recipePage = recipeRepository
                         .findByIsPublicIsTrueOrderByHeartCountDesc(pageable);
-                totalPages = recipePage.getTotalPages();
-                totalElements = recipePage.getTotalElements();
-                hasNext = recipePage.hasNext();
                 break;
             case COMMENT_COUNT:
                 recipePage = recipeRepository
                         .findByIsPublicIsTrueOrderByCommentCountDesc(pageable);
-                totalPages = recipePage.getTotalPages();
-                totalElements = recipePage.getTotalElements();
-                hasNext = recipePage.hasNext();
                 break;
-            default:
-                throw new RecipeException(ORDER_TYPE_NOT_FOUND);
         }
 
+        if (memberAuthDto.getRoles().contains(ROLE_VISITOR.name())) {
+            return ListResponse.<RecipeCardDto>builder()
+                    .totalPages(recipePage.getTotalPages())
+                    .hasNextPage(recipePage.hasNext())
+                    .totalElements(recipePage.getTotalElements())
+                    .content(
+                            recipePage.stream()
+                                    .map(r -> RecipeCardDto.builder()
+                                            .recipeId(r.getId())
+                                            .nickName(r.getMember().getNickname())
+                                            .mainImageUrl(r.getMainImageUrl())
+                                            .title(r.getSummary().getTitle())
+                                            .content(r.getSummary().getContent())
+                                            .heartCount(r.getHeartCount())
+                                            .build())
+                                    .collect(Collectors.toList()))
+                    .build();
+        }
+        Member member = memberRepository.findById(memberAuthDto.getId())
+                .orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
+
         return ListResponse.<RecipeCardDto>builder()
-                .totalPages(totalPages)
-                .hasNextPage(hasNext)
-                .totalElements(totalElements)
+                .totalPages(recipePage.getTotalPages())
+                .hasNextPage(recipePage.hasNext())
+                .totalElements(recipePage.getTotalElements())
                 .content(
                         recipePage.stream()
                                 .map(r -> RecipeCardDto.builder()
@@ -380,7 +415,21 @@ public class RecipeService {
      * 작성일 : 2023-10-10
      * 오늘 생성된 레시피 중 좋아요 높은 순으로 5개를 조회해 옵니다.
      */
-    public List<RecipeCardDto> recommendedRecipe(MemberAuthDto memberAuthDto) {
+    public List<RecipeCardDto> getRecommendedRecipeList(MemberAuthDto memberAuthDto) {
+        if (memberAuthDto.getRoles().contains(ROLE_VISITOR.name())) {
+            return recipeRepository.findTop5ByIsPublicIsTrueAndCreatedAtAfterOrderByHeartCountDesc(
+                            LocalDate.now().atStartOfDay())
+                    .stream()
+                    .map(r -> RecipeCardDto.builder()
+                            .recipeId(r.getId())
+                            .nickName(r.getMember().getNickname())
+                            .title(r.getSummary().getTitle())
+                            .mainImageUrl(r.getMainImageUrl())
+                            .content(r.getSummary().getContent())
+                            .heartCount(r.getHeartCount())
+                            .build())
+                    .collect(Collectors.toList());
+        }
         Member member = memberRepository.findById(memberAuthDto.getId())
                 .orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
 
