@@ -24,7 +24,7 @@ import static com.zerobase.foodlier.common.security.exception.JwtErrorCode.*;
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
-    private static final List<String> PUBLIC_URLS = List.of("/recipe/detail", "/recipe/search",
+    private static final List<String> PUBLIC_URL_LIST = List.of("/recipe/detail", "/recipe/search",
             "/recipe/main", "/recipe/default", "/recipe/recommended", "/profile/public/top-chef");
     private static final String REISSUE_URL = "/reissue";
     private final JwtProvider tokenProvider;
@@ -111,11 +111,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     }
 
     private boolean isMainPageUrl(String uri) {
-        for (String mainPageUrl : PUBLIC_URLS) {
-            if (uri.contains(mainPageUrl)) {
-                return true;
-            }
-        }
-        return false;
+        return PUBLIC_URL_LIST.stream().anyMatch(uri::contains);
     }
 }
