@@ -17,7 +17,7 @@ import org.springframework.web.client.RestTemplate;
 
 import java.util.Objects;
 
-import static com.zerobase.foodlier.common.security.constants.AuthorizationConstants.TOKEN_HEADER;
+import static com.zerobase.foodlier.common.security.constants.AuthorizationConstants.ACCESS_HEADER;
 import static com.zerobase.foodlier.common.security.constants.AuthorizationConstants.TOKEN_PREFIX;
 import static com.zerobase.foodlier.module.member.member.exception.OAuthErrorCode.FAILED_AUTH;
 import static com.zerobase.foodlier.module.member.member.exception.OAuthErrorCode.INVALID_TOKEN;
@@ -78,7 +78,7 @@ public class NaverApiClient implements OAuthApiClient {
 
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-        httpHeaders.set(TOKEN_HEADER, TOKEN_PREFIX + " " + accessToken);
+        httpHeaders.set(ACCESS_HEADER, TOKEN_PREFIX + " " + accessToken);
 
         MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
 

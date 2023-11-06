@@ -1,6 +1,6 @@
 package com.zerobase.foodlier.common.websocket.config;
 
-import com.zerobase.foodlier.common.security.provider.JwtTokenProvider;
+import com.zerobase.foodlier.common.security.provider.JwtProvider;
 import com.zerobase.foodlier.common.security.provider.dto.MemberAuthDto;
 import com.zerobase.foodlier.module.member.member.exception.MemberException;
 import com.zerobase.foodlier.module.member.member.repository.MemberRepository;
@@ -17,7 +17,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
-import static com.zerobase.foodlier.common.security.constants.AuthorizationConstants.TOKEN_HEADER;
+import static com.zerobase.foodlier.common.security.constants.AuthorizationConstants.ACCESS_HEADER;
 import static com.zerobase.foodlier.common.security.constants.AuthorizationConstants.TOKEN_PREFIX;
 import static com.zerobase.foodlier.module.member.member.exception.MemberErrorCode.MEMBER_NOT_FOUND;
 
@@ -26,7 +26,7 @@ import static com.zerobase.foodlier.module.member.member.exception.MemberErrorCo
 @Order(Ordered.HIGHEST_PRECEDENCE + 99)
 public class StompHandler implements ChannelInterceptor {
 
-    private final JwtTokenProvider jwtTokenProvider;
+    private final JwtProvider jwtProvider;
     private final MemberRepository memberRepository;
 
     @Override
@@ -34,11 +34,11 @@ public class StompHandler implements ChannelInterceptor {
         StompHeaderAccessor accessor = StompHeaderAccessor.wrap(message);
 
         if (StompCommand.CONNECT == accessor.getCommand()) {
-            String jwt = accessor.getFirstNativeHeader(TOKEN_HEADER);
+            String jwt = accessor.getFirstNativeHeader(ACCESS_HEADER);
             if (StringUtils.hasText(jwt) && jwt.startsWith(TOKEN_PREFIX)) {
                 jwt = jwt.substring(TOKEN_PREFIX.length()).trim();
             }
-            Authentication authentication = jwtTokenProvider
+            Authentication authentication = jwtProvider
                     .getAuthentication(jwt);
             MemberAuthDto memberAuthDto = (MemberAuthDto) authentication.getPrincipal();
 

@@ -350,7 +350,7 @@ class RecipeControllerTest {
                 .willReturn(recipeDtoResponse);
 
         //when
-        ResultActions perform = mockMvc.perform(get("/recipe/{recipeId}",
+        ResultActions perform = mockMvc.perform(get("/recipe/detail/{recipeId}",
                 recipeId));
 
         //then
@@ -439,7 +439,7 @@ class RecipeControllerTest {
                 .isHeart(true)
                 .build();
 
-        given(recipeService.getRecipeList(any()))
+        given(recipeService.searchRecipeListBy(any()))
                 .willReturn(ListResponse.from(
                         new PageImpl<>(
                                 List.of(
@@ -491,7 +491,7 @@ class RecipeControllerTest {
                 .isHeart(true)
                 .build();
 
-        given(recipeService.getRecipeList(any()))
+        given(recipeService.searchRecipeListBy(any()))
                 .willReturn(ListResponse.from(
                         new PageImpl<>(
                                 List.of(
@@ -544,7 +544,7 @@ class RecipeControllerTest {
                 .isHeart(true)
                 .build();
 
-        given(recipeService.getRecipeList(any()))
+        given(recipeService.searchRecipeListBy(any()))
                 .willReturn(ListResponse.from(
                         new PageImpl<>(
                                 List.of(
@@ -597,7 +597,7 @@ class RecipeControllerTest {
                 .isHeart(true)
                 .build();
 
-        given(recipeService.getRecipeList(any()))
+        given(recipeService.searchRecipeListBy(any()))
                 .willReturn(ListResponse.from(
                         new PageImpl<>(
                                 List.of(
@@ -650,7 +650,7 @@ class RecipeControllerTest {
                 .isHeart(true)
                 .build();
 
-        given(recipeService.getRecipeList(any()))
+        given(recipeService.searchRecipeListBy(any()))
                 .willReturn(ListResponse.from(
                         new PageImpl<>(
                                 List.of(
@@ -703,7 +703,7 @@ class RecipeControllerTest {
                 .isHeart(true)
                 .build();
 
-        given(recipeService.getRecipeList(any()))
+        given(recipeService.searchRecipeListBy(any()))
                 .willReturn(ListResponse.from(
                         new PageImpl<>(
                                 List.of(
@@ -756,7 +756,7 @@ class RecipeControllerTest {
                 .isHeart(true)
                 .build();
 
-        given(recipeService.getRecipeList(any()))
+        given(recipeService.searchRecipeListBy(any()))
                 .willReturn(ListResponse.from(
                         new PageImpl<>(
                                 List.of(
@@ -809,7 +809,7 @@ class RecipeControllerTest {
                 .isHeart(true)
                 .build();
 
-        given(recipeService.getRecipeList(any()))
+        given(recipeService.searchRecipeListBy(any()))
                 .willReturn(ListResponse.from(
                         new PageImpl<>(
                                 List.of(
@@ -904,7 +904,7 @@ class RecipeControllerTest {
         //given
         Long recipeId = 1L;
 
-        given(recipeService.getMainPageRecipeList(any())).willReturn(
+        given(recipeService.getRecentRecipeList(any())).willReturn(
                 new ArrayList<>(List.of(RecipeCardDto.builder()
                         .recipeId(recipeId)
                         .nickName("nickName")
@@ -949,7 +949,7 @@ class RecipeControllerTest {
                 .isHeart(true)
                 .build();
 
-        given(recipeService.getRecipePageRecipeList(any(), any(), any()))
+        given(recipeService.getDefaultRecipeList(any(), any(), any()))
                 .willReturn(ListResponse.from(
                         new PageImpl<>(
                                 List.of(
@@ -998,7 +998,7 @@ class RecipeControllerTest {
                 .isHeart(true)
                 .build();
 
-        given(recipeService.getRecipePageRecipeList(any(), any(), any()))
+        given(recipeService.getDefaultRecipeList(any(), any(), any()))
                 .willReturn(ListResponse.from(
                         new PageImpl<>(
                                 List.of(
@@ -1047,7 +1047,7 @@ class RecipeControllerTest {
                 .isHeart(true)
                 .build();
 
-        given(recipeService.getRecipePageRecipeList(any(), any(), any()))
+        given(recipeService.getDefaultRecipeList(any(), any(), any()))
                 .willReturn(ListResponse.from(
                         new PageImpl<>(
                                 List.of(
@@ -1093,7 +1093,7 @@ class RecipeControllerTest {
                 .isHeart(true)
                 .build();
 
-        given(recipeService.recommendedRecipe(any()))
+        given(recipeService.getRecommendedRecipeList(any()))
                 .willReturn(new ArrayList<>(List.of(recipeCardDto)));
 
         //when
