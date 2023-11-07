@@ -54,7 +54,7 @@ const MyPage = () => {
     },
     {
       title: '내 충전 내역',
-      navigate: '/trade-history',
+      navigate: '/charge-history',
     },
     {
       title: '내 정보 수정',

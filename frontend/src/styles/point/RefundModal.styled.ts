@@ -49,6 +49,7 @@ export const WrapInput = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
+  width: 70%;
   margin: 1rem 0;
   font-size: ${typography.mobile.content};
   ${breakpoints.large} {
@@ -57,14 +58,14 @@ export const WrapInput = styled.div`
 `
 
 export const Input = styled.input`
-  width: 60%;
+  width: 100%;
   border: 1px solid black;
   border-radius: 1rem;
   margin-right: 0.5rem;
   padding: 1rem;
   font-size: ${typography.mobile.content};
   ${breakpoints.large} {
-    width: 100%;
+    width: 70%;
   }
 `
 
