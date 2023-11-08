@@ -64,7 +64,7 @@ const UserChefInfo: React.FC<ChefInfo> = ({
       const chefGradeRes = await axiosInstance.get(
         `/api/profile/public/chef/${chefMemberId}`
       )
-      // console.log('쉐프등급', chefGradeRes.data)
+      console.log('쉐프등급', chefGradeRes.data)
       setChefGrade(chefGradeRes.data)
       setIsGradeLoading(true)
     } catch (error) {
@@ -99,7 +99,7 @@ const UserChefInfo: React.FC<ChefInfo> = ({
           {isGradeLoading ? (
             <>
               <S.Bar>
-                <S.ExpBar $cookerExp={(chefGrade.exp / 50) * 100} />
+                <S.ExpBar $cookerExp={(chefGrade.exp / 800) * 100} />
               </S.Bar>
               <S.GradeList>
                 <S.Grade>브론즈</S.Grade>

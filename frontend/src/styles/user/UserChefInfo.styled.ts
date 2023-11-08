@@ -28,7 +28,8 @@ export const ExpBar = styled.div<{ $cookerExp: number }>`
   position: absolute;
   top: 0;
   left: 0;
-  width: ${props => props.$cookerExp / 8}%;
+  width: ${props => props.$cookerExp}%;
+  max-width: 100%;
   height: 20px;
   border-radius: 10px;
   background-color: ${palette.textSecondary};

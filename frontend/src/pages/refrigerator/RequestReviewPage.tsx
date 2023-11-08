@@ -41,6 +41,7 @@ const RequestReviewPage = () => {
       })
       if (res.status === 200) {
         console.log(res)
+        navigate(-1)
       }
     } catch (error) {
       console.log(error)
