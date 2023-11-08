@@ -64,7 +64,7 @@ const UserChefInfo: React.FC<ChefInfo> = ({
       const chefGradeRes = await axiosInstance.get(
         `/api/profile/public/chef/${chefMemberId}`
       )
-      console.log('쉐프등급', chefGradeRes.data)
+      // console.log('쉐프등급', chefGradeRes.data)
       setChefGrade(chefGradeRes.data)
       setIsGradeLoading(true)
     } catch (error) {
