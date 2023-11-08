@@ -8,6 +8,7 @@ import WriteRequestPage from './pages/refrigerator/WriteRequestPage'
 import RequestDetailPage from './pages/refrigerator/RequestDetailPage'
 import WriteQuotationPage from './pages/refrigerator/WriteQuotationPage'
 import QuotationDetailPage from './pages/refrigerator/QuotationDetailPage'
+import RequestReviewPage from './pages/refrigerator/RequestReviewPage'
 import LoginPage from './pages/auth/LoginPage'
 import RegisterPage from './pages/auth/RegisterPage'
 import MainPage from './pages/MainPage'
@@ -109,6 +110,10 @@ function App() {
           element={<RequestDetailPage />}
         />
         <Route
+          path="/refrigerator/request/review"
+          element={<RequestReviewPage />}
+        />
+        <Route
           path="/refrigerator/quotation/write"
           element={<WriteQuotationPage />}
         />
@@ -131,8 +136,8 @@ function App() {
         <Route path="/point" element={<PointPage />} />
         <Route path="/point/success" element={<SuccessPage />} />
         <Route path="/point/fail" element={<SuccessPage />} />
-        <Route path="/trade-history" element={<TradeHistoryPage />} />
-        <Route path="/charge-history" element={<ChargeHistoryPage />} />
+        <Route path="/my/trade-history" element={<TradeHistoryPage />} />
+        <Route path="/my/charge-history" element={<ChargeHistoryPage />} />
         <Route path="/my/:category" element={<MyLogPage />} />
         <Route path="/my/edit" element={<ProfileEditPage />} />
         <Route path="/my/edit/password" element={<EditPasswordPage />} />

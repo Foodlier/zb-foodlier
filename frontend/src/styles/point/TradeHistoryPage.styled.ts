@@ -17,7 +17,7 @@ export const Title = styled.span`
   font-size: ${typography.mobile.mainTitle};
   font-weight: ${weight.mainTitle};
   color: ${palette.textPrimary};
-
+  margin: 2rem 0 5rem;
   ${breakpoints.large} {
     font-size: ${typography.web.mainTitle};
   }

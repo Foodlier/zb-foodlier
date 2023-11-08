@@ -72,9 +72,9 @@ function ReviewForm() {
       navigate(-1)
     }, 1500)
 
-    console.log('별점:', rating)
-    console.log('후기 내용:', memo)
-    console.log('첨부 파일:', reviewImage)
+    // console.log('별점:', rating)
+    // console.log('후기 내용:', memo)
+    // console.log('첨부 파일:', reviewImage)
   }
 
   const handleStarClick = (starValue: number) => {

@@ -11,6 +11,7 @@ interface HistoryType {
   description: string
   sender: string
   transactionAt: string
+  requestId: number
 }
 
 const TradeHistoryPage = () => {
@@ -35,8 +36,7 @@ const TradeHistoryPage = () => {
       requestId,
       name,
     }
-    // 후기 작성 페이지 경로 수정 해줘야함
-    navigate('/경로', { state: body })
+    navigate('/refrigerator/request/review', { state: body })
   }
 
   useEffect(() => {
@@ -69,13 +69,13 @@ const TradeHistoryPage = () => {
                   <S.HistoryPartDes>{el.currentPoint}</S.HistoryPartDes>
                 </S.HistoryPartWrap>
               </S.HistoryLeftWrap>
-              {el.description === '포인트 출금' && (
+              {/* 포인트 출금  으로 바꿔야한당~ */}
+              {el.description === '포인트 입금' && (
                 <S.HistoryRightWrap>
                   <S.ReviewButton
                     type="button"
                     onClick={() => {
-                      // 번호 자리에 el.requestId 넣어줘야 해요 현재 백에서 PR 올라감
-                      goToReview(el.sender, 1)
+                      goToReview(el.sender, el.requestId)
                     }}
                   >
                     후기 작성
