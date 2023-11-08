@@ -69,8 +69,7 @@ const TradeHistoryPage = () => {
                   <S.HistoryPartDes>{el.currentPoint}</S.HistoryPartDes>
                 </S.HistoryPartWrap>
               </S.HistoryLeftWrap>
-              {/* 포인트 출금  으로 바꿔야한당~ */}
-              {el.description === '포인트 입금' && (
+              {el.description === '포인트 출금' && (
                 <S.HistoryRightWrap>
                   <S.ReviewButton
                     type="button"

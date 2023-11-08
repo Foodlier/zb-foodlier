@@ -15,9 +15,6 @@ export const GreyBackground = styled.div`
 `
 
 export const SelectMoadl = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
   position: absolute;
   top: 50%;
   left: 50%;
@@ -35,7 +32,7 @@ export const SelectMoadl = styled.div`
 
 export const ChargingInfo = styled.div`
   width: 100%;
-  height: 76%;
+  height: calc(100% - 40px);
   padding: 6%;
   display: flex;
   flex-direction: column;
@@ -66,7 +63,7 @@ export const PointInfo = styled.p``
 export const ButtonList = styled.div`
   display: flex;
   width: 100%;
-  height: 100%;
+  height: 40px;
 `
 
 export const RejectButton = styled.button`

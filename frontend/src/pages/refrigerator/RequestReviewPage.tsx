@@ -35,7 +35,7 @@ const RequestReviewPage = () => {
       return
     }
     try {
-      const res = await axiosInstance.post(`/api/review/cher/${requestId}`, {
+      const res = await axiosInstance.post(`/api/review/chef/${requestId}`, {
         content: review,
         star: rating,
       })
