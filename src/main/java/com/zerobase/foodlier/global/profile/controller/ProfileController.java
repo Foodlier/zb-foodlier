@@ -100,7 +100,7 @@ public class ProfileController {
         return ResponseEntity.ok("내 정보 수정 완료");
     }
 
-    @PostMapping("/private/registerchef")
+    @PostMapping("/private/register-chef")
     public ResponseEntity<String> registerChef(
             @AuthenticationPrincipal MemberAuthDto memberAuthDto,
             @RequestBody ChefIntroduceForm chefIntroduceForm
@@ -136,7 +136,7 @@ public class ProfileController {
         );
     }
 
-    @GetMapping("/public/chefreview/{pageIdx}/{pageSize}/{chefMemberId}")
+    @GetMapping("/public/chef-review/{pageIdx}/{pageSize}/{chefMemberId}")
     public ResponseEntity<ListResponse<ChefReviewResponseDto>> getChefReviewList(
             @PathVariable int pageIdx,
             @PathVariable int pageSize,
@@ -148,7 +148,7 @@ public class ProfileController {
         );
     }
 
-    @GetMapping("/public/recipereview/{pageIdx}/{pageSize}/{memberId}")
+    @GetMapping("/public/recipe-review/{pageIdx}/{pageSize}/{memberId}")
     public ResponseEntity<ListResponse<RecipeReviewResponseDto>> getRecipeReviewListForProfile(
             @PathVariable int pageIdx,
             @PathVariable int pageSize,
@@ -174,7 +174,7 @@ public class ProfileController {
         );
     }
 
-    @GetMapping("/public/topchef")
+    @GetMapping("/public/top-chef")
     public ResponseEntity<List<TopChefDto>> getTopChefList() {
         return ResponseEntity.ok(
                 chefMemberService.getTopChefList()

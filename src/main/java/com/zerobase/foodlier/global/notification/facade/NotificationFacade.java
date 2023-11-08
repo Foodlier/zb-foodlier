@@ -48,7 +48,7 @@ public class NotificationFacade {
         emitter.onError(throwable -> emitter.complete());
         return emitter;
     }
-    @Async
+
     public void send(Notify notify) {
         Notification notification = notificationService.create(notify);
         String receiverEmail = notify.getReceiverEmail();

@@ -1,7 +1,7 @@
 package com.zerobase.foodlier.module.member.member.service;
 
 import com.zerobase.foodlier.common.response.ListResponse;
-import com.zerobase.foodlier.common.security.provider.JwtTokenProvider;
+import com.zerobase.foodlier.common.security.provider.JwtProvider;
 import com.zerobase.foodlier.common.security.provider.dto.MemberAuthDto;
 import com.zerobase.foodlier.common.security.provider.dto.TokenDto;
 import com.zerobase.foodlier.module.member.member.domain.model.Member;
@@ -35,7 +35,7 @@ public class MemberService {
     private static final String SOCIAL_MEMBER = "소셜회원";
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
-    private final JwtTokenProvider tokenProvider;
+    private final JwtProvider tokenProvider;
     private static final String DEL_PREFIX = "DEL";
     private static final String EMPTY_URL = null;
     private static final String NO_IMAGE = "empty";

@@ -7,6 +7,7 @@ import com.zerobase.foodlier.common.security.exception.JwtException;
 import com.zerobase.foodlier.common.security.provider.constants.TokenExpiredConstant;
 import com.zerobase.foodlier.common.security.provider.dto.MemberAuthDto;
 import com.zerobase.foodlier.common.security.provider.dto.TokenDto;
+import com.zerobase.foodlier.module.member.member.type.RoleType;
 import io.jsonwebtoken.*;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -19,22 +20,22 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.zerobase.foodlier.common.security.constants.AuthorizationConstants.*;
 import static com.zerobase.foodlier.common.security.exception.JwtErrorCode.*;
 import static com.zerobase.foodlier.common.security.provider.constants.TokenType.ACCESS_TOKEN;
 import static com.zerobase.foodlier.common.security.provider.constants.TokenType.REFRESH_TOKEN;
 
 @Component
-public class JwtTokenProvider {
+public class JwtProvider {
 
-    private static final String KEY_ROLES = "roles";
-    private static final String TOKEN_TYPE = "type";
     private final TokenExpiredConstant tokenExpiredConstant;
     private final RefreshTokenService refreshTokenService;
     private final String accessSecretKey;
 
-    public JwtTokenProvider(@Value("${spring.jwt.secret}") String accessSecretKey,
-                            TokenExpiredConstant tokenExpiredConstant,
-                            RefreshTokenService refreshTokenService) {
+
+    public JwtProvider(@Value("${spring.jwt.secret}") String accessSecretKey,
+                       TokenExpiredConstant tokenExpiredConstant,
+                       RefreshTokenService refreshTokenService) {
         this.accessSecretKey = accessSecretKey;
         this.refreshTokenService = refreshTokenService;
         this.tokenExpiredConstant = tokenExpiredConstant;
@@ -74,6 +75,23 @@ public class JwtTokenProvider {
                 .signWith(SignatureAlgorithm.HS512, accessSecretKey)
                 .compact();
     }
+
+    /**
+     * 방문자용 토큰 발급
+     */
+    public String createVisitorToken(Date date) {
+        Claims claims = Jwts.claims().setSubject(VISITOR_EMAIL);
+        claims.setId(VISITOR_ID);
+        claims.put(KEY_ROLES, List.of(RoleType.ROLE_VISITOR));
+        claims.put(TOKEN_TYPE, ACCESS_TOKEN);
+        return Jwts.builder()
+                .setClaims(claims)
+                .setExpiration(date)
+                .setIssuedAt(date)
+                .signWith(SignatureAlgorithm.HS512, accessSecretKey)
+                .compact();
+    }
+
 
     /**
      * 작성자: 이종욱
