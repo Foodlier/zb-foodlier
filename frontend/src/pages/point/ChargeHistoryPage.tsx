@@ -10,6 +10,7 @@ interface HistoryType {
   chargePoint: number
   description: string
   paymentKey: string
+  canceled: boolean
 }
 
 const ChargeHistoryPage = () => {
@@ -54,17 +55,22 @@ const ChargeHistoryPage = () => {
                 </S.HistoryPartWrap>
               </S.HistoryLeftWrap>
               <S.HistoryRightWrap>
-                {el.description === '포인트 충전' && (
-                  <S.ReviewButton
-                    type="button"
-                    onClick={() => {
-                      setPaymentKey(el.paymentKey)
-                      setIsRefundModal(true)
-                    }}
-                  >
-                    환불하기
-                  </S.ReviewButton>
-                )}
+                {el.description === '포인트 충전' &&
+                  (el.canceled ? (
+                    <S.ReviewButton
+                      type="button"
+                      onClick={() => {
+                        setPaymentKey(el.paymentKey)
+                        setIsRefundModal(true)
+                      }}
+                    >
+                      환불하기
+                    </S.ReviewButton>
+                  ) : (
+                    <S.ReviewedButton type="button" disabled>
+                      환불완료
+                    </S.ReviewedButton>
+                  ))}
               </S.HistoryRightWrap>
             </S.HistoryWrap>
           ))
