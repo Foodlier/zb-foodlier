@@ -48,7 +48,7 @@ const UserChefInfo: React.FC<ChefInfo> = ({
   const getChefReview = async () => {
     try {
       const chefReviewRes = await axiosInstance.get(
-        `/api/profile/public/chefreview/${0}/${EA}/${chefMemberId}`
+        `/api/profile/public/chef-review/${0}/${EA}/${chefMemberId}`
       )
       // console.log('쉐프 리뷰', chefReviewRes.data.content)
       setChefReview(chefReviewRes.data.content)

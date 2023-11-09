@@ -106,7 +106,7 @@ const MyPage = () => {
         introduce: '잘 부탁드립니다.',
       }
       const response = await axiosInstance.post(
-        '/api/profile/private/registerchef',
+        '/api/profile/private/register-chef',
         body
       )
       console.log(response)
