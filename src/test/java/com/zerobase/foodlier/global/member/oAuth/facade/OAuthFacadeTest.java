@@ -1,6 +1,6 @@
 package com.zerobase.foodlier.global.member.oAuth.facade;
 
-import com.zerobase.foodlier.common.security.provider.JwtTokenProvider;
+import com.zerobase.foodlier.common.security.provider.JwtProvider;
 import com.zerobase.foodlier.common.security.provider.dto.TokenDto;
 import com.zerobase.foodlier.module.member.member.domain.model.Member;
 import com.zerobase.foodlier.module.member.member.exception.OAuthException;
@@ -32,7 +32,7 @@ class OAuthFacadeTest {
     @Mock
     private MemberService memberService;
     @Mock
-    private JwtTokenProvider tokenProvider;
+    private JwtProvider tokenProvider;
     @InjectMocks
     private OAuthFacade oAuthFacade;
 

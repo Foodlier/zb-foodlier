@@ -6,6 +6,7 @@ import com.zerobase.foodlier.module.heart.reposiotry.HeartRepository;
 import com.zerobase.foodlier.module.member.member.domain.model.Member;
 import com.zerobase.foodlier.module.member.member.exception.MemberException;
 import com.zerobase.foodlier.module.member.member.repository.MemberRepository;
+import com.zerobase.foodlier.module.member.member.type.RoleType;
 import com.zerobase.foodlier.module.recipe.domain.document.RecipeDocument;
 import com.zerobase.foodlier.module.recipe.domain.model.Recipe;
 import com.zerobase.foodlier.module.recipe.domain.vo.RecipeDetail;
@@ -307,6 +308,7 @@ class RecipeServiceTest {
         RecipeDtoResponse recipeDtoResponse = recipeService
                 .getRecipeDetail(MemberAuthDto.builder()
                         .id(2L)
+                        .roles(List.of(RoleType.ROLE_USER.name()))
                         .build(), id);
 
         //then
@@ -355,6 +357,7 @@ class RecipeServiceTest {
         MemberException memberException = assertThrows(MemberException.class,
                 () -> recipeService.getRecipeDetail(MemberAuthDto.builder()
                         .id(1L)
+                        .roles(List.of(RoleType.ROLE_USER.name()))
                         .build(), id));
 
         //then
@@ -420,7 +423,7 @@ class RecipeServiceTest {
 
             // when
             MemberException memberException = assertThrows(MemberException.class,
-                    () -> recipeService.getRecipeList(recipeSearchRequest));
+                    () -> recipeService.searchRecipeListBy(recipeSearchRequest));
 
 
             // then
@@ -452,10 +455,10 @@ class RecipeServiceTest {
                 given(recipeSearchRepository.searchBy(any(), any(), any()))
                         .willReturn(recipeDocumentPage);
                 for (int i = 0; i < expectedRecipeList.getContent().size(); i++) {
-                    given(heartRepository.existsHeart(anyLong(),any())).willReturn(false);
+                    given(heartRepository.existsHeart(anyLong(), any())).willReturn(false);
                 }
                 // when
-                ListResponse<RecipeCardDto> recipeList = recipeService.getRecipeList(recipeSearchRequest);
+                ListResponse<RecipeCardDto> recipeList = recipeService.searchRecipeListBy(recipeSearchRequest);
 
                 // then
                 verify(recipeSearchRepository, times(1)).searchBy(any(),
@@ -502,10 +505,10 @@ class RecipeServiceTest {
                 given(recipeSearchRepository.searchBy(any(), any(), any()))
                         .willReturn(recipeDocumentPage);
                 for (int i = 0; i < expectedRecipeList.getContent().size(); i++) {
-                    given(heartRepository.existsHeart(anyLong(),any())).willReturn(false);
+                    given(heartRepository.existsHeart(anyLong(), any())).willReturn(false);
                 }
                 // when
-                ListResponse<RecipeCardDto> recipeList = recipeService.getRecipeList(recipeSearchRequest);
+                ListResponse<RecipeCardDto> recipeList = recipeService.searchRecipeListBy(recipeSearchRequest);
 
                 // then
                 verify(recipeSearchRepository, times(1)).searchBy(any(),
@@ -549,10 +552,10 @@ class RecipeServiceTest {
                 given(recipeSearchRepository.searchBy(any(), any(), any()))
                         .willReturn(recipeDocumentPage);
                 for (int i = 0; i < expectedRecipeList.getContent().size(); i++) {
-                    given(heartRepository.existsHeart(anyLong(),any())).willReturn(false);
+                    given(heartRepository.existsHeart(anyLong(), any())).willReturn(false);
                 }
                 // when
-                ListResponse<RecipeCardDto> recipeList = recipeService.getRecipeList(recipeSearchRequest);
+                ListResponse<RecipeCardDto> recipeList = recipeService.searchRecipeListBy(recipeSearchRequest);
 
                 // then
                 verify(recipeSearchRepository, times(1)).searchBy(any(),
@@ -607,11 +610,11 @@ class RecipeServiceTest {
                 given(recipeSearchRepository.searchBy(any(), any(), any()))
                         .willReturn(recipeDocumentPage);
                 for (int i = 0; i < expectedRecipeList.getContent().size(); i++) {
-                    given(heartRepository.existsHeart(anyLong(),any())).willReturn(false);
+                    given(heartRepository.existsHeart(anyLong(), any())).willReturn(false);
                 }
 
                 // when
-                ListResponse<RecipeCardDto> recipeList = recipeService.getRecipeList(recipeSearchRequest);
+                ListResponse<RecipeCardDto> recipeList = recipeService.searchRecipeListBy(recipeSearchRequest);
 
                 // then
                 verify(recipeSearchRepository, times(1)).searchBy(any(), any(), any());
@@ -663,10 +666,10 @@ class RecipeServiceTest {
                 given(recipeSearchRepository.searchBy(any(), any(), any()))
                         .willReturn(recipeDocumentPage);
                 for (int i = 0; i < expectedRecipeList.getContent().size(); i++) {
-                    given(heartRepository.existsHeart(anyLong(),any())).willReturn(false);
+                    given(heartRepository.existsHeart(anyLong(), any())).willReturn(false);
                 }
                 // when
-                ListResponse<RecipeCardDto> recipeList = recipeService.getRecipeList(recipeSearchRequest);
+                ListResponse<RecipeCardDto> recipeList = recipeService.searchRecipeListBy(recipeSearchRequest);
 
                 // then
                 verify(recipeSearchRepository, times(1)).searchBy(any(), any(), any());
@@ -717,10 +720,10 @@ class RecipeServiceTest {
                 given(recipeSearchRepository.searchBy(any(), any(), any()))
                         .willReturn(recipeDocumentPage);
                 for (int i = 0; i < expectedRecipeList.getContent().size(); i++) {
-                    given(heartRepository.existsHeart(anyLong(),any())).willReturn(false);
+                    given(heartRepository.existsHeart(anyLong(), any())).willReturn(false);
                 }
                 // when
-                ListResponse<RecipeCardDto> recipeList = recipeService.getRecipeList(recipeSearchRequest);
+                ListResponse<RecipeCardDto> recipeList = recipeService.searchRecipeListBy(recipeSearchRequest);
 
                 // then
                 verify(recipeSearchRepository, times(1)).searchBy(any(), any(), any());
@@ -773,10 +776,10 @@ class RecipeServiceTest {
                 given(recipeSearchRepository.searchBy(any(), any(), any()))
                         .willReturn(recipeDocumentPage);
                 for (int i = 0; i < expectedRecipeList.getContent().size(); i++) {
-                    given(heartRepository.existsHeart(anyLong(),any())).willReturn(false);
+                    given(heartRepository.existsHeart(anyLong(), any())).willReturn(false);
                 }
                 // when
-                ListResponse<RecipeCardDto> recipeList = recipeService.getRecipeList(recipeSearchRequest);
+                ListResponse<RecipeCardDto> recipeList = recipeService.searchRecipeListBy(recipeSearchRequest);
 
                 // then
                 verify(recipeSearchRepository, times(1)).searchBy(any(), any(), any());
@@ -825,10 +828,10 @@ class RecipeServiceTest {
                 given(recipeSearchRepository.searchBy(any(), any(), any()))
                         .willReturn(recipeDocumentPage);
                 for (int i = 0; i < expectedRecipeList.getContent().size(); i++) {
-                    given(heartRepository.existsHeart(anyLong(),any())).willReturn(false);
+                    given(heartRepository.existsHeart(anyLong(), any())).willReturn(false);
                 }
                 // when
-                ListResponse<RecipeCardDto> recipeList = recipeService.getRecipeList(recipeSearchRequest);
+                ListResponse<RecipeCardDto> recipeList = recipeService.searchRecipeListBy(recipeSearchRequest);
 
                 // then
                 verify(recipeSearchRepository, times(1)).searchBy(any(), any(), any());
@@ -877,10 +880,10 @@ class RecipeServiceTest {
                 given(recipeSearchRepository.searchBy(any(), any(), any()))
                         .willReturn(recipeDocumentPage);
                 for (int i = 0; i < expectedRecipeList.getContent().size(); i++) {
-                    given(heartRepository.existsHeart(anyLong(),any())).willReturn(false);
+                    given(heartRepository.existsHeart(anyLong(), any())).willReturn(false);
                 }
                 // when
-                ListResponse<RecipeCardDto> recipeList = recipeService.getRecipeList(recipeSearchRequest);
+                ListResponse<RecipeCardDto> recipeList = recipeService.searchRecipeListBy(recipeSearchRequest);
 
                 // then
                 verify(recipeSearchRepository, times(1)).searchBy(any(), any(), any());
@@ -1299,8 +1302,9 @@ class RecipeServiceTest {
                 .willReturn(true);
 
         //when
-        List<RecipeCardDto> mainPageRecipeList = recipeService.getMainPageRecipeList(MemberAuthDto.builder()
+        List<RecipeCardDto> mainPageRecipeList = recipeService.getRecentRecipeList(MemberAuthDto.builder()
                 .id(1L)
+                .roles(List.of(RoleType.ROLE_USER.name()))
                 .build());
 
         //then
@@ -1333,8 +1337,9 @@ class RecipeServiceTest {
 
         //when
         MemberException memberException = assertThrows(MemberException.class,
-                () -> recipeService.getMainPageRecipeList(MemberAuthDto.builder()
+                () -> recipeService.getRecentRecipeList(MemberAuthDto.builder()
                         .id(1L)
+                        .roles(List.of(RoleType.ROLE_USER.name()))
                         .build()));
 
         //then
@@ -1403,8 +1408,9 @@ class RecipeServiceTest {
 
         //when
         ListResponse<RecipeCardDto> recipePageRecipeList = recipeService
-                .getRecipePageRecipeList(MemberAuthDto.builder()
+                .getDefaultRecipeList(MemberAuthDto.builder()
                         .id(1L)
+                        .roles(List.of(RoleType.ROLE_USER.name()))
                         .build(), PageRequest.of(0, 10), CREATED_AT);
 
         //then
@@ -1494,8 +1500,9 @@ class RecipeServiceTest {
 
         //when
         ListResponse<RecipeCardDto> recipePageRecipeList = recipeService
-                .getRecipePageRecipeList(MemberAuthDto.builder()
+                .getDefaultRecipeList(MemberAuthDto.builder()
                         .id(1L)
+                        .roles(List.of(RoleType.ROLE_USER.name()))
                         .build(), PageRequest.of(0, 10), HEART_COUNT);
 
         //then
@@ -1588,8 +1595,9 @@ class RecipeServiceTest {
 
         //when
         ListResponse<RecipeCardDto> recipePageRecipeList = recipeService
-                .getRecipePageRecipeList(MemberAuthDto.builder()
+                .getDefaultRecipeList(MemberAuthDto.builder()
                         .id(1L)
+                        .roles(List.of(RoleType.ROLE_USER.name()))
                         .build(), PageRequest.of(0, 10), COMMENT_COUNT);
 
         //then
@@ -1624,31 +1632,13 @@ class RecipeServiceTest {
 
         //when
         MemberException memberException = assertThrows(MemberException.class,
-                () -> recipeService.getRecipePageRecipeList(MemberAuthDto.builder()
+                () -> recipeService.getDefaultRecipeList(MemberAuthDto.builder()
                         .id(1L)
-                        .build(), PageRequest.of(0, 10), any()));
+                        .roles(List.of(RoleType.ROLE_USER.name()))
+                        .build(), PageRequest.of(0, 10), CREATED_AT));
 
         //then
         assertEquals(MEMBER_NOT_FOUND, memberException.getErrorCode());
-    }
-
-    @Test
-    @DisplayName("레시피 페이지에서 조회 실패 - 정의되지 않은 정렬타입")
-    void fail_fail_getRecipePageRecipeList_orderTypeNotFound() {
-        //given
-        Member member = getMember();
-
-        given(memberRepository.findById(any()))
-                .willReturn(Optional.ofNullable(member));
-
-        //when
-        RecipeException recipeException = assertThrows(RecipeException.class,
-                () -> recipeService.getRecipePageRecipeList(MemberAuthDto.builder()
-                        .id(1L)
-                        .build(), PageRequest.of(0, 10), INVALID_TYPE));
-
-        //then
-        assertEquals(ORDER_TYPE_NOT_FOUND, recipeException.getErrorCode());
     }
 
     @Test
@@ -1751,8 +1741,9 @@ class RecipeServiceTest {
                 .willReturn(false);
 
         //when
-        List<RecipeCardDto> recipeListDtoList = recipeService.recommendedRecipe(MemberAuthDto.builder()
+        List<RecipeCardDto> recipeListDtoList = recipeService.getRecommendedRecipeList(MemberAuthDto.builder()
                 .id(1L)
+                .roles(List.of(RoleType.ROLE_USER.name()))
                 .build());
 
         //then
@@ -1787,8 +1778,9 @@ class RecipeServiceTest {
 
         //when
         MemberException memberException = assertThrows(MemberException.class,
-                () -> recipeService.recommendedRecipe(MemberAuthDto.builder()
+                () -> recipeService.getRecommendedRecipeList(MemberAuthDto.builder()
                         .id(1L)
+                        .roles(List.of(RoleType.ROLE_USER.name()))
                         .build()));
 
         //then

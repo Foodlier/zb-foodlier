@@ -1,7 +1,7 @@
 package com.zerobase.foodlier.common.security.filter;
 
 import com.zerobase.foodlier.common.security.exception.JwtException;
-import com.zerobase.foodlier.common.security.provider.JwtTokenProvider;
+import com.zerobase.foodlier.common.security.provider.JwtProvider;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -14,6 +14,8 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Date;
+import java.util.List;
 
 import static com.zerobase.foodlier.common.security.constants.AuthorizationConstants.*;
 import static com.zerobase.foodlier.common.security.exception.JwtErrorCode.*;
@@ -22,9 +24,10 @@ import static com.zerobase.foodlier.common.security.exception.JwtErrorCode.*;
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
-
-    private final JwtTokenProvider tokenProvider;
-
+    private static final List<String> PUBLIC_URL_LIST = List.of("/recipe/detail", "/recipe/search",
+            "/recipe/main", "/recipe/default", "/recipe/recommended", "/profile/public/top-chef");
+    private static final String REISSUE_URL = "/reissue";
+    private final JwtProvider tokenProvider;
 
     @Override
     protected void doFilterInternal(@NonNull HttpServletRequest request,
@@ -32,49 +35,82 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                                     @NonNull FilterChain filterChain)
             throws ServletException, IOException {
 
-        if(request.getRequestURI().contains("reissue")){
-            String refreshToken = this.resolveTokenFromRequest(request, REFRESH_HEADER);
-            if(!StringUtils.hasText(refreshToken)){
+        String uri = request.getRequestURI();
+        String authorization;
+        if (uri.contains(REISSUE_URL)) {
+            authorization = this.getTokenFromRequestBy(request, REFRESH_HEADER);
+            String refreshToken = this.resolveToken(authorization);
+            if (!StringUtils.hasText(refreshToken)) {
                 throw new JwtException(EMPTY_TOKEN);
             }
             setSecurityContext(refreshToken);
-        }
-        else{
-            String accessToken = this.resolveTokenFromRequest(request, TOKEN_HEADER);
+        } else if (isMainPageUrl(uri)) {
+            authorization = this.getTokenFromRequestBy(request, ACCESS_HEADER);
+            String accessToken = this.resolveTokenWhenNonLogin(authorization);
+            setSecurityContext(accessToken);
+        } else {
+            authorization = this.getTokenFromRequestBy(request, ACCESS_HEADER);
+            String accessToken = this.resolveToken(authorization);
 
             if (this.tokenProvider.isTokenExpired(accessToken)
                     && !this.tokenProvider.existRefreshToken(accessToken)) {
                 throw new JwtException(ALL_TOKEN_EXPIRED);
             }
 
-            if (this.tokenProvider.isTokenExpired(accessToken)){
+            if (this.tokenProvider.isTokenExpired(accessToken)) {
                 throw new JwtException(ACCESS_TOKEN_EXPIRED);
             }
             setSecurityContext(accessToken);
         }
 
-        filterChain.doFilter(request,response);
+        filterChain.doFilter(request, response);
     }
 
-    private String resolveTokenFromRequest(@NonNull HttpServletRequest request,
-                                           String header) {
-        String token = request.getHeader(header);
+    private String resolveToken(String token) {
+        validateEmptyToken(token);
+        validateValidToken(token);
+        return getTokenWithoutPrefix(token);
+    }
 
+    private String resolveTokenWhenNonLogin(String token) {
+
+        if (!StringUtils.hasText(token)) {
+            return this.tokenProvider.createVisitorToken(new Date());
+        }
+
+        validateEmptyToken(token);
+        validateValidToken(token);
+
+        return getTokenWithoutPrefix(token);
+    }
+
+    private String getTokenFromRequestBy(@NonNull HttpServletRequest request, String headerKey) {
+        return request.getHeader(headerKey);
+    }
+
+    private String getTokenWithoutPrefix(String authorization) {
+        return authorization.substring(TOKEN_PREFIX.length());
+    }
+
+    private void validateEmptyToken(String token) {
         if (ObjectUtils.isEmpty(token)) {
             throw new JwtException(EMPTY_TOKEN);
         }
+    }
 
+    private void validateValidToken(String token) {
         if (!token.startsWith(TOKEN_PREFIX)) {
             throw new JwtException(MALFORMED_JWT_REQUEST);
         }
-
-        return token.substring(TOKEN_PREFIX.length());
     }
 
     private void setSecurityContext(String accessToken) {
         SecurityContextHolder
                 .getContext()
-                .setAuthentication(this.tokenProvider
-                        .getAuthentication(accessToken));
+                .setAuthentication(this.tokenProvider.getAuthentication(accessToken));
+    }
+
+    private boolean isMainPageUrl(String uri) {
+        return PUBLIC_URL_LIST.stream().anyMatch(uri::contains);
     }
 }
