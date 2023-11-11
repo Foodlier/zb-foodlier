@@ -56,6 +56,12 @@ public class RecipeController {
                 mainImage, cookingOrderImageList, recipeId));
     }
 
+    @PostMapping("/image/single")
+    public ResponseEntity<SingleImageResponse> uploadSingleImage(
+            @Valid @ImageFile @RequestPart MultipartFile image) {
+        return ResponseEntity.ok(recipeFacade.uploadSingleImage(image));
+    }
+
     @PostMapping
     public ResponseEntity<String> createRecipe(@AuthenticationPrincipal MemberAuthDto memberAuthDto,
                                                @RequestBody @Valid RecipeDtoRequest recipeDto) {
