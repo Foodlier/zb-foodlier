@@ -25,15 +25,9 @@ const MainPage = () => {
 
   const getRecipe = async () => {
     try {
-<<<<<<< HEAD
-      const mainRecipe = await axiosInstance.get('/api/recipe/main')
-      const recommendRecipe = await axiosInstance.get('/api/recipe/recommended')
-      const chefList = await axiosInstance.get('/api/profile/public/top-chef')
-=======
       const mainRecipe = await get('/api/recipe/main')
       const recommendRecipe = await get('/api/recipe/recommended')
       const chefList = await get('/api/profile/public/top-chef')
->>>>>>> 747bd847fdeb1b09294e3706221d9b774ca96e1a
 
       setRecipeList(mainRecipe.data)
       setRecommendList(recommendRecipe.data)
@@ -45,11 +39,6 @@ const MainPage = () => {
 
   useEffect(() => {
     getRecipe()
-<<<<<<< HEAD
-    getMyProfile()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-=======
->>>>>>> 747bd847fdeb1b09294e3706221d9b774ca96e1a
   }, [])
 
   return (
