@@ -1,6 +1,6 @@
 package com.zerobase.foodlier.global.member.oAuth.facade;
 
-import com.zerobase.foodlier.common.security.provider.JwtTokenProvider;
+import com.zerobase.foodlier.common.security.provider.JwtProvider;
 import com.zerobase.foodlier.common.security.provider.dto.MemberAuthDto;
 import com.zerobase.foodlier.common.security.provider.dto.TokenDto;
 import com.zerobase.foodlier.module.member.member.domain.model.Member;
@@ -21,7 +21,7 @@ import java.time.LocalDateTime;
 public class OAuthFacade {
     private final OAuthInfoService oAuthInfoService;
     private final MemberService memberService;
-    private final JwtTokenProvider tokenProvider;
+    private final JwtProvider tokenProvider;
 
     /**
      * 작성자 : 황태원

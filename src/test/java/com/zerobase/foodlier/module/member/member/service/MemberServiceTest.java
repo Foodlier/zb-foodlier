@@ -2,7 +2,7 @@ package com.zerobase.foodlier.module.member.member.service;
 
 import com.zerobase.foodlier.common.response.ListResponse;
 import com.zerobase.foodlier.common.security.exception.JwtException;
-import com.zerobase.foodlier.common.security.provider.JwtTokenProvider;
+import com.zerobase.foodlier.common.security.provider.JwtProvider;
 import com.zerobase.foodlier.common.security.provider.dto.MemberAuthDto;
 import com.zerobase.foodlier.common.security.provider.dto.TokenDto;
 import com.zerobase.foodlier.module.member.chef.domain.model.ChefMember;
@@ -52,7 +52,7 @@ class MemberServiceTest {
     private MemberRepository memberRepository;
 
     @Mock
-    private JwtTokenProvider tokenProvider;
+    private JwtProvider tokenProvider;
 
     private MemberService memberService;
 

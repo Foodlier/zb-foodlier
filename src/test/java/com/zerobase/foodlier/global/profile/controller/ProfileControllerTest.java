@@ -265,7 +265,7 @@ class ProfileControllerTest {
         //when
         ChefIntroduceForm form = new ChefIntroduceForm("요리사 소개입니다.");
 
-        ResultActions perform = mockMvc.perform(post("/profile/private/registerchef")
+        ResultActions perform = mockMvc.perform(post("/profile/private/register-chef")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(form))
                 .with(csrf()));
@@ -391,7 +391,7 @@ class ProfileControllerTest {
                 ));
 
         //when
-        ResultActions perform = mockMvc.perform(get("/profile/public/chefreview/0/10/1"));
+        ResultActions perform = mockMvc.perform(get("/profile/public/chef-review/0/10/1"));
 
         //then
         perform.andDo(print())
@@ -429,7 +429,7 @@ class ProfileControllerTest {
                         )
                 ));
         //when
-        ResultActions perform = mockMvc.perform(get("/profile/public/recipereview/0/10/1"));
+        ResultActions perform = mockMvc.perform(get("/profile/public/recipe-review/0/10/1"));
 
         //then
         perform.andDo(print())
@@ -536,7 +536,7 @@ class ProfileControllerTest {
                 ));
 
         //when
-        ResultActions perform = mockMvc.perform(get("/profile/public/topchef"));
+        ResultActions perform = mockMvc.perform(get("/profile/public/top-chef"));
 
         //then
         perform.andDo(print())

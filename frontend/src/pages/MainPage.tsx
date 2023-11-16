@@ -1,4 +1,3 @@
-import { useRecoilState } from 'recoil'
 import { useNavigate } from 'react-router-dom'
 import { useEffect, useState } from 'react'
 import * as S from '../styles/MainPage.styled'
@@ -9,15 +8,13 @@ import Header from '../components/Header'
 import BottomNavigation from '../components/BottomNavigation'
 import RecipeItem from '../components/recipe/RecipeItem'
 import ChefItem, { MainChef } from '../components/chef/ChefItem'
-import axiosInstance from '../utils/FetchCall'
+import { get } from '../utils/FetchCall'
 import { RecipeListItem } from '../constants/Interfaces'
-import { myInfoState } from '../store/recoilState'
 
 const MainPage = () => {
   const { IcAddLight } = useIcon()
   const navigate = useNavigate()
 
-  const [, setProfile] = useRecoilState(myInfoState)
   const [recipeList, setRecipeList] = useState<RecipeListItem[]>([])
   const [recommendList, setRecommendList] = useState<RecipeListItem[]>([])
   const [topChefList, setTopChefList] = useState<MainChef[]>([])
@@ -28,9 +25,15 @@ const MainPage = () => {
 
   const getRecipe = async () => {
     try {
+<<<<<<< HEAD
       const mainRecipe = await axiosInstance.get('/api/recipe/main')
       const recommendRecipe = await axiosInstance.get('/api/recipe/recommended')
       const chefList = await axiosInstance.get('/api/profile/public/top-chef')
+=======
+      const mainRecipe = await get('/api/recipe/main')
+      const recommendRecipe = await get('/api/recipe/recommended')
+      const chefList = await get('/api/profile/public/top-chef')
+>>>>>>> 747bd847fdeb1b09294e3706221d9b774ca96e1a
 
       setRecipeList(mainRecipe.data)
       setRecommendList(recommendRecipe.data)
@@ -40,19 +43,13 @@ const MainPage = () => {
     }
   }
 
-  // 프로필 조회 API
-  const getMyProfile = async () => {
-    const response = await axiosInstance.get('/api/profile/private')
-    if (response.status === 200) {
-      setProfile(response.data)
-      localStorage.setItem('PROFILE', JSON.stringify(response.data))
-    }
-  }
-
   useEffect(() => {
     getRecipe()
+<<<<<<< HEAD
     getMyProfile()
     // eslint-disable-next-line react-hooks/exhaustive-deps
+=======
+>>>>>>> 747bd847fdeb1b09294e3706221d9b774ca96e1a
   }, [])
 
   return (
@@ -60,18 +57,13 @@ const MainPage = () => {
       {/* Header */}
       <Header />
 
-      {/* 검색 */}
-      <S.WebSearchWrapper>
-        <S.WebSearchContainer>
-          {/* <WebSearch onSearch={handleSearch} /> */}
-        </S.WebSearchContainer>
-      </S.WebSearchWrapper>
-
       {/* 배너 */}
-      <S.SlickContainer>
-        <S.Tit>오늘 이 요리 어때요?</S.Tit>
-        <SlickSlider slides={recommendList} />
-      </S.SlickContainer>
+      {recommendList.length > 2 && (
+        <S.SlickContainer>
+          <S.Tit>오늘 이 요리 어때요?</S.Tit>
+          <SlickSlider slides={recommendList} />
+        </S.SlickContainer>
+      )}
 
       {/* 레시피 */}
       <S.RecipeContainer>

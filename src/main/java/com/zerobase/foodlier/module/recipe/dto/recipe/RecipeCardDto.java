@@ -16,5 +16,6 @@ public class RecipeCardDto {
     private String mainImageUrl;
     private String content;
     private int heartCount;
-    private Boolean isHeart;
+    @Builder.Default
+    private Boolean isHeart = Boolean.FALSE;
 }

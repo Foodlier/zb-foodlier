@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-use-before-define */
 import axios from 'axios'
 import { setCookie, removeCookie } from '../utils/Cookies'
+import { setInterceptor } from '../utils/FetchCall'
 
 const onSilentRefresh = () => {
   axios
@@ -14,8 +15,10 @@ const onSilentRefresh = () => {
 const onLoginSuccess = (res: any) => {
   const JWT_EXPIRY_TIME = 3600000 // 1시간
   const { accessToken, refreshToken } = res.data
+  setInterceptor(accessToken)
 
   // 로그인 성공시 쿠키에 accessToken 저장
+  localStorage.setItem('accessToken', JSON.stringify(accessToken))
   setCookie('accessToken', accessToken, { path: '/' })
   setCookie('refreshToken', refreshToken, { path: '/' })
 

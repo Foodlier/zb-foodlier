@@ -4,10 +4,7 @@ import com.zerobase.foodlier.common.s3.service.S3Service;
 import com.zerobase.foodlier.module.member.member.domain.model.Member;
 import com.zerobase.foodlier.module.member.member.service.MemberService;
 import com.zerobase.foodlier.module.recipe.domain.model.Recipe;
-import com.zerobase.foodlier.module.recipe.dto.recipe.ImageUrlDto;
-import com.zerobase.foodlier.module.recipe.dto.recipe.RecipeDetailDto;
-import com.zerobase.foodlier.module.recipe.dto.recipe.RecipeDtoRequest;
-import com.zerobase.foodlier.module.recipe.dto.recipe.RecipeImageResponse;
+import com.zerobase.foodlier.module.recipe.dto.recipe.*;
 import com.zerobase.foodlier.module.recipe.exception.recipe.RecipeException;
 import com.zerobase.foodlier.module.recipe.service.recipe.RecipeService;
 import lombok.RequiredArgsConstructor;
@@ -60,6 +57,15 @@ public class RecipeFacade {
                 .cookingOrderImageList(s3Service
                         .getImageUrlList(cookingOrderImageList))
                 .build();
+    }
+
+    /**
+     * 2023-11-10
+     * 황태원
+     * 단일 사진 업로드 시 s3에 등록 후 url을 return
+     */
+    public SingleImageResponse uploadSingleImage(MultipartFile image) {
+        return new SingleImageResponse(s3Service.getImageUrl(image));
     }
 
     /**

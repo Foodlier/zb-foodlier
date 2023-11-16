@@ -201,6 +201,7 @@ const MyPage = () => {
           content="정말 로그아웃하시겠어요?"
           setIsModalFalse={() => setIsLogoutModal(false)}
           modalEvent={() => {
+            localStorage.removeItem('accessToken')
             removeCookie('accessToken')
             removeCookie('refreshToken')
             navigate('/login')

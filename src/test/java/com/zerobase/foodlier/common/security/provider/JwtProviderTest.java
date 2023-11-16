@@ -28,7 +28,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.*;
 
-public class JwtTokenProviderTest {
+public class JwtProviderTest {
     private static final int TRY_ONCE = 1;
     @Mock
     private RefreshTokenService refreshTokenService;
@@ -36,7 +36,7 @@ public class JwtTokenProviderTest {
     @Mock
     private TokenExpiredConstant tokenExpiredConstant;
 
-    private JwtTokenProvider jwtTokenProvider;
+    private JwtProvider jwtProvider;
 
     private final String accessSecretKey = "secret_key"; // Access secret key for testing
     private final Long accessTokenExpiredTime = 36000000L;
@@ -45,7 +45,7 @@ public class JwtTokenProviderTest {
     @BeforeEach
     public void setup() {
         MockitoAnnotations.openMocks(this);
-        jwtTokenProvider = new JwtTokenProvider(accessSecretKey,
+        jwtProvider = new JwtProvider(accessSecretKey,
                 tokenExpiredConstant,
                 refreshTokenService
         );
@@ -73,7 +73,7 @@ public class JwtTokenProviderTest {
                 .thenReturn(expiredDate);
 
         // when
-        String accessToken = jwtTokenProvider.createAccessToken(memberAuthDto, date);
+        String accessToken = jwtProvider.createAccessToken(memberAuthDto, date);
 
         // then
         Claims claims = parseClaims(accessToken);
@@ -105,7 +105,7 @@ public class JwtTokenProviderTest {
                 .thenReturn(expectedExpiredDate);
 
         // when
-        String accessToken = jwtTokenProvider.createRefreshToken(memberAuthDto, date);
+        String accessToken = jwtProvider.createRefreshToken(memberAuthDto, date);
 
         // then
         Claims claims = parseClaims(accessToken);
@@ -144,7 +144,7 @@ public class JwtTokenProviderTest {
         // when
         ArgumentCaptor<RefreshTokenDto> captor = ArgumentCaptor.forClass(RefreshTokenDto.class);
 
-        TokenDto tokenDto = jwtTokenProvider.createToken(memberAuthDto, date);
+        TokenDto tokenDto = jwtProvider.createToken(memberAuthDto, date);
 
         // then
         verify(refreshTokenService, times(TRY_ONCE)).save(captor.capture());
@@ -173,7 +173,7 @@ public class JwtTokenProviderTest {
 
         when(tokenExpiredConstant.getAccessTokenExpiredDate(date))
                 .thenReturn(date);
-        String accessToken = jwtTokenProvider.createAccessToken(memberAuthDto, date);
+        String accessToken = jwtProvider.createAccessToken(memberAuthDto, date);
 
         given(refreshTokenService.isRefreshTokenExisted(anyString()))
                 .willReturn(true);
@@ -183,7 +183,7 @@ public class JwtTokenProviderTest {
 
         // when
 
-        String reissue = jwtTokenProvider.reissue(accessToken,
+        String reissue = jwtProvider.reissue(accessToken,
                 memberAuthDto.getRoles().stream()
                 .map(String::valueOf)
                         .collect(Collectors.toList()),
@@ -218,13 +218,13 @@ public class JwtTokenProviderTest {
 
         when(tokenExpiredConstant.getAccessTokenExpiredDate(date))
                 .thenReturn(date);
-        String accessToken = jwtTokenProvider.createAccessToken(memberAuthDto, date);
+        String accessToken = jwtProvider.createAccessToken(memberAuthDto, date);
 
         given(refreshTokenService.isRefreshTokenExisted(anyString()))
                 .willReturn(false);
 
         // when
-        JwtException jwtException = assertThrows(JwtException.class, () -> jwtTokenProvider.reissue(
+        JwtException jwtException = assertThrows(JwtException.class, () -> jwtProvider.reissue(
                 accessToken,
                 memberAuthDto.getRoles().stream()
                 .map(String::valueOf)
@@ -253,10 +253,10 @@ public class JwtTokenProviderTest {
 
         when(tokenExpiredConstant.getAccessTokenExpiredDate(date))
                 .thenReturn(new Date(date.getTime() + accessTokenExpiredTime));
-        String accessToken = jwtTokenProvider.createAccessToken(memberAuthDto, date);
+        String accessToken = jwtProvider.createAccessToken(memberAuthDto, date);
 
         // when
-        Authentication authentication = jwtTokenProvider.getAuthentication(accessToken);
+        Authentication authentication = jwtProvider.getAuthentication(accessToken);
 
         // then
         Object principal = authentication.getPrincipal();
@@ -281,7 +281,7 @@ public class JwtTokenProviderTest {
 
         // when
 
-        jwtTokenProvider.deleteRefreshToken(memberAuthDto.getEmail());
+        jwtProvider.deleteRefreshToken(memberAuthDto.getEmail());
 
         // then
         verify(refreshTokenService, times(TRY_ONCE)).delete(memberAuthDto.getEmail());
@@ -302,14 +302,14 @@ public class JwtTokenProviderTest {
 
         when(tokenExpiredConstant.getAccessTokenExpiredDate(date))
                 .thenReturn(new Date(date.getTime() + accessTokenExpiredTime));
-        String accessToken = jwtTokenProvider.createAccessToken(memberAuthDto, date);
+        String accessToken = jwtProvider.createAccessToken(memberAuthDto, date);
 
         when(refreshTokenService.isRefreshTokenExisted(memberAuthDto.getEmail()))
                 .thenReturn(true);
 
         // when
 
-        boolean findingResult = jwtTokenProvider.existRefreshToken(accessToken);
+        boolean findingResult = jwtProvider.existRefreshToken(accessToken);
 
         // then
         assertTrue(findingResult);
@@ -330,14 +330,14 @@ public class JwtTokenProviderTest {
 
         when(tokenExpiredConstant.getAccessTokenExpiredDate(date))
                 .thenReturn(new Date(date.getTime() + accessTokenExpiredTime));
-        String accessToken = jwtTokenProvider.createAccessToken(memberAuthDto, date);
+        String accessToken = jwtProvider.createAccessToken(memberAuthDto, date);
 
         when(refreshTokenService.isRefreshTokenExisted(memberAuthDto.getEmail()))
                 .thenReturn(false);
 
         // when
 
-        boolean findingResult = jwtTokenProvider.existRefreshToken(accessToken);
+        boolean findingResult = jwtProvider.existRefreshToken(accessToken);
 
         // then
         assertFalse(findingResult);

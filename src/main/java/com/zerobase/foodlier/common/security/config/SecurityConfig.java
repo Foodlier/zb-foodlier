@@ -2,7 +2,7 @@ package com.zerobase.foodlier.common.security.config;
 
 import com.zerobase.foodlier.common.security.filter.JwtAuthenticationFilter;
 import com.zerobase.foodlier.common.security.filter.JwtExceptionFilter;
-import com.zerobase.foodlier.common.security.provider.JwtTokenProvider;
+import com.zerobase.foodlier.common.security.provider.JwtProvider;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -31,7 +31,7 @@ public class SecurityConfig {
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final JwtExceptionFilter jwtExceptionFilter;
 
-    public SecurityConfig(JwtTokenProvider tokenProvider) {
+    public SecurityConfig(JwtProvider tokenProvider) {
         this.jwtExceptionFilter = new JwtExceptionFilter();
         this.jwtAuthenticationFilter = new JwtAuthenticationFilter(tokenProvider);
     }

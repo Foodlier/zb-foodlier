@@ -6,12 +6,17 @@ import { palette } from '../constants/Styles'
 import * as S from '../styles/Header.styled'
 import MoSearch from './search/MoSearch'
 import SideNotification from './SideNotification'
+import ModalWithTwoButton from './ui/ModalWithTwoButton'
 
 const Header = () => {
   const navigate = useNavigate()
   const { IcSearch } = useIcon()
 
   const [isToggle, setIsToggle] = useState(false)
+
+  const TOKEN: string | null = JSON.parse(
+    localStorage.getItem('accessToken') ?? 'null'
+  )
 
   useEffect(() => {
     // 토글이 열려있을 경우 화면 클릭 시 토글 닫히게 설정
@@ -28,6 +33,7 @@ const Header = () => {
 
   // 모바일 검색 - 토글
   const [isMoSearchOpen, setIsMoSearchOpen] = useState(false)
+  const [isModal, setIsModal] = useState(false)
 
   const HEADER_MENU_LIST = [
     {
@@ -36,11 +42,18 @@ const Header = () => {
     },
     { title: '냉마카세', navigate: 'refrigerator' },
     { title: '채팅', navigate: 'chat' },
-    { title: '마이페이지', navigate: 'my' },
+    {
+      title: TOKEN ? '마이페이지' : '로그인',
+      navigate: TOKEN ? 'my' : 'login',
+    },
   ]
 
   const navigateTo = (pageName: string) => {
-    navigate(`/${pageName}`)
+    if ((pageName === 'refrigerator' || pageName === 'chat') && !TOKEN) {
+      setIsModal(true)
+    } else {
+      navigate(`/${pageName}`)
+    }
   }
 
   return (
@@ -65,6 +78,17 @@ const Header = () => {
       </S.WrapMenu>
       {isMoSearchOpen && <MoSearch setIsMoSearchOpen={setIsMoSearchOpen} />}
       <SideNotification />
+      {isModal && (
+        <ModalWithTwoButton
+          content="로그인이 필요한 기능입니다."
+          subContent="로그인하러 가시겠습니까?"
+          setIsModalFalse={() => setIsModal(false)}
+          modalEvent={() => {
+            setIsModal(false)
+            navigate('/login')
+          }}
+        />
+      )}
     </S.Container>
   )
 }

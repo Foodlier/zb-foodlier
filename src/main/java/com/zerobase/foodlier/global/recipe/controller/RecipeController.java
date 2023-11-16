@@ -15,6 +15,7 @@ import com.zerobase.foodlier.module.recipe.dto.recipe.*;
 import com.zerobase.foodlier.module.recipe.service.recipe.RecipeService;
 import com.zerobase.foodlier.module.recipe.type.OrderType;
 import com.zerobase.foodlier.module.recipe.type.SearchType;
+import com.zerobase.foodlier.module.recipe.validation.ValidOrder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
@@ -55,6 +56,12 @@ public class RecipeController {
                 mainImage, cookingOrderImageList, recipeId));
     }
 
+    @PostMapping("/image/single")
+    public ResponseEntity<SingleImageResponse> uploadSingleImage(
+            @Valid @ImageFile @RequestPart MultipartFile image) {
+        return ResponseEntity.ok(recipeFacade.uploadSingleImage(image));
+    }
+
     @PostMapping
     public ResponseEntity<String> createRecipe(@AuthenticationPrincipal MemberAuthDto memberAuthDto,
                                                @RequestBody @Valid RecipeDtoRequest recipeDto) {
@@ -70,7 +77,7 @@ public class RecipeController {
         return ResponseEntity.ok("게시글 수정을 성공했습니다.");
     }
 
-    @GetMapping("/{recipeId}")
+    @GetMapping("/detail/{recipeId}")
     public ResponseEntity<RecipeDtoResponse> getRecipe(
             @AuthenticationPrincipal MemberAuthDto memberAuthDto,
             @PathVariable(name = "recipeId") Long recipeId
@@ -92,13 +99,13 @@ public class RecipeController {
         return ResponseEntity.ok("레시피 접근 가능합니다.");
     }
 
-    @GetMapping("search/{searchType}/{pageIdx}/{pageSize}")
+    @GetMapping("/search/{searchType}/{pageIdx}/{pageSize}")
     public ResponseEntity<ListResponse<RecipeCardDto>> getRecipeList(@AuthenticationPrincipal MemberAuthDto memberAuthDto,
                                                                      @PathVariable SearchType searchType,
                                                                      @PathVariable int pageIdx,
                                                                      @PathVariable int pageSize,
                                                                      @RequestParam String searchText) {
-        return ResponseEntity.ok(recipeService.getRecipeList(RecipeSearchRequest.builder()
+        return ResponseEntity.ok(recipeService.searchRecipeListBy(RecipeSearchRequest.builder()
                 .searchType(searchType)
                 .searchText(searchText)
                 .memberId(memberAuthDto.getId())
@@ -107,14 +114,14 @@ public class RecipeController {
         );
     }
 
-    @GetMapping("search/{searchType}/{orderType}/{pageIdx}/{pageSize}")
+    @GetMapping("/search/{searchType}/{orderType}/{pageIdx}/{pageSize}")
     public ResponseEntity<ListResponse<RecipeCardDto>> getFilteredRecipeList(@AuthenticationPrincipal MemberAuthDto memberAuthDto,
                                                                              @PathVariable SearchType searchType,
                                                                              @PathVariable int pageIdx,
                                                                              @PathVariable int pageSize,
                                                                              @PathVariable OrderType orderType,
                                                                              @RequestParam String searchText) {
-        return ResponseEntity.ok(recipeService.getRecipeList(RecipeSearchRequest.builder()
+        return ResponseEntity.ok(recipeService.searchRecipeListBy(RecipeSearchRequest.builder()
                 .searchType(searchType)
                 .searchText(searchText)
                 .memberId(memberAuthDto.getId())
@@ -154,7 +161,7 @@ public class RecipeController {
             @AuthenticationPrincipal MemberAuthDto memberAuthDto
     ) {
         return ResponseEntity.ok(recipeService.
-                getMainPageRecipeList(memberAuthDto));
+                getRecentRecipeList(memberAuthDto));
     }
 
     @GetMapping("/default/{pageIdx}/{pageSize}")
@@ -162,10 +169,10 @@ public class RecipeController {
             @AuthenticationPrincipal MemberAuthDto memberAuthDto,
             @PathVariable int pageIdx,
             @PathVariable int pageSize,
-            @RequestParam OrderType orderType
+            @RequestParam @ValidOrder OrderType orderType
     ) {
         return ResponseEntity.ok(recipeService
-                .getRecipePageRecipeList(memberAuthDto,
+                .getDefaultRecipeList(memberAuthDto,
                         PageRequest.of(pageIdx, pageSize), orderType));
     }
 
@@ -173,6 +180,6 @@ public class RecipeController {
     public ResponseEntity<List<RecipeCardDto>> getRecommendedRecipeList(
             @AuthenticationPrincipal MemberAuthDto memberAuthDto
     ) {
-        return ResponseEntity.ok(recipeService.recommendedRecipe(memberAuthDto));
+        return ResponseEntity.ok(recipeService.getRecommendedRecipeList(memberAuthDto));
     }
 }
