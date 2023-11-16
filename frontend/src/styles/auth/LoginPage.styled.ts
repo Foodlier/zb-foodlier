@@ -144,3 +144,5 @@ export const SocialLogo = styled.img`
   height: 20px;
   margin-right: 10px;
 `
+
+export const MainButton = styled.button``
