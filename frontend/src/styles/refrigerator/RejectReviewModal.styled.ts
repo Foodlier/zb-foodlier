@@ -44,39 +44,3 @@ export const Title = styled.span`
     font-weight: ${weight.subTitle};
   }
 `
-
-export const WrapInput = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin: 1rem 0;
-  font-size: ${typography.mobile.content};
-  ${breakpoints.large} {
-    font-size: ${typography.web.content};
-  }
-`
-
-export const Input = styled.input`
-  width: 60%;
-  border: 1px solid black;
-  border-radius: 1rem;
-  margin-right: 0.5rem;
-  padding: 1rem;
-  font-size: ${typography.mobile.content};
-  ${breakpoints.large} {
-    width: 100%;
-  }
-`
-
-export const Alert = styled.p`
-  color: red;
-  margin-bottom: 1rem;
-`
-
-export const Button = styled.button`
-  background-color: ${palette.main};
-  color: ${palette.white};
-  padding: 1rem 2rem;
-  border-radius: 1rem;
-  font-size: ${typography.mobile.content};
-`

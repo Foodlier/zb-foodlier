@@ -33,7 +33,6 @@ const ChargeModal: React.FC<ChargeModalProps> = ({ setIsChargeModal }) => {
         navigate('/point', { state: res.data })
       }
     } catch (error) {
-      console.log(error)
       setAlert(true)
     }
   }

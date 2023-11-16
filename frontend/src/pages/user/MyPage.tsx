@@ -50,7 +50,11 @@ const MyPage = () => {
     },
     {
       title: '내 거래 내역',
-      navigate: '/trade-history',
+      navigate: '/my/trade-history',
+    },
+    {
+      title: '내 충전 내역',
+      navigate: '/my/charge-history',
     },
     {
       title: '내 정보 수정',
@@ -102,7 +106,7 @@ const MyPage = () => {
         introduce: '잘 부탁드립니다.',
       }
       const response = await axiosInstance.post(
-        '/api/profile/private/registerchef',
+        '/api/profile/private/register-chef',
         body
       )
       console.log(response)
