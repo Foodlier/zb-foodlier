@@ -3,6 +3,7 @@
 import axios from 'axios'
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useRecoilState } from 'recoil'
 import Swal from 'sweetalert2'
 import kakao from '../../../public/images/auths/btn_kakao.png'
 import logo from '../../../public/images/foodlier_logo.png'
@@ -10,6 +11,8 @@ import naver from '../../../public/images/auths/btn_naver.png'
 import * as S from '../../styles/auth/LoginPage.styled'
 import { onLoginSuccess } from '../../services/authServices'
 import { palette } from '../../constants/Styles'
+import axiosInstance from '../../utils/FetchCall'
+import { myInfoState } from '../../store/recoilState'
 
 const Login = () => {
   const navigate = useNavigate()
@@ -22,6 +25,8 @@ const Login = () => {
   const NAVER_STATE = 'false'
   const NAVER_CALLBACK_URL = 'http://localhost:5173/naver/callback'
   const NAVER_AUTH_URI = `https://nid.naver.com/oauth2.0/authorize?response_type=code&client_id=${NAVER_CLIENT_ID}&state=${NAVER_STATE}&redirect_uri=${NAVER_CALLBACK_URL}`
+
+  const [, setProfile] = useRecoilState(myInfoState)
 
   const KakaoLoginHandler = () => {
     window.location.href = KAKAO_AUTH_URI
@@ -48,6 +53,15 @@ const Login = () => {
     })
   }
 
+  // 프로필 조회 API
+  const getMyProfile = async () => {
+    const response = await axiosInstance.get('/api/profile/private')
+    if (response.status === 200) {
+      setProfile(response.data)
+      localStorage.setItem('PROFILE', JSON.stringify(response.data))
+    }
+  }
+
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     axios
@@ -61,13 +75,13 @@ const Login = () => {
             text: '환영합니다.',
             confirmButtonColor: `${palette.main}`,
           }).then(() => {
+            getMyProfile()
             navigate('/')
-            window.location.reload()
+            // window.location.reload()
           })
         }, 1000)
       })
       .catch(err => {
-        console.log(err.response.data)
         const { errorCode } = err.response.data
         if (errorCode === 'MEMBER_NOT_FOUND') {
           Swal.fire({
@@ -90,7 +104,9 @@ const Login = () => {
   return (
     <S.Container>
       <S.Title>
-        <S.Logo src={logo} alt="Foodlier Logo" />
+        <S.MainButton onClick={() => navigate('/')}>
+          <S.Logo src={logo} alt="Foodlier Logo" />
+        </S.MainButton>
       </S.Title>
       <S.Form onSubmit={handleSubmit}>
         <S.Input
