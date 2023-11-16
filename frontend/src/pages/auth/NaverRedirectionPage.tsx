@@ -1,9 +1,10 @@
+/* eslint-disable react/jsx-no-useless-fragment */
 /* eslint-disable react-hooks/exhaustive-deps */
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import Swal from 'sweetalert2'
-import { onLoginSuccess } from '../../services/authServices'
+import { onAuthLoginSuccess } from '../../services/authServices'
 import axiosInstance from '../../utils/FetchCall'
+import ModalWithoutButton from '../../components/ui/ModalWithoutButton'
 
 const NaverRedirection = () => {
   const authorizationCode = new URL(
@@ -12,35 +13,60 @@ const NaverRedirection = () => {
   const state = 'false'
   const navigate = useNavigate()
 
-  useEffect(() => {
-    axiosInstance
-      .post('/api/auth/oauth2/naver', {
+  const [modalContent, setModalContent] = useState('')
+  const [isModal, setIsModal] = useState(false)
+
+  const switchModal = () => {
+    setIsModal(true)
+    setTimeout(() => {
+      setIsModal(false)
+      navigate(-1)
+    }, 1500)
+  }
+
+  const loginNaver = async () => {
+    try {
+      const { data } = await axiosInstance.post('/api/auth/oauth2/naver', {
         authorizationCode,
         state,
       })
-      .then(res => {
-        Swal.fire({
-          icon: 'success',
-          title: '로그인 성공',
-          text: '메인 페이지로 이동합니다.',
-          showConfirmButton: false,
-          timer: 1500,
-        })
-        onAuthLoginSuccess(res)
+
+      // 일반 계정으로 가입 된 계정
+      if (data.registrationType === 'DOMAIN') {
+        switchModal()
+        setModalContent('일반 계정으로 가입 된 계정입니다.')
+      }
+      // 카카오 계정으로 가입 된 계정
+      else if (data.registrationType === 'KAKAO') {
+        switchModal()
+        setModalContent('카카오 계정으로 가입 된 계정입니다.')
+      }
+      // 네이버 계정으로 정상 로그인
+      else {
+        onAuthLoginSuccess(data)
         navigate('/')
-      })
-      .catch(() => {
-        Swal.fire({
-          icon: 'error',
-          title: '로그인 실패',
-          text: '다시 시도해주세요.',
-          showConfirmButton: false,
-          timer: 1500,
-        })
-      })
+      }
+    } catch (error) {
+      console.log(error)
+      switchModal()
+      setModalContent('로그인에 실패하였습니다.')
+    }
+  }
+
+  useEffect(() => {
+    loginNaver()
   }, [authorizationCode])
 
-  return <div>로그인 중입니다.</div>
+  return (
+    <>
+      {isModal && (
+        <ModalWithoutButton
+          content={modalContent}
+          setIsModalFalse={() => setIsModal(false)}
+        />
+      )}
+    </>
+  )
 }
 
 export default NaverRedirection
