@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import useIcon from '../../../../hooks/useIcon'
 import RecipeReviewItem from './RecipeReviewItem'
 import CommonButton from '../../../ui/Button'
@@ -18,12 +18,23 @@ interface ReviewItem {
   star: number
 }
 
-function RecipeReviewList({ recipeId }: { recipeId: number }) {
+function RecipeReviewList({
+  recipeId,
+  activeModal,
+}: {
+  recipeId: number
+  activeModal: () => void
+}) {
+  const navigate = useNavigate()
   const { IcAddLight } = useIcon()
   const [reviewList, setReviewList] = useState<ReviewItem[]>([])
   const [myReview, setMyReview] = useState<ReviewItem>()
   const [pageIdx, setPageIdx] = useState(0)
   const [hasNextReviewPage, setHasNextReviewPage] = useState(true)
+
+  const TOKEN: string | null = JSON.parse(
+    localStorage.getItem('accessToken') ?? 'null'
+  )
 
   // 나의 리뷰
   const fetchMyReviewData = async () => {
@@ -75,12 +86,21 @@ function RecipeReviewList({ recipeId }: { recipeId: number }) {
     <S.ReviewContainer>
       <S.ReviewtitBox>
         <S.Reviewtit>후기</S.Reviewtit>
-        <Link to={`/recipe/detail/write-review/${recipeId}`}>
-          <CommonButton color="main">
-            <IcAddLight size={2} color={palette.white} />
-            후기 작성하기
-          </CommonButton>
-        </Link>
+        {/* <Link to={`/recipe/detail/write-review/${recipeId}`}> */}
+        <CommonButton
+          color="main"
+          onClick={() => {
+            if (TOKEN) {
+              navigate(`/recipe/detail/write-review/${recipeId}`)
+            } else {
+              activeModal()
+            }
+          }}
+        >
+          <IcAddLight size={2} color={palette.white} />
+          후기 작성하기
+        </CommonButton>
+        {/* </Link> */}
       </S.ReviewtitBox>
       {/* 나의 리뷰 */}
       {myReview && (

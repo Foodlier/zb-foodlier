@@ -7,7 +7,13 @@ import ModalWithTwoButton from '../../../ui/ModalWithTwoButton'
 import { CommentItem } from '../../../../constants/Interfaces'
 import defaultProfile from '../../../../../public/images/default_profile.png'
 
-const RecipeComment = ({ recipeId }: { recipeId: number }) => {
+const RecipeComment = ({
+  recipeId,
+  activeModal,
+}: {
+  recipeId: number
+  activeModal: () => void
+}) => {
   const [commentId, setCommentId] = useState<number | null>(null)
   const [pageIdx, setPageIdx] = useState(0)
   const [commentList, setCommentList] = useState<CommentItem[]>([])
@@ -19,6 +25,10 @@ const RecipeComment = ({ recipeId }: { recipeId: number }) => {
   const [willModifyCommentId, setWillModifyCommentId] = useState(0)
   const [memberId, setMemberId] = useState(0)
   const navigate = useNavigate()
+
+  const TOKEN: string | null = JSON.parse(
+    localStorage.getItem('accessToken') ?? 'null'
+  )
 
   const getProfile = async () => {
     const res = await axiosInstance.get(`/api/profile/private`)
@@ -146,7 +156,17 @@ const RecipeComment = ({ recipeId }: { recipeId: number }) => {
           onChange={handleClick}
           value={commentValue}
         />
-        <S.CommentSubmit onClick={onSubmit}>등록</S.CommentSubmit>
+        <S.CommentSubmit
+          onClick={e => {
+            if (TOKEN) {
+              onSubmit(e)
+            } else {
+              activeModal()
+            }
+          }}
+        >
+          등록
+        </S.CommentSubmit>
       </S.CommentForm>
       <S.CommentList>
         {commentList.map((commentItem, idx) => (
