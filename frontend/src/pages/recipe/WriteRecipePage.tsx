@@ -2,13 +2,13 @@
 /* eslint-disable no-restricted-globals */
 /* eslint-disable react/no-array-index-key */
 import { useLocation, useNavigate } from 'react-router-dom'
-import React, { useEffect, useState } from 'react'
+import React, { ChangeEvent, useEffect, useRef, useState } from 'react'
 import Header from '../../components/Header'
 import BottomNavigation from '../../components/BottomNavigation'
 import * as S from '../../styles/recipe/WriteRecipePage.styled'
 import useIcon from '../../hooks/useIcon'
 import { palette } from '../../constants/Styles'
-import RecipeImage, { ImageFile } from '../../components/recipe/RecipeImage'
+import { ImageFile } from '../../components/recipe/RecipeImage'
 import {
   DIFFICULTY_LIST,
   EMPTY_INGREDIENT,
@@ -36,10 +36,11 @@ const WriteRecipePage = () => {
   const navigate = useNavigate()
   const { state } = useLocation()
   const recipeId = state?.recipeId || 0
+  const imageRef = useRef(null)
 
   const isEdit = Boolean(recipeId)
 
-  const { IcAddRound } = useIcon()
+  const { IcAddRound, IcAddRoundDuotone } = useIcon()
 
   const emptyFile = new File([''], 'empty.txt', { type: 'text/plain' })
 
@@ -47,6 +48,7 @@ const WriteRecipePage = () => {
     mainImage: emptyFile,
     cookingOrderImageList: [],
   })
+  const [isClickedImage, setIsClickedImage] = useState<number>(0)
   const [isCompleteModal, setIsCompleteModal] = useState(false)
   const [modalContent, setModalContent] = useState('')
   const [errorValue, setErrorValue] = useState({
@@ -158,9 +160,9 @@ const WriteRecipePage = () => {
     }, 1500)
   }
 
-  const postRecipe = async (body: Recipe) => {
+  const postRecipe = async () => {
     try {
-      const { status } = await axiosInstance.post('/api/recipe', body)
+      const { status } = await axiosInstance.post('/api/recipe', recipeValue)
       if (status === 200) {
         setModalContent('게시글 작성이 완료되었습니다.')
       }
@@ -173,32 +175,6 @@ const WriteRecipePage = () => {
       setIsCompleteModal(false)
       navigate(-1)
     }, 1500)
-  }
-
-  const postImage = async () => {
-    try {
-      const formData = new FormData()
-      formData.append('mainImage', imageFile.mainImage)
-      imageFile.cookingOrderImageList.forEach(image =>
-        formData.append('cookingOrderImageList', image)
-      )
-
-      const { data, status } = await postFormData('/api/recipe/image', formData)
-      if (status === 200) {
-        const body = { ...recipeValue }
-        const { cookingOrderImageList, mainImage } = data
-
-        cookingOrderImageList.forEach((image: string, index: number) => {
-          body.recipeDetailDtoList[index].cookingOrderImageUrl = image
-        })
-        body.mainImageUrl = mainImage
-        console.log(body)
-        setRecipeValue(body)
-        postRecipe(body)
-      }
-    } catch (error) {
-      console.log(error)
-    }
   }
 
   // 유효성 검사
@@ -265,13 +241,13 @@ const WriteRecipePage = () => {
       if (isEdit) {
         editRecipe()
       } else {
-        postImage()
+        postRecipe()
       }
     }
   }
 
   const getRecipe = async () => {
-    const { data } = await axiosInstance.get(`/api/recipe/${recipeId}`)
+    const { data } = await axiosInstance.get(`/api/recipe/detail/${recipeId}`)
 
     setRecipeValue({
       title: data.title,
@@ -284,6 +260,42 @@ const WriteRecipePage = () => {
     })
   }
 
+  const postS3Image = async (image: File) => {
+    const formData = new FormData()
+    formData.append('image', image)
+    const res = await postFormData('/api/recipe/image/single', formData)
+    console.log(res)
+    return res.data.image
+  }
+
+  const newUploadImage = async (e: ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+
+    if (file) {
+      const localImageURL = URL.createObjectURL(file)
+      const S3ImageURL = await postS3Image(file)
+
+      console.log(localImageURL, S3ImageURL)
+
+      if (isClickedImage === -1) {
+        setImageFile({ ...imageFile, mainImage: file })
+        setRecipeValue({ ...recipeValue, mainImageUrl: S3ImageURL })
+      } else {
+        const updatedCookingOrderImageList = [
+          ...imageFile.cookingOrderImageList,
+          file,
+        ]
+        setImageFile({
+          ...imageFile,
+          cookingOrderImageList: updatedCookingOrderImageList,
+        })
+        const newValue = [...recipeValue.recipeDetailDtoList]
+        newValue[isClickedImage].cookingOrderImageUrl = S3ImageURL
+        setRecipeValue({ ...recipeValue, recipeDetailDtoList: newValue })
+      }
+    }
+  }
+
   useEffect(() => {
     if (isEdit) {
       getRecipe()
@@ -294,14 +306,42 @@ const WriteRecipePage = () => {
     <>
       <Header />
       <S.Container>
-        <RecipeImage
-          size={25}
-          isText
-          formKey="mainImage"
-          imageFile={imageFile}
-          setImageFile={setImageFile}
-          defaultUrl={recipeValue.mainImageUrl}
-        />
+        <>
+          {recipeValue.mainImageUrl ? (
+            <S.Image $size={25} src={recipeValue.mainImageUrl} />
+          ) : (
+            <S.Label
+              htmlFor="file"
+              $size={25}
+              onClick={() => setIsClickedImage(-1)}
+            >
+              <IcAddRoundDuotone size={4} />
+              <S.SubText>대표 이미지를 등록해주세요.</S.SubText>
+            </S.Label>
+          )}
+          <S.ImageButton
+            ref={imageRef}
+            id="file"
+            accept="image/*"
+            type="file"
+            onChange={e => {
+              newUploadImage(e)
+            }}
+          />
+          {recipeValue.mainImageUrl && (
+            <S.EditImage
+              onClick={() => {
+                if (imageRef.current) {
+                  setIsClickedImage(-1)
+                  ;(imageRef.current as HTMLElement).click()
+                }
+              }}
+            >
+              사진 수정
+            </S.EditImage>
+          )}
+        </>
+
         <S.ErrorText>{errorValue.mainImageUrl}</S.ErrorText>
 
         <S.WrapForm>
@@ -325,7 +365,6 @@ const WriteRecipePage = () => {
             onChange={e =>
               setRecipeValue({ ...recipeValue, content: e.target.value })
             }
-            // $width={80}
           />
           <S.ErrorText>{errorValue.content}</S.ErrorText>
         </S.WrapForm>
@@ -412,19 +451,40 @@ const WriteRecipePage = () => {
             {recipeValue.recipeDetailDtoList.map((item, index) => (
               <S.FlexWrap key={`key-${index}`}>
                 <S.WrapOrder>
-                  <RecipeImage
-                    size={7}
-                    isText={false}
-                    formKey="cookingOrderImageList"
-                    imageFile={imageFile}
-                    setImageFile={setImageFile}
-                    defaultUrl={item.cookingOrderImageUrl}
+                  {item.cookingOrderImageUrl ? (
+                    <S.WrapEdit>
+                      <S.Image $size={7} src={item.cookingOrderImageUrl} />
+                      <S.EditDetailImage
+                        onClick={() => {
+                          if (imageRef.current) {
+                            setIsClickedImage(index)
+                            ;(imageRef.current as HTMLElement).click()
+                          }
+                        }}
+                      >
+                        수정하기
+                      </S.EditDetailImage>
+                    </S.WrapEdit>
+                  ) : (
+                    <S.Label
+                      htmlFor={`cookingOrder-${index}`}
+                      onClick={() => setIsClickedImage(index)}
+                      $size={7}
+                    >
+                      <IcAddRoundDuotone size={4} />
+                    </S.Label>
+                  )}
+                  <S.ImageButton
+                    ref={imageRef}
+                    id={`cookingOrder-${index}`}
+                    accept="image/*"
+                    type="file"
+                    onChange={e => newUploadImage(e)}
                   />
                   <S.Input
                     onChange={e => updateOrder(e, index)}
                     placeholder="조리 순서를 입력해주세요."
                     value={item.cookingOrder}
-                    // $width={150}
                     $marginLf={1}
                   />
                 </S.WrapOrder>

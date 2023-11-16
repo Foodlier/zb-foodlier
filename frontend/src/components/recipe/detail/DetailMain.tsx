@@ -7,15 +7,23 @@ import profile from '../../../../public/images/default_profile.png'
 
 interface DetailMainProps {
   recipe: Recipe | undefined
+  activeModal: () => void
 }
 
-const DetailMainItem = ({ recipe }: DetailMainProps) => {
+const DetailMainItem = ({ recipe, activeModal }: DetailMainProps) => {
   const navigate = useNavigate()
   const { IcExpandRight, IcTimeLight } = useIcon()
 
+  const TOKEN: string | null = JSON.parse(
+    localStorage.getItem('accessToken') ?? 'null'
+  )
+
   const goToProfile = () => {
-    // 정확한 경로로 router 수정
-    navigate(`/profile/${recipe?.memberId}`)
+    if (TOKEN) {
+      navigate(`/profile/${recipe?.memberId}`)
+    } else {
+      activeModal()
+    }
   }
 
   if (!recipe) return null

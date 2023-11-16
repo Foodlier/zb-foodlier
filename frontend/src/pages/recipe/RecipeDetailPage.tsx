@@ -1,5 +1,6 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect, useState } from 'react'
-import { useParams } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import styled from 'styled-components'
 import Header from '../../components/Header'
 import BottomNavigation from '../../components/BottomNavigation'
@@ -11,6 +12,7 @@ import axiosInstance from '../../utils/FetchCall'
 import { Recipe } from '../../constants/Interfaces'
 import DetailEditDelete from '../../components/recipe/detail/DetailEditDelete'
 import RecipeComment from '../../components/recipe/detail/comment/RecipeComment'
+import ModalWithTwoButton from '../../components/ui/ModalWithTwoButton'
 
 export const DetailContainer = styled.div`
   width: 100%;
@@ -19,16 +21,17 @@ export const DetailContainer = styled.div`
 
 const RecipeDetailPage = () => {
   const { id } = useParams()
+  const navigate = useNavigate()
   const localProfile = localStorage.getItem('PROFILE')
   const profile = localProfile ? JSON.parse(localProfile) : {}
 
+  const [isModal, setIsModal] = useState(false)
   const [isLoadng, setIsLoading] = useState(true)
   const [recipeData, setRecipeData] = useState<Recipe | undefined>()
 
   const getRecipe = async () => {
     try {
-      // 현재 List 조회 API X -> 추후 id 받아오는 형식으로 수정 필요
-      const res = await axiosInstance.get(`/api/recipe/${id}`)
+      const res = await axiosInstance.get(`/api/recipe/detail/${id}`)
 
       if (res.status === 200) {
         setRecipeData(res.data)
@@ -39,6 +42,10 @@ const RecipeDetailPage = () => {
       // 추후 Error code를 통한 에러 처리 구현 예정
       console.log(error)
     }
+  }
+
+  const activeModal = () => {
+    setIsModal(true)
   }
 
   useEffect(() => {
@@ -56,13 +63,29 @@ const RecipeDetailPage = () => {
         {recipeData?.memberId === profile.myMemberId && (
           <DetailEditDelete recipeId={recipeData?.recipeId || 0} />
         )}
-        <DetailMainItem recipe={recipeData} />
+        <DetailMainItem recipe={recipeData} activeModal={activeModal} />
         <DetailIngredients ingredients={recipeData?.recipeIngredientDtoList} />
         <DetailProcedure detail={recipeData?.recipeDetailDtoList} />
-        <RecipeComment recipeId={recipeData?.recipeId || 0} />
-        <RecipeReviewList recipeId={recipeData?.recipeId || 0} />
+        <RecipeComment
+          recipeId={recipeData?.recipeId || 0}
+          activeModal={activeModal}
+        />
+        <RecipeReviewList
+          recipeId={recipeData?.recipeId || 0}
+          activeModal={activeModal}
+        />
       </DetailContainer>
-
+      {isModal && (
+        <ModalWithTwoButton
+          content="로그인이 필요한 기능입니다."
+          subContent="로그인하러 가시겠습니까?"
+          setIsModalFalse={() => setIsModal(false)}
+          modalEvent={() => {
+            setIsModal(false)
+            navigate('/login')
+          }}
+        />
+      )}
       <BottomNavigation />
     </>
   )
