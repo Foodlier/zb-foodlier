@@ -17,7 +17,7 @@ export const Title = styled.span`
   font-size: ${typography.mobile.mainTitle};
   font-weight: ${weight.mainTitle};
   color: ${palette.textPrimary};
-
+  margin: 2rem 0 5rem;
   ${breakpoints.large} {
     font-size: ${typography.web.mainTitle};
   }
@@ -61,6 +61,19 @@ export const ReviewButton = styled.button`
     margin-right: 1rem;
   }
 `
+
+export const ReviewedButton = styled.button`
+  background-color: ${palette.divider};
+  color: ${palette.white};
+  padding: 0.5rem 1.2rem;
+  border-radius: 0.5rem;
+  white-space: nowrap;
+  cursor: initial;
+  ${breakpoints.large} {
+    margin-right: 1rem;
+  }
+`
+
 export const NoHistoryCard = styled.div`
   display: flex;
   justify-content: center;

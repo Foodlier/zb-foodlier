@@ -78,6 +78,7 @@ export const ReviewWriteTextarea = styled.textarea`
 
 export const ReviewWriteStar = styled.div`
   display: inline-flex;
+  cursor: pointer;
 `
 
 export const ReviewStar = styled.span`

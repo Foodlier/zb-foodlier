@@ -16,6 +16,8 @@ const RequestDetailPage = () => {
   const navigate = useNavigate()
   const { state } = useLocation()
   const isChat = state?.recipeId || 0
+  console.log(state)
+  console.log(isChat)
 
   const [requestValue, setRequestValue] = useState<RequestDetail>()
   const [isQuotationListModal, setIsQuotationListModal] = useState(false)
@@ -155,7 +157,14 @@ const RequestDetailPage = () => {
               )}
             </S.RequestFormEl>
           </S.RequestFormList>
-          {!isChat && (
+          {state && (
+            <S.ButtonList>
+              <S.RejectButton type="button" onClick={() => navigate(-1)}>
+                뒤로가기
+              </S.RejectButton>
+            </S.ButtonList>
+          )}
+          {!isChat && !state && (
             <S.ButtonList>
               <S.RejectButton type="button" onClick={rejectRequest}>
                 거절하기

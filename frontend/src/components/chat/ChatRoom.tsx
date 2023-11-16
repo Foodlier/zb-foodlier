@@ -30,7 +30,7 @@ const ChatRoom = ({ roomNum }: { roomNum: number | undefined }) => {
   const [isExitModalOpen, setIsExitModalOpen] = useState(false)
   const [dmMessageList, setDmMessageList] = useState<DmMessage[]>([])
   const [message, setMessage] = useState('')
-  const [messageHasNext, setMessageHasNext] = useState(true)
+  const [messageHasNext, setMessageHasNext] = useState(false)
   const [lastDmNum, setLastDmNum] = useState(0)
   const [stompClientstate, setStompClientstate] = useState<StompJs.Client>()
   const [roomInfo, setRoomInfo] = useState<RoomInfoInterface>()
