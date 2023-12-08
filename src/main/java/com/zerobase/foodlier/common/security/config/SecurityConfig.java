@@ -101,6 +101,7 @@ public class SecurityConfig {
                 "http://127.0.0.1:5173",
                 "http://127.0.0.1:8080",
                 "http://localhost:8080",
+                "https://foodlier.store",
                 "https://zb-foodlier-iota.vercel.app/",
                 "http://ec2-15-165-55-217.ap-northeast-2.compute.amazonaws.com",
                 "http://ec2-13-209-238-113.ap-northeast-2.compute.amazonaws.com"
