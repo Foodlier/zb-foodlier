@@ -140,16 +140,10 @@ public class RequestService {
     public Request cancelRequest(Long memberId, Long requestId) {
         Member member = getMember(memberId);
         Request request = getRequest(requestId);
-        Request canceledRequest = Request.builder()
-                .id(request.getId())
-                .chefMember(request.getChefMember())
-                .title(request.getTitle())
-                .build();
-
         validateCancelRequest(member, request);
 
         requestRepository.delete(request);
-        return canceledRequest;
+        return request;
     }
 
     /**
