@@ -131,9 +131,7 @@ const ChatRoom = ({ roomNum }: { roomNum: number | undefined }) => {
   // 방 정보 새로 업데이트 될 때 마다(방 클릭시 마다)
   useEffect(() => {
     // 채팅 환경설정
-    const socket = new SockJS(
-      'http://ec2-15-165-55-217.ap-northeast-2.compute.amazonaws.com/ws'
-    )
+    const socket = new SockJS('https://foodlier.store/ws')
     const stompClient = StompJs.over(socket)
     setStompClientstate(stompClient)
     // 메세지 수신
