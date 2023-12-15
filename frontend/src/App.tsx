@@ -44,7 +44,7 @@ function App() {
         const EventSource = EventSourcePolyfill || NativeEventSource
 
         const eventSource = new EventSource(
-          'http://ec2-15-165-55-217.ap-northeast-2.compute.amazonaws.com/notification/subscribe',
+          'https://foodlier.store/notification/subscribe',
           {
             headers: {
               Authorization: `Bearer ${getCookie('accessToken')}`,
