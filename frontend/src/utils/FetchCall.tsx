@@ -7,13 +7,20 @@ import { getCookie } from './Cookies'
 // const API_BASE_URL = 'http://localhost:8080'
 // 서버에서 받아온 안전한 accessToken 사용
 
-// const API_ACCESS_TOKEN = getCookie('accessToken')
+const API_ACCESS_TOKEN = getCookie('accessToken')
 const API_REFRESH_TOKEN = getCookie('refreshToken')
 
+let AuthorizationValue = {}
+
+if (API_ACCESS_TOKEN) {
+  AuthorizationValue = {
+    Authorization: `Bearer ${API_ACCESS_TOKEN}`,
+  }
+}
 const axiosInstance = axios.create({
   // baseURL 빼고 작업해야 CORS
   // baseURL: API_BASE_URL,
-  headers: {},
+  headers: AuthorizationValue,
   withCredentials: true,
 })
 
