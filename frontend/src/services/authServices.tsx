@@ -17,8 +17,13 @@ const onLoginSuccess = (res: any) => {
   const { accessToken, refreshToken } = res.data
   setInterceptor(accessToken)
 
+  // 만료 시간 설정
+  // const nowTime = new Date()
+  // const expiresTime = nowTime.setSeconds(nowTime.getSeconds() + 10)
+
   // 로그인 성공시 쿠키에 accessToken 저장
   localStorage.setItem('accessToken', JSON.stringify(accessToken))
+  // setCookie('accessToken', accessToken, { path: '/', expires: expiresTime })
   setCookie('accessToken', accessToken, { path: '/' })
   setCookie('refreshToken', refreshToken, { path: '/' })
 
